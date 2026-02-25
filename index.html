@@ -1237,7 +1237,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
 <body>
 
 <!-- Login Screen -->
-<div id="login-screen" class="login-screen">
+<div id="login-screen" class="login-screen" style="display:none">
   <div class="login-card">
     <div class="login-logo">
       <i class='bx bx-cube-alt'></i>
@@ -3969,6 +3969,8 @@ async function initApp() {
     const loggedIn = await autoLogin();
     if (loggedIn) {
       showApp();
+    } else {
+      document.getElementById('login-screen').style.display = 'flex';
     }
     
     // Load default categories (first run only)
