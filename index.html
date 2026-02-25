@@ -3035,6 +3035,9 @@ async function onDriveConnected() {
     // Sync data from Drive
     await pullFromDrive();
     
+    // Start auto-pull for multi-device sync
+    startAutoPull();
+    
   } catch (err) {
     console.error('Drive connect error:', err);
     updateSyncStatus('error');
@@ -3047,6 +3050,7 @@ function disconnectDrive() {
   driveFolderId = null;
   driveFileIds = {};
   driveReady = false;
+  stopAutoPull();
   localStorage.removeItem('sms_drive_token');
   updateSyncStatus('disconnected');
   toast('تم قطع الاتصال بـ Google Drive');
@@ -3253,6 +3257,7 @@ async function pushToDrive() {
       await writeDriveFile(store, data);
     }
     
+    lastPullTime = Date.now();
     updateSyncStatus('connected');
   } catch (err) {
     console.error('Push error:', err);
@@ -3266,6 +3271,60 @@ function scheduleDriveSync() {
   if (!driveReady) return;
   if (syncTimeout) clearTimeout(syncTimeout);
   syncTimeout = setTimeout(() => pushToDrive(), 3000); // Debounce 3 seconds
+}
+
+// Auto-pull from Drive periodically (every 30 seconds)
+let autoPullInterval = null;
+let lastPullTime = 0;
+
+function startAutoPull() {
+  if (autoPullInterval) return;
+  autoPullInterval = setInterval(async () => {
+    if (!driveReady || document.hidden) return; // Skip if tab not visible
+    // Don't pull if we just pushed (within 5 seconds)
+    if (Date.now() - lastPullTime < 25000) return;
+    await silentPull();
+  }, 30000); // Every 30 seconds
+}
+
+function stopAutoPull() {
+  if (autoPullInterval) { clearInterval(autoPullInterval); autoPullInterval = null; }
+}
+
+async function silentPull() {
+  if (!driveReady) return;
+  try {
+    const storeNames = Object.keys(STORES).filter(s => s !== 'settings'); // Don't overwrite local settings
+    let changed = false;
+    
+    for (const store of storeNames) {
+      const driveData = await readDriveFile(store);
+      if (!driveData || !Array.isArray(driveData)) continue;
+      
+      const localData = await dbGetAll(store);
+      // Simple check: if count differs or latest timestamps differ, sync
+      if (driveData.length !== localData.length || JSON.stringify(driveData) !== JSON.stringify(localData)) {
+        await dbClear(store);
+        for (const record of driveData) {
+          try { await _origDbAdd(store, record); } catch(e) {}
+        }
+        changed = true;
+      }
+    }
+    
+    if (changed) {
+      lastPullTime = Date.now();
+      // Reload active page
+      const hash = localStorage.getItem('sms_last_page') || 'dashboard';
+      const page = hash.split('/')[0];
+      if (page === 'inventory') loadInventory();
+      else if (page === 'dashboard') loadDashboard();
+      else if (page === 'sales') loadSalesPage();
+      else if (page === 'purchases') loadPurchasesPage();
+      else if (page === 'maintenance') loadMaintenancePage();
+      else if (page === 'accounting') loadAccountingPage();
+    }
+  } catch (e) { /* silent fail */ }
 }
 
 // Override db functions to trigger sync
