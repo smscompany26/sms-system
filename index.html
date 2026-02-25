@@ -5618,7 +5618,8 @@ function printHTML(html) {
   doc.open();
   doc.write(html);
   // Add close button and print button for mobile
-  doc.write(`<div style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:100000;direction:rtl">
+  doc.write(`<style>@media print{.print-actions{display:none!important}}</style>
+  <div class="print-actions" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:100000;direction:rtl">
     <button onclick="window.print()" style="background:#6c3ce9;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:16px;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700">🖨️ طباعة / PDF</button>
     <button onclick="parent.document.querySelector('iframe').remove()" style="background:#ef4444;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:16px;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700">✕ إغلاق</button>
   </div>`);
