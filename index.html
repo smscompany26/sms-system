@@ -37,7 +37,15 @@
   --text-muted: #9ca3af;
   --border: #2d2d44;
   --shadow: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.4);
+  --sidebar-bg: #0a0a14;
 }
+[data-theme="dark"] .login-screen { background: linear-gradient(135deg, #0a0a14, #0f0f1a); }
+[data-theme="dark"] .readonly-input { background: var(--border) !important; }
+[data-theme="dark"] thead { background: rgba(255,255,255,0.03); }
+[data-theme="dark"] tr:hover { background: rgba(108,60,233,0.06); }
+[data-theme="dark"] .alert-warning { background: rgba(245,158,11,0.08); color: #fbbf24; }
+[data-theme="dark"] .mobile-more-menu { background: var(--bg-card); border-color: var(--border); }
 
 /* ========== Reset ========== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1135,6 +1143,93 @@ tr:hover { background: rgba(108,60,233,0.02); }
   z-index: 99;
 }
 .sidebar-overlay.active { display: block; }
+
+/* ========== Dark Mode Toggle ========== */
+.theme-toggle {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 20px;
+  transition: all var(--transition);
+}
+.theme-toggle:hover { border-color: var(--primary); color: var(--primary); }
+
+/* ========== Barcode Scanner ========== */
+.scanner-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.9); z-index: 2000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.scanner-overlay video {
+  max-width: 90vw; max-height: 60vh; border-radius: 12px; border: 3px solid var(--primary);
+}
+.scanner-overlay .scanner-close {
+  margin-top: 20px; padding: 10px 32px;
+  background: var(--danger); color: #fff; border: none; border-radius: 8px;
+  font-size: 16px; font-weight: 700; cursor: pointer; font-family: var(--font);
+}
+.scanner-line {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+  width: 280px; height: 2px; background: var(--danger);
+  animation: scanLine 2s ease-in-out infinite;
+}
+@keyframes scanLine { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+/* ========== Dashboard Charts ========== */
+.chart-card { padding: 20px; }
+.chart-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--text); }
+.chart-card h4 i { color: var(--primary); }
+
+.h-bar-chart { display: flex; flex-direction: column; gap: 8px; }
+.h-bar-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.h-bar-label { min-width: 60px; text-align: left; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+.h-bar-track { flex: 1; height: 24px; background: var(--bg); border-radius: 6px; overflow: hidden; position: relative; }
+.h-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; display: flex; align-items: center; padding: 0 8px; font-size: 11px; font-weight: 700; color: #fff; min-width: fit-content; }
+.h-bar-fill.sales { background: linear-gradient(90deg, var(--success), #4ade80); }
+.h-bar-fill.purchases { background: linear-gradient(90deg, var(--danger), #f87171); }
+.h-bar-fill.product { background: linear-gradient(90deg, var(--primary), var(--primary-light)); }
+
+.donut-chart {
+  width: 160px; height: 160px; border-radius: 50%;
+  position: relative; margin: 0 auto;
+}
+.donut-center {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 80px; height: 80px; border-radius: 50%; background: var(--bg-card);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 800; color: var(--text);
+}
+.donut-legend { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+.donut-legend-item { display: flex; align-items: center; gap: 4px; font-size: 12px; }
+.donut-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+.sparkline { display: flex; align-items: flex-end; gap: 3px; height: 60px; padding: 4px 0; }
+.sparkline-bar {
+  flex: 1; min-width: 8px; border-radius: 3px 3px 0 0;
+  background: var(--primary); opacity: 0.7; transition: opacity 0.2s;
+}
+.sparkline-bar:hover { opacity: 1; }
+.sparkline-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+.recent-invoices-list { display: flex; flex-direction: column; gap: 8px; }
+.recent-inv-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 12px; background: var(--bg); border-radius: var(--radius-sm);
+  font-size: 13px; cursor: pointer; transition: background var(--transition);
+}
+.recent-inv-item:hover { background: rgba(108,60,233,0.06); }
+
+.warranty-alert { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.warranty-alert:last-child { border-bottom: none; }
+.warranty-alert.warning i { color: var(--warning); }
+.warranty-alert.danger i { color: var(--danger); }
+
+.clickable-stat { cursor: pointer; transition: transform var(--transition), box-shadow var(--transition); }
+.clickable-stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
@@ -1273,6 +1368,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <button class="mobile-menu" onclick="toggleSidebar()"><i class='bx bx-menu'></i></button>
       <h2 id="page-title">لوحة التحكم</h2>
       <div class="topbar-actions">
+        <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="الوضع الليلي"><i class='bx bx-moon'></i></button>
         <span id="sync-status" class="sync-badge" title="Google Drive — اضغط للاتصال" style="cursor:pointer" onclick="navigate('settings')"><i class='bx bx-cloud-upload'></i></span>
         <span class="user-role-badge" id="user-role-badge">مدير</span>
       </div>
@@ -1283,29 +1379,30 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
       <!-- Dashboard -->
       <section id="page-dashboard" class="page active">
+        <!-- Main stats row -->
         <div class="stats-grid">
-          <div class="stat-card stat-sales">
+          <div class="stat-card stat-sales clickable-stat" onclick="navigate('sales')">
             <div class="stat-icon"><i class='bx bx-trending-up'></i></div>
             <div class="stat-info">
               <span class="stat-value" id="stat-sales-today">0</span>
               <span class="stat-label">مبيعات اليوم</span>
             </div>
           </div>
-          <div class="stat-card stat-purchases">
+          <div class="stat-card stat-purchases clickable-stat" onclick="navigate('purchases')">
             <div class="stat-icon"><i class='bx bx-trending-down'></i></div>
             <div class="stat-info">
               <span class="stat-value" id="stat-purchases-today">0</span>
               <span class="stat-label">مشتريات اليوم</span>
             </div>
           </div>
-          <div class="stat-card stat-profit">
+          <div class="stat-card stat-profit clickable-stat" onclick="navigate('accounting')">
             <div class="stat-icon"><i class='bx bx-money'></i></div>
             <div class="stat-info">
               <span class="stat-value" id="stat-profit-today">0</span>
               <span class="stat-label">صافي الربح</span>
             </div>
           </div>
-          <div class="stat-card stat-maintenance">
+          <div class="stat-card stat-maintenance clickable-stat" onclick="navigate('maintenance')">
             <div class="stat-icon"><i class='bx bx-wrench'></i></div>
             <div class="stat-info">
               <span class="stat-value" id="stat-maintenance">0</span>
@@ -1314,6 +1411,50 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
         </div>
 
+        <!-- Quick stats row 2 -->
+        <div class="stats-grid" id="dash-quick-stats" style="grid-template-columns:repeat(4,1fr)">
+          <div class="stat-card clickable-stat" style="border-right-color:var(--accent)" onclick="navigate('inventory')">
+            <div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-package'></i></div>
+            <div class="stat-info"><span class="stat-value" id="stat-total-products" style="font-size:20px">0</span><span class="stat-label">إجمالي المنتجات</span></div>
+          </div>
+          <div class="stat-card clickable-stat" style="border-right-color:var(--primary)" onclick="navigate('sales');setTimeout(()=>switchSalesTab('clients'),100)">
+            <div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-group'></i></div>
+            <div class="stat-info"><span class="stat-value" id="stat-total-clients" style="font-size:20px">0</span><span class="stat-label">إجمالي العملاء</span></div>
+          </div>
+          <div class="stat-card clickable-stat" style="border-right-color:var(--warning)" onclick="navigate('purchases');setTimeout(()=>switchPurchasesTab('suppliers'),100)">
+            <div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-store'></i></div>
+            <div class="stat-info"><span class="stat-value" id="stat-total-suppliers" style="font-size:20px">0</span><span class="stat-label">إجمالي الموردين</span></div>
+          </div>
+          <div class="stat-card clickable-stat" style="border-right-color:var(--danger)" onclick="navigate('maintenance')">
+            <div class="stat-icon" style="background:rgba(239,68,68,0.1);color:var(--danger)"><i class='bx bx-devices'></i></div>
+            <div class="stat-info"><span class="stat-value" id="stat-active-devices" style="font-size:20px">0</span><span class="stat-label">أجهزة نشطة</span></div>
+          </div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="dashboard-grid">
+          <div class="card chart-card">
+            <h4><i class='bx bx-bar-chart-alt-2'></i> المبيعات vs المشتريات (7 أيام)</h4>
+            <div id="dash-sales-chart" class="h-bar-chart"></div>
+          </div>
+          <div class="card chart-card">
+            <h4><i class='bx bx-pie-chart-alt'></i> حالة الصيانة</h4>
+            <div id="dash-maint-donut" style="text-align:center"></div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card chart-card">
+            <h4><i class='bx bx-trophy'></i> أكثر 5 منتجات مبيعاً</h4>
+            <div id="dash-top-products" class="h-bar-chart"></div>
+          </div>
+          <div class="card chart-card">
+            <h4><i class='bx bx-line-chart'></i> إيرادات آخر 6 شهور</h4>
+            <div id="dash-revenue-sparkline"></div>
+          </div>
+        </div>
+
+        <!-- Alerts + Recent -->
         <div class="dashboard-grid">
           <div class="card">
             <h3><i class='bx bx-bell'></i> تنبيهات</h3>
@@ -1322,20 +1463,28 @@ tr:hover { background: rgba(108,60,233,0.02); }
             </div>
           </div>
           <div class="card">
+            <h3><i class='bx bx-receipt'></i> آخر الفواتير</h3>
+            <div id="dash-recent-invoices" class="recent-invoices-list">
+              <p class="empty-state">لا توجد فواتير</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card">
             <h3><i class='bx bx-history'></i> آخر الحركات</h3>
             <div id="recent-transactions" class="transactions-list">
               <p class="empty-state">لا توجد حركات</p>
             </div>
           </div>
-        </div>
-
-        <div class="card">
-          <h3><i class='bx bx-rocket'></i> إجراءات سريعة</h3>
-          <div class="quick-actions">
-            <button class="qa-btn" onclick="navigate('inventory');openAddProduct()"><i class='bx bx-plus-circle'></i> إضافة صنف</button>
-            <button class="qa-btn" onclick="navigate('sales')"><i class='bx bx-receipt'></i> فاتورة بيع</button>
-            <button class="qa-btn" onclick="navigate('purchases')"><i class='bx bx-cart-download'></i> فاتورة شراء</button>
-            <button class="qa-btn" onclick="navigate('maintenance')"><i class='bx bx-wrench'></i> إذن صيانة</button>
+          <div class="card">
+            <h3><i class='bx bx-rocket'></i> إجراءات سريعة</h3>
+            <div class="quick-actions">
+              <button class="qa-btn" onclick="navigate('inventory');openAddProduct()"><i class='bx bx-plus-circle'></i> إضافة صنف</button>
+              <button class="qa-btn" onclick="navigate('sales')"><i class='bx bx-receipt'></i> فاتورة بيع</button>
+              <button class="qa-btn" onclick="navigate('purchases')"><i class='bx bx-cart-download'></i> فاتورة شراء</button>
+              <button class="qa-btn" onclick="navigate('maintenance')"><i class='bx bx-wrench'></i> إذن صيانة</button>
+            </div>
           </div>
         </div>
       </section>
@@ -1367,6 +1516,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <button class="view-btn active" id="view-list-btn" onclick="setInventoryView('list')"><i class='bx bx-list-ul'></i></button>
               <button class="view-btn" id="view-grid-btn" onclick="setInventoryView('grid')"><i class='bx bx-grid-alt'></i></button>
             </div>
+            <button class="btn btn-outline" onclick="openBarcodeScanner('inventory')"><i class='bx bx-barcode'></i> مسح باركود</button>
             <button class="btn btn-primary" onclick="openAddProduct()"><i class='bx bx-plus'></i> إضافة صنف</button>
             <button class="btn btn-outline" onclick="openImportExport()"><i class='bx bx-import'></i> استيراد/تصدير</button>
             <button class="btn btn-outline" onclick="openCategories()"><i class='bx bx-category'></i> التصنيفات</button>
@@ -1827,6 +1977,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <label class="perm-checkbox"><input type="checkbox" id="notif-low-stock"> تنبيه مخزون منخفض</label>
             <label class="perm-checkbox"><input type="checkbox" id="notif-unpaid"> فواتير غير مدفوعة</label>
             <label class="perm-checkbox"><input type="checkbox" id="notif-devices-ready"> أجهزة جاهزة للتسليم</label>
+            <label class="perm-checkbox"><input type="checkbox" id="notif-warranty-expiry"> تنبيهات انتهاء الضمان</label>
             <label class="perm-checkbox"><input type="checkbox" id="notif-daily-summary"> ملخص يومي</label>
           </div>
           <div style="display:flex;gap:12px;margin-top:12px">
@@ -2323,7 +2474,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
       
       <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px">
         <h4>الأصناف</h4>
-        <button type="button" class="btn btn-sm btn-primary" onclick="addInvoiceItem()"><i class='bx bx-plus'></i> إضافة صنف</button>
+        <div style="display:flex;gap:6px">
+          <button type="button" class="btn btn-sm btn-outline" onclick="openBarcodeScanner('invoice')"><i class='bx bx-barcode'></i> مسح</button>
+          <button type="button" class="btn btn-sm btn-primary" onclick="addInvoiceItem()"><i class='bx bx-plus'></i> إضافة صنف</button>
+        </div>
       </div>
       <div id="invoice-items-list" class="invoice-items-container"></div>
       
@@ -2410,6 +2564,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
 <div id="toast-container"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.4/dist/quagga.min.js" async></script>
 <script>/**
  * SMS System — IndexedDB Database Layer
  */
@@ -3320,15 +3475,152 @@ function formatDateTime(dateStr) {
   return d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
+// ============ DARK MODE ============
+function initTheme() {
+  const saved = localStorage.getItem('sms_theme');
+  if (saved === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    const icon = document.querySelector('#theme-toggle i');
+    if (icon) { icon.classList.remove('bx-moon'); icon.classList.add('bx-sun'); }
+  }
+}
+
+function toggleTheme() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    document.body.removeAttribute('data-theme');
+    localStorage.setItem('sms_theme', 'light');
+    const icon = document.querySelector('#theme-toggle i');
+    if (icon) { icon.classList.remove('bx-sun'); icon.classList.add('bx-moon'); }
+  } else {
+    document.body.setAttribute('data-theme', 'dark');
+    localStorage.setItem('sms_theme', 'dark');
+    const icon = document.querySelector('#theme-toggle i');
+    if (icon) { icon.classList.remove('bx-moon'); icon.classList.add('bx-sun'); }
+  }
+}
+
+// ============ BARCODE SCANNER ============
+let _scannerStream = null;
+let _scannerContext = null; // 'inventory' or 'invoice'
+
+async function openBarcodeScanner(context) {
+  _scannerContext = context || 'inventory';
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'scanner-overlay';
+  overlay.id = 'barcode-scanner-overlay';
+  overlay.innerHTML = `
+    <p style="color:#fff;font-size:16px;margin-bottom:12px">وجّه الكاميرا نحو الباركود</p>
+    <video id="scanner-video" autoplay playsinline></video>
+    <div class="scanner-line"></div>
+    <button class="scanner-close" onclick="closeBarcodeScanner()">إغلاق</button>
+  `;
+  document.body.appendChild(overlay);
+  
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    _scannerStream = stream;
+    const video = document.getElementById('scanner-video');
+    video.srcObject = stream;
+    
+    // Try native BarcodeDetector first
+    if ('BarcodeDetector' in window) {
+      const detector = new BarcodeDetector({ formats: ['ean_13','ean_8','code_128','code_39','upc_a','upc_e','qr_code'] });
+      const scanLoop = async () => {
+        if (!_scannerStream) return;
+        try {
+          const barcodes = await detector.detect(video);
+          if (barcodes.length > 0) {
+            handleBarcodeResult(barcodes[0].rawValue);
+            return;
+          }
+        } catch(e) {}
+        requestAnimationFrame(scanLoop);
+      };
+      video.onloadedmetadata = () => scanLoop();
+    } else if (typeof Quagga !== 'undefined') {
+      // Fallback to QuaggaJS
+      Quagga.init({
+        inputStream: { type: 'LiveStream', target: video, constraints: { facingMode: 'environment' } },
+        decoder: { readers: ['ean_reader','ean_8_reader','code_128_reader','code_39_reader','upc_reader'] },
+      }, (err) => {
+        if (!err) {
+          Quagga.start();
+          Quagga.onDetected((result) => {
+            if (result?.codeResult?.code) {
+              Quagga.stop();
+              handleBarcodeResult(result.codeResult.code);
+            }
+          });
+        }
+      });
+    } else {
+      toast('متصفحك لا يدعم مسح الباركود', 'error');
+      closeBarcodeScanner();
+    }
+  } catch(err) {
+    toast('فشل الوصول للكاميرا', 'error');
+    closeBarcodeScanner();
+  }
+}
+
+function closeBarcodeScanner() {
+  if (_scannerStream) {
+    _scannerStream.getTracks().forEach(t => t.stop());
+    _scannerStream = null;
+  }
+  try { if (typeof Quagga !== 'undefined') Quagga.stop(); } catch(e) {}
+  const overlay = document.getElementById('barcode-scanner-overlay');
+  if (overlay) overlay.remove();
+}
+
+async function handleBarcodeResult(code) {
+  closeBarcodeScanner();
+  toast('تم المسح: ' + code, 'info');
+  
+  const products = await dbGetAll('products');
+  const found = products.find(p => p.barcode === code || p.sku === code);
+  
+  if (_scannerContext === 'inventory') {
+    if (found) {
+      viewProduct(found.id);
+    } else {
+      if (confirm(`لم يتم العثور على منتج بباركود: ${code}\nهل تريد إضافة منتج جديد؟`)) {
+        openAddProduct();
+        document.getElementById('product-barcode').value = code;
+      }
+    }
+  } else if (_scannerContext === 'invoice') {
+    if (found) {
+      // Add to current invoice items
+      const existing = currentInvoiceItems.find(i => i.productId === found.id);
+      if (existing) {
+        existing.quantity++;
+        existing.total = existing.quantity * existing.unitPrice;
+      } else {
+        const price = editingInvoiceType === 'sale' ? found.sellPrice : found.buyPrice;
+        currentInvoiceItems.push({ productId: found.id, productName: found.name, quantity: 1, unitPrice: price, total: price });
+      }
+      renderInvoiceItems();
+      updateInvoiceTotals();
+      toast(`تمت إضافة: ${found.name}`, 'success');
+    } else {
+      toast('لم يتم العثور على منتج بهذا الباركود', 'warning');
+    }
+  }
+}
+
 // Dashboard
 async function loadDashboard() {
   const products = await dbGetAll('products');
   const movements = await dbGetAll('stockMovements');
   const invoices = await dbGetAll('invoices');
+  const devices = await dbGetAll('devices');
+  const clients = await dbGetAll('clients');
+  const suppliers = await dbGetAll('suppliers');
   
   const today = new Date().toISOString().split('T')[0];
-  
-  // Calculate stats from invoices
   const todayInvoices = invoices.filter(i => i.date?.startsWith(today));
   
   let salesToday = 0, purchasesToday = 0;
@@ -3340,18 +3632,49 @@ async function loadDashboard() {
   document.getElementById('stat-sales-today').textContent = formatMoney(salesToday);
   document.getElementById('stat-purchases-today').textContent = formatMoney(purchasesToday);
   document.getElementById('stat-profit-today').textContent = formatMoney(salesToday - purchasesToday);
-  document.getElementById('stat-maintenance').textContent = '0';
   
-  // Low stock alerts
+  const activeDevices = devices.filter(d => d.status !== 'completed');
+  document.getElementById('stat-maintenance').textContent = devices.filter(d => d.status === 'under_repair').length;
+  
+  // Quick stats row 2
+  document.getElementById('stat-total-products').textContent = products.length;
+  document.getElementById('stat-total-clients').textContent = clients.length;
+  document.getElementById('stat-total-suppliers').textContent = suppliers.length;
+  document.getElementById('stat-active-devices').textContent = activeDevices.length;
+  
+  // ===== CHARTS =====
+  // Sales vs Purchases last 7 days
+  renderSalesPurchasesChart(invoices);
+  
+  // Maintenance donut
+  renderMaintenanceDonut(devices);
+  
+  // Top 5 products
+  renderTopProducts(invoices, products);
+  
+  // Revenue sparkline
+  renderRevenueSparkline(invoices);
+  
+  // Recent invoices (last 5)
+  renderRecentInvoices(invoices);
+  
+  // ===== ALERTS (low stock + warranty) =====
+  const alertsHtml = [];
+  
+  // Low stock
   const lowStock = products.filter(p => p.quantity <= p.minStock);
+  lowStock.forEach(p => {
+    alertsHtml.push(`<div class="alert-item"><i class='bx bx-error'></i> <span><strong>${p.name}</strong> — الكمية: ${p.quantity} (الحد الأدنى: ${p.minStock})</span></div>`);
+  });
+  
+  // Warranty alerts
+  const warrantyAlerts = getWarrantyAlerts(devices, clients);
+  warrantyAlerts.forEach(a => {
+    alertsHtml.push(`<div class="warranty-alert ${a.type}"><i class='bx ${a.type==='danger'?'bx-error-circle':'bx-error'}'></i> <span>${a.message}</span></div>`);
+  });
+  
   const alertsList = document.getElementById('alerts-list');
-  if (lowStock.length > 0) {
-    alertsList.innerHTML = lowStock.map(p => 
-      `<div class="alert-item"><i class='bx bx-error'></i> <span><strong>${p.name}</strong> — الكمية: ${p.quantity} (الحد الأدنى: ${p.minStock})</span></div>`
-    ).join('');
-  } else {
-    alertsList.innerHTML = '<p class="empty-state" style="padding:20px">لا توجد تنبيهات</p>';
-  }
+  alertsList.innerHTML = alertsHtml.length > 0 ? alertsHtml.join('') : '<p class="empty-state" style="padding:20px">لا توجد تنبيهات</p>';
   
   // Recent transactions
   const recentList = document.getElementById('recent-transactions');
@@ -3370,6 +3693,170 @@ async function loadDashboard() {
   } else {
     recentList.innerHTML = '<p class="empty-state" style="padding:20px">لا توجد حركات بعد</p>';
   }
+}
+
+// ===== WARRANTY ALERTS =====
+function getWarrantyAlerts(devices, clients) {
+  const alerts = [];
+  const now = new Date();
+  
+  devices.forEach(d => {
+    if (!d.hasWarranty || !d.intakeDate || !d.warrantyMonths) return;
+    const intake = new Date(d.intakeDate);
+    const warrantyEnd = new Date(intake);
+    warrantyEnd.setMonth(warrantyEnd.getMonth() + d.warrantyMonths);
+    
+    const daysLeft = Math.ceil((warrantyEnd - now) / (1000*60*60*24));
+    const client = clients.find(c => c.id === d.clientId);
+    const clientName = client?.name || d.clientName || 'غير محدد';
+    
+    if (daysLeft < 0) {
+      alerts.push({ type: 'danger', message: `🚨 ضمان ${d.deviceName} — ${clientName} انتهى منذ ${Math.abs(daysLeft)} يوم`, daysLeft });
+    } else if (daysLeft <= 30) {
+      alerts.push({ type: 'warning', message: `⚠️ ضمان ${d.deviceName} — ${clientName} ينتهي خلال ${daysLeft} يوم`, daysLeft });
+    }
+  });
+  
+  return alerts.sort((a, b) => a.daysLeft - b.daysLeft);
+}
+
+// ===== DASHBOARD CHARTS =====
+function renderSalesPurchasesChart(invoices) {
+  const container = document.getElementById('dash-sales-chart');
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+  
+  let maxVal = 1;
+  const data = days.map(day => {
+    const s = invoices.filter(i => i.type === 'sale' && i.date?.startsWith(day)).reduce((sum, i) => sum + (i.total || 0), 0);
+    const p = invoices.filter(i => i.type === 'purchase' && i.date?.startsWith(day)).reduce((sum, i) => sum + (i.total || 0), 0);
+    maxVal = Math.max(maxVal, s, p);
+    return { day, sales: s, purchases: p };
+  });
+  
+  container.innerHTML = data.map(d => {
+    const dayLabel = new Date(d.day).toLocaleDateString('ar-EG', { weekday: 'short' });
+    const sW = Math.max(2, (d.sales / maxVal) * 100);
+    const pW = Math.max(2, (d.purchases / maxVal) * 100);
+    return `<div class="h-bar-row">
+      <span class="h-bar-label">${dayLabel}</span>
+      <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+        <div class="h-bar-track"><div class="h-bar-fill sales" style="width:${sW}%">${d.sales > 0 ? formatMoney(d.sales) : ''}</div></div>
+        <div class="h-bar-track"><div class="h-bar-fill purchases" style="width:${pW}%">${d.purchases > 0 ? formatMoney(d.purchases) : ''}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMaintenanceDonut(devices) {
+  const container = document.getElementById('dash-maint-donut');
+  const counts = { under_repair: 0, done_not_delivered: 0, delivered_not_paid: 0, completed: 0 };
+  devices.forEach(d => { if (counts[d.status] !== undefined) counts[d.status]++; });
+  const total = Object.values(counts).reduce((s, v) => s + v, 0);
+  
+  if (total === 0) {
+    container.innerHTML = '<p class="empty-state" style="padding:20px">لا توجد أجهزة</p>';
+    return;
+  }
+  
+  const colors = { under_repair: '#f59e0b', done_not_delivered: '#6c3ce9', delivered_not_paid: '#ef4444', completed: '#22c55e' };
+  const labels = { under_repair: 'تحت الصيانة', done_not_delivered: 'خلصت', delivered_not_paid: 'اتسلمت', completed: 'مكتملة' };
+  
+  // Build conic-gradient
+  let gradParts = [], angle = 0;
+  for (const [key, count] of Object.entries(counts)) {
+    if (count === 0) continue;
+    const pct = (count / total) * 100;
+    gradParts.push(`${colors[key]} ${angle}% ${angle + pct}%`);
+    angle += pct;
+  }
+  
+  container.innerHTML = `
+    <div class="donut-chart" style="background:conic-gradient(${gradParts.join(',')})">
+      <div class="donut-center">${total}</div>
+    </div>
+    <div class="donut-legend">
+      ${Object.entries(counts).filter(([,v]) => v > 0).map(([k, v]) => 
+        `<span class="donut-legend-item"><span class="donut-legend-dot" style="background:${colors[k]}"></span>${labels[k]}: ${v}</span>`
+      ).join('')}
+    </div>`;
+}
+
+function renderTopProducts(invoices, products) {
+  const container = document.getElementById('dash-top-products');
+  const productSales = {};
+  invoices.filter(i => i.type === 'sale').forEach(inv => {
+    (inv.items || []).forEach(item => {
+      productSales[item.productId] = (productSales[item.productId] || 0) + item.quantity;
+    });
+  });
+  
+  const sorted = Object.entries(productSales).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  if (sorted.length === 0) { container.innerHTML = '<p class="empty-state" style="padding:12px">لا توجد بيانات</p>'; return; }
+  
+  const maxQty = sorted[0][1] || 1;
+  container.innerHTML = sorted.map(([pid, qty]) => {
+    const p = products.find(pr => pr.id === parseInt(pid));
+    const name = p?.name || 'غير معروف';
+    const w = Math.max(5, (qty / maxQty) * 100);
+    return `<div class="h-bar-row">
+      <span class="h-bar-label" style="min-width:100px">${name.substring(0, 20)}</span>
+      <div class="h-bar-track"><div class="h-bar-fill product" style="width:${w}%">${qty}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderRevenueSparkline(invoices) {
+  const container = document.getElementById('dash-revenue-sparkline');
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(); d.setMonth(d.getMonth() - i);
+    months.push(d.toISOString().slice(0, 7));
+  }
+  
+  const data = months.map(m => invoices.filter(i => i.type === 'sale' && i.date?.startsWith(m)).reduce((s, i) => s + (i.total || 0), 0));
+  const maxVal = Math.max(...data, 1);
+  
+  container.innerHTML = `
+    <div class="sparkline">
+      ${data.map((v, i) => `<div class="sparkline-bar" style="height:${Math.max(4, (v/maxVal)*100)}%" title="${months[i]}: ${formatMoney(v)}"></div>`).join('')}
+    </div>
+    <div class="sparkline-labels">
+      ${months.map(m => `<span>${new Date(m+'-01').toLocaleDateString('ar-EG',{month:'short'})}</span>`).join('')}
+    </div>
+    <div style="text-align:center;margin-top:8px;font-size:12px;color:var(--text-muted)">
+      ${data.map((v, i) => i === data.length-1 ? `هذا الشهر: <strong style="color:var(--primary)">${formatMoney(v)}</strong>` : '').join('')}
+    </div>`;
+}
+
+function renderRecentInvoices(invoices) {
+  const container = document.getElementById('dash-recent-invoices');
+  const recent = invoices.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+  
+  if (recent.length === 0) { container.innerHTML = '<p class="empty-state" style="padding:12px">لا توجد فواتير</p>'; return; }
+  
+  container.innerHTML = recent.map(inv => {
+    const isSale = inv.type === 'sale';
+    const icon = isSale ? 'bx-trending-up' : 'bx-trending-down';
+    const color = isSale ? 'var(--success)' : 'var(--danger)';
+    const party = isSale ? inv.clientName : inv.supplierName;
+    return `<div class="recent-inv-item" onclick="viewInvoice(${inv.id})">
+      <div style="display:flex;align-items:center;gap:10px">
+        <i class='bx ${icon}' style="font-size:20px;color:${color}"></i>
+        <div>
+          <div style="font-weight:700">${inv.number}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${party || 'غير محدد'} · ${formatDate(inv.date)}</div>
+        </div>
+      </div>
+      <div style="text-align:left">
+        <div style="font-weight:700">${formatMoney(inv.total)}</div>
+        <div>${getPaymentBadge(inv.paymentStatus)}</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // App init
@@ -3584,7 +4071,7 @@ async function shareInvoiceWhatsApp(id) {
 }
 
 // Start
-document.addEventListener('DOMContentLoaded', () => { initApp(); setupMobileNav(); });
+document.addEventListener('DOMContentLoaded', () => { initTheme(); initApp(); setupMobileNav(); });
 </script>
 <script>/**
  * SMS System — Inventory Module
@@ -5138,26 +5625,110 @@ async function viewInvoice(id) {
   openModal('modal-view-product');
 }
 
-function printInvoice() {
-  const content = document.getElementById('invoice-print-area');
+async function printInvoice(invoiceId) {
+  // If called with an ID, fetch the invoice; otherwise use current view
+  let inv = null;
+  if (invoiceId) {
+    inv = await dbGet('invoices', invoiceId);
+  }
+  
+  const settings = await dbGet('settings', 'company') || {};
+  const companyName = settings.value?.name || 'SMS Company';
+  const companyPhone = settings.value?.phone || '';
+  const companyAddress = settings.value?.address || '';
+  const companyLogo = settings.value?.logo || '';
+  
+  if (!inv) {
+    // Fallback: just print the current view area
+    const content = document.getElementById('invoice-print-area');
+    if (!content) return;
+    const win = window.open('', '_blank');
+    win.document.write(`<html dir="rtl"><head><style>body{font-family:Cairo,sans-serif;padding:40px;color:#333}h2{margin:0}h3{margin:0;color:#6c3ce9}.inv-header{display:flex;justify-content:space-between;margin-bottom:20px}table{width:100%;border-collapse:collapse;margin:16px 0}th,td{padding:8px 12px;border:1px solid #ddd;text-align:right}th{background:#f5f5f5}.inv-totals{text-align:left;margin-top:16px}.inv-totals div{display:flex;justify-content:space-between;max-width:300px;margin-right:auto;padding:4px 0}hr{border:none;border-top:1px solid #ddd;margin:12px 0}</style></head><body>${content.innerHTML}</body></html>`);
+    win.document.close();
+    setTimeout(() => win.print(), 300);
+    return;
+  }
+  
+  const isSale = inv.type === 'sale';
+  const partyLabel = isSale ? 'العميل' : 'المورد';
+  const partyName = isSale ? inv.clientName : inv.supplierName;
+  const remaining = inv.total - (inv.paidAmount || 0);
+  const qrData = encodeURIComponent(JSON.stringify({ inv: inv.number, total: inv.total, date: inv.date, party: partyName }));
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
+  
   const win = window.open('', '_blank');
-  win.document.write(`<html dir="rtl"><head><style>
-    body{font-family:Cairo,sans-serif;padding:40px;color:#333}
-    h2{margin:0} h3{margin:0;color:#6c3ce9}
-    .inv-header{display:flex;justify-content:space-between;margin-bottom:20px}
+  win.document.write(`<html dir="rtl"><head>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Cairo',sans-serif;padding:30px;color:#333;max-width:800px;margin:0 auto}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:3px solid #6c3ce9;margin-bottom:20px}
+    .header-right h1{font-size:22px;color:#6c3ce9;margin-bottom:4px}
+    .header-right p{font-size:13px;color:#666}
+    .header-left{text-align:left}
+    .header-left h2{font-size:18px;color:#333;margin-bottom:4px}
+    .header-left p{font-size:13px;color:#666}
+    .logo{max-height:60px;max-width:150px;margin-bottom:8px}
+    .party-info{background:#f8f8f8;padding:12px 16px;border-radius:8px;margin-bottom:20px;font-size:14px}
     table{width:100%;border-collapse:collapse;margin:16px 0}
-    th,td{padding:8px 12px;border:1px solid #ddd;text-align:right}
-    th{background:#f5f5f5}
-    .inv-totals{text-align:left;margin-top:16px}
-    .inv-totals div{display:flex;justify-content:space-between;max-width:300px;margin-right:auto;padding:4px 0}
-    hr{border:none;border-top:1px solid #ddd;margin:12px 0}
-  </style></head><body>${content.innerHTML}</body></html>`);
+    th{background:#6c3ce9;color:#fff;padding:10px 14px;text-align:right;font-size:13px}
+    td{padding:10px 14px;border-bottom:1px solid #eee;text-align:right;font-size:14px}
+    tr:nth-child(even){background:#fafafa}
+    .totals{margin-top:16px;display:flex;justify-content:flex-end}
+    .totals-box{min-width:280px;border:2px solid #6c3ce9;border-radius:8px;overflow:hidden}
+    .totals-row{display:flex;justify-content:space-between;padding:8px 16px;font-size:14px}
+    .totals-row.total-final{background:#6c3ce9;color:#fff;font-weight:800;font-size:16px}
+    .notes{margin-top:16px;padding:12px;background:#fff8e1;border-radius:8px;font-size:13px}
+    .qr-section{text-align:center;margin-top:24px;padding-top:16px;border-top:1px dashed #ddd}
+    .qr-section img{width:120px;height:120px}
+    .qr-section p{font-size:11px;color:#999;margin-top:4px}
+    .footer{text-align:center;margin-top:20px;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:10px}
+    .payment-badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700}
+    .badge-paid{background:#dcfce7;color:#16a34a}
+    .badge-partial{background:#fef3c7;color:#d97706}
+    .badge-unpaid{background:#fee2e2;color:#dc2626}
+    @media print{body{padding:20px}button{display:none!important}}
+  </style></head><body>
+    <div class="header">
+      <div class="header-right">
+        ${companyLogo ? `<img src="${companyLogo}" class="logo">` : ''}
+        <h1>${companyName}</h1>
+        ${companyAddress ? `<p>📍 ${companyAddress}</p>` : ''}
+        ${companyPhone ? `<p>📞 ${companyPhone}</p>` : ''}
+      </div>
+      <div class="header-left">
+        <h2>${isSale ? 'فاتورة بيع' : 'فاتورة شراء'}</h2>
+        <p><strong>رقم:</strong> ${inv.number}</p>
+        <p><strong>التاريخ:</strong> ${formatDate(inv.date)}</p>
+        <p><span class="payment-badge ${inv.paymentStatus==='paid'?'badge-paid':inv.paymentStatus==='partial'?'badge-partial':'badge-unpaid'}">${inv.paymentStatus==='paid'?'مدفوعة':inv.paymentStatus==='partial'?'جزئي':'غير مدفوعة'}</span></p>
+      </div>
+    </div>
+    <div class="party-info"><strong>${partyLabel}:</strong> ${partyName || 'غير محدد'}</div>
+    <table>
+      <thead><tr><th>#</th><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
+      <tbody>${(inv.items||[]).map((item, i) => `<tr>
+        <td>${i+1}</td><td>${item.productName}</td><td>${item.quantity}</td>
+        <td>${formatMoney(item.unitPrice)}</td><td>${formatMoney(item.total)}</td>
+      </tr>`).join('')}</tbody>
+    </table>
+    <div class="totals"><div class="totals-box">
+      <div class="totals-row"><span>الإجمالي:</span><strong>${formatMoney(inv.total)}</strong></div>
+      <div class="totals-row"><span>المدفوع:</span><strong>${formatMoney(inv.paidAmount||0)}</strong></div>
+      <div class="totals-row total-final"><span>المتبقي:</span><strong>${formatMoney(remaining)}</strong></div>
+    </div></div>
+    ${inv.notes ? `<div class="notes"><strong>ملاحظات:</strong> ${inv.notes}</div>` : ''}
+    <div class="qr-section">
+      <img src="${qrUrl}">
+      <p>QR — فاتورة ${inv.number}</p>
+    </div>
+    <div class="footer">${companyName} — ${companyPhone} · تم الإنشاء بواسطة نظام SMS</div>
+  </body></html>`);
   win.document.close();
-  win.print();
+  setTimeout(() => win.print(), 500);
 }
 
 function exportInvoicePDF() {
-  printInvoice(); // For now, use print-to-PDF
+  printInvoice(); // Uses print-to-PDF
 }
 
 // ============ RETURNS ============
@@ -5610,6 +6181,7 @@ async function viewDevice(id) {
     <div id="device-qr-view"></div>
     <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">QR Code — أمر صيانة ${d.orderNumber}</p>
     <button class="btn btn-sm btn-outline" style="margin-top:8px" onclick="printDeviceLabel(${d.id})"><i class='bx bx-printer'></i> طباعة الملصق</button>
+    <button class="btn btn-sm btn-primary" style="margin-top:8px" onclick="printMaintenanceReceipt(${d.id})"><i class='bx bx-printer'></i> طباعة إيصال</button>
   </div>`;
   
   document.getElementById('view-product-content').innerHTML = html;
@@ -5689,6 +6261,92 @@ function generateOrderNumber() {
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const rand = String(Math.floor(Math.random() * 9999)).padStart(4, '0');
   return `M-${y}${m}-${rand}`;
+}
+
+// ============ MAINTENANCE RECEIPT PRINT ============
+async function printMaintenanceReceipt(id) {
+  const d = await dbGet('devices', id);
+  if (!d) return;
+  
+  const settings = await dbGet('settings', 'company') || {};
+  const companyName = settings.value?.name || 'SMS';
+  const companyPhone = settings.value?.phone || '';
+  const companyAddress = settings.value?.address || '';
+  const companyLogo = settings.value?.logo || '';
+  const client = d.clientId ? await dbGet('clients', d.clientId) : null;
+  const clientName = client?.name || d.clientName || 'غير محدد';
+  const clientPhone = client?.phone || '';
+  const st = DEVICE_STATUSES[d.status] || {};
+  
+  const qrData = encodeURIComponent(JSON.stringify({ order: d.orderNumber, device: d.deviceName, client: clientName, date: d.intakeDate }));
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
+  
+  const win = window.open('', '_blank');
+  win.document.write(`<html dir="rtl"><head>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Cairo',sans-serif;padding:30px;color:#333;max-width:800px;margin:0 auto}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:3px solid #6c3ce9;margin-bottom:20px}
+    .header h1{font-size:22px;color:#6c3ce9}
+    .header p{font-size:13px;color:#666}
+    h2{font-size:18px;color:#333;text-align:center;margin-bottom:16px}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;font-size:14px}
+    .info-item{padding:8px 12px;background:#f8f8f8;border-radius:6px}
+    .info-item strong{color:#6c3ce9}
+    table{width:100%;border-collapse:collapse;margin:12px 0}
+    th{background:#6c3ce9;color:#fff;padding:8px 12px;text-align:right;font-size:13px}
+    td{padding:8px 12px;border-bottom:1px solid #eee;font-size:13px}
+    .totals{background:#f0f0f0;padding:12px;border-radius:8px;margin-top:12px}
+    .totals div{display:flex;justify-content:space-between;padding:4px 0;font-size:14px}
+    .totals .total-main{font-size:16px;font-weight:800;border-top:2px solid #6c3ce9;padding-top:8px;margin-top:4px}
+    .qr-section{text-align:center;margin-top:20px;border-top:1px dashed #ddd;padding-top:16px}
+    .qr-section img{width:120px;height:120px}
+    .footer{text-align:center;margin-top:16px;font-size:11px;color:#999}
+    .warranty-badge{display:inline-block;padding:3px 12px;border-radius:20px;background:#dcfce7;color:#16a34a;font-size:12px;font-weight:700}
+    @media print{body{padding:15px}button{display:none!important}}
+  </style></head><body>
+    <div class="header">
+      <div>
+        ${companyLogo ? `<img src="${companyLogo}" style="max-height:50px;margin-bottom:4px">` : ''}
+        <h1>${companyName}</h1>
+        ${companyAddress ? `<p>📍 ${companyAddress}</p>` : ''}
+        ${companyPhone ? `<p>📞 ${companyPhone}</p>` : ''}
+      </div>
+      <div style="text-align:left">
+        <p><strong>رقم الأمر:</strong> ${d.orderNumber}</p>
+        <p><strong>التاريخ:</strong> ${formatDate(d.intakeDate)}</p>
+        <p><strong>الحالة:</strong> ${st.label || d.status}</p>
+      </div>
+    </div>
+    <h2>إيصال صيانة</h2>
+    <div class="info-grid">
+      <div class="info-item"><strong>العميل:</strong> ${clientName}</div>
+      <div class="info-item"><strong>الهاتف:</strong> ${clientPhone || '-'}</div>
+      <div class="info-item"><strong>الجهاز:</strong> ${d.deviceName}</div>
+      <div class="info-item"><strong>المواصفات:</strong> ${d.specs || '-'}</div>
+      <div class="info-item" style="grid-column:1/-1"><strong>المشكلة:</strong> ${d.problem || '-'}</div>
+      ${d.hasWarranty ? `<div class="info-item" style="grid-column:1/-1"><span class="warranty-badge">🛡️ ضمان ${d.warrantyMonths} شهر</span></div>` : ''}
+    </div>
+    ${d.parts && d.parts.length > 0 ? `
+    <table>
+      <thead><tr><th>القطعة</th><th>المصدر</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
+      <tbody>${d.parts.map(p => `<tr><td>${p.name}</td><td>${p.fromStock?'مخزون':'خارجي'}</td><td>${p.quantity}</td><td>${formatMoney(p.unitPrice)}</td><td>${formatMoney(p.total)}</td></tr>`).join('')}</tbody>
+    </table>` : ''}
+    <div class="totals">
+      <div><span>تكلفة القطع:</span><span>${formatMoney((d.stockPartsCost||0) + (d.externalPartsCost||0))}</span></div>
+      <div><span>مصاريف إضافية:</span><span>${formatMoney(d.extraExpenses||0)}</span></div>
+      <div class="total-main"><span>سعر البيع:</span><strong>${formatMoney(d.sellingPrice||0)}</strong></div>
+    </div>
+    ${d.notes ? `<p style="margin-top:12px;font-size:13px"><strong>ملاحظات:</strong> ${d.notes}</p>` : ''}
+    <div class="qr-section">
+      <img src="${qrUrl}">
+      <p style="font-size:11px;color:#999;margin-top:4px">QR — أمر صيانة ${d.orderNumber}</p>
+    </div>
+    <div class="footer">${companyName} — ${companyPhone} · نظام SMS</div>
+  </body></html>`);
+  win.document.close();
+  setTimeout(() => win.print(), 500);
 }
 </script>
 <script>/**
@@ -6522,6 +7180,29 @@ async function checkAndNotify() {
     }
   }
   
+  // Warranty expiry warnings
+  if (notifSettings.value.warrantyExpiry) {
+    const clients = await dbGetAll('clients');
+    const now = new Date();
+    const warrantyAlerts = [];
+    devices.forEach(d => {
+      if (!d.hasWarranty || !d.intakeDate || !d.warrantyMonths) return;
+      const warrantyEnd = new Date(d.intakeDate);
+      warrantyEnd.setMonth(warrantyEnd.getMonth() + d.warrantyMonths);
+      const daysLeft = Math.ceil((warrantyEnd - now) / (1000*60*60*24));
+      const client = clients.find(c => c.id === d.clientId);
+      const clientName = client?.name || d.clientName || '';
+      if (daysLeft < 0) {
+        warrantyAlerts.push(`🚨 ${d.deviceName} — ${clientName}: انتهى منذ ${Math.abs(daysLeft)} يوم`);
+      } else if (daysLeft <= 30) {
+        warrantyAlerts.push(`⚠️ ${d.deviceName} — ${clientName}: ينتهي خلال ${daysLeft} يوم`);
+      }
+    });
+    if (warrantyAlerts.length > 0) {
+      messages.push(`🛡️ <b>تنبيهات الضمان:</b>\n${warrantyAlerts.join('\n')}`);
+    }
+  }
+  
   // Send
   for (const msg of messages) {
     await sendTelegramNotification(msg);
@@ -6553,6 +7234,7 @@ async function loadNotificationSettings() {
     document.getElementById('notif-low-stock').checked = notif.value.lowStock || false;
     document.getElementById('notif-unpaid').checked = notif.value.unpaid || false;
     document.getElementById('notif-devices-ready').checked = notif.value.devicesReady || false;
+    document.getElementById('notif-warranty-expiry').checked = notif.value.warrantyExpiry || false;
     document.getElementById('notif-daily-summary').checked = notif.value.dailySummary || false;
   }
 }
@@ -6573,6 +7255,7 @@ async function saveNotificationSettings() {
       lowStock: document.getElementById('notif-low-stock').checked,
       unpaid: document.getElementById('notif-unpaid').checked,
       devicesReady: document.getElementById('notif-devices-ready').checked,
+      warrantyExpiry: document.getElementById('notif-warranty-expiry').checked,
       dailySummary: document.getElementById('notif-daily-summary').checked,
     }
   });
