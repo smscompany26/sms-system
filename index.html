@@ -3307,7 +3307,7 @@ async function silentPull() {
     lastDriveMod = mod;
     
     // Something changed — pull all stores
-    const storeNames = Object.keys(STORES).filter(s => s !== 'settings');
+    const storeNames = Object.keys(STORES);
     let changed = false;
     
     for (const store of storeNames) {
