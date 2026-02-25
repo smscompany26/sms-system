@@ -3053,11 +3053,37 @@ async function ghCheckChanged() {
 
 // ============ INIT ============
 function initDriveAuth() {
-  testSync().then(ok => {
+  testSync().then(async (ok) => {
     if (ok) {
       syncReady = true;
       updateSyncStatus('connected');
-      pullFromCloud().then(() => startAutoPull());
+      
+      // Check if cloud has data
+      const remoteData = await ghReadSync();
+      
+      if (remoteData && typeof remoteData === 'object' && Object.values(remoteData).some(v => Array.isArray(v) && v.length > 0)) {
+        // Cloud has data — pull it
+        for (const [store, records] of Object.entries(remoteData)) {
+          if (!STORES[store] || !Array.isArray(records)) continue;
+          await dbClear(store);
+          for (const record of records) {
+            try { await _origDbAdd(store, record); } catch(e) {}
+          }
+        }
+        lastPullTime = Date.now();
+        reloadActivePage();
+      } else {
+        // Cloud empty — push local data if any
+        let hasLocal = false;
+        for (const s of Object.keys(STORES)) {
+          const d = await dbGetAll(s);
+          if (d.length > 0) { hasLocal = true; break; }
+        }
+        if (hasLocal) await pushToCloud();
+      }
+      
+      updateSyncStatus('connected');
+      startAutoPull();
     } else {
       updateSyncStatus('error');
     }
