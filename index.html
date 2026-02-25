@@ -952,13 +952,14 @@ tr:hover { background: rgba(108,60,233,0.02); }
 /* ========== App Footer ========== */
 .app-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 16px 24px;
   margin-top: auto;
   border-top: 1px solid var(--border);
   font-size: 12px;
   color: var(--text-muted);
+  text-align: center;
 }
 .app-footer a {
   color: var(--primary);
@@ -1876,8 +1877,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — <a href="tel:01228370809" dir="ltr">01228370809</a></span>
-      <span>© 2026</span>
+      <span>Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -2696,9 +2696,12 @@ function showApp() {
     document.querySelector('[data-page="settings"]').style.display = '';
   }
   
-  // Restore last page from hash or default to dashboard
-  if (location.hash && location.hash.length > 1) {
-    restoreFromHash();
+  // Restore last page from hash, localStorage, or default to dashboard
+  const hash = location.hash.replace('#', '');
+  const saved = hash && hash.length > 0 ? hash : localStorage.getItem('sms_last_page');
+  if (saved) {
+    const parts = saved.split('/');
+    navigate(parts[0], parts[1] || null);
   } else {
     navigate('dashboard');
   }
@@ -3144,12 +3147,10 @@ const PAGE_TITLES = {
 
 // Navigation with hash routing
 function navigate(page, sub) {
-  // Save to hash for persistence
-  if (sub) {
-    location.hash = page + '/' + sub;
-  } else {
-    location.hash = page;
-  }
+  // Save for persistence (hash + localStorage)
+  const hashVal = sub ? page + '/' + sub : page;
+  location.hash = hashVal;
+  localStorage.setItem('sms_last_page', hashVal);
   
   // Hide all pages
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -3190,6 +3191,8 @@ function navigate(page, sub) {
   if (page === 'accounting') { loadAccountingPage(); }
   if (page === 'reports') { loadReportsPage(); }
   if (page === 'settings') { 
+    // Always reset settings to overview first
+    closeSettingsSection();
     loadSettingsOverview(); loadUsersPage(); loadActivityLog(); loadCompanySettings(); loadNotificationSettings();
     if (sub) setTimeout(() => openSettingsSection(sub), 150);
   }
