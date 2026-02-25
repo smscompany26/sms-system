@@ -3040,21 +3040,22 @@ async function pushToCloud() {
   updateSyncStatus('syncing');
   
   try {
+    const now = new Date().toISOString();
+    const batch = [];
     for (const storeName of Object.keys(STORES)) {
       const data = await dbGetAll(storeName);
-      await sbAPI('/sync_data', {
-        method: 'POST',
-        headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify({
-          store_name: storeName,
-          data: data,
-          updated_at: new Date().toISOString(),
-        }),
-      });
+      batch.push({ store_name: storeName, data: data, updated_at: now });
     }
     
+    // Single API call for all stores
+    await sbAPI('/sync_data', {
+      method: 'POST',
+      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify(batch),
+    });
+    
     lastPullTime = Date.now();
-    lastRemoteTs = new Date().toISOString();
+    lastRemoteTs = now;
     updateSyncStatus('connected');
   } catch(e) {
     console.error('Push error:', e);
@@ -3135,7 +3136,7 @@ function startAutoPull() {
     if (document.hidden) return;
     if (Date.now() - lastPullTime < 2000) return;
     await silentPull();
-  }, 3000); // Every 3 seconds
+  }, 2000); // Every 2 seconds
 }
 
 function stopAutoPull() {
