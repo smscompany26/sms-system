@@ -1345,7 +1345,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <a href="#" class="nav-sub-item" onclick="navigate('settings')">الرئيسية</a>
           <a href="#" class="nav-sub-item" onclick="navigate('settings','company')">بيانات الشركة</a>
           <a href="#" class="nav-sub-item" onclick="navigate('settings','notifications')">الإشعارات</a>
-          <a href="#" class="nav-sub-item" onclick="navigate('settings','drive')">Google Drive</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('settings','drive')">المزامنة السحابية</a>
           <a href="#" class="nav-sub-item" onclick="navigate('settings','backup')">النسخ الاحتياطي</a>
           <a href="#" class="nav-sub-item" onclick="navigate('settings','users')">فريق العمل</a>
           <a href="#" class="nav-sub-item" onclick="navigate('settings','activity')">سجل النشاط</a>
@@ -1369,7 +1369,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <h2 id="page-title">لوحة التحكم</h2>
       <div class="topbar-actions">
         <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="الوضع الليلي"><i class='bx bx-moon'></i></button>
-        <span id="sync-status" class="sync-badge" title="Google Drive — اضغط للاتصال" style="cursor:pointer" onclick="navigate('settings')"><i class='bx bx-cloud-upload'></i></span>
+        <span id="sync-status" class="sync-badge" title="المزامنة السحابية" style="cursor:pointer" onclick="navigate('settings')"><i class='bx bx-cloud-upload'></i></span>
         <span class="user-role-badge" id="user-role-badge">مدير</span>
       </div>
     </header>
@@ -1921,7 +1921,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div id="settings-overview">
           <div class="stats-grid" id="settings-summary-cards" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px">
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label">الشركة</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bxl-google-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label">Google Drive</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label">فريق العمل</span></div></div>
             <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-data'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">—</span><span class="stat-label">آخر نسخة</span></div></div>
           </div>
@@ -1929,7 +1929,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
           <div class="settings-nav" id="settings-nav-setup">
             <div class="settings-nav-item" onclick="openSettingsSection('company')"><i class='bx bx-building'></i><div><strong>بيانات الشركة</strong><small>الاسم، اللوجو، العنوان، الضريبة</small></div><i class='bx bx-chevron-left'></i></div>
-            <div class="settings-nav-item" onclick="openSettingsSection('drive')"><i class='bx bxl-google-cloud'></i><div><strong>Google Drive</strong><small>ربط، مزامنة، نسخ احتياطي</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('drive')"><i class='bx bx-cloud'></i><div><strong>المزامنة السحابية</strong><small>مزامنة تلقائية، نسخ احتياطي</small></div><i class='bx bx-chevron-left'></i></div>
             <div class="settings-nav-item" onclick="openSettingsSection('notifications')"><i class='bx bx-bell'></i><div><strong>الإشعارات</strong><small>Telegram، تنبيهات المخزون والفواتير</small></div><i class='bx bx-chevron-left'></i></div>
           </div>
 
@@ -2019,7 +2019,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
   </div>
 </div>
 
-        <!-- Google Drive Section -->
+        <!-- Cloud Sync Section -->
         <div class="settings-section" id="section-drive">
         
         <div class="card" style="margin-bottom:16px">
@@ -2529,36 +2529,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
   </div>
 </div>
 
-<!-- Google Drive Setup Modal -->
-<div id="modal-drive-setup" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3><i class='bx bxl-google' style="color:#4285f4"></i> ربط Google Drive</h3>
-      <button class="modal-close" onclick="closeModal('modal-drive-setup')">&times;</button>
-    </div>
-    <div style="padding:20px">
-      <div class="drive-setup-steps">
-        <h4>خطوات الإعداد (مرة واحدة):</h4>
-        <ol style="padding-right:20px;color:var(--text-muted);font-size:13px;line-height:2">
-          <li>افتح <a href="https://console.cloud.google.com/" target="_blank" style="color:var(--primary)">Google Cloud Console</a></li>
-          <li>أنشئ مشروع جديد (أو اختر موجود)</li>
-          <li>فعّل <strong>Google Drive API</strong> من Library</li>
-          <li>اذهب لـ <strong>Credentials</strong> → Create OAuth Client ID</li>
-          <li>اختر <strong>Web Application</strong></li>
-          <li>في Authorized JavaScript origins أضف: <code>file://</code> وعنوان الملف</li>
-          <li>انسخ الـ <strong>Client ID</strong> وحطه هنا</li>
-        </ol>
-      </div>
-      <div class="form-group" style="margin-top:16px">
-        <label>Google OAuth Client ID</label>
-        <input type="text" id="drive-client-id" placeholder="xxxxxxxx.apps.googleusercontent.com" dir="ltr" style="text-align:left">
-      </div>
-      <div style="display:flex;gap:12px;margin-top:16px">
-        <button class="btn btn-primary btn-block" onclick="saveDriveClientId()"><i class='bx bx-link'></i> ربط Google Drive</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- Drive modal removed -->
 
 <!-- Drive Sync Status Bar (inside settings page) -->
 
