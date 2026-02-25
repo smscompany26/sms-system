@@ -949,6 +949,35 @@ tr:hover { background: rgba(108,60,233,0.02); }
   #settings-overview { display: block; }
 }
 
+/* ========== Mobile More Menu ========== */
+.mobile-more-menu {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  border-radius: 16px 16px 0 0;
+  padding: 12px;
+  z-index: 1001;
+}
+.mobile-more-menu.open { display: block; }
+.mobile-more-menu a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+}
+.mobile-more-menu a:hover { background: var(--bg); }
+.mobile-more-menu a i { font-size: 20px; color: var(--primary); min-width: 20px; }
+
 /* ========== App Footer ========== */
 .app-footer {
   display: flex;
@@ -2060,7 +2089,15 @@ tr:hover { background: rgba(108,60,233,0.02); }
   <button class="mob-nav-item" onclick="mobileNav('inventory')"><i class='bx bxs-package'></i>المخزون</button>
   <button class="mob-nav-item" onclick="mobileNav('sales')"><i class='bx bxs-cart'></i>البيع</button>
   <button class="mob-nav-item" onclick="mobileNav('maintenance')"><i class='bx bxs-wrench'></i>الصيانة</button>
-  <button class="mob-nav-item" onclick="mobileNav('more')"><i class='bx bx-menu'></i>المزيد</button>
+  <button class="mob-nav-item" onclick="toggleMobileMore(event)"><i class='bx bx-menu'></i>المزيد</button>
+  <div class="mobile-more-menu" id="mobile-more-menu">
+    <a onclick="mobileNav('purchases')"><i class='bx bxs-cart-download'></i> المشتريات</a>
+    <a onclick="mobileNav('accounting')"><i class='bx bxs-wallet'></i> المحاسبة</a>
+    <a onclick="mobileNav('reports')"><i class='bx bxs-report'></i> التقارير</a>
+    <a onclick="mobileNav('settings')"><i class='bx bxs-cog'></i> الإعدادات</a>
+    <hr style="border:none;border-top:1px solid var(--border);margin:4px 0">
+    <a onclick="logout()" style="color:var(--danger)"><i class='bx bx-log-out'></i> تسجيل الخروج</a>
+  </div>
 </div>
 
 <!-- Expense Modal -->
@@ -3478,14 +3515,29 @@ function toggleWarrantyField() {
 
 // ============ MOBILE BOTTOM NAV ============
 function mobileNav(page) {
-  if (page === 'more') {
-    toggleSidebar();
-    return;
-  }
+  // Close more menu if open
+  const moreMenu = document.getElementById('mobile-more-menu');
+  if (moreMenu) moreMenu.classList.remove('open');
+  
   navigate(page);
   document.querySelectorAll('.mob-nav-item').forEach(b => b.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  const btn = document.querySelector(`.mob-nav-item[onclick*="'${page}'"]`);
+  if (btn) btn.classList.add('active');
 }
+
+function toggleMobileMore(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('mobile-more-menu');
+  menu.classList.toggle('open');
+}
+
+// Close more menu on outside click
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('mobile-more-menu');
+  if (menu && !e.target.closest('.mobile-more-menu') && !e.target.closest('[onclick*="toggleMobileMore"]')) {
+    menu.classList.remove('open');
+  }
+});
 
 function setupMobileNav() {
   const check = () => {
