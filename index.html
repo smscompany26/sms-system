@@ -3284,17 +3284,30 @@ function startAutoPull() {
     // Don't pull if we just pushed (within 5 seconds)
     if (Date.now() - lastPullTime < 25000) return;
     await silentPull();
-  }, 30000); // Every 30 seconds
+  }, 2000); // Every 2 seconds
 }
 
 function stopAutoPull() {
   if (autoPullInterval) { clearInterval(autoPullInterval); autoPullInterval = null; }
 }
 
+// Check if Drive folder was modified since last pull
+let lastDriveMod = null;
+
 async function silentPull() {
-  if (!driveReady) return;
+  if (!driveReady || !driveFolderId) return;
   try {
-    const storeNames = Object.keys(STORES).filter(s => s !== 'settings'); // Don't overwrite local settings
+    // Quick check: get folder's modifiedTime (1 API call only)
+    const meta = await driveAPI(`https://www.googleapis.com/drive/v3/files/${driveFolderId}?fields=modifiedTime`);
+    const info = await meta.json();
+    const mod = info.modifiedTime;
+    
+    // No change since last pull — skip
+    if (lastDriveMod && mod === lastDriveMod) return;
+    lastDriveMod = mod;
+    
+    // Something changed — pull all stores
+    const storeNames = Object.keys(STORES).filter(s => s !== 'settings');
     let changed = false;
     
     for (const store of storeNames) {
@@ -3302,7 +3315,6 @@ async function silentPull() {
       if (!driveData || !Array.isArray(driveData)) continue;
       
       const localData = await dbGetAll(store);
-      // Simple check: if count differs or latest timestamps differ, sync
       if (driveData.length !== localData.length || JSON.stringify(driveData) !== JSON.stringify(localData)) {
         await dbClear(store);
         for (const record of driveData) {
@@ -3314,7 +3326,6 @@ async function silentPull() {
     
     if (changed) {
       lastPullTime = Date.now();
-      // Reload active page
       const hash = localStorage.getItem('sms_last_page') || 'dashboard';
       const page = hash.split('/')[0];
       if (page === 'inventory') loadInventory();
