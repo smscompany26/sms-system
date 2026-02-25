@@ -1063,8 +1063,50 @@ tr:hover { background: rgba(108,60,233,0.02); }
   .stat-label { font-size: 11px !important; }
   .stat-icon { width: 40px !important; height: 40px !important; font-size: 20px !important; }
   
-  /* Compact tables on mobile */
-  th, td { padding: 8px 10px !important; font-size: 12px !important; }
+  /* Card-style tables on mobile */
+  .table-responsive table,
+  .table-responsive thead,
+  .table-responsive tbody,
+  .table-responsive tr,
+  .table-responsive th,
+  .table-responsive td {
+    display: block !important;
+  }
+  .table-responsive thead { display: none !important; }
+  .table-responsive tr {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    margin-bottom: 10px !important;
+    padding: 12px !important;
+    position: relative !important;
+  }
+  .table-responsive td {
+    padding: 4px 0 !important;
+    font-size: 13px !important;
+    border: none !important;
+    text-align: right !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+  .table-responsive td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: 12px;
+    white-space: nowrap;
+  }
+  .table-responsive td:last-child {
+    justify-content: flex-end !important;
+    padding-top: 8px !important;
+    border-top: 1px solid var(--border) !important;
+    margin-top: 4px !important;
+  }
+  .table-responsive td .badge { font-size: 11px !important; }
+  .table-responsive .actions-cell { gap: 6px; }
+  .table-responsive .actions-cell .btn { font-size: 12px !important; padding: 6px 10px !important; }
   
   /* Quick actions vertical */
   .quick-actions { flex-direction: column; }
@@ -4097,6 +4139,37 @@ async function shareInvoiceWhatsApp(id) {
   const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
   window.open(url, '_blank');
 }
+
+// Auto-label table cells for mobile card layout
+function labelTableCells() {
+  document.querySelectorAll('.table-responsive table').forEach(table => {
+    const headers = [];
+    table.querySelectorAll('thead th').forEach(th => {
+      headers.push(th.textContent.trim());
+    });
+    if (headers.length === 0) return;
+    table.querySelectorAll('tbody tr').forEach(tr => {
+      tr.querySelectorAll('td').forEach((td, i) => {
+        if (headers[i] && !td.getAttribute('data-label')) {
+          td.setAttribute('data-label', headers[i]);
+        }
+      });
+    });
+  });
+}
+
+// Run after any page load
+const _origLoadInventory = typeof loadInventory === 'function' ? loadInventory : null;
+const _origLoadSalesPage = typeof loadSalesPage === 'function' ? loadSalesPage : null;
+const _origLoadPurchasesPage = typeof loadPurchasesPage === 'function' ? loadPurchasesPage : null;
+const _origLoadMaintenancePage = typeof loadMaintenancePage === 'function' ? loadMaintenancePage : null;
+
+// We'll call labelTableCells after page renders via MutationObserver
+const tableObserver = new MutationObserver(() => {
+  clearTimeout(tableObserver._t);
+  tableObserver._t = setTimeout(labelTableCells, 100);
+});
+tableObserver.observe(document.body, { childList: true, subtree: true });
 
 // Copy Apps Script code
 function copySyncScript() {
