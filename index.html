@@ -1996,9 +1996,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="recipient-form" onsubmit="return saveRecipient(event)">
       <input type="hidden" id="recipient-idx" value="">
       <div class="form-row">
-        <div class="form-group"><label>الاسم *</label><input type="text" id="recipient-name" required placeholder="مثلاً: أحمد المدير"></div>
-        <div class="form-group"><label>Chat ID *</label><input type="text" id="recipient-chat-id" required dir="ltr" placeholder="مثلاً: 123456789"></div>
+        <div class="form-group"><label>الاسم *</label><input type="text" id="recipient-name" required placeholder="مثلاً: أحمد"></div>
+        <div class="form-group"><label>المسمى الوظيفي</label><input type="text" id="recipient-title" placeholder="مثلاً: مدير المخازن"></div>
       </div>
+      <div class="form-group"><label>Chat ID *</label><input type="text" id="recipient-chat-id" required dir="ltr" placeholder="مثلاً: 123456789"></div>
       <div class="form-group">
         <label>الإشعارات المفعلة</label>
         <div class="notif-toggles">
@@ -7286,7 +7287,7 @@ function renderRecipients() {
       `<span class="badge" style="font-size:11px;padding:2px 6px;background:rgba(108,60,233,0.1);color:var(--primary)">${notifLabels[k] || k}</span>`
     ).join(' ');
     return `<tr>
-      <td><strong>${r.name}</strong></td>
+      <td><strong>${r.name}</strong>${r.title ? `<br><small style="color:var(--text-muted)">${r.title}</small>` : ''}</td>
       <td dir="ltr" style="font-family:monospace;font-size:13px">${r.chatId}</td>
       <td>${badges || '—'}</td>
       <td><span class="badge ${r.enabled !== false ? 'badge-new' : 'badge-low'}">${r.enabled !== false ? 'مفعل' : 'معطل'}</span></td>
@@ -7319,6 +7320,7 @@ function editRecipient(idx) {
   document.getElementById('modal-recipient-title').textContent = 'تعديل مستلم';
   document.getElementById('recipient-idx').value = idx;
   document.getElementById('recipient-name').value = r.name || '';
+  document.getElementById('recipient-title').value = r.title || '';
   document.getElementById('recipient-chat-id').value = r.chatId || '';
   document.getElementById('rcpt-low-stock').checked = r.notifications?.lowStock || false;
   document.getElementById('rcpt-unpaid').checked = r.notifications?.unpaid || false;
@@ -7333,6 +7335,7 @@ async function saveRecipient(e) {
   const idx = document.getElementById('recipient-idx').value;
   const data = {
     name: document.getElementById('recipient-name').value.trim(),
+    title: document.getElementById('recipient-title').value.trim(),
     chatId: document.getElementById('recipient-chat-id').value.trim(),
     enabled: true,
     notifications: {
