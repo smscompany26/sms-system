@@ -1218,6 +1218,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <i class='bx bx-chevron-down nav-arrow'></i>
         </a>
         <div class="nav-sub">
+          <a href="#" class="nav-sub-item" onclick="navigate('settings')">الرئيسية</a>
           <a href="#" class="nav-sub-item" onclick="navigate('settings','company')">بيانات الشركة</a>
           <a href="#" class="nav-sub-item" onclick="navigate('settings','notifications')">الإشعارات</a>
           <a href="#" class="nav-sub-item" onclick="navigate('settings','drive')">Google Drive</a>
@@ -2696,12 +2697,14 @@ function showApp() {
     document.querySelector('[data-page="settings"]').style.display = '';
   }
   
-  // Restore last page from hash, localStorage, or default to dashboard
-  const hash = location.hash.replace('#', '');
-  const saved = hash && hash.length > 0 ? hash : localStorage.getItem('sms_last_page');
-  if (saved) {
+  // Restore last page or default to dashboard
+  const saved = localStorage.getItem('sms_last_page');
+  if (saved && saved !== 'dashboard') {
     const parts = saved.split('/');
-    navigate(parts[0], parts[1] || null);
+    const pg = parts[0];
+    const sb = parts[1] || null;
+    // Small delay to ensure DOM is ready
+    setTimeout(() => navigate(pg, sb), 50);
   } else {
     navigate('dashboard');
   }
