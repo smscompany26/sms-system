@@ -3128,9 +3128,9 @@ function initDriveAuth() {
       const remoteData = await ghReadSync();
       
       if (remoteData && typeof remoteData === 'object' && Object.values(remoteData).some(v => Array.isArray(v) && v.length > 0)) {
-        // Cloud has data — pull it
+        // Cloud has data — pull only non-empty stores
         for (const [store, records] of Object.entries(remoteData)) {
-          if (!STORES[store] || !Array.isArray(records)) continue;
+          if (!STORES[store] || !Array.isArray(records) || records.length === 0) continue;
           await dbClear(store);
           for (const record of records) {
             try { await _origDbAdd(store, record); } catch(e) {}
@@ -3173,7 +3173,7 @@ async function pullFromCloud() {
     const allData = await ghReadSync();
     if (allData && typeof allData === 'object') {
       for (const [store, records] of Object.entries(allData)) {
-        if (!STORES[store] || !Array.isArray(records)) continue;
+        if (!STORES[store] || !Array.isArray(records) || records.length === 0) continue;
         await dbClear(store);
         for (const record of records) {
           try { await _origDbAdd(store, record); } catch(e) {}
@@ -3254,7 +3254,7 @@ async function silentPull() {
     
     let changed = false;
     for (const [store, records] of Object.entries(allData)) {
-      if (!STORES[store] || !Array.isArray(records)) continue;
+      if (!STORES[store] || !Array.isArray(records) || records.length === 0) continue;
       const local = await dbGetAll(store);
       if (JSON.stringify(records) !== JSON.stringify(local)) {
         await dbClear(store);
@@ -3296,9 +3296,13 @@ function stopAutoPull() {
   if (autoPullInterval) { clearInterval(autoPullInterval); autoPullInterval = null; }
 }
 
+let pushQueue = false;
 function scheduleDriveSync() {
   if (!syncReady) return;
-  pushToCloud();
+  if (isPushing) { pushQueue = true; return; }
+  pushToCloud().then(() => {
+    if (pushQueue) { pushQueue = false; pushToCloud(); }
+  });
 }
 
 // ============ BACKWARD COMPAT ============
