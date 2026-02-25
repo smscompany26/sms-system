@@ -1738,11 +1738,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
         <!-- Settings Sections (hidden by default on mobile) -->
         <div id="settings-sections">
-        <div id="settings-back" class="settings-back" style="display:none" onclick="closeSettingsSection()"><i class='bx bx-arrow-right'></i> رجوع</div>
+        <div id="settings-back" class="settings-back" onclick="closeSettingsSection()"><i class='bx bx-arrow-right'></i> رجوع</div>
         
         <!-- Company Info -->
         <div class="settings-section" id="section-company">
-        <div class="card">
         <div class="card">
           <h3><i class='bx bx-building'></i> بيانات الشركة</h3>
           <div class="form-row">
@@ -3339,7 +3338,8 @@ function openSettingsSection(section) {
   document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active-section'));
   const el = document.getElementById('section-' + section);
   if (el) el.classList.add('active-section');
-  document.getElementById('settings-back').classList.add('settings-back-visible');
+  const back = document.getElementById('settings-back');
+  if (back) { back.style.display = 'flex'; back.classList.add('settings-back-visible'); }
   
   if (section === 'users') loadUsersPage();
   if (section === 'activity') loadActivityLog();
@@ -3351,7 +3351,8 @@ function closeSettingsSection() {
   document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active-section'));
   const overview = document.getElementById('settings-overview');
   if (overview) overview.style.display = '';
-  document.getElementById('settings-back').classList.remove('settings-back-visible');
+  const back = document.getElementById('settings-back');
+  if (back) { back.style.display = 'none'; back.classList.remove('settings-back-visible'); }
 }
 
 async function loadSettingsOverview() {
