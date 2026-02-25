@@ -1966,27 +1966,57 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
         <!-- Notifications -->
         <div class="settings-section" id="section-notifications">
+        <div class="card" style="margin-bottom:16px">
+          <h3><i class='bx bx-bot'></i> إعدادات Telegram Bot</h3>
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px">التوكن مشترك — كل مستلم يتم إضافته بـ Chat ID خاص</p>
+          <div class="form-group"><label>Bot Token</label><input type="text" id="telegram-bot-token" dir="ltr" placeholder="123456:ABC..."></div>
+          <button class="btn btn-primary" onclick="saveBotToken()" style="margin-top:8px"><i class='bx bx-save'></i> حفظ التوكن</button>
+        </div>
+
         <div class="card">
-          <h3><i class='bx bx-bell'></i> الإشعارات (Telegram)</h3>
-          <div class="form-row">
-            <div class="form-group"><label>Telegram Bot Token</label><input type="text" id="telegram-bot-token" dir="ltr" placeholder="123456:ABC..."></div>
-            <div class="form-group"><label>Chat ID</label><input type="text" id="telegram-chat-id" dir="ltr" placeholder="-100..."></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 style="margin:0"><i class='bx bx-bell'></i> المستلمين</h3>
+            <button class="btn btn-primary" onclick="openAddRecipient()"><i class='bx bx-plus'></i> إضافة مستلم</button>
           </div>
-          <div class="notif-toggles">
-            <label class="perm-checkbox"><input type="checkbox" id="notif-enabled"> تفعيل الإشعارات</label>
-            <label class="perm-checkbox"><input type="checkbox" id="notif-low-stock"> تنبيه مخزون منخفض</label>
-            <label class="perm-checkbox"><input type="checkbox" id="notif-unpaid"> فواتير غير مدفوعة</label>
-            <label class="perm-checkbox"><input type="checkbox" id="notif-devices-ready"> أجهزة جاهزة للتسليم</label>
-            <label class="perm-checkbox"><input type="checkbox" id="notif-warranty-expiry"> تنبيهات انتهاء الضمان</label>
-            <label class="perm-checkbox"><input type="checkbox" id="notif-daily-summary"> ملخص يومي</label>
+          <div class="table-responsive">
+            <table>
+              <thead><tr><th>الاسم</th><th>Chat ID</th><th>الإشعارات</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+              <tbody id="recipients-tbody"></tbody>
+            </table>
           </div>
-          <div style="display:flex;gap:12px;margin-top:12px">
-            <button class="btn btn-primary" onclick="saveNotificationSettings()"><i class='bx bx-save'></i> حفظ</button>
-            <button class="btn btn-outline" onclick="testTelegramNotification()"><i class='bx bx-send'></i> اختبار</button>
-          </div>
+          <div id="recipients-empty" class="empty-state" style="padding:20px"><p>لا يوجد مستلمين — أضف Chat ID لبدء الإشعارات</p></div>
         </div>
 
         </div><!-- end section-notifications -->
+
+<!-- Recipient Modal -->
+<div id="modal-recipient" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3 id="modal-recipient-title">إضافة مستلم</h3><button class="modal-close" onclick="closeModal('modal-recipient')">&times;</button></div>
+    <form id="recipient-form" onsubmit="return saveRecipient(event)">
+      <input type="hidden" id="recipient-idx" value="">
+      <div class="form-row">
+        <div class="form-group"><label>الاسم *</label><input type="text" id="recipient-name" required placeholder="مثلاً: أحمد المدير"></div>
+        <div class="form-group"><label>Chat ID *</label><input type="text" id="recipient-chat-id" required dir="ltr" placeholder="مثلاً: 123456789"></div>
+      </div>
+      <div class="form-group">
+        <label>الإشعارات المفعلة</label>
+        <div class="notif-toggles">
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-low-stock" checked> تنبيه مخزون منخفض</label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-unpaid" checked> فواتير غير مدفوعة</label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-devices-ready" checked> أجهزة جاهزة للتسليم</label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-warranty-expiry" checked> تنبيهات انتهاء الضمان</label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-daily-summary"> ملخص يومي</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-recipient')">إلغاء</button>
+        <button type="button" class="btn btn-outline" onclick="testRecipient()"><i class='bx bx-send'></i> اختبار</button>
+        <button type="submit" class="btn btn-primary">حفظ</button>
+      </div>
+    </form>
+  </div>
+</div>
 
         <!-- Google Drive Section -->
         <div class="settings-section" id="section-drive">
@@ -7110,164 +7140,280 @@ async function loadActivityLog() {
 }
 </script>
 <script>/**
- * SMS System — Notifications Module (Email + Telegram)
+ * SMS System — Multi-Recipient Telegram Notifications
  */
 
-// ============ TELEGRAM ============
-async function sendTelegramNotification(message) {
-  const settings = await dbGet('settings', 'telegram');
-  if (!settings?.value?.botToken || !settings?.value?.chatId) return;
-  
+// ============ SEND TO ONE CHAT ============
+async function sendTelegram(botToken, chatId, message) {
   try {
-    const resp = await fetch(`https://api.telegram.org/bot${settings.value.botToken}/sendMessage`, {
+    const resp = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: settings.value.chatId, text: message, parse_mode: 'HTML' }),
+      body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'HTML' }),
     });
     return resp.ok;
   } catch (e) { console.error('Telegram error:', e); return false; }
 }
 
-// ============ EMAIL (via EmailJS or similar free service) ============
-async function sendEmailNotification(subject, body) {
-  const settings = await dbGet('settings', 'email');
-  if (!settings?.value?.serviceId) return;
-  // Uses EmailJS free tier (200/month)
-  try {
-    if (typeof emailjs !== 'undefined') {
-      await emailjs.send(settings.value.serviceId, settings.value.templateId, {
-        to_email: settings.value.toEmail,
-        subject: subject,
-        message: body,
-      });
-    }
-  } catch (e) { console.error('Email error:', e); }
+// ============ SEND TO RECIPIENTS BY TYPE ============
+async function sendTelegramNotification(message, type) {
+  const telegram = await dbGet('settings', 'telegram');
+  if (!telegram?.value?.botToken) return;
+  
+  const recipients = telegram.value.recipients || [];
+  // Backward compat: old single chatId
+  if (recipients.length === 0 && telegram.value.chatId) {
+    return sendTelegram(telegram.value.botToken, telegram.value.chatId, message);
+  }
+
+  const botToken = telegram.value.botToken;
+  let sent = false;
+  for (const r of recipients) {
+    if (!r.enabled) continue;
+    // If type specified, check recipient wants it
+    if (type && !r.notifications?.[type]) continue;
+    const ok = await sendTelegram(botToken, r.chatId, message);
+    if (ok) sent = true;
+  }
+  return sent;
 }
 
 // ============ AUTO NOTIFICATIONS ============
 async function checkAndNotify() {
-  const notifSettings = await dbGet('settings', 'notifications');
-  if (!notifSettings?.value?.enabled) return;
-  
+  const telegram = await dbGet('settings', 'telegram');
+  if (!telegram?.value?.botToken) return;
+  const recipients = telegram.value.recipients || [];
+  if (recipients.length === 0 && !telegram.value.chatId) return;
+
   const products = await dbGetAll('products');
   const invoices = await dbGetAll('invoices');
   const devices = await dbGetAll('devices');
-  
-  const messages = [];
-  
+  const clients = await dbGetAll('clients');
+
   // Low stock
-  if (notifSettings.value.lowStock) {
-    const lowStock = products.filter(p => p.quantity <= p.minStock);
-    if (lowStock.length > 0) {
-      messages.push(`⚠️ <b>تنبيه مخزون منخفض</b>\n${lowStock.map(p => `• ${p.name}: ${p.quantity} (الحد: ${p.minStock})`).join('\n')}`);
-    }
+  const lowStock = products.filter(p => p.quantity <= p.minStock);
+  if (lowStock.length > 0) {
+    await sendTelegramNotification(
+      `⚠️ <b>تنبيه مخزون منخفض</b>\n${lowStock.map(p => `• ${p.name}: ${p.quantity} (الحد: ${p.minStock})`).join('\n')}`,
+      'lowStock'
+    );
   }
-  
+
   // Unpaid invoices
-  if (notifSettings.value.unpaid) {
-    const unpaid = invoices.filter(i => i.type === 'sale' && i.paymentStatus === 'unpaid');
-    if (unpaid.length > 0) {
-      const total = unpaid.reduce((s, i) => s + i.total, 0);
-      messages.push(`💰 <b>فواتير غير مدفوعة: ${unpaid.length}</b>\nالإجمالي: ${total} ج.م`);
-    }
+  const unpaid = invoices.filter(i => i.type === 'sale' && i.paymentStatus === 'unpaid');
+  if (unpaid.length > 0) {
+    const total = unpaid.reduce((s, i) => s + (i.total || 0), 0);
+    await sendTelegramNotification(
+      `💰 <b>فواتير غير مدفوعة: ${unpaid.length}</b>\nالإجمالي: ${total} ج.م`,
+      'unpaid'
+    );
   }
-  
+
   // Devices done not delivered
-  if (notifSettings.value.devicesReady) {
-    const ready = devices.filter(d => d.status === 'done_not_delivered');
-    if (ready.length > 0) {
-      messages.push(`📦 <b>أجهزة جاهزة للتسليم: ${ready.length}</b>\n${ready.map(d => `• ${d.deviceName} - ${d.clientName}`).join('\n')}`);
+  const ready = devices.filter(d => d.status === 'done_not_delivered');
+  if (ready.length > 0) {
+    await sendTelegramNotification(
+      `📦 <b>أجهزة جاهزة للتسليم: ${ready.length}</b>\n${ready.map(d => `• ${d.deviceName} - ${d.clientName || ''}`).join('\n')}`,
+      'devicesReady'
+    );
+  }
+
+  // Warranty expiry
+  const now = new Date();
+  const warrantyAlerts = [];
+  devices.forEach(d => {
+    if (!d.hasWarranty || !d.intakeDate || !d.warrantyMonths) return;
+    const warrantyEnd = new Date(d.intakeDate);
+    warrantyEnd.setMonth(warrantyEnd.getMonth() + d.warrantyMonths);
+    const daysLeft = Math.ceil((warrantyEnd - now) / (1000*60*60*24));
+    const client = clients.find(c => c.id === d.clientId);
+    const clientName = client?.name || d.clientName || '';
+    if (daysLeft < 0) {
+      warrantyAlerts.push(`🚨 ${d.deviceName} — ${clientName}: انتهى منذ ${Math.abs(daysLeft)} يوم`);
+    } else if (daysLeft <= 30) {
+      warrantyAlerts.push(`⚠️ ${d.deviceName} — ${clientName}: ينتهي خلال ${daysLeft} يوم`);
     }
+  });
+  if (warrantyAlerts.length > 0) {
+    await sendTelegramNotification(
+      `🛡️ <b>تنبيهات الضمان:</b>\n${warrantyAlerts.join('\n')}`,
+      'warrantyExpiry'
+    );
   }
-  
-  // Warranty expiry warnings
-  if (notifSettings.value.warrantyExpiry) {
-    const clients = await dbGetAll('clients');
-    const now = new Date();
-    const warrantyAlerts = [];
-    devices.forEach(d => {
-      if (!d.hasWarranty || !d.intakeDate || !d.warrantyMonths) return;
-      const warrantyEnd = new Date(d.intakeDate);
-      warrantyEnd.setMonth(warrantyEnd.getMonth() + d.warrantyMonths);
-      const daysLeft = Math.ceil((warrantyEnd - now) / (1000*60*60*24));
-      const client = clients.find(c => c.id === d.clientId);
-      const clientName = client?.name || d.clientName || '';
-      if (daysLeft < 0) {
-        warrantyAlerts.push(`🚨 ${d.deviceName} — ${clientName}: انتهى منذ ${Math.abs(daysLeft)} يوم`);
-      } else if (daysLeft <= 30) {
-        warrantyAlerts.push(`⚠️ ${d.deviceName} — ${clientName}: ينتهي خلال ${daysLeft} يوم`);
-      }
-    });
-    if (warrantyAlerts.length > 0) {
-      messages.push(`🛡️ <b>تنبيهات الضمان:</b>\n${warrantyAlerts.join('\n')}`);
-    }
-  }
-  
-  // Send
-  for (const msg of messages) {
-    await sendTelegramNotification(msg);
-  }
-  
+
   // Daily summary
-  if (notifSettings.value.dailySummary) {
-    const today = new Date().toISOString().split('T')[0];
-    const todaySales = invoices.filter(i => i.type === 'sale' && i.date?.startsWith(today));
-    const totalSales = todaySales.reduce((s, i) => s + (i.total || 0), 0);
-    
-    if (todaySales.length > 0) {
-      await sendTelegramNotification(`📊 <b>ملخص اليوم</b>\nمبيعات: ${totalSales} ج.م (${todaySales.length} فاتورة)`);
-    }
+  const today = new Date().toISOString().split('T')[0];
+  const todaySales = invoices.filter(i => i.type === 'sale' && i.date?.startsWith(today));
+  const totalSales = todaySales.reduce((s, i) => s + (i.total || 0), 0);
+  if (todaySales.length > 0 || true) { // Always send daily summary
+    await sendTelegramNotification(
+      `📊 <b>ملخص اليوم</b>\nمبيعات: ${totalSales} ج.م (${todaySales.length} فاتورة)\nمخزون منخفض: ${lowStock.length}\nفواتير معلقة: ${unpaid.length}\nصيانة جاهزة: ${ready.length}`,
+      'dailySummary'
+    );
   }
 }
 
-// ============ NOTIFICATION SETTINGS UI ============
+// ============ RECIPIENTS UI ============
+let notifRecipients = [];
+
 async function loadNotificationSettings() {
   const telegram = await dbGet('settings', 'telegram');
-  const notif = await dbGet('settings', 'notifications');
-  
   if (telegram?.value) {
     document.getElementById('telegram-bot-token').value = telegram.value.botToken || '';
-    document.getElementById('telegram-chat-id').value = telegram.value.chatId || '';
+    notifRecipients = telegram.value.recipients || [];
+    // Migrate old single chatId
+    if (notifRecipients.length === 0 && telegram.value.chatId) {
+      notifRecipients = [{ name: 'المدير', chatId: telegram.value.chatId, enabled: true, notifications: { lowStock:true, unpaid:true, devicesReady:true, warrantyExpiry:true, dailySummary:true } }];
+    }
   }
-  if (notif?.value) {
-    document.getElementById('notif-enabled').checked = notif.value.enabled || false;
-    document.getElementById('notif-low-stock').checked = notif.value.lowStock || false;
-    document.getElementById('notif-unpaid').checked = notif.value.unpaid || false;
-    document.getElementById('notif-devices-ready').checked = notif.value.devicesReady || false;
-    document.getElementById('notif-warranty-expiry').checked = notif.value.warrantyExpiry || false;
-    document.getElementById('notif-daily-summary').checked = notif.value.dailySummary || false;
-  }
+  renderRecipients();
 }
 
-async function saveNotificationSettings() {
-  await dbPut('settings', {
-    key: 'telegram',
-    value: {
-      botToken: document.getElementById('telegram-bot-token').value.trim(),
-      chatId: document.getElementById('telegram-chat-id').value.trim(),
-    }
-  });
+function renderRecipients() {
+  const tbody = document.getElementById('recipients-tbody');
+  const empty = document.getElementById('recipients-empty');
+  if (notifRecipients.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
   
-  await dbPut('settings', {
-    key: 'notifications',
-    value: {
-      enabled: document.getElementById('notif-enabled').checked,
-      lowStock: document.getElementById('notif-low-stock').checked,
-      unpaid: document.getElementById('notif-unpaid').checked,
-      devicesReady: document.getElementById('notif-devices-ready').checked,
-      warrantyExpiry: document.getElementById('notif-warranty-expiry').checked,
-      dailySummary: document.getElementById('notif-daily-summary').checked,
-    }
-  });
+  const notifLabels = { lowStock:'مخزون', unpaid:'فواتير', devicesReady:'تسليم', warrantyExpiry:'ضمان', dailySummary:'ملخص' };
   
-  toast('تم حفظ إعدادات الإشعارات ✅');
+  tbody.innerHTML = notifRecipients.map((r, i) => {
+    const badges = Object.entries(r.notifications || {}).filter(([k,v]) => v).map(([k]) => 
+      `<span class="badge" style="font-size:11px;padding:2px 6px;background:rgba(108,60,233,0.1);color:var(--primary)">${notifLabels[k] || k}</span>`
+    ).join(' ');
+    return `<tr>
+      <td><strong>${r.name}</strong></td>
+      <td dir="ltr" style="font-family:monospace;font-size:13px">${r.chatId}</td>
+      <td>${badges || '—'}</td>
+      <td><span class="badge ${r.enabled !== false ? 'badge-new' : 'badge-low'}">${r.enabled !== false ? 'مفعل' : 'معطل'}</span></td>
+      <td class="actions-cell">
+        <button class="btn-icon" onclick="editRecipient(${i})" title="تعديل"><i class='bx bx-edit'></i></button>
+        <button class="btn-icon" onclick="toggleRecipient(${i})" title="تفعيل/تعطيل"><i class='bx bx-power-off'></i></button>
+        <button class="btn-icon" onclick="testRecipientByIndex(${i})" title="اختبار"><i class='bx bx-send'></i></button>
+        <button class="btn-icon danger" onclick="deleteRecipient(${i})" title="حذف"><i class='bx bx-trash'></i></button>
+      </td>
+    </tr>`;
+  }).join('');
 }
 
+function openAddRecipient() {
+  document.getElementById('recipient-form').reset();
+  document.getElementById('recipient-idx').value = '';
+  document.getElementById('modal-recipient-title').textContent = 'إضافة مستلم';
+  // Default all checked
+  document.getElementById('rcpt-low-stock').checked = true;
+  document.getElementById('rcpt-unpaid').checked = true;
+  document.getElementById('rcpt-devices-ready').checked = true;
+  document.getElementById('rcpt-warranty-expiry').checked = true;
+  document.getElementById('rcpt-daily-summary').checked = false;
+  openModal('modal-recipient');
+}
+
+function editRecipient(idx) {
+  const r = notifRecipients[idx];
+  if (!r) return;
+  document.getElementById('modal-recipient-title').textContent = 'تعديل مستلم';
+  document.getElementById('recipient-idx').value = idx;
+  document.getElementById('recipient-name').value = r.name || '';
+  document.getElementById('recipient-chat-id').value = r.chatId || '';
+  document.getElementById('rcpt-low-stock').checked = r.notifications?.lowStock || false;
+  document.getElementById('rcpt-unpaid').checked = r.notifications?.unpaid || false;
+  document.getElementById('rcpt-devices-ready').checked = r.notifications?.devicesReady || false;
+  document.getElementById('rcpt-warranty-expiry').checked = r.notifications?.warrantyExpiry || false;
+  document.getElementById('rcpt-daily-summary').checked = r.notifications?.dailySummary || false;
+  openModal('modal-recipient');
+}
+
+async function saveRecipient(e) {
+  e.preventDefault();
+  const idx = document.getElementById('recipient-idx').value;
+  const data = {
+    name: document.getElementById('recipient-name').value.trim(),
+    chatId: document.getElementById('recipient-chat-id').value.trim(),
+    enabled: true,
+    notifications: {
+      lowStock: document.getElementById('rcpt-low-stock').checked,
+      unpaid: document.getElementById('rcpt-unpaid').checked,
+      devicesReady: document.getElementById('rcpt-devices-ready').checked,
+      warrantyExpiry: document.getElementById('rcpt-warranty-expiry').checked,
+      dailySummary: document.getElementById('rcpt-daily-summary').checked,
+    }
+  };
+  
+  if (idx !== '') {
+    notifRecipients[parseInt(idx)] = { ...notifRecipients[parseInt(idx)], ...data };
+  } else {
+    notifRecipients.push(data);
+  }
+  
+  await saveRecipientsToDb();
+  renderRecipients();
+  closeModal('modal-recipient');
+  toast('تم حفظ المستلم ✅');
+  return false;
+}
+
+async function toggleRecipient(idx) {
+  notifRecipients[idx].enabled = !notifRecipients[idx].enabled;
+  await saveRecipientsToDb();
+  renderRecipients();
+  toast(notifRecipients[idx].enabled ? 'تم التفعيل' : 'تم التعطيل');
+}
+
+async function deleteRecipient(idx) {
+  if (!confirm('حذف هذا المستلم؟')) return;
+  notifRecipients.splice(idx, 1);
+  await saveRecipientsToDb();
+  renderRecipients();
+  toast('تم الحذف');
+}
+
+async function saveRecipientsToDb() {
+  const telegram = await dbGet('settings', 'telegram') || { key: 'telegram', value: {} };
+  telegram.value.recipients = notifRecipients;
+  await dbPut('settings', telegram);
+}
+
+async function saveBotToken() {
+  const token = document.getElementById('telegram-bot-token').value.trim();
+  const telegram = await dbGet('settings', 'telegram') || { key: 'telegram', value: {} };
+  telegram.value.botToken = token;
+  await dbPut('settings', telegram);
+  toast('تم حفظ التوكن ✅');
+}
+
+async function testRecipient() {
+  const chatId = document.getElementById('recipient-chat-id').value.trim();
+  const telegram = await dbGet('settings', 'telegram');
+  if (!telegram?.value?.botToken || !chatId) return toast('أدخل التوكن و Chat ID', 'warning');
+  const ok = await sendTelegram(telegram.value.botToken, chatId, '✅ تجربة إشعار من نظام SMS — الاتصال يعمل بنجاح!');
+  toast(ok ? 'تم الإرسال ✅' : 'فشل — تحقق من Chat ID', ok ? 'success' : 'error');
+}
+
+async function testRecipientByIndex(idx) {
+  const r = notifRecipients[idx];
+  const telegram = await dbGet('settings', 'telegram');
+  if (!telegram?.value?.botToken || !r?.chatId) return toast('تحقق من التوكن و Chat ID', 'warning');
+  const ok = await sendTelegram(telegram.value.botToken, r.chatId, `✅ تجربة إشعار — مرحباً ${r.name}! الاتصال يعمل بنجاح.`);
+  toast(ok ? `تم الإرسال لـ ${r.name} ✅` : 'فشل — تحقق من Chat ID', ok ? 'success' : 'error');
+}
+
+// Keep old function name for backward compat
 async function testTelegramNotification() {
-  const result = await sendTelegramNotification('✅ تجربة إشعار من نظام SMS — الاتصال يعمل بنجاح!');
-  if (result) toast('تم إرسال الإشعار التجريبي ✅');
-  else toast('فشل الإرسال — تحقق من البيانات', 'error');
+  const telegram = await dbGet('settings', 'telegram');
+  if (!telegram?.value?.botToken) return toast('أدخل التوكن أولاً', 'warning');
+  for (const r of (notifRecipients || [])) {
+    if (r.enabled) await sendTelegram(telegram.value.botToken, r.chatId, '✅ تجربة إشعار من نظام SMS');
+  }
+  toast('تم إرسال اختبار لكل المستلمين ✅');
 }
+
+// Keep old save function working
+async function saveNotificationSettings() { await saveBotToken(); }
 
 // ============ COMPANY SETTINGS ============
 async function loadCompanySettings() {
