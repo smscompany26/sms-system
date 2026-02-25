@@ -2968,6 +2968,7 @@ const DRIVE_FOLDER_NAME = 'SMS-System-Data';
 const DRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
 // Apps Script sync
+const DEFAULT_SYNC_URL = 'https://script.google.com/macros/s/AKfycbyLVr6dccOC8crvRewoKUwqPNSyFx9BWqvcjQd-CK_YcFaz_K68k4i7aWqwAQjXR1fD/exec';
 let syncUrl = null;
 let syncReady = false;
 let lastRemoteMod = null;
@@ -2986,9 +2987,10 @@ let syncTimeout = null;
 
 // ============ INIT ============
 function initDriveAuth() {
-  // Try Apps Script URL first
-  syncUrl = localStorage.getItem('sms_sync_url');
+  // Try Apps Script URL first (default or saved)
+  syncUrl = localStorage.getItem('sms_sync_url') || DEFAULT_SYNC_URL;
   if (syncUrl) {
+    localStorage.setItem('sms_sync_url', syncUrl);
     testSyncUrl(syncUrl).then(ok => {
       if (ok) {
         syncReady = true;
