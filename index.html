@@ -3387,6 +3387,10 @@ async function loadSettingsOverview() {
   // Drive status
   const driveEl = document.getElementById('settings-drive-status');
   if (driveEl) driveEl.textContent = driveReady ? 'متصل ✅' : 'غير متصل';
+  const driveIndicator = document.getElementById('drive-status-indicator');
+  const driveText = document.getElementById('drive-status-text');
+  if (driveIndicator) driveIndicator.style.background = driveReady ? 'var(--success)' : 'var(--text-muted)';
+  if (driveText) driveText.textContent = driveReady ? 'متصل ✅' : 'غير متصل';
   
   // Team count
   const users = await dbGetAll('users');
