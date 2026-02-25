@@ -914,21 +914,25 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .settings-nav-item > i:last-child { color: var(--text-muted); font-size: 18px; }
 
 .settings-back {
+  display: none;
+  cursor: pointer;
+  padding: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 15px;
+}
+.settings-back.settings-back-visible {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 0;
-  margin-bottom: 12px;
-  font-weight: 600;
-  color: var(--primary);
-  cursor: pointer;
-  font-size: 15px;
 }
 
-/* Desktop: show all sections, hide nav arrows */
+.settings-section { display: none; }
+.settings-section.active-section { display: block; }
+
+/* Desktop: show all sections when navigated from sidebar, hide nav/overview */
 @media (min-width: 769px) {
-  .settings-nav { display: none; }
-  .settings-section { display: block !important; }
+  .settings-section.active-section { display: block; }
   #settings-back { display: none !important; }
 }
 
@@ -938,7 +942,8 @@ tr:hover { background: rgba(108,60,233,0.02); }
   .settings-section { display: none; }
   .settings-section.active-section { display: block; }
   #settings-back { display: none; }
-  .settings-back-visible { display: flex !important; }
+  .settings-back.settings-back-visible { display: flex !important; }
+  #settings-overview { display: block; }
 }
 
 /* ========== Remember Me ========== */
@@ -1378,6 +1383,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="tabs-bar">
           <button class="tab-btn active" onclick="switchSalesTab('invoices')">الفواتير</button>
           <button class="tab-btn" onclick="switchSalesTab('clients')">العملاء</button>
+          <button class="tab-btn" onclick="switchSalesTab('services')">خدمات وزيارات</button>
         </div>
 
         <!-- Sales Invoices Tab -->
@@ -1439,6 +1445,37 @@ tr:hover { background: rgba(108,60,233,0.02); }
             </div>
           </div>
         </div>
+      
+        <!-- Services Tab -->
+        <div id="sales-tab-services" class="tab-content">
+          <div class="page-header">
+            <div class="page-header-actions">
+              <div class="search-box">
+                <i class='bx bx-search'></i>
+                <input type="text" id="services-search" placeholder="بحث في الخدمات..." oninput="filterServices()">
+              </div>
+            </div>
+            <div class="page-header-btns">
+              <button class="btn btn-primary" onclick="openNewService()"><i class='bx bx-plus'></i> زيارة/خدمة جديدة</button>
+            </div>
+          </div>
+          <div class="card table-card">
+            <div class="table-responsive">
+              <table id="services-table">
+                <thead><tr>
+                  <th>التاريخ</th><th>العميل</th><th>الوصف</th><th>الموقع</th><th>السعر</th><th>الحالة</th><th>إجراءات</th>
+                </tr></thead>
+                <tbody id="services-tbody"></tbody>
+              </table>
+            </div>
+            <div id="services-empty" class="empty-state">
+              <i class='bx bx-map-pin' style="font-size:48px;color:#ccc"></i>
+              <p>لا توجد زيارات أو خدمات</p>
+              <button class="btn btn-primary" onclick="openNewService()">إضافة أول زيارة</button>
+            </div>
+          </div>
+        </div>
+
       </section>
 
       <!-- Purchases Page -->
@@ -1509,6 +1546,11 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <!-- Maintenance Page -->
       <section id="page-maintenance" class="page">
         <!-- Status Stats -->
+        <div class="tabs-bar">
+          <button class="tab-btn active" onclick="switchMaintenanceTab('devices')">أجهزة</button>
+          <button class="tab-btn" onclick="switchMaintenanceTab('visits')">زيارات وخدمات</button>
+        </div>
+        <div id="maint-tab-devices" class="tab-content active">
         <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
           <div class="stat-card" style="border-right-color:#f59e0b;cursor:pointer" onclick="filterDevicesByStatus('under_repair')">
             <div class="stat-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b"><i class='bx bx-wrench'></i></div>
@@ -1556,6 +1598,35 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <button class="btn btn-primary" onclick="openNewDevice()">إذن استلام أول جهاز</button>
           </div>
         </div>
+      </div><!-- end maint-tab-devices -->
+
+        <!-- Maintenance Visits Tab -->
+        <div id="maint-tab-visits" class="tab-content">
+          <div class="page-header">
+            <div class="page-header-actions">
+              <div class="search-box">
+                <i class='bx bx-search'></i>
+                <input type="text" id="maint-services-search" placeholder="بحث في الزيارات..." oninput="filterMaintServices()">
+              </div>
+            </div>
+            <div class="page-header-btns">
+              <button class="btn btn-primary" onclick="openNewService()"><i class='bx bx-plus'></i> زيارة جديدة</button>
+            </div>
+          </div>
+          <div class="card table-card">
+            <div class="table-responsive">
+              <table id="maint-services-table">
+                <thead><tr><th>التاريخ</th><th>العميل</th><th>الوصف</th><th>الموقع</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                <tbody id="maint-services-tbody"></tbody>
+              </table>
+            </div>
+            <div id="maint-services-empty" class="empty-state">
+              <i class='bx bx-map-pin' style="font-size:48px;color:#ccc"></i>
+              <p>لا توجد زيارات</p>
+              <button class="btn btn-primary" onclick="openNewService()">إضافة أول زيارة</button>
+            </div>
+          </div>
+        </div>
       </section>
       <!-- Accounting Page -->
       <section id="page-accounting" class="page">
@@ -1586,13 +1657,31 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <h3 style="margin:0"><i class='bx bx-money'></i> المصروفات</h3>
             <button class="btn btn-primary" onclick="openAddExpense()"><i class='bx bx-plus'></i> إضافة مصروف</button>
           </div>
-          <div class="table-responsive">
-            <table id="expenses-table">
-              <thead><tr><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead>
-              <tbody id="expenses-tbody"></tbody>
-            </table>
+          <div class="tabs-bar" style="margin-bottom:16px">
+            <button class="tab-btn active" onclick="switchExpenseTab('treasury')">مصروفات خزينة</button>
+            <button class="tab-btn" onclick="switchExpenseTab('indirect')">مصروفات غير مباشرة</button>
+            <button class="tab-btn" onclick="switchExpenseTab('all')">الكل</button>
           </div>
-          <div id="expenses-empty" class="empty-state"><p>لا توجد مصروفات</p></div>
+          <div id="expense-tab-treasury" class="tab-content active">
+            <div class="stat-card" style="margin-bottom:12px;border-right-color:var(--warning)"><div class="stat-info"><span class="stat-value" id="treasury-total" style="font-size:18px">0</span><span class="stat-label">إجمالي مصروفات الخزينة</span></div></div>
+            <div class="table-responsive">
+              <table id="treasury-expenses-table"><thead><tr><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="treasury-expenses-tbody"></tbody></table>
+            </div>
+            <div id="treasury-expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات خزينة</p></div>
+          </div>
+          <div id="expense-tab-indirect" class="tab-content">
+            <div class="stat-card" style="margin-bottom:12px;border-right-color:var(--primary)"><div class="stat-info"><span class="stat-value" id="indirect-total" style="font-size:18px">0</span><span class="stat-label">إجمالي المصروفات غير المباشرة</span></div></div>
+            <div class="table-responsive">
+              <table id="indirect-expenses-table"><thead><tr><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="indirect-expenses-tbody"></tbody></table>
+            </div>
+            <div id="indirect-expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات غير مباشرة</p></div>
+          </div>
+          <div id="expense-tab-all" class="tab-content">
+            <div class="table-responsive">
+              <table id="expenses-table"><thead><tr><th>التاريخ</th><th>النوع</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="expenses-tbody"></tbody></table>
+            </div>
+            <div id="expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات</p></div>
+          </div>
         </div>
       </section>
 
@@ -1623,13 +1712,28 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
       <section id="page-settings" class="page">
         <!-- Settings Navigation -->
-        <div class="settings-nav" id="settings-nav">
-          <div class="settings-nav-item" onclick="openSettingsSection('company')"><i class='bx bx-building'></i><div><strong>بيانات الشركة</strong><small>الاسم، اللوجو، العنوان، الضريبة</small></div><i class='bx bx-chevron-left'></i></div>
-          <div class="settings-nav-item" onclick="openSettingsSection('notifications')"><i class='bx bx-bell'></i><div><strong>الإشعارات</strong><small>Telegram، تنبيهات المخزون والفواتير</small></div><i class='bx bx-chevron-left'></i></div>
-          <div class="settings-nav-item" onclick="openSettingsSection('drive')"><i class='bx bxl-google-cloud'></i><div><strong>Google Drive</strong><small>ربط، مزامنة، نسخ احتياطي</small></div><i class='bx bx-chevron-left'></i></div>
-          <div class="settings-nav-item" onclick="openSettingsSection('backup')"><i class='bx bx-data'></i><div><strong>النسخ الاحتياطي</strong><small>تصدير/استيراد البيانات</small></div><i class='bx bx-chevron-left'></i></div>
-          <div class="settings-nav-item" onclick="openSettingsSection('users')"><i class='bx bx-group'></i><div><strong>فريق العمل</strong><small>المستخدمين والصلاحيات</small></div><i class='bx bx-chevron-left'></i></div>
-          <div class="settings-nav-item" onclick="openSettingsSection('activity')"><i class='bx bx-history'></i><div><strong>سجل النشاط</strong><small>من عمل ايه وامتى</small></div><i class='bx bx-chevron-left'></i></div>
+        <!-- Settings Overview -->
+        <div id="settings-overview">
+          <div class="stats-grid" id="settings-summary-cards" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px">
+            <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label">الشركة</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bxl-google-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label">Google Drive</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label">فريق العمل</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-data'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">—</span><span class="stat-label">آخر نسخة</span></div></div>
+          </div>
+
+          <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
+          <div class="settings-nav" id="settings-nav-setup">
+            <div class="settings-nav-item" onclick="openSettingsSection('company')"><i class='bx bx-building'></i><div><strong>بيانات الشركة</strong><small>الاسم، اللوجو، العنوان، الضريبة</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('drive')"><i class='bx bxl-google-cloud'></i><div><strong>Google Drive</strong><small>ربط، مزامنة، نسخ احتياطي</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('notifications')"><i class='bx bx-bell'></i><div><strong>الإشعارات</strong><small>Telegram، تنبيهات المخزون والفواتير</small></div><i class='bx bx-chevron-left'></i></div>
+          </div>
+
+          <h4 style="margin:20px 0 12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-calendar'></i> إدارة يومية</h4>
+          <div class="settings-nav" id="settings-nav-daily">
+            <div class="settings-nav-item" onclick="openSettingsSection('users')"><i class='bx bx-group'></i><div><strong>فريق العمل</strong><small>المستخدمين والصلاحيات</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('backup')"><i class='bx bx-data'></i><div><strong>النسخ الاحتياطي</strong><small>تصدير/استيراد البيانات</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('activity')"><i class='bx bx-history'></i><div><strong>سجل النشاط</strong><small>من عمل ايه وامتى</small></div><i class='bx bx-chevron-left'></i></div>
+          </div>
         </div>
 
         <!-- Settings Sections (hidden by default on mobile) -->
@@ -1939,6 +2043,14 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <input type="hidden" id="expense-id">
       <div class="form-row">
         <div class="form-group"><label>التاريخ</label><input type="date" id="expense-date" required></div>
+        <div class="form-group"><label>نوع المصروف</label>
+          <select id="expense-type">
+            <option value="treasury">مصروفات خزينة</option>
+            <option value="indirect">مصروفات غير مباشرة</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
         <div class="form-group"><label>التصنيف</label>
           <select id="expense-category">
             <option value="">عام</option>
@@ -2015,6 +2127,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="form-group"><label>اسم الجهاز *</label><input type="text" id="device-name" required></div>
       </div>
       <div class="form-group"><label>المواصفات</label><input type="text" id="device-specs" placeholder="الموديل، الرقم التسلسلي..."></div>
+      <div class="form-row">
+        <div class="form-group"><label class="perm-checkbox"><input type="checkbox" id="device-warranty" onchange="toggleWarrantyField()"> الجهاز عليه ضمان</label></div>
+        <div class="form-group" id="warranty-months-group" style="display:none"><label>مدة الضمان (شهور)</label><input type="number" id="device-warranty-months" min="1" max="120" value="12"></div>
+      </div>
       <div class="form-group"><label>المشكلة</label><textarea id="device-problem" rows="2" placeholder="وصف العطل أو المشكلة"></textarea></div>
       <div class="form-group"><label>ملاحظات</label><textarea id="device-notes" rows="2"></textarea></div>
       <div class="form-group">
@@ -2193,6 +2309,38 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
 <!-- Drive Sync Status Bar (inside settings page) -->
 
+<!-- Service Visit Modal -->
+<div id="modal-service" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3 id="modal-service-title">زيارة/خدمة جديدة</h3><button class="modal-close" onclick="closeModal('modal-service')">&times;</button></div>
+    <form id="service-form" onsubmit="return saveService(event)">
+      <input type="hidden" id="service-id">
+      <div class="form-row">
+        <div class="form-group"><label>التاريخ</label><input type="date" id="service-date" required></div>
+        <div class="form-group"><label>العميل</label><select id="service-client"><option value="">اختر العميل</option></select></div>
+      </div>
+      <div class="form-group"><label>الوصف *</label><input type="text" id="service-description" required placeholder="وصف الخدمة أو الزيارة"></div>
+      <div class="form-group"><label>الموقع</label><input type="text" id="service-location" placeholder="عنوان أو موقع الزيارة"></div>
+      <div class="form-row">
+        <div class="form-group"><label>السعر (ج.م)</label><input type="number" id="service-price" step="0.01" min="0" value="0"></div>
+        <div class="form-group"><label>الحالة</label>
+          <select id="service-status">
+            <option value="pending">قيد الانتظار</option>
+            <option value="in_progress">جاري التنفيذ</option>
+            <option value="completed">مكتملة</option>
+            <option value="cancelled">ملغاة</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>ملاحظات</label><textarea id="service-notes" rows="2"></textarea></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-service')">إلغاء</button>
+        <button type="submit" class="btn btn-primary">حفظ</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast-container"></div>
 
@@ -2202,7 +2350,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
  */
 
 const DB_NAME = 'sms_system';
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 let db = null;
 
 const STORES = {
@@ -2213,7 +2361,8 @@ const STORES = {
   suppliers: { keyPath: 'id', autoIncrement: true, indexes: ['code', 'name', 'phone'] },
   invoices: { keyPath: 'id', autoIncrement: true, indexes: ['number', 'type', 'date', 'clientId', 'supplierId', 'paymentStatus'] },
   devices: { keyPath: 'id', autoIncrement: true, indexes: ['orderNumber', 'clientId', 'status', 'intakeDate'] },
-  expenses: { keyPath: 'id', autoIncrement: true, indexes: ['date', 'category'] },
+  expenses: { keyPath: 'id', autoIncrement: true, indexes: ['date', 'category', 'expenseType'] },
+  services: { keyPath: 'id', autoIncrement: true, indexes: ['date', 'clientId', 'status'] },
   users: { keyPath: 'id', autoIncrement: true, indexes: ['username'] },
   settings: { keyPath: 'key' },
   activityLog: { keyPath: 'id', autoIncrement: true, indexes: ['userId', 'date', 'action'] },
@@ -2233,6 +2382,19 @@ function openDB() {
               store.createIndex(idx, idx, { unique: idx === 'sku' || idx === 'username' || idx === 'barcode' });
             });
           }
+        } else {
+          // Add missing indexes to existing stores
+          try {
+            const tx = e.target.transaction;
+            const store = tx.objectStore(name);
+            if (config.indexes) {
+              config.indexes.forEach(idx => {
+                if (!store.indexNames.contains(idx)) {
+                  store.createIndex(idx, idx, { unique: false });
+                }
+              });
+            }
+          } catch(err) { /* ignore */ }
         }
       }
     };
@@ -2520,7 +2682,6 @@ function showApp() {
 
 const DRIVE_FOLDER_NAME = 'SMS-System-Data';
 const DRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
-
 let driveToken = null;
 let driveFolderId = null;
 let driveFileIds = {}; // { storeName: fileId }
@@ -2964,12 +3125,12 @@ function navigate(page) {
   if (page === 'inventory') loadInventory();
   if (page === 'categories') loadCategoriesPage();
   if (page === 'dashboard') loadDashboard();
-  if (page === 'sales') { loadSalesPage(); }
+  if (page === 'sales') { loadSalesPage(); loadServices().then(() => renderServicesInAllPages()); }
   if (page === 'purchases') { loadPurchasesPage(); }
-  if (page === 'maintenance') { loadMaintenancePage(); }
+  if (page === 'maintenance') { loadMaintenancePage(); loadServices().then(() => renderServicesInAllPages()); }
   if (page === 'accounting') { loadAccountingPage(); }
   if (page === 'reports') { loadReportsPage(); }
-  if (page === 'settings') { loadUsersPage(); loadActivityLog(); loadCompanySettings(); loadNotificationSettings(); }
+  if (page === 'settings') { loadSettingsOverview(); loadUsersPage(); loadActivityLog(); loadCompanySettings(); loadNotificationSettings(); }
   
   return false;
 }
@@ -3052,7 +3213,7 @@ async function loadDashboard() {
   document.getElementById('stat-sales-today').textContent = formatMoney(salesToday);
   document.getElementById('stat-purchases-today').textContent = formatMoney(purchasesToday);
   document.getElementById('stat-profit-today').textContent = formatMoney(salesToday - purchasesToday);
-  document.getElementById('stat-maintenance').textContent = '0'; // Will be updated in Day 3
+  document.getElementById('stat-maintenance').textContent = '0';
   
   // Low stock alerts
   const lowStock = products.filter(p => p.quantity <= p.minStock);
@@ -3108,10 +3269,14 @@ async function initApp() {
 
 // Tab switching
 function switchSalesTab(tab) {
-  document.querySelectorAll('#page-sales .tab-btn').forEach((b,i) => b.classList.toggle('active', (tab==='invoices'?0:1)===i));
-  document.getElementById('sales-tab-invoices').classList.toggle('active', tab==='invoices');
-  document.getElementById('sales-tab-clients').classList.toggle('active', tab==='clients');
-  if (tab==='clients') { loadClients().then(()=>renderClientsTable()); }
+  const tabs = ['invoices', 'clients', 'services'];
+  document.querySelectorAll('#page-sales .tabs-bar .tab-btn').forEach((b, i) => b.classList.toggle('active', tabs[i] === tab));
+  tabs.forEach(t => {
+    const el = document.getElementById('sales-tab-' + t);
+    if (el) el.classList.toggle('active', t === tab);
+  });
+  if (tab === 'clients') { loadClients().then(() => renderClientsTable()); }
+  if (tab === 'services') { loadClients().then(() => { loadServices().then(() => renderServicesInAllPages()); }); }
 }
 
 function switchPurchasesTab(tab) {
@@ -3121,13 +3286,19 @@ function switchPurchasesTab(tab) {
   if (tab==='suppliers') { loadSuppliers().then(()=>renderSuppliersTable()); }
 }
 
+function switchMaintenanceTab(tab) {
+  const tabs = ['devices', 'visits'];
+  document.querySelectorAll('#page-maintenance .tabs-bar .tab-btn').forEach((b, i) => b.classList.toggle('active', tabs[i] === tab));
+  document.getElementById('maint-tab-devices').classList.toggle('active', tab === 'devices');
+  document.getElementById('maint-tab-visits').classList.toggle('active', tab === 'visits');
+  if (tab === 'visits') { loadClients().then(() => { loadServices().then(() => renderServicesInAllPages()); }); }
+}
+
 function filterSalesInvoices(q) {
   q = q.toLowerCase();
   const filtered = allInvoices.filter(i => i.type==='sale' && (
     i.number.toLowerCase().includes(q) || (i.clientName||'').toLowerCase().includes(q)
   ));
-  const tbody = document.getElementById('sales-tbody');
-  // Quick re-render
   const tmp = allInvoices;
   allInvoices = [...allInvoices.filter(i=>i.type!=='sale'), ...filtered];
   renderSalesInvoices();
@@ -3153,7 +3324,6 @@ function filterPurchaseInvoices(q) {
   const filtered = allInvoices.filter(i => i.type==='purchase' && (
     i.number.toLowerCase().includes(q) || (i.supplierName||'').toLowerCase().includes(q)
   ));
-  const tbody = document.getElementById('purchases-tbody');
   const tmp = allInvoices;
   allInvoices = [...allInvoices.filter(i=>i.type!=='purchase'), ...filtered];
   renderPurchaseInvoices();
@@ -3162,10 +3332,13 @@ function filterPurchaseInvoices(q) {
 
 // ============ SETTINGS SECTIONS ============
 function openSettingsSection(section) {
+  // Hide overview
+  const overview = document.getElementById('settings-overview');
+  if (overview) overview.style.display = 'none';
+  
   document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active-section'));
   const el = document.getElementById('section-' + section);
   if (el) el.classList.add('active-section');
-  document.getElementById('settings-nav').style.display = 'none';
   document.getElementById('settings-back').classList.add('settings-back-visible');
   
   if (section === 'users') loadUsersPage();
@@ -3176,8 +3349,35 @@ function openSettingsSection(section) {
 
 function closeSettingsSection() {
   document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active-section'));
-  document.getElementById('settings-nav').style.display = '';
+  const overview = document.getElementById('settings-overview');
+  if (overview) overview.style.display = '';
   document.getElementById('settings-back').classList.remove('settings-back-visible');
+}
+
+async function loadSettingsOverview() {
+  // Company name
+  const company = await dbGet('settings', 'company');
+  const companyEl = document.getElementById('settings-company-name');
+  if (companyEl) companyEl.textContent = company?.value?.name || '—';
+  
+  // Drive status
+  const driveEl = document.getElementById('settings-drive-status');
+  if (driveEl) driveEl.textContent = driveReady ? 'متصل ✅' : 'غير متصل';
+  
+  // Team count
+  const users = await dbGetAll('users');
+  const teamEl = document.getElementById('settings-team-count');
+  if (teamEl) teamEl.textContent = users.length;
+  
+  // Last backup
+  const backupEl = document.getElementById('settings-last-backup');
+  if (backupEl) backupEl.textContent = '—';
+}
+
+// ============ WARRANTY TOGGLE ============
+function toggleWarrantyField() {
+  const checked = document.getElementById('device-warranty').checked;
+  document.getElementById('warranty-months-group').style.display = checked ? '' : 'none';
 }
 
 // ============ MOBILE BOTTOM NAV ============
@@ -3198,6 +3398,41 @@ function setupMobileNav() {
   };
   check();
   window.addEventListener('resize', check);
+}
+
+// ============ WHATSAPP INVOICE SHARING ============
+async function shareInvoiceWhatsApp(id) {
+  const inv = await dbGet('invoices', id);
+  if (!inv) return;
+  
+  const settings = await dbGet('settings', 'company') || {};
+  const companyName = settings.value?.name || 'SMS';
+  
+  const isSale = inv.type === 'sale';
+  const partyName = isSale ? inv.clientName : inv.supplierName;
+  
+  let text = `📄 *${isSale ? 'فاتورة بيع' : 'فاتورة شراء'}*\n`;
+  text += `🏢 ${companyName}\n`;
+  text += `📋 رقم: ${inv.number}\n`;
+  text += `📅 التاريخ: ${formatDate(inv.date)}\n`;
+  text += `👤 ${isSale ? 'العميل' : 'المورد'}: ${partyName || 'غير محدد'}\n\n`;
+  text += `━━━━━━━━━━━━━━\n`;
+  
+  if (inv.items) {
+    inv.items.forEach((item, i) => {
+      text += `${i+1}. ${item.productName}\n`;
+      text += `   ${item.quantity} × ${formatMoney(item.unitPrice)} = ${formatMoney(item.total)}\n`;
+    });
+  }
+  
+  text += `━━━━━━━━━━━━━━\n`;
+  text += `💰 *الإجمالي: ${formatMoney(inv.total)}*\n`;
+  text += `✅ المدفوع: ${formatMoney(inv.paidAmount || 0)}\n`;
+  const remaining = inv.total - (inv.paidAmount || 0);
+  if (remaining > 0) text += `⏳ المتبقي: ${formatMoney(remaining)}\n`;
+  
+  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
 }
 
 // Start
@@ -4747,6 +4982,7 @@ async function viewInvoice(id) {
   <div style="text-align:center;margin-top:16px;padding:0 20px 20px">
     <button class="btn btn-primary" onclick="printInvoice()"><i class='bx bx-printer'></i> طباعة</button>
     <button class="btn btn-outline" onclick="exportInvoicePDF()"><i class='bx bx-file'></i> PDF</button>
+    <button class="btn btn-success" onclick="shareInvoiceWhatsApp(${inv.id})" style="background:#25d366"><i class='bx bxl-whatsapp'></i> مشاركة واتساب</button>
   </div>`;
   
   document.getElementById('view-product-content').innerHTML = html;
@@ -4853,7 +5089,7 @@ function renderDevicesTable(filter) {
     const client = allClients.find(c => c.id === d.clientId);
     return `<tr>
       <td><strong>${d.orderNumber}</strong></td>
-      <td>${d.deviceName}</td>
+      <td>${d.deviceName}${d.hasWarranty ? ' <span class="badge" style="background:rgba(34,197,94,0.1);color:var(--success);font-size:10px">🛡️ ضمان '+d.warrantyMonths+' شهر</span>' : ''}</td>
       <td>${client?.name || d.clientName || '-'}</td>
       <td>${d.problem ? d.problem.substring(0, 40) + (d.problem.length > 40 ? '...' : '') : '-'}</td>
       <td><span class="badge" style="background:${st.bg};color:${st.color}">${st.label}</span></td>
@@ -4922,6 +5158,9 @@ async function editDevice(id) {
   document.getElementById('device-status-select').value = d.status;
   document.getElementById('device-selling-price').value = d.sellingPrice || '';
   document.getElementById('device-extra-expenses').value = d.extraExpenses || 0;
+  document.getElementById('device-warranty').checked = d.hasWarranty || false;
+  document.getElementById('device-warranty-months').value = d.warrantyMonths || 12;
+  document.getElementById('warranty-months-group').style.display = d.hasWarranty ? '' : 'none';
   
   const sel = document.getElementById('device-client');
   sel.innerHTML = '<option value="">اختر العميل</option>' +
@@ -4956,6 +5195,8 @@ async function saveDevice(e) {
     clientName: document.getElementById('device-client').selectedOptions[0]?.text?.split(' (')[0] || '',
     deviceName: document.getElementById('device-name').value.trim(),
     specs: document.getElementById('device-specs').value.trim(),
+    hasWarranty: document.getElementById('device-warranty').checked,
+    warrantyMonths: document.getElementById('device-warranty').checked ? (parseInt(document.getElementById('device-warranty-months').value) || 0) : 0,
     problem: document.getElementById('device-problem').value.trim(),
     notes: document.getElementById('device-notes').value.trim(),
     status: document.getElementById('device-status-select').value,
@@ -5177,6 +5418,7 @@ async function viewDevice(id) {
     <div class="view-item"><div class="view-label">تاريخ الدخول</div><div class="view-value">${formatDate(d.intakeDate)}</div></div>
     <div class="view-item"><div class="view-label">العميل</div><div class="view-value">${client?.name || d.clientName || '-'}</div></div>
     <div class="view-item"><div class="view-label">مصنع العميل</div><div class="view-value">${client?.factoryName || '-'}</div></div>
+    <div class="view-item"><div class="view-label">الضمان</div><div class="view-value">${d.hasWarranty ? '<span class="badge badge-new">🛡️ ضمان ' + d.warrantyMonths + ' شهر</span>' : 'لا يوجد ضمان'}</div></div>
   </div>`;
   
   if (d.notes) html += `<div class="view-item" style="margin-top:12px"><div class="view-label">ملاحظات</div><div class="view-value">${d.notes}</div></div>`;
@@ -5303,16 +5545,18 @@ function generateOrderNumber() {
 </script>
 <script>/**
  * SMS System — Accounting Module
- * Income, Expenses, Cash Register, Balances, Profit & Loss
+ * Income, Expenses (treasury/indirect), Cash Register, Balances, Profit & Loss
  */
 
 let allExpenses = [];
+let allServices = [];
 
 // ============ LOAD ============
 async function loadAccountingPage() {
   allExpenses = await dbGetAll('expenses');
   allInvoices = await dbGetAll('invoices');
   allDevices = await dbGetAll('devices');
+  allServices = await dbGetAll('services');
   await loadClients();
   await loadSuppliers();
   renderAccountingDashboard();
@@ -5326,11 +5570,13 @@ function renderAccountingDashboard() {
   
   // Income
   const salesTotal = allInvoices.filter(i => i.type === 'sale').reduce((s, i) => s + (i.total || 0), 0);
-  const salesToday = allInvoices.filter(i => i.type === 'sale' && i.date?.startsWith(today)).reduce((s, i) => s + (i.total || 0), 0);
   const salesMonth = allInvoices.filter(i => i.type === 'sale' && i.date >= monthStart).reduce((s, i) => s + (i.total || 0), 0);
   
   const maintTotal = allDevices.filter(d => d.status === 'completed').reduce((s, d) => s + (d.sellingPrice || 0), 0);
   const maintMonth = allDevices.filter(d => d.status === 'completed' && d.completedDate >= monthStart).reduce((s, d) => s + (d.sellingPrice || 0), 0);
+  
+  const servicesTotal = allServices.filter(s => s.status === 'completed').reduce((s, sv) => s + (sv.price || 0), 0);
+  const servicesMonth = allServices.filter(s => s.status === 'completed' && s.date >= monthStart).reduce((s, sv) => s + (sv.price || 0), 0);
   
   // Expenses
   const purchasesTotal = allInvoices.filter(i => i.type === 'purchase').reduce((s, i) => s + (i.total || 0), 0);
@@ -5342,11 +5588,11 @@ function renderAccountingDashboard() {
   const maintCosts = allDevices.filter(d => d.status === 'completed').reduce((s, d) => s + (d.totalCost || 0), 0);
   
   // Profit
-  const totalIncome = salesTotal + maintTotal;
+  const totalIncome = salesTotal + maintTotal + servicesTotal;
   const totalExpenses = purchasesTotal + customExpTotal + maintCosts;
   const netProfit = totalIncome - totalExpenses;
   
-  const monthIncome = salesMonth + maintMonth;
+  const monthIncome = salesMonth + maintMonth + servicesMonth;
   const monthExpenses = purchasesMonth + customExpMonth;
   const monthProfit = monthIncome - monthExpenses;
   
@@ -5380,18 +5626,57 @@ function renderAccountingDashboard() {
 }
 
 // ============ EXPENSES ============
+function switchExpenseTab(tab) {
+  const tabs = ['treasury', 'indirect', 'all'];
+  const parent = document.querySelector('#page-accounting .card:last-child');
+  parent.querySelectorAll('.tabs-bar .tab-btn').forEach((b, i) => b.classList.toggle('active', tabs[i] === tab));
+  tabs.forEach(t => {
+    const el = document.getElementById('expense-tab-' + t);
+    if (el) el.classList.toggle('active', t === tab);
+  });
+}
+
 function renderExpensesTable() {
+  const sorted = allExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  // Treasury expenses
+  const treasury = sorted.filter(e => e.expenseType === 'treasury' || (!e.expenseType && true));
+  const indirect = sorted.filter(e => e.expenseType === 'indirect');
+  
+  // For backward compat: expenses without expenseType are treated as treasury
+  const treasuryFiltered = sorted.filter(e => !e.expenseType || e.expenseType === 'treasury');
+  
+  // Treasury table
+  const tTbody = document.getElementById('treasury-expenses-tbody');
+  const tEmpty = document.getElementById('treasury-expenses-empty');
+  const tTable = document.getElementById('treasury-expenses-table');
+  if (treasuryFiltered.length === 0) { tTable.style.display = 'none'; tEmpty.style.display = 'block'; }
+  else { tTable.style.display = ''; tEmpty.style.display = 'none'; }
+  tTbody.innerHTML = treasuryFiltered.map(e => expenseRow(e)).join('');
+  
+  const treasuryTotal = treasuryFiltered.reduce((s, e) => s + (e.amount || 0), 0);
+  document.getElementById('treasury-total').textContent = formatMoney(treasuryTotal);
+  
+  // Indirect table
+  const iTbody = document.getElementById('indirect-expenses-tbody');
+  const iEmpty = document.getElementById('indirect-expenses-empty');
+  const iTable = document.getElementById('indirect-expenses-table');
+  if (indirect.length === 0) { iTable.style.display = 'none'; iEmpty.style.display = 'block'; }
+  else { iTable.style.display = ''; iEmpty.style.display = 'none'; }
+  iTbody.innerHTML = indirect.map(e => expenseRow(e)).join('');
+  
+  const indirectTotal = indirect.reduce((s, e) => s + (e.amount || 0), 0);
+  document.getElementById('indirect-total').textContent = formatMoney(indirectTotal);
+  
+  // All expenses table
   const tbody = document.getElementById('expenses-tbody');
   const table = document.getElementById('expenses-table');
   const empty = document.getElementById('expenses-empty');
-  
-  const sorted = allExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
-  
-  if (sorted.length === 0) { table.style.display = 'none'; empty.style.display = 'block'; return; }
-  table.style.display = ''; empty.style.display = 'none';
-  
+  if (sorted.length === 0) { table.style.display = 'none'; empty.style.display = 'block'; }
+  else { table.style.display = ''; empty.style.display = 'none'; }
   tbody.innerHTML = sorted.map(e => `<tr>
     <td>${formatDate(e.date)}</td>
+    <td><span class="badge" style="background:${e.expenseType === 'indirect' ? 'rgba(108,60,233,0.1);color:var(--primary)' : 'rgba(245,158,11,0.1);color:var(--warning)'}">${e.expenseType === 'indirect' ? 'غير مباشرة' : 'خزينة'}</span></td>
     <td>${e.category || '-'}</td>
     <td>${e.description}</td>
     <td>${formatMoney(e.amount)}</td>
@@ -5402,10 +5687,24 @@ function renderExpensesTable() {
   </tr>`).join('');
 }
 
+function expenseRow(e) {
+  return `<tr>
+    <td>${formatDate(e.date)}</td>
+    <td>${e.category || '-'}</td>
+    <td>${e.description}</td>
+    <td>${formatMoney(e.amount)}</td>
+    <td class="actions-cell">
+      <button class="btn-icon" onclick="editExpense(${e.id})"><i class='bx bx-edit'></i></button>
+      <button class="btn-icon danger" onclick="deleteExpense(${e.id})"><i class='bx bx-trash'></i></button>
+    </td>
+  </tr>`;
+}
+
 function openAddExpense() {
   document.getElementById('expense-form').reset();
   document.getElementById('expense-id').value = '';
   document.getElementById('expense-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('expense-type').value = 'treasury';
   openModal('modal-expense');
 }
 
@@ -5414,6 +5713,7 @@ async function editExpense(id) {
   if (!e) return;
   document.getElementById('expense-id').value = e.id;
   document.getElementById('expense-date').value = e.date?.split('T')[0] || '';
+  document.getElementById('expense-type').value = e.expenseType || 'treasury';
   document.getElementById('expense-category').value = e.category || '';
   document.getElementById('expense-description').value = e.description || '';
   document.getElementById('expense-amount').value = e.amount;
@@ -5425,6 +5725,7 @@ async function saveExpense(e) {
   const id = document.getElementById('expense-id').value;
   const data = {
     date: document.getElementById('expense-date').value,
+    expenseType: document.getElementById('expense-type').value,
     category: document.getElementById('expense-category').value,
     description: document.getElementById('expense-description').value.trim(),
     amount: parseFloat(document.getElementById('expense-amount').value) || 0,
@@ -5448,6 +5749,141 @@ async function deleteExpense(id) {
   await dbDelete('expenses', id);
   toast('تم حذف المصروف');
   await loadAccountingPage();
+}
+
+// ============ SERVICES CRUD ============
+let _allServicesLoaded = [];
+
+async function loadServices() {
+  _allServicesLoaded = await dbGetAll('services');
+  return _allServicesLoaded;
+}
+
+function openNewService() {
+  document.getElementById('modal-service-title').textContent = 'زيارة/خدمة جديدة';
+  document.getElementById('service-form').reset();
+  document.getElementById('service-id').value = '';
+  document.getElementById('service-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('service-status').value = 'pending';
+  
+  const sel = document.getElementById('service-client');
+  sel.innerHTML = '<option value="">اختر العميل</option>' +
+    allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('');
+  
+  openModal('modal-service');
+}
+
+async function editService(id) {
+  const s = await dbGet('services', id);
+  if (!s) return;
+  document.getElementById('modal-service-title').textContent = 'تعديل الزيارة/الخدمة';
+  document.getElementById('service-id').value = s.id;
+  document.getElementById('service-date').value = s.date?.split('T')[0] || '';
+  document.getElementById('service-description').value = s.description || '';
+  document.getElementById('service-location').value = s.location || '';
+  document.getElementById('service-price').value = s.price || 0;
+  document.getElementById('service-status').value = s.status || 'pending';
+  document.getElementById('service-notes').value = s.notes || '';
+  
+  const sel = document.getElementById('service-client');
+  sel.innerHTML = '<option value="">اختر العميل</option>' +
+    allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('');
+  sel.value = s.clientId || '';
+  
+  openModal('modal-service');
+}
+
+async function saveService(e) {
+  e.preventDefault();
+  const id = document.getElementById('service-id').value;
+  const clientSel = document.getElementById('service-client');
+  const data = {
+    date: document.getElementById('service-date').value,
+    clientId: parseInt(clientSel.value) || null,
+    clientName: clientSel.selectedOptions[0]?.text?.split(' (')[0] || '',
+    description: document.getElementById('service-description').value.trim(),
+    location: document.getElementById('service-location').value.trim(),
+    price: parseFloat(document.getElementById('service-price').value) || 0,
+    status: document.getElementById('service-status').value,
+    notes: document.getElementById('service-notes').value.trim(),
+  };
+  
+  if (id) {
+    data.id = parseInt(id);
+    await dbPut('services', data);
+    toast('تم تعديل الخدمة');
+  } else {
+    await dbAdd('services', data);
+    toast('تم إضافة الخدمة');
+  }
+  
+  closeModal('modal-service');
+  renderServicesInAllPages();
+}
+
+async function deleteService(id) {
+  if (!confirm('حذف هذه الخدمة؟')) return;
+  await dbDelete('services', id);
+  toast('تم حذف الخدمة');
+  renderServicesInAllPages();
+}
+
+async function renderServicesInAllPages() {
+  _allServicesLoaded = await dbGetAll('services');
+  const sorted = _allServicesLoaded.sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  renderServicesTableInto('services-tbody', 'services-table', 'services-empty', sorted);
+  renderServicesTableInto('maint-services-tbody', 'maint-services-table', 'maint-services-empty', sorted);
+}
+
+function renderServicesTableInto(tbodyId, tableId, emptyId, services) {
+  const tbody = document.getElementById(tbodyId);
+  const table = document.getElementById(tableId);
+  const empty = document.getElementById(emptyId);
+  if (!tbody || !table) return;
+  
+  if (services.length === 0) { table.style.display = 'none'; if (empty) empty.style.display = 'block'; return; }
+  table.style.display = ''; if (empty) empty.style.display = 'none';
+  
+  const statusLabels = {
+    'pending': '<span class="badge" style="background:rgba(245,158,11,0.1);color:var(--warning)">قيد الانتظار</span>',
+    'in_progress': '<span class="badge" style="background:rgba(0,200,255,0.1);color:#0891b2">جاري التنفيذ</span>',
+    'completed': '<span class="badge badge-new">مكتملة</span>',
+    'cancelled': '<span class="badge badge-low">ملغاة</span>',
+  };
+  
+  tbody.innerHTML = services.map(s => `<tr>
+    <td>${formatDate(s.date)}</td>
+    <td>${s.clientName || '-'}</td>
+    <td>${s.description || '-'}</td>
+    <td>${s.location || '-'}</td>
+    <td>${formatMoney(s.price || 0)}</td>
+    <td>${statusLabels[s.status] || s.status}</td>
+    <td class="actions-cell">
+      <button class="btn-icon" onclick="editService(${s.id})"><i class='bx bx-edit'></i></button>
+      <button class="btn-icon danger" onclick="deleteService(${s.id})"><i class='bx bx-trash'></i></button>
+    </td>
+  </tr>`).join('');
+}
+
+function filterServices() {
+  const q = document.getElementById('services-search').value.trim().toLowerCase();
+  const filtered = q ? _allServicesLoaded.filter(s =>
+    (s.description || '').toLowerCase().includes(q) ||
+    (s.clientName || '').toLowerCase().includes(q) ||
+    (s.location || '').toLowerCase().includes(q)
+  ) : _allServicesLoaded;
+  renderServicesTableInto('services-tbody', 'services-table', 'services-empty', filtered.sort((a, b) => new Date(b.date) - new Date(a.date)));
+}
+
+function filterMaintServices() {
+  const q = document.getElementById('maint-services-search').value.trim().toLowerCase();
+  const filtered = q ? _allServicesLoaded.filter(s =>
+    (s.description || '').toLowerCase().includes(q) ||
+    (s.clientName || '').toLowerCase().includes(q) ||
+    (s.location || '').toLowerCase().includes(q)
+  ) : _allServicesLoaded;
+  renderServicesTableInto('maint-services-tbody', 'maint-services-table', 'maint-services-empty', filtered.sort((a, b) => new Date(b.date) - new Date(a.date)));
 }
 </script>
 <script>/**
