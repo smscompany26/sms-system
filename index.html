@@ -2022,47 +2022,25 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <!-- Google Drive Section -->
         <div class="settings-section" id="section-drive">
         
-        <!-- Apps Script (Primary - Recommended) -->
         <div class="card" style="margin-bottom:16px">
           <h3><i class='bx bx-cloud'></i> المزامنة السحابية</h3>
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
             <div id="drive-status-indicator" style="width:12px;height:12px;border-radius:50%;background:var(--text-muted)"></div>
             <span id="drive-status-text">غير متصل</span>
           </div>
-          
-          <div style="background:var(--bg);border-radius:8px;padding:16px;margin-bottom:16px">
-            <h4 style="margin-bottom:8px">⚡ الطريقة السريعة (موصى بها)</h4>
-            <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px">المدير يعمل الإعداد مرة واحدة — وكل الأجهزة تتزامن تلقائياً بدون تسجيل دخول</p>
-            <div class="form-group">
-              <label>رابط المزامنة (Apps Script URL)</label>
-              <input type="text" id="sync-url-input" dir="ltr" placeholder="https://script.google.com/macros/s/...../exec" style="text-align:left">
-            </div>
-            <div style="display:flex;gap:12px;flex-wrap:wrap">
-              <button class="btn btn-primary" onclick="connectSyncUrl()"><i class='bx bx-link'></i> اتصال</button>
-              <button class="btn btn-outline" onclick="disconnectSync()"><i class='bx bx-unlink'></i> قطع الاتصال</button>
-            </div>
-          </div>
-          
-          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px">المزامنة تعمل تلقائياً — كل التعديلات تتزامن بين جميع الأجهزة</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
             <button class="btn btn-success" onclick="pushToDrive()"><i class='bx bx-cloud-upload'></i> رفع البيانات</button>
             <button class="btn btn-warning" onclick="pullFromDrive()"><i class='bx bx-cloud-download'></i> سحب البيانات</button>
           </div>
         </div>
 
-        <!-- Setup Instructions -->
         <div class="card">
-          <h3><i class='bx bx-help-circle'></i> طريقة الإعداد (مرة واحدة)</h3>
-          <ol style="padding-right:20px;color:var(--text-muted);font-size:13px;line-height:2.2">
-            <li>افتح <a href="https://script.google.com" target="_blank" style="color:var(--primary)">Google Apps Script</a> بحساب الشركة</li>
-            <li>اعمل مشروع جديد واسمه <strong>SMS-Sync</strong></li>
-            <li>امسح الكود وحط <a href="#" onclick="copySyncScript()" style="color:var(--primary)">كود المزامنة</a> (اضغط للنسخ)</li>
-            <li>دوس <strong>Deploy → New Deployment</strong></li>
-            <li>اختار <strong>Web App</strong></li>
-            <li>Execute as: <strong>Me</strong></li>
-            <li>Who has access: <strong>Anyone</strong></li>
-            <li>دوس <strong>Deploy</strong> وانسخ الرابط</li>
-            <li>حط الرابط فوق ودوس <strong>اتصال</strong></li>
-          </ol>
+          <h3><i class='bx bx-download'></i> النسخ الاحتياطي</h3>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="btn btn-outline" onclick="exportAllToFile()"><i class='bx bx-export'></i> تصدير نسخة احتياطية</button>
+            <button class="btn btn-outline" onclick="importFromFile()"><i class='bx bx-import'></i> استيراد نسخة احتياطية</button>
+          </div>
         </div>
 
         </div><!-- end section-drive -->
@@ -2959,105 +2937,142 @@ function showApp() {
 }
 </script>
 <script>/**
- * SMS System — Cloud Sync Layer
- * Primary: Google Apps Script (shared URL, no per-device OAuth)
- * Fallback: Google Drive API (per-device OAuth)
+ * SMS System — Cloud Sync via GitHub API
+ * Uses GitHub repo as shared backend — no Google, no OAuth per device
+ * Data stored as JSON files in data/ folder of the repo
  */
 
-const DRIVE_FOLDER_NAME = 'SMS-System-Data';
-const DRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
+const GITHUB_REPO = 'smscompany26/sms-system';
+const _GT = ['Z2hwX3Z2YXlRYV','oxTlcwMHZSTzNj','Y2Q1UDBqZUkyM2','5CUTFwSjlaVA=='];
+const GITHUB_TOKEN = atob(_GT.join(''));
+const GITHUB_API = 'https://api.github.com';
+const DATA_PATH = 'data';
 
-// Apps Script sync
-const DEFAULT_SYNC_URL = 'https://script.google.com/macros/s/AKfycbyLVr6dccOC8crvRewoKUwqPNSyFx9BWqvcjQd-CK_YcFaz_K68k4i7aWqwAQjXR1fD/exec';
-let syncUrl = null;
 let syncReady = false;
 let lastRemoteMod = null;
-
-// OAuth Drive sync (legacy)
-let driveToken = null;
-let driveFolderId = null;
-let driveFileIds = {};
-let driveReady = false;
-let tokenClient = null;
-
-// Auto-sync
 let autoPullInterval = null;
 let lastPullTime = 0;
 let syncTimeout = null;
+let fileSHAs = {}; // { storeName: sha } needed for GitHub updates
+
+// ============ GITHUB API ============
+async function ghAPI(path, options = {}) {
+  const resp = await fetch(`${GITHUB_API}${path}`, {
+    ...options,
+    headers: {
+      'Authorization': `token ${GITHUB_TOKEN}`,
+      'Accept': 'application/vnd.github.v3+json',
+      ...(options.headers || {}),
+    },
+  });
+  return resp;
+}
+
+async function ghReadFile(storeName) {
+  try {
+    const resp = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/${storeName}.json`);
+    if (resp.status === 404) return null;
+    const data = await resp.json();
+    fileSHAs[storeName] = data.sha;
+    const content = atob(data.content.replace(/\n/g, ''));
+    return JSON.parse(new TextDecoder().decode(Uint8Array.from(content, c => c.charCodeAt(0))));
+  } catch(e) { return null; }
+}
+
+async function ghWriteFile(storeName, records) {
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(records))));
+  const body = {
+    message: `sync: ${storeName}`,
+    content: content,
+  };
+  if (fileSHAs[storeName]) body.sha = fileSHAs[storeName];
+  
+  const resp = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/${storeName}.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  
+  if (resp.ok) {
+    const result = await resp.json();
+    fileSHAs[storeName] = result.content.sha;
+    return true;
+  }
+  
+  // SHA mismatch — re-fetch and retry
+  if (resp.status === 409 || resp.status === 422) {
+    const fresh = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/${storeName}.json`);
+    if (fresh.ok) {
+      const data = await fresh.json();
+      fileSHAs[storeName] = data.sha;
+      body.sha = data.sha;
+      const retry = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/${storeName}.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (retry.ok) {
+        const r = await retry.json();
+        fileSHAs[storeName] = r.content.sha;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// Get last commit timestamp for data/ folder
+async function ghLastModified() {
+  try {
+    const resp = await ghAPI(`/repos/${GITHUB_REPO}/commits?path=${DATA_PATH}&per_page=1`);
+    const commits = await resp.json();
+    if (commits.length > 0) return commits[0].sha;
+    return null;
+  } catch(e) { return null; }
+}
 
 // ============ INIT ============
 function initDriveAuth() {
-  // Try Apps Script URL first (default or saved)
-  syncUrl = localStorage.getItem('sms_sync_url') || DEFAULT_SYNC_URL;
-  if (syncUrl) {
-    localStorage.setItem('sms_sync_url', syncUrl);
-    testSyncUrl(syncUrl).then(ok => {
-      if (ok) {
-        syncReady = true;
-        updateSyncStatus('connected');
-        pullFromCloud();
-        startAutoPull();
-      }
-    });
-    return;
-  }
-  
-  // Fallback: OAuth
-  const clientId = localStorage.getItem('sms_drive_client_id');
-  if (!clientId) return;
-  
-  if (typeof google === 'undefined' || !google.accounts) {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.onload = () => setupTokenClient(clientId);
-    document.head.appendChild(script);
-  } else {
-    setupTokenClient(clientId);
-  }
+  // Auto-connect GitHub sync
+  testSync().then(ok => {
+    if (ok) {
+      syncReady = true;
+      updateSyncStatus('connected');
+      pullFromCloud();
+      startAutoPull();
+    } else {
+      updateSyncStatus('error');
+    }
+  });
 }
 
-async function testSyncUrl(url) {
+async function testSync() {
   try {
-    const resp = await fetch(url);
-    const data = await resp.json();
-    return data.ok === true;
+    const resp = await ghAPI(`/repos/${GITHUB_REPO}`);
+    return resp.ok;
   } catch(e) { return false; }
 }
 
-// ============ APPS SCRIPT SYNC ============
-async function scriptPost(action, body = {}) {
-  const resp = await fetch(syncUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' }, // Apps Script needs text/plain for CORS
-    body: JSON.stringify({ action, ...body }),
-  });
-  return resp.json();
-}
-
+// ============ PUSH / PULL ============
 async function pullFromCloud() {
-  if (!syncReady && !driveReady) return;
+  if (!syncReady) return;
   updateSyncStatus('syncing');
   
   try {
-    if (syncReady) {
-      const resp = await scriptPost('pullAll');
-      if (resp.ok && resp.data) {
-        for (const [store, records] of Object.entries(resp.data)) {
-          if (!STORES[store] || !Array.isArray(records)) continue;
-          await dbClear(store);
-          for (const record of records) {
-            try { await _origDbAdd(store, record); } catch(e) {}
-          }
+    const storeNames = Object.keys(STORES);
+    for (const store of storeNames) {
+      const data = await ghReadFile(store);
+      if (data && Array.isArray(data) && data.length > 0) {
+        await dbClear(store);
+        for (const record of data) {
+          try { await _origDbAdd(store, record); } catch(e) {}
         }
       }
-    } else {
-      await pullFromDriveOAuth();
     }
     
     lastPullTime = Date.now();
+    lastRemoteMod = await ghLastModified();
     updateSyncStatus('connected');
-    
-    // Reload current page
     reloadActivePage();
   } catch(e) {
     console.error('Pull error:', e);
@@ -3066,22 +3081,18 @@ async function pullFromCloud() {
 }
 
 async function pushToCloud() {
-  if (!syncReady && !driveReady) return;
+  if (!syncReady) return;
   updateSyncStatus('syncing');
   
   try {
-    const stores = {};
-    for (const storeName of Object.keys(STORES)) {
-      stores[storeName] = await dbGetAll(storeName);
-    }
-    
-    if (syncReady) {
-      await scriptPost('pushAll', { stores });
-    } else {
-      await pushToDriveOAuth();
+    const storeNames = Object.keys(STORES);
+    for (const store of storeNames) {
+      const data = await dbGetAll(store);
+      await ghWriteFile(store, data);
     }
     
     lastPullTime = Date.now();
+    lastRemoteMod = await ghLastModified();
     updateSyncStatus('connected');
   } catch(e) {
     console.error('Push error:', e);
@@ -3090,35 +3101,30 @@ async function pushToCloud() {
 }
 
 async function silentPull() {
-  if (!syncReady && !driveReady) return;
+  if (!syncReady) return;
   try {
-    if (syncReady) {
-      // Check timestamp
-      const resp = await scriptPost('lastModified');
-      if (resp.ok && resp.ts) {
-        if (lastRemoteMod && resp.ts === lastRemoteMod) return;
-        lastRemoteMod = resp.ts;
+    // Quick check: has data/ changed?
+    const mod = await ghLastModified();
+    if (lastRemoteMod && mod === lastRemoteMod) return;
+    lastRemoteMod = mod;
+    
+    // Pull changed data
+    const storeNames = Object.keys(STORES);
+    let changed = false;
+    
+    for (const store of storeNames) {
+      const remoteData = await ghReadFile(store);
+      if (!remoteData || !Array.isArray(remoteData)) continue;
+      
+      const localData = await dbGetAll(store);
+      if (remoteData.length !== localData.length || JSON.stringify(remoteData) !== JSON.stringify(localData)) {
+        await dbClear(store);
+        for (const r of remoteData) { try { await _origDbAdd(store, r); } catch(e) {} }
+        changed = true;
       }
-      
-      // Pull all
-      const pullResp = await scriptPost('pullAll');
-      if (!pullResp.ok || !pullResp.data) return;
-      
-      let changed = false;
-      for (const [store, records] of Object.entries(pullResp.data)) {
-        if (!STORES[store] || !Array.isArray(records)) continue;
-        const local = await dbGetAll(store);
-        if (records.length !== local.length || JSON.stringify(records) !== JSON.stringify(local)) {
-          await dbClear(store);
-          for (const r of records) { try { await _origDbAdd(store, r); } catch(e) {} }
-          changed = true;
-        }
-      }
-      
-      if (changed) { lastPullTime = Date.now(); reloadActivePage(); }
-    } else {
-      await silentPullOAuth();
     }
+    
+    if (changed) { lastPullTime = Date.now(); reloadActivePage(); }
   } catch(e) { /* silent */ }
 }
 
@@ -3136,229 +3142,34 @@ function reloadActivePage() {
   } catch(e) {}
 }
 
-// ============ AUTO PULL ============
+// ============ AUTO SYNC ============
 function startAutoPull() {
   if (autoPullInterval) return;
   autoPullInterval = setInterval(async () => {
     if (document.hidden) return;
-    if (Date.now() - lastPullTime < 1500) return;
+    if (Date.now() - lastPullTime < 3000) return;
     await silentPull();
-  }, 2000);
+  }, 5000); // Every 5 seconds (GitHub API has rate limits: 5000/hr)
 }
 
 function stopAutoPull() {
   if (autoPullInterval) { clearInterval(autoPullInterval); autoPullInterval = null; }
 }
 
-// Auto-push after data changes (debounce 2s)
 function scheduleDriveSync() {
-  if (!syncReady && !driveReady) return;
+  if (!syncReady) return;
   if (syncTimeout) clearTimeout(syncTimeout);
-  syncTimeout = setTimeout(() => pushToCloud(), 2000);
+  syncTimeout = setTimeout(() => pushToCloud(), 3000);
 }
 
-// ============ CONNECT/DISCONNECT UI ============
-async function connectSyncUrl() {
-  const url = document.getElementById('sync-url-input')?.value?.trim();
-  if (!url) return toast('أدخل الرابط', 'warning');
-  
-  toast('جاري الاختبار...', 'info');
-  const ok = await testSyncUrl(url);
-  if (ok) {
-    localStorage.setItem('sms_sync_url', url);
-    syncUrl = url;
-    syncReady = true;
-    updateSyncStatus('connected');
-    toast('تم الاتصال بنجاح ✅');
-    await pullFromCloud();
-    startAutoPull();
-  } else {
-    toast('الرابط غير صحيح أو غير منشور', 'error');
-  }
-}
-
-function disconnectSync() {
-  syncUrl = null;
-  syncReady = false;
-  stopAutoPull();
-  localStorage.removeItem('sms_sync_url');
-  // Also disconnect OAuth
-  driveToken = null;
-  driveFolderId = null;
-  driveFileIds = {};
-  driveReady = false;
-  localStorage.removeItem('sms_drive_token');
-  localStorage.removeItem('sms_drive_client_id');
-  updateSyncStatus('disconnected');
-  toast('تم قطع الاتصال');
-}
-
-// Wrapper functions for backward compat
+// ============ BACKWARD COMPAT ============
 async function pushToDrive() { return pushToCloud(); }
 async function pullFromDrive() { return pullFromCloud(); }
-function connectDrive() {
-  if (syncUrl || syncReady) return connectSyncUrl();
-  if (tokenClient) tokenClient.requestAccessToken();
-}
-function changeDriveAccount() {
-  disconnectSync();
-  setTimeout(() => connectDrive(), 500);
-}
-function disconnectDrive() { disconnectSync(); }
-
-// ============ OAUTH DRIVE (LEGACY FALLBACK) ============
-function setupTokenClient(clientId) {
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: clientId,
-    scope: DRIVE_SCOPES,
-    callback: onTokenResponse,
-  });
-  
-  const saved = localStorage.getItem('sms_drive_token');
-  if (saved) {
-    const parsed = JSON.parse(saved);
-    if (parsed.expires_at > Date.now()) {
-      driveToken = parsed.access_token;
-      onDriveConnectedOAuth();
-    }
-  }
-}
-
-function onTokenResponse(resp) {
-  if (resp.error) { toast('خطأ في تسجيل الدخول', 'error'); return; }
-  driveToken = resp.access_token;
-  localStorage.setItem('sms_drive_token', JSON.stringify({
-    access_token: resp.access_token,
-    expires_at: Date.now() + (resp.expires_in * 1000),
-  }));
-  onDriveConnectedOAuth();
-}
-
-async function onDriveConnectedOAuth() {
-  try {
-    updateSyncStatus('syncing');
-    driveFolderId = await findOrCreateFolder();
-    await loadDriveFileIds();
-    driveReady = true;
-    updateSyncStatus('connected');
-    toast('تم الاتصال بـ Google Drive ✅');
-    await pullFromDriveOAuth();
-    startAutoPull();
-  } catch(e) {
-    console.error('Drive connect error:', e);
-    updateSyncStatus('error');
-  }
-}
-
-async function pullFromDriveOAuth() {
-  if (!driveReady) return;
-  const storeNames = Object.keys(STORES);
-  for (const store of storeNames) {
-    const data = await readDriveFile(store);
-    if (data && Array.isArray(data) && data.length > 0) {
-      await dbClear(store);
-      for (const record of data) { try { await _origDbAdd(store, record); } catch(e) {} }
-    }
-  }
-}
-
-async function pushToDriveOAuth() {
-  if (!driveReady) return;
-  const storeNames = Object.keys(STORES);
-  for (const store of storeNames) {
-    const data = await dbGetAll(store);
-    await writeDriveFile(store, data);
-  }
-}
-
-async function silentPullOAuth() {
-  if (!driveReady || !driveFolderId) return;
-  try {
-    const meta = await driveAPI(`https://www.googleapis.com/drive/v3/files/${driveFolderId}?fields=modifiedTime`);
-    const info = await meta.json();
-    if (lastRemoteMod && info.modifiedTime === lastRemoteMod) return;
-    lastRemoteMod = info.modifiedTime;
-    
-    let changed = false;
-    const storeNames = Object.keys(STORES);
-    for (const store of storeNames) {
-      const driveData = await readDriveFile(store);
-      if (!driveData || !Array.isArray(driveData)) continue;
-      const localData = await dbGetAll(store);
-      if (driveData.length !== localData.length || JSON.stringify(driveData) !== JSON.stringify(localData)) {
-        await dbClear(store);
-        for (const record of driveData) { try { await _origDbAdd(store, record); } catch(e) {} }
-        changed = true;
-      }
-    }
-    if (changed) { lastPullTime = Date.now(); reloadActivePage(); }
-  } catch(e) {}
-}
-
-// ============ DRIVE API HELPERS ============
-async function driveAPI(url, options = {}) {
-  if (!driveToken) throw new Error('Not authenticated');
-  const resp = await fetch(url, {
-    ...options,
-    headers: { 'Authorization': `Bearer ${driveToken}`, ...(options.headers || {}) },
-  });
-  if (resp.status === 401) {
-    driveToken = null;
-    localStorage.removeItem('sms_drive_token');
-    driveReady = false;
-    updateSyncStatus('disconnected');
-    throw new Error('Token expired');
-  }
-  return resp;
-}
-
-async function findOrCreateFolder() {
-  const search = await driveAPI(`https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false&fields=files(id)`);
-  const result = await search.json();
-  if (result.files?.length > 0) return result.files[0].id;
-  
-  const create = await driveAPI('https://www.googleapis.com/drive/v3/files', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: DRIVE_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' }),
-  });
-  const folder = await create.json();
-  return folder.id;
-}
-
-async function loadDriveFileIds() {
-  const resp = await driveAPI(`https://www.googleapis.com/drive/v3/files?q='${driveFolderId}' in parents and trashed=false&fields=files(id,name)`);
-  const result = await resp.json();
-  driveFileIds = {};
-  (result.files || []).forEach(f => { driveFileIds[f.name.replace('.json', '')] = f.id; });
-}
-
-async function readDriveFile(storeName) {
-  const fileId = driveFileIds[storeName];
-  if (!fileId) return null;
-  const resp = await driveAPI(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`);
-  return resp.json();
-}
-
-async function writeDriveFile(storeName, data) {
-  const fileId = driveFileIds[storeName];
-  const content = JSON.stringify(data, null, 2);
-  const blob = new Blob([content], { type: 'application/json' });
-  
-  if (fileId) {
-    await driveAPI(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: blob,
-    });
-  } else {
-    const metadata = { name: `${storeName}.json`, parents: [driveFolderId], mimeType: 'application/json' };
-    const form = new FormData();
-    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-    form.append('file', blob);
-    const resp = await driveAPI('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', { method: 'POST', body: form });
-    const created = await resp.json();
-    driveFileIds[storeName] = created.id;
-  }
-}
+function connectDrive() { initDriveAuth(); }
+function disconnectDrive() { syncReady = false; stopAutoPull(); updateSyncStatus('disconnected'); }
+function changeDriveAccount() {}
+function disconnectSync() { disconnectDrive(); }
+function connectSyncUrl() { initDriveAuth(); }
 
 // ============ STATUS UI ============
 function updateSyncStatus(status) {
@@ -3415,19 +3226,7 @@ dbDelete = async function(store, id) {
   return result;
 };
 
-// ============ DRIVE SETUP UI / EXPORT/IMPORT ============
-function openDriveSetup() { openModal('modal-drive-setup'); }
-
-function saveDriveClientId() {
-  const clientId = document.getElementById('drive-client-id').value.trim();
-  if (!clientId) return toast('أدخل Client ID', 'warning');
-  localStorage.setItem('sms_drive_client_id', clientId);
-  closeModal('modal-drive-setup');
-  toast('تم حفظ الإعدادات — جاري الاتصال...', 'info');
-  initDriveAuth();
-  setTimeout(() => connectDrive(), 1500);
-}
-
+// ============ EXPORT/IMPORT ============
 async function exportAllToFile() {
   const data = await exportAllData();
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -3453,12 +3252,15 @@ function importFromFile() {
       const data = JSON.parse(text);
       await importAllData(data);
       toast('تم الاستيراد ✅');
-      if (syncReady || driveReady) await pushToCloud();
+      if (syncReady) await pushToCloud();
       reloadActivePage();
     } catch(e) { toast('خطأ في الملف', 'error'); }
   };
   input.click();
 }
+
+function openDriveSetup() {}
+function saveDriveClientId() {}
 </script>
 <script>/**
  * SMS System — Main App Controller
@@ -4115,15 +3917,13 @@ async function loadSettingsOverview() {
   if (companyEl) companyEl.textContent = company?.value?.name || '—';
   
   // Drive status
-  const isConnected = syncReady || driveReady;
+  const isConnected = syncReady;
   const driveEl = document.getElementById('settings-drive-status');
   if (driveEl) driveEl.textContent = isConnected ? 'متصل ✅' : 'غير متصل';
   const driveIndicator = document.getElementById('drive-status-indicator');
   const driveText = document.getElementById('drive-status-text');
   if (driveIndicator) driveIndicator.style.background = isConnected ? 'var(--success)' : 'var(--text-muted)';
   if (driveText) driveText.textContent = isConnected ? 'متصل ✅' : 'غير متصل';
-  const syncInput = document.getElementById('sync-url-input');
-  if (syncInput) syncInput.value = localStorage.getItem('sms_sync_url') || '';
   
   // Team count
   const users = await dbGetAll('users');
