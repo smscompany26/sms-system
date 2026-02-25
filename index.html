@@ -2794,25 +2794,48 @@ function disconnectDrive() {
 
 function updateSyncStatus(status) {
   const el = document.getElementById('sync-status');
-  if (!el) return;
-  el.className = 'sync-badge';
-  switch (status) {
-    case 'connected':
-      el.className = 'sync-badge connected';
-      el.innerHTML = "<i class='bx bx-cloud-upload'></i>";
-      el.title = 'متصل بـ Google Drive';
-      break;
-    case 'syncing':
-      el.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i>";
-      el.title = 'جاري المزامنة...';
-      break;
-    case 'error':
-      el.innerHTML = "<i class='bx bx-cloud-off' style='color:var(--danger)'></i>";
-      el.title = 'خطأ في الاتصال';
-      break;
-    default:
-      el.innerHTML = "<i class='bx bx-cloud-upload'></i>";
-      el.title = 'غير متصل بـ Google Drive';
+  if (el) {
+    el.className = 'sync-badge';
+    switch (status) {
+      case 'connected':
+        el.className = 'sync-badge connected';
+        el.innerHTML = "<i class='bx bx-cloud-upload'></i>";
+        el.title = 'متصل بـ Google Drive';
+        break;
+      case 'syncing':
+        el.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i>";
+        el.title = 'جاري المزامنة...';
+        break;
+      case 'error':
+        el.innerHTML = "<i class='bx bx-cloud-off' style='color:var(--danger)'></i>";
+        el.title = 'خطأ في الاتصال';
+        break;
+      default:
+        el.innerHTML = "<i class='bx bx-cloud-upload'></i>";
+        el.title = 'غير متصل بـ Google Drive';
+    }
+  }
+  // Update settings Drive section
+  const indicator = document.getElementById('drive-status-indicator');
+  const text = document.getElementById('drive-status-text');
+  const overviewStatus = document.getElementById('settings-drive-status');
+  if (indicator && text) {
+    if (status === 'connected') {
+      indicator.style.background = 'var(--success)';
+      text.textContent = 'متصل ✅';
+    } else if (status === 'syncing') {
+      indicator.style.background = 'var(--warning)';
+      text.textContent = 'جاري المزامنة...';
+    } else if (status === 'error') {
+      indicator.style.background = 'var(--danger)';
+      text.textContent = 'خطأ في الاتصال';
+    } else {
+      indicator.style.background = 'var(--text-muted)';
+      text.textContent = 'غير متصل';
+    }
+  }
+  if (overviewStatus) {
+    overviewStatus.textContent = status === 'connected' ? 'متصل ✅' : status === 'syncing' ? 'مزامنة...' : status === 'error' ? 'خطأ' : 'غير متصل';
   }
 }
 
