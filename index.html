@@ -3298,8 +3298,7 @@ function stopAutoPull() {
 
 function scheduleDriveSync() {
   if (!syncReady) return;
-  if (syncTimeout) clearTimeout(syncTimeout);
-  syncTimeout = setTimeout(() => pushToCloud(), 3000);
+  pushToCloud();
 }
 
 // ============ BACKWARD COMPAT ============
