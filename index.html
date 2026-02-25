@@ -2967,12 +2967,26 @@ async function ghReadSync() {
     if (resp.status === 404) return null;
     const file = await resp.json();
     lastRemoteSHA = file.sha;
-    const raw = atob(file.content.replace(/\n/g, ''));
+    
+    let raw;
+    if (file.content) {
+      // Small file — content is base64 inline
+      raw = atob(file.content.replace(/\n/g, ''));
+    } else if (file.download_url) {
+      // Large file (>1MB) — need to download separately
+      const dlResp = await fetch(file.download_url);
+      raw = await dlResp.text();
+    } else {
+      // Fallback: use git blob API
+      const blobResp = await ghAPI(`/repos/${GITHUB_REPO}/git/blobs/${file.sha}`);
+      const blob = await blobResp.json();
+      raw = atob(blob.content.replace(/\n/g, ''));
+    }
+    
     try {
       const decrypted = decryptData(raw);
       return JSON.parse(decrypted);
     } catch(e) {
-      // Try unencrypted (legacy)
       return JSON.parse(new TextDecoder().decode(Uint8Array.from(raw, c => c.charCodeAt(0))));
     }
   } catch(e) { console.error('ghReadSync error:', e); return null; }
@@ -3165,7 +3179,18 @@ async function silentPull() {
     
     // Decode and decrypt
     isPulling = true;
-    const raw = atob(file.content.replace(/\n/g, ''));
+    let raw;
+    if (file.content) {
+      raw = atob(file.content.replace(/\n/g, ''));
+    } else if (file.download_url) {
+      const dlResp = await fetch(file.download_url);
+      raw = await dlResp.text();
+    } else {
+      const blobResp = await ghAPI(`/repos/${GITHUB_REPO}/git/blobs/${file.sha}`);
+      const blob = await blobResp.json();
+      raw = atob(blob.content.replace(/\n/g, ''));
+    }
+    
     let allData;
     try {
       allData = JSON.parse(decryptData(raw));
