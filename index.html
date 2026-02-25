@@ -3985,32 +3985,87 @@ async function shareInvoiceWhatsApp(id) {
   
   const settings = await dbGet('settings', 'company') || {};
   const companyName = settings.value?.name || 'SMS';
+  const companyPhone = settings.value?.phone || '';
   
   const isSale = inv.type === 'sale';
   const partyName = isSale ? inv.clientName : inv.supplierName;
+  const remaining = inv.total - (inv.paidAmount || 0);
   
-  let text = `📄 *${isSale ? 'فاتورة بيع' : 'فاتورة شراء'}*\n`;
-  text += `🏢 ${companyName}\n`;
-  text += `📋 رقم: ${inv.number}\n`;
-  text += `📅 التاريخ: ${formatDate(inv.date)}\n`;
-  text += `👤 ${isSale ? 'العميل' : 'المورد'}: ${partyName || 'غير محدد'}\n\n`;
-  text += `━━━━━━━━━━━━━━\n`;
+  // Build clean message
+  let text = '';
+  text += `${isSale ? 'فاتورة بيع' : 'فاتورة شراء'}\n`;
+  text += `${companyName}\n`;
+  text += `ـــــــــــــــــــــــ\n\n`;
+  text += `رقم الفاتورة: ${inv.number}\n`;
+  text += `التاريخ: ${formatDate(inv.date)}\n`;
+  text += `${isSale ? 'العميل' : 'المورد'}: ${partyName || 'غير محدد'}\n\n`;
+  text += `ـــــــــــــــــــــــ\n`;
+  text += `الأصناف:\n\n`;
   
   if (inv.items) {
     inv.items.forEach((item, i) => {
       text += `${i+1}. ${item.productName}\n`;
-      text += `   ${item.quantity} × ${formatMoney(item.unitPrice)} = ${formatMoney(item.total)}\n`;
+      text += `   الكمية: ${item.quantity}  |  السعر: ${formatMoney(item.unitPrice)}  |  الإجمالي: ${formatMoney(item.total)}\n\n`;
     });
   }
   
-  text += `━━━━━━━━━━━━━━\n`;
-  text += `💰 *الإجمالي: ${formatMoney(inv.total)}*\n`;
-  text += `✅ المدفوع: ${formatMoney(inv.paidAmount || 0)}\n`;
-  const remaining = inv.total - (inv.paidAmount || 0);
-  if (remaining > 0) text += `⏳ المتبقي: ${formatMoney(remaining)}\n`;
+  text += `ـــــــــــــــــــــــ\n`;
+  text += `الإجمالي: ${formatMoney(inv.total)}\n`;
+  text += `المدفوع: ${formatMoney(inv.paidAmount || 0)}\n`;
+  if (remaining > 0) text += `المتبقي: ${formatMoney(remaining)}\n`;
+  else text += `الحالة: مدفوعة بالكامل\n`;
+  text += `ـــــــــــــــــــــــ\n\n`;
+  if (companyPhone) text += `للتواصل: ${companyPhone}\n`;
+  text += `${companyName}`;
   
-  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-  window.open(url, '_blank');
+  // Show choice modal
+  showShareModal(text, inv);
+}
+
+function showShareModal(text, inv) {
+  // Create modal
+  const modal = document.createElement('div');
+  modal.className = 'modal active';
+  modal.id = 'modal-share';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width:400px">
+      <div class="modal-header">
+        <h3>مشاركة الفاتورة عبر واتساب</h3>
+        <button class="modal-close" onclick="document.getElementById('modal-share').remove()">&times;</button>
+      </div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
+        <button class="btn btn-success btn-block" onclick="shareAsText()" style="padding:14px;font-size:15px;background:#25d366">
+          <i class='bx bx-message-rounded-dots'></i> إرسال كرسالة نصية
+        </button>
+        <button class="btn btn-primary btn-block" onclick="shareAsPDF(${inv.id})" style="padding:14px;font-size:15px">
+          <i class='bx bx-file'></i> إرسال كملف PDF
+        </button>
+        <button class="btn btn-outline btn-block" onclick="document.getElementById('modal-share').remove()" style="padding:14px;font-size:15px">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  `;
+  
+  // Store text for use in shareAsText
+  window._shareText = text;
+  window._shareInvId = inv.id;
+  document.body.appendChild(modal);
+}
+
+function shareAsText() {
+  const text = window._shareText;
+  document.getElementById('modal-share')?.remove();
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+}
+
+async function shareAsPDF(invId) {
+  document.getElementById('modal-share')?.remove();
+  // Generate PDF view then share
+  await printInvoice(invId);
+  toast('اطبع الفاتورة كـ PDF ثم شاركها من تطبيق الملفات');
 }
 
 // Auto-label table cells for mobile card layout
