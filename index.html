@@ -3020,26 +3020,25 @@ async function ghReadSync() {
     const file = await resp.json();
     lastRemoteSHA = file.sha;
     
-    let raw;
+    let encrypted; // our base64 encrypted string
     if (file.content) {
-      // Small file — content is base64 inline
-      raw = atob(file.content.replace(/\n/g, ''));
+      // API returns base64(file_content), file_content is our encrypted base64
+      encrypted = atob(file.content.replace(/\n/g, ''));
     } else if (file.download_url) {
-      // Large file (>1MB) — need to download separately
+      // Raw download returns file content directly = our encrypted base64
       const dlResp = await fetch(file.download_url);
-      raw = await dlResp.text();
+      encrypted = await dlResp.text();
     } else {
-      // Fallback: use git blob API
       const blobResp = await ghAPI(`/repos/${GITHUB_REPO}/git/blobs/${file.sha}`);
       const blob = await blobResp.json();
-      raw = atob(blob.content.replace(/\n/g, ''));
+      encrypted = atob(blob.content.replace(/\n/g, ''));
     }
     
     try {
-      const decrypted = decryptData(raw);
-      return JSON.parse(decrypted);
+      return JSON.parse(decryptData(encrypted));
     } catch(e) {
-      return JSON.parse(new TextDecoder().decode(Uint8Array.from(raw, c => c.charCodeAt(0))));
+      try { return JSON.parse(encrypted); } catch(e2) {}
+      return null;
     }
   } catch(e) { console.error('ghReadSync error:', e); return null; }
 }
@@ -3047,8 +3046,9 @@ async function ghReadSync() {
 // Write all data as single encrypted file
 async function ghWriteSync(allData) {
   const json = JSON.stringify(allData);
-  const encrypted = encryptData(json);
-  const content = btoa(unescape(encodeURIComponent(encrypted)));
+  const encrypted = encryptData(json); // returns base64
+  // GitHub API needs base64 of file content. Our encrypted IS base64, so we base64 it again for the API
+  const content = btoa(encrypted);
   
   // Get current SHA first
   let sha = lastRemoteSHA;
@@ -3231,23 +3231,23 @@ async function silentPull() {
     
     // Decode and decrypt
     isPulling = true;
-    let raw;
+    let encrypted;
     if (file.content) {
-      raw = atob(file.content.replace(/\n/g, ''));
+      encrypted = atob(file.content.replace(/\n/g, ''));
     } else if (file.download_url) {
       const dlResp = await fetch(file.download_url);
-      raw = await dlResp.text();
+      encrypted = await dlResp.text();
     } else {
       const blobResp = await ghAPI(`/repos/${GITHUB_REPO}/git/blobs/${file.sha}`);
       const blob = await blobResp.json();
-      raw = atob(blob.content.replace(/\n/g, ''));
+      encrypted = atob(blob.content.replace(/\n/g, ''));
     }
     
     let allData;
     try {
-      allData = JSON.parse(decryptData(raw));
+      allData = JSON.parse(decryptData(encrypted));
     } catch(e) {
-      allData = JSON.parse(new TextDecoder().decode(Uint8Array.from(raw, c => c.charCodeAt(0))));
+      try { allData = JSON.parse(encrypted); } catch(e2) { isPulling = false; return; }
     }
     
     if (!allData || typeof allData !== 'object') { isPulling = false; return; }
