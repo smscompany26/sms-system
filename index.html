@@ -298,6 +298,9 @@ input, select, textarea, button { font-family: var(--font); }
   flex: 1;
   margin-right: 260px;
   transition: margin var(--transition);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 .sidebar.collapsed ~ .main-content { margin-right: 72px; }
 
@@ -331,7 +334,7 @@ input, select, textarea, button { font-family: var(--font); }
   color: var(--primary);
 }
 
-.page-content { padding: 24px; }
+.page-content { padding: 24px; flex: 1; }
 .page { display: none; }
 .page.active { display: block; }
 
@@ -946,6 +949,27 @@ tr:hover { background: rgba(108,60,233,0.02); }
   #settings-overview { display: block; }
 }
 
+/* ========== App Footer ========== */
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.app-footer a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.app-footer a:hover { text-decoration: underline; }
+@media (max-width: 768px) {
+  .app-footer { padding: 12px 16px; font-size: 11px; flex-wrap: wrap; gap: 4px; justify-content: center; text-align: center; margin-bottom: 60px; }
+}
+
 /* ========== Remember Me ========== */
 .remember-me {
   display: flex;
@@ -1193,12 +1217,12 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <i class='bx bx-chevron-down nav-arrow'></i>
         </a>
         <div class="nav-sub">
-          <a href="#" class="nav-sub-item" onclick="navigate('settings');setTimeout(()=>openSettingsSection('company'),100)">بيانات الشركة</a>
-          <a href="#" class="nav-sub-item" onclick="navigate('settings');setTimeout(()=>openSettingsSection('notifications'),100)">الإشعارات</a>
-          <a href="#" class="nav-sub-item" onclick="navigate('settings');setTimeout(()=>openSettingsSection('drive'),100)">Google Drive</a>
-          <a href="#" class="nav-sub-item" onclick="navigate('settings');setTimeout(()=>openSettingsSection('backup'),100)">النسخ الاحتياطي</a>
-          <a href="#" class="nav-sub-item" onclick="navigate('settings');setTimeout(()=>openSettingsSection('users'),100)">فريق العمل</a>
-          <a href="#" class="nav-sub-item" onclick="navigate('settings');setTimeout(()=>openSettingsSection('activity'),100)">سجل النشاط</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('settings','company')">بيانات الشركة</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('settings','notifications')">الإشعارات</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('settings','drive')">Google Drive</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('settings','backup')">النسخ الاحتياطي</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('settings','users')">فريق العمل</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('settings','activity')">سجل النشاط</a>
         </div>
       </div>
     </nav>
@@ -1851,6 +1875,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
         </div><!-- end settings-sections -->
       </section>
     </div>
+    <footer class="app-footer">
+      <span>Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — <a href="tel:01228370809" dir="ltr">01228370809</a></span>
+      <span>© 2026</span>
+    </footer>
   </main>
 </div>
 
@@ -2668,9 +2696,12 @@ function showApp() {
     document.querySelector('[data-page="settings"]').style.display = '';
   }
   
-  // Load dashboard data
-  navigate('dashboard');
-  loadDashboard();
+  // Restore last page from hash or default to dashboard
+  if (location.hash && location.hash.length > 1) {
+    restoreFromHash();
+  } else {
+    navigate('dashboard');
+  }
 }
 </script>
 <script>/**
@@ -3111,8 +3142,15 @@ const PAGE_TITLES = {
   settings: 'الإعدادات',
 };
 
-// Navigation
-function navigate(page) {
+// Navigation with hash routing
+function navigate(page, sub) {
+  // Save to hash for persistence
+  if (sub) {
+    location.hash = page + '/' + sub;
+  } else {
+    location.hash = page;
+  }
+  
   // Hide all pages
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   // Show target page
@@ -3139,7 +3177,6 @@ function navigate(page) {
   document.querySelector('.sidebar-overlay')?.classList.remove('active');
   
   // Load page-specific data
-  // Categories page belongs to inventory group
   if (page === 'categories') {
     const invGroup = document.querySelector('.nav-group[data-page="inventory"]');
     if (invGroup) { invGroup.classList.add('open'); invGroup.querySelector('.nav-item')?.classList.add('active'); }
@@ -3152,10 +3189,35 @@ function navigate(page) {
   if (page === 'maintenance') { loadMaintenancePage(); loadServices().then(() => renderServicesInAllPages()); }
   if (page === 'accounting') { loadAccountingPage(); }
   if (page === 'reports') { loadReportsPage(); }
-  if (page === 'settings') { loadSettingsOverview(); loadUsersPage(); loadActivityLog(); loadCompanySettings(); loadNotificationSettings(); }
+  if (page === 'settings') { 
+    loadSettingsOverview(); loadUsersPage(); loadActivityLog(); loadCompanySettings(); loadNotificationSettings();
+    if (sub) setTimeout(() => openSettingsSection(sub), 150);
+  }
   
   return false;
 }
+
+// Restore page from hash on load
+function restoreFromHash() {
+  const hash = location.hash.replace('#', '');
+  if (!hash) return;
+  const parts = hash.split('/');
+  const page = parts[0];
+  const sub = parts[1] || null;
+  if (PAGE_TITLES[page] || page === 'categories') {
+    navigate(page, sub);
+  }
+}
+
+window.addEventListener('hashchange', () => {
+  const hash = location.hash.replace('#', '');
+  const parts = hash.split('/');
+  const page = parts[0];
+  const sub = parts[1] || null;
+  if (PAGE_TITLES[page] || page === 'categories') {
+    navigate(page, sub);
+  }
+});
 
 // Sidebar toggle
 function toggleSidebar() {
