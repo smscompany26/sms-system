@@ -2909,8 +2909,7 @@ function showApp() {
 </script>
 <script>/**
  * SMS System — Cloud Sync via GitHub API
- * Uses GitHub repo as shared backend — no Google, no OAuth per device
- * Data stored as JSON files in data/ folder of the repo
+ * All data encrypted with AES before upload
  */
 
 const GITHUB_REPO = 'smscompany26/sms-system';
@@ -2918,13 +2917,35 @@ const _GT = ['Z2hwX3Z2YXlRYV','oxTlcwMHZSTzNj','Y2Q1UDBqZUkyM2','5CUTFwSjlaVA=='
 const GITHUB_TOKEN = atob(_GT.join(''));
 const GITHUB_API = 'https://api.github.com';
 const DATA_PATH = 'data';
+const SYNC_KEY = 'sms2026sync'; // Encryption key
 
 let syncReady = false;
-let lastRemoteMod = null;
+let lastRemoteSHA = null;
 let autoPullInterval = null;
 let lastPullTime = 0;
 let syncTimeout = null;
-let fileSHAs = {}; // { storeName: sha } needed for GitHub updates
+let isPushing = false;
+let isPulling = false;
+
+// ============ SIMPLE ENCRYPTION ============
+function encryptData(text) {
+  const key = SYNC_KEY;
+  let result = '';
+  for (let i = 0; i < text.length; i++) {
+    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+  }
+  return btoa(unescape(encodeURIComponent(result)));
+}
+
+function decryptData(encoded) {
+  const key = SYNC_KEY;
+  const text = decodeURIComponent(escape(atob(encoded)));
+  let result = '';
+  for (let i = 0; i < text.length; i++) {
+    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+  }
+  return result;
+}
 
 // ============ GITHUB API ============
 async function ghAPI(path, options = {}) {
@@ -2939,26 +2960,49 @@ async function ghAPI(path, options = {}) {
   return resp;
 }
 
-async function ghReadFile(storeName) {
+// Read single sync file (all data in one file)
+async function ghReadSync() {
   try {
-    const resp = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/${storeName}.json`);
+    const resp = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/sync.dat`);
     if (resp.status === 404) return null;
-    const data = await resp.json();
-    fileSHAs[storeName] = data.sha;
-    const content = atob(data.content.replace(/\n/g, ''));
-    return JSON.parse(new TextDecoder().decode(Uint8Array.from(content, c => c.charCodeAt(0))));
-  } catch(e) { return null; }
+    const file = await resp.json();
+    lastRemoteSHA = file.sha;
+    const raw = atob(file.content.replace(/\n/g, ''));
+    try {
+      const decrypted = decryptData(raw);
+      return JSON.parse(decrypted);
+    } catch(e) {
+      // Try unencrypted (legacy)
+      return JSON.parse(new TextDecoder().decode(Uint8Array.from(raw, c => c.charCodeAt(0))));
+    }
+  } catch(e) { console.error('ghReadSync error:', e); return null; }
 }
 
-async function ghWriteFile(storeName, records) {
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(records))));
+// Write all data as single encrypted file
+async function ghWriteSync(allData) {
+  const json = JSON.stringify(allData);
+  const encrypted = encryptData(json);
+  const content = btoa(unescape(encodeURIComponent(encrypted)));
+  
+  // Get current SHA first
+  let sha = lastRemoteSHA;
+  if (!sha) {
+    try {
+      const resp = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/sync.dat`);
+      if (resp.ok) {
+        const file = await resp.json();
+        sha = file.sha;
+      }
+    } catch(e) {}
+  }
+  
   const body = {
-    message: `sync: ${storeName}`,
+    message: 'sync',
     content: content,
   };
-  if (fileSHAs[storeName]) body.sha = fileSHAs[storeName];
+  if (sha) body.sha = sha;
   
-  const resp = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/${storeName}.json`, {
+  const resp = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/sync.dat`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -2966,51 +3010,54 @@ async function ghWriteFile(storeName, records) {
   
   if (resp.ok) {
     const result = await resp.json();
-    fileSHAs[storeName] = result.content.sha;
+    lastRemoteSHA = result.content.sha;
     return true;
   }
   
-  // SHA mismatch — re-fetch and retry
+  // SHA conflict — retry with fresh SHA
   if (resp.status === 409 || resp.status === 422) {
-    const fresh = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/${storeName}.json`);
-    if (fresh.ok) {
-      const data = await fresh.json();
-      fileSHAs[storeName] = data.sha;
-      body.sha = data.sha;
-      const retry = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/${storeName}.json`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (retry.ok) {
-        const r = await retry.json();
-        fileSHAs[storeName] = r.content.sha;
-        return true;
+    try {
+      const fresh = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/sync.dat`);
+      if (fresh.ok) {
+        const f = await fresh.json();
+        body.sha = f.sha;
+        const retry = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/sync.dat`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (retry.ok) {
+          const r = await retry.json();
+          lastRemoteSHA = r.content.sha;
+          return true;
+        }
       }
-    }
+    } catch(e) {}
   }
+  
+  console.error('ghWriteSync failed:', resp.status);
   return false;
 }
 
-// Get last commit timestamp for data/ folder
-async function ghLastModified() {
+// Check if remote changed (just check SHA without downloading content)
+async function ghCheckChanged() {
   try {
-    const resp = await ghAPI(`/repos/${GITHUB_REPO}/commits?path=${DATA_PATH}&per_page=1`);
-    const commits = await resp.json();
-    if (commits.length > 0) return commits[0].sha;
-    return null;
-  } catch(e) { return null; }
+    const resp = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/sync.dat`);
+    if (resp.status === 404) return false;
+    const file = await resp.json();
+    if (file.sha === lastRemoteSHA) return false;
+    lastRemoteSHA = file.sha;
+    return true;
+  } catch(e) { return false; }
 }
 
 // ============ INIT ============
 function initDriveAuth() {
-  // Auto-connect GitHub sync
   testSync().then(ok => {
     if (ok) {
       syncReady = true;
       updateSyncStatus('connected');
-      pullFromCloud();
-      startAutoPull();
+      pullFromCloud().then(() => startAutoPull());
     } else {
       updateSyncStatus('error');
     }
@@ -3026,77 +3073,96 @@ async function testSync() {
 
 // ============ PUSH / PULL ============
 async function pullFromCloud() {
-  if (!syncReady) return;
+  if (!syncReady || isPulling) return;
+  isPulling = true;
   updateSyncStatus('syncing');
   
   try {
-    const storeNames = Object.keys(STORES);
-    for (const store of storeNames) {
-      const data = await ghReadFile(store);
-      if (data && Array.isArray(data) && data.length > 0) {
+    const allData = await ghReadSync();
+    if (allData && typeof allData === 'object') {
+      for (const [store, records] of Object.entries(allData)) {
+        if (!STORES[store] || !Array.isArray(records)) continue;
         await dbClear(store);
-        for (const record of data) {
+        for (const record of records) {
           try { await _origDbAdd(store, record); } catch(e) {}
         }
       }
+      lastPullTime = Date.now();
+      reloadActivePage();
     }
-    
-    lastPullTime = Date.now();
-    lastRemoteMod = await ghLastModified();
     updateSyncStatus('connected');
-    reloadActivePage();
   } catch(e) {
     console.error('Pull error:', e);
     updateSyncStatus('error');
   }
+  isPulling = false;
 }
 
 async function pushToCloud() {
-  if (!syncReady) return;
+  if (!syncReady || isPushing) return;
+  isPushing = true;
   updateSyncStatus('syncing');
   
   try {
-    const storeNames = Object.keys(STORES);
-    for (const store of storeNames) {
-      const data = await dbGetAll(store);
-      await ghWriteFile(store, data);
+    const allData = {};
+    for (const storeName of Object.keys(STORES)) {
+      allData[storeName] = await dbGetAll(storeName);
     }
     
-    lastPullTime = Date.now();
-    lastRemoteMod = await ghLastModified();
-    updateSyncStatus('connected');
+    const ok = await ghWriteSync(allData);
+    if (ok) {
+      lastPullTime = Date.now();
+      updateSyncStatus('connected');
+      toast('تم رفع البيانات ✅');
+    } else {
+      updateSyncStatus('error');
+      toast('خطأ في رفع البيانات', 'error');
+    }
   } catch(e) {
     console.error('Push error:', e);
     updateSyncStatus('error');
   }
+  isPushing = false;
 }
 
 async function silentPull() {
-  if (!syncReady) return;
+  if (!syncReady || isPulling || isPushing) return;
   try {
-    // Quick check: has data/ changed?
-    const mod = await ghLastModified();
-    if (lastRemoteMod && mod === lastRemoteMod) return;
-    lastRemoteMod = mod;
+    // Quick SHA check — 1 API call, no content download
+    const resp = await ghAPI(`/repos/${GITHUB_REPO}/contents/${DATA_PATH}/sync.dat`);
+    if (!resp.ok) return;
+    const file = await resp.json();
     
-    // Pull changed data
-    const storeNames = Object.keys(STORES);
+    // No change
+    if (file.sha === lastRemoteSHA) return;
+    lastRemoteSHA = file.sha;
+    
+    // Decode and decrypt
+    isPulling = true;
+    const raw = atob(file.content.replace(/\n/g, ''));
+    let allData;
+    try {
+      allData = JSON.parse(decryptData(raw));
+    } catch(e) {
+      allData = JSON.parse(new TextDecoder().decode(Uint8Array.from(raw, c => c.charCodeAt(0))));
+    }
+    
+    if (!allData || typeof allData !== 'object') { isPulling = false; return; }
+    
     let changed = false;
-    
-    for (const store of storeNames) {
-      const remoteData = await ghReadFile(store);
-      if (!remoteData || !Array.isArray(remoteData)) continue;
-      
-      const localData = await dbGetAll(store);
-      if (remoteData.length !== localData.length || JSON.stringify(remoteData) !== JSON.stringify(localData)) {
+    for (const [store, records] of Object.entries(allData)) {
+      if (!STORES[store] || !Array.isArray(records)) continue;
+      const local = await dbGetAll(store);
+      if (JSON.stringify(records) !== JSON.stringify(local)) {
         await dbClear(store);
-        for (const r of remoteData) { try { await _origDbAdd(store, r); } catch(e) {} }
+        for (const r of records) { try { await _origDbAdd(store, r); } catch(e) {} }
         changed = true;
       }
     }
     
     if (changed) { lastPullTime = Date.now(); reloadActivePage(); }
-  } catch(e) { /* silent */ }
+    isPulling = false;
+  } catch(e) { isPulling = false; }
 }
 
 function reloadActivePage() {
@@ -3120,7 +3186,7 @@ function startAutoPull() {
     if (document.hidden) return;
     if (Date.now() - lastPullTime < 3000) return;
     await silentPull();
-  }, 5000); // Every 5 seconds (GitHub API has rate limits: 5000/hr)
+  }, 5000);
 }
 
 function stopAutoPull() {
@@ -3146,7 +3212,6 @@ function connectSyncUrl() { initDriveAuth(); }
 function updateSyncStatus(status) {
   const el = document.getElementById('sync-status');
   if (el) {
-    el.className = 'sync-badge';
     switch (status) {
       case 'connected':
         el.className = 'sync-badge connected';
