@@ -4018,54 +4018,8 @@ async function shareInvoiceWhatsApp(id) {
   if (companyPhone) text += `للتواصل: ${companyPhone}\n`;
   text += `${companyName}`;
   
-  // Show choice modal
-  showShareModal(text, inv);
-}
-
-function showShareModal(text, inv) {
-  // Create modal
-  const modal = document.createElement('div');
-  modal.className = 'modal active';
-  modal.id = 'modal-share';
-  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-  
-  modal.innerHTML = `
-    <div class="modal-content" style="max-width:400px">
-      <div class="modal-header">
-        <h3>مشاركة الفاتورة عبر واتساب</h3>
-        <button class="modal-close" onclick="document.getElementById('modal-share').remove()">&times;</button>
-      </div>
-      <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
-        <button class="btn btn-success btn-block" onclick="shareAsText()" style="padding:14px;font-size:15px;background:#25d366">
-          <i class='bx bx-message-rounded-dots'></i> إرسال كرسالة نصية
-        </button>
-        <button class="btn btn-primary btn-block" onclick="shareAsPDF(${inv.id})" style="padding:14px;font-size:15px">
-          <i class='bx bx-file'></i> إرسال كملف PDF
-        </button>
-        <button class="btn btn-outline btn-block" onclick="document.getElementById('modal-share').remove()" style="padding:14px;font-size:15px">
-          إلغاء
-        </button>
-      </div>
-    </div>
-  `;
-  
-  // Store text for use in shareAsText
-  window._shareText = text;
-  window._shareInvId = inv.id;
-  document.body.appendChild(modal);
-}
-
-function shareAsText() {
-  const text = window._shareText;
-  document.getElementById('modal-share')?.remove();
+  // Send directly as text
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-}
-
-async function shareAsPDF(invId) {
-  document.getElementById('modal-share')?.remove();
-  // Generate PDF view then share
-  await printInvoice(invId);
-  toast('اطبع الفاتورة كـ PDF ثم شاركها من تطبيق الملفات');
 }
 
 // Auto-label table cells for mobile card layout
