@@ -2021,23 +2021,48 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
         <!-- Google Drive Section -->
         <div class="settings-section" id="section-drive">
-        <div class="card">
-          <h3><i class='bx bxl-google-cloud'></i> Google Drive</h3>
-          <div id="drive-status-section">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-              <div id="drive-status-indicator" style="width:12px;height:12px;border-radius:50%;background:var(--text-muted)"></div>
-              <span id="drive-status-text">غير متصل</span>
+        
+        <!-- Apps Script (Primary - Recommended) -->
+        <div class="card" style="margin-bottom:16px">
+          <h3><i class='bx bx-cloud'></i> المزامنة السحابية</h3>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+            <div id="drive-status-indicator" style="width:12px;height:12px;border-radius:50%;background:var(--text-muted)"></div>
+            <span id="drive-status-text">غير متصل</span>
+          </div>
+          
+          <div style="background:var(--bg);border-radius:8px;padding:16px;margin-bottom:16px">
+            <h4 style="margin-bottom:8px">⚡ الطريقة السريعة (موصى بها)</h4>
+            <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px">المدير يعمل الإعداد مرة واحدة — وكل الأجهزة تتزامن تلقائياً بدون تسجيل دخول</p>
+            <div class="form-group">
+              <label>رابط المزامنة (Apps Script URL)</label>
+              <input type="text" id="sync-url-input" dir="ltr" placeholder="https://script.google.com/macros/s/...../exec" style="text-align:left">
             </div>
             <div style="display:flex;gap:12px;flex-wrap:wrap">
-              <button class="btn btn-primary" onclick="connectDrive()"><i class='bx bx-link'></i> اتصال بـ Google Drive</button>
-              <button class="btn btn-outline" onclick="changeDriveAccount()"><i class='bx bx-transfer'></i> تغيير الحساب</button>
-              <button class="btn btn-outline" onclick="disconnectDrive()"><i class='bx bx-unlink'></i> قطع الاتصال</button>
-            </div>
-            <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap">
-              <button class="btn btn-success" onclick="pushToDrive()"><i class='bx bx-cloud-upload'></i> رفع البيانات للدرايف</button>
-              <button class="btn btn-warning" onclick="pullFromDrive()"><i class='bx bx-cloud-download'></i> سحب البيانات من الدرايف</button>
+              <button class="btn btn-primary" onclick="connectSyncUrl()"><i class='bx bx-link'></i> اتصال</button>
+              <button class="btn btn-outline" onclick="disconnectSync()"><i class='bx bx-unlink'></i> قطع الاتصال</button>
             </div>
           </div>
+          
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+            <button class="btn btn-success" onclick="pushToDrive()"><i class='bx bx-cloud-upload'></i> رفع البيانات</button>
+            <button class="btn btn-warning" onclick="pullFromDrive()"><i class='bx bx-cloud-download'></i> سحب البيانات</button>
+          </div>
+        </div>
+
+        <!-- Setup Instructions -->
+        <div class="card">
+          <h3><i class='bx bx-help-circle'></i> طريقة الإعداد (مرة واحدة)</h3>
+          <ol style="padding-right:20px;color:var(--text-muted);font-size:13px;line-height:2.2">
+            <li>افتح <a href="https://script.google.com" target="_blank" style="color:var(--primary)">Google Apps Script</a> بحساب الشركة</li>
+            <li>اعمل مشروع جديد واسمه <strong>SMS-Sync</strong></li>
+            <li>امسح الكود وحط <a href="#" onclick="copySyncScript()" style="color:var(--primary)">كود المزامنة</a> (اضغط للنسخ)</li>
+            <li>دوس <strong>Deploy → New Deployment</strong></li>
+            <li>اختار <strong>Web App</strong></li>
+            <li>Execute as: <strong>Me</strong></li>
+            <li>Who has access: <strong>Anyone</strong></li>
+            <li>دوس <strong>Deploy</strong> وانسخ الرابط</li>
+            <li>حط الرابط فوق ودوس <strong>اتصال</strong></li>
+          </ol>
         </div>
 
         </div><!-- end section-drive -->
@@ -2934,25 +2959,51 @@ function showApp() {
 }
 </script>
 <script>/**
- * SMS System — Google Drive Sync Layer
- * Uses Google Drive API v3 to store/retrieve JSON data files
- * All data lives in a "SMS-System-Data" folder on Drive
+ * SMS System — Cloud Sync Layer
+ * Primary: Google Apps Script (shared URL, no per-device OAuth)
+ * Fallback: Google Drive API (per-device OAuth)
  */
 
 const DRIVE_FOLDER_NAME = 'SMS-System-Data';
 const DRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+// Apps Script sync
+let syncUrl = null;
+let syncReady = false;
+let lastRemoteMod = null;
+
+// OAuth Drive sync (legacy)
 let driveToken = null;
 let driveFolderId = null;
-let driveFileIds = {}; // { storeName: fileId }
+let driveFileIds = {};
 let driveReady = false;
 let tokenClient = null;
 
+// Auto-sync
+let autoPullInterval = null;
+let lastPullTime = 0;
+let syncTimeout = null;
+
 // ============ INIT ============
 function initDriveAuth() {
+  // Try Apps Script URL first
+  syncUrl = localStorage.getItem('sms_sync_url');
+  if (syncUrl) {
+    testSyncUrl(syncUrl).then(ok => {
+      if (ok) {
+        syncReady = true;
+        updateSyncStatus('connected');
+        pullFromCloud();
+        startAutoPull();
+      }
+    });
+    return;
+  }
+  
+  // Fallback: OAuth
   const clientId = localStorage.getItem('sms_drive_client_id');
   if (!clientId) return;
   
-  // Load Google Identity Services
   if (typeof google === 'undefined' || !google.accounts) {
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
@@ -2963,6 +3014,197 @@ function initDriveAuth() {
   }
 }
 
+async function testSyncUrl(url) {
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+    return data.ok === true;
+  } catch(e) { return false; }
+}
+
+// ============ APPS SCRIPT SYNC ============
+async function scriptPost(action, body = {}) {
+  const resp = await fetch(syncUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' }, // Apps Script needs text/plain for CORS
+    body: JSON.stringify({ action, ...body }),
+  });
+  return resp.json();
+}
+
+async function pullFromCloud() {
+  if (!syncReady && !driveReady) return;
+  updateSyncStatus('syncing');
+  
+  try {
+    if (syncReady) {
+      const resp = await scriptPost('pullAll');
+      if (resp.ok && resp.data) {
+        for (const [store, records] of Object.entries(resp.data)) {
+          if (!STORES[store] || !Array.isArray(records)) continue;
+          await dbClear(store);
+          for (const record of records) {
+            try { await _origDbAdd(store, record); } catch(e) {}
+          }
+        }
+      }
+    } else {
+      await pullFromDriveOAuth();
+    }
+    
+    lastPullTime = Date.now();
+    updateSyncStatus('connected');
+    
+    // Reload current page
+    reloadActivePage();
+  } catch(e) {
+    console.error('Pull error:', e);
+    updateSyncStatus('error');
+  }
+}
+
+async function pushToCloud() {
+  if (!syncReady && !driveReady) return;
+  updateSyncStatus('syncing');
+  
+  try {
+    const stores = {};
+    for (const storeName of Object.keys(STORES)) {
+      stores[storeName] = await dbGetAll(storeName);
+    }
+    
+    if (syncReady) {
+      await scriptPost('pushAll', { stores });
+    } else {
+      await pushToDriveOAuth();
+    }
+    
+    lastPullTime = Date.now();
+    updateSyncStatus('connected');
+  } catch(e) {
+    console.error('Push error:', e);
+    updateSyncStatus('error');
+  }
+}
+
+async function silentPull() {
+  if (!syncReady && !driveReady) return;
+  try {
+    if (syncReady) {
+      // Check timestamp
+      const resp = await scriptPost('lastModified');
+      if (resp.ok && resp.ts) {
+        if (lastRemoteMod && resp.ts === lastRemoteMod) return;
+        lastRemoteMod = resp.ts;
+      }
+      
+      // Pull all
+      const pullResp = await scriptPost('pullAll');
+      if (!pullResp.ok || !pullResp.data) return;
+      
+      let changed = false;
+      for (const [store, records] of Object.entries(pullResp.data)) {
+        if (!STORES[store] || !Array.isArray(records)) continue;
+        const local = await dbGetAll(store);
+        if (records.length !== local.length || JSON.stringify(records) !== JSON.stringify(local)) {
+          await dbClear(store);
+          for (const r of records) { try { await _origDbAdd(store, r); } catch(e) {} }
+          changed = true;
+        }
+      }
+      
+      if (changed) { lastPullTime = Date.now(); reloadActivePage(); }
+    } else {
+      await silentPullOAuth();
+    }
+  } catch(e) { /* silent */ }
+}
+
+function reloadActivePage() {
+  const hash = localStorage.getItem('sms_last_page') || 'dashboard';
+  const page = hash.split('/')[0];
+  try {
+    if (page === 'inventory') loadInventory();
+    else if (page === 'dashboard') loadDashboard();
+    else if (page === 'sales') loadSalesPage();
+    else if (page === 'purchases') loadPurchasesPage();
+    else if (page === 'maintenance') loadMaintenancePage();
+    else if (page === 'accounting') loadAccountingPage();
+    else if (page === 'settings') loadSettingsOverview();
+  } catch(e) {}
+}
+
+// ============ AUTO PULL ============
+function startAutoPull() {
+  if (autoPullInterval) return;
+  autoPullInterval = setInterval(async () => {
+    if (document.hidden) return;
+    if (Date.now() - lastPullTime < 1500) return;
+    await silentPull();
+  }, 2000);
+}
+
+function stopAutoPull() {
+  if (autoPullInterval) { clearInterval(autoPullInterval); autoPullInterval = null; }
+}
+
+// Auto-push after data changes (debounce 2s)
+function scheduleDriveSync() {
+  if (!syncReady && !driveReady) return;
+  if (syncTimeout) clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(() => pushToCloud(), 2000);
+}
+
+// ============ CONNECT/DISCONNECT UI ============
+async function connectSyncUrl() {
+  const url = document.getElementById('sync-url-input')?.value?.trim();
+  if (!url) return toast('أدخل الرابط', 'warning');
+  
+  toast('جاري الاختبار...', 'info');
+  const ok = await testSyncUrl(url);
+  if (ok) {
+    localStorage.setItem('sms_sync_url', url);
+    syncUrl = url;
+    syncReady = true;
+    updateSyncStatus('connected');
+    toast('تم الاتصال بنجاح ✅');
+    await pullFromCloud();
+    startAutoPull();
+  } else {
+    toast('الرابط غير صحيح أو غير منشور', 'error');
+  }
+}
+
+function disconnectSync() {
+  syncUrl = null;
+  syncReady = false;
+  stopAutoPull();
+  localStorage.removeItem('sms_sync_url');
+  // Also disconnect OAuth
+  driveToken = null;
+  driveFolderId = null;
+  driveFileIds = {};
+  driveReady = false;
+  localStorage.removeItem('sms_drive_token');
+  localStorage.removeItem('sms_drive_client_id');
+  updateSyncStatus('disconnected');
+  toast('تم قطع الاتصال');
+}
+
+// Wrapper functions for backward compat
+async function pushToDrive() { return pushToCloud(); }
+async function pullFromDrive() { return pullFromCloud(); }
+function connectDrive() {
+  if (syncUrl || syncReady) return connectSyncUrl();
+  if (tokenClient) tokenClient.requestAccessToken();
+}
+function changeDriveAccount() {
+  disconnectSync();
+  setTimeout(() => connectDrive(), 500);
+}
+function disconnectDrive() { disconnectSync(); }
+
+// ============ OAUTH DRIVE (LEGACY FALLBACK) ============
 function setupTokenClient(clientId) {
   tokenClient = google.accounts.oauth2.initTokenClient({
     client_id: clientId,
@@ -2970,92 +3212,153 @@ function setupTokenClient(clientId) {
     callback: onTokenResponse,
   });
   
-  // Try to use saved token
   const saved = localStorage.getItem('sms_drive_token');
   if (saved) {
     const parsed = JSON.parse(saved);
     if (parsed.expires_at > Date.now()) {
       driveToken = parsed.access_token;
-      onDriveConnected();
+      onDriveConnectedOAuth();
     }
   }
 }
 
-function connectDrive() {
-  const clientId = localStorage.getItem('sms_drive_client_id');
-  if (!clientId) {
-    openDriveSetup();
-    return;
-  }
-  
-  if (!tokenClient) {
-    initDriveAuth();
-    setTimeout(() => {
-      if (tokenClient) tokenClient.requestAccessToken();
-      else toast('جاري تحميل Google... حاول مرة أخرى', 'info');
-    }, 1000);
-    return;
-  }
-  
-  tokenClient.requestAccessToken();
-}
-
 function onTokenResponse(resp) {
-  if (resp.error) {
-    console.error('Drive auth error:', resp);
-    toast('فشل الاتصال بـ Google Drive', 'error');
-    return;
-  }
-  
+  if (resp.error) { toast('خطأ في تسجيل الدخول', 'error'); return; }
   driveToken = resp.access_token;
-  
-  // Save token with expiry
   localStorage.setItem('sms_drive_token', JSON.stringify({
     access_token: resp.access_token,
     expires_at: Date.now() + (resp.expires_in * 1000),
   }));
-  
-  onDriveConnected();
+  onDriveConnectedOAuth();
 }
 
-async function onDriveConnected() {
+async function onDriveConnectedOAuth() {
   try {
     updateSyncStatus('syncing');
-    
-    // Find or create folder
     driveFolderId = await findOrCreateFolder();
-    
-    // Load file IDs mapping
     await loadDriveFileIds();
-    
     driveReady = true;
     updateSyncStatus('connected');
-    toast('تم الاتصال بـ Google Drive ✅', 'success');
-    
-    // Sync data from Drive
-    await pullFromDrive();
-    
-    // Start auto-pull for multi-device sync
+    toast('تم الاتصال بـ Google Drive ✅');
+    await pullFromDriveOAuth();
     startAutoPull();
-    
-  } catch (err) {
-    console.error('Drive connect error:', err);
+  } catch(e) {
+    console.error('Drive connect error:', e);
     updateSyncStatus('error');
-    toast('خطأ في الاتصال بـ Drive', 'error');
   }
 }
 
-function disconnectDrive() {
-  driveToken = null;
-  driveFolderId = null;
-  driveFileIds = {};
-  driveReady = false;
-  stopAutoPull();
-  localStorage.removeItem('sms_drive_token');
-  updateSyncStatus('disconnected');
-  toast('تم قطع الاتصال بـ Google Drive');
+async function pullFromDriveOAuth() {
+  if (!driveReady) return;
+  const storeNames = Object.keys(STORES);
+  for (const store of storeNames) {
+    const data = await readDriveFile(store);
+    if (data && Array.isArray(data) && data.length > 0) {
+      await dbClear(store);
+      for (const record of data) { try { await _origDbAdd(store, record); } catch(e) {} }
+    }
+  }
 }
 
+async function pushToDriveOAuth() {
+  if (!driveReady) return;
+  const storeNames = Object.keys(STORES);
+  for (const store of storeNames) {
+    const data = await dbGetAll(store);
+    await writeDriveFile(store, data);
+  }
+}
+
+async function silentPullOAuth() {
+  if (!driveReady || !driveFolderId) return;
+  try {
+    const meta = await driveAPI(`https://www.googleapis.com/drive/v3/files/${driveFolderId}?fields=modifiedTime`);
+    const info = await meta.json();
+    if (lastRemoteMod && info.modifiedTime === lastRemoteMod) return;
+    lastRemoteMod = info.modifiedTime;
+    
+    let changed = false;
+    const storeNames = Object.keys(STORES);
+    for (const store of storeNames) {
+      const driveData = await readDriveFile(store);
+      if (!driveData || !Array.isArray(driveData)) continue;
+      const localData = await dbGetAll(store);
+      if (driveData.length !== localData.length || JSON.stringify(driveData) !== JSON.stringify(localData)) {
+        await dbClear(store);
+        for (const record of driveData) { try { await _origDbAdd(store, record); } catch(e) {} }
+        changed = true;
+      }
+    }
+    if (changed) { lastPullTime = Date.now(); reloadActivePage(); }
+  } catch(e) {}
+}
+
+// ============ DRIVE API HELPERS ============
+async function driveAPI(url, options = {}) {
+  if (!driveToken) throw new Error('Not authenticated');
+  const resp = await fetch(url, {
+    ...options,
+    headers: { 'Authorization': `Bearer ${driveToken}`, ...(options.headers || {}) },
+  });
+  if (resp.status === 401) {
+    driveToken = null;
+    localStorage.removeItem('sms_drive_token');
+    driveReady = false;
+    updateSyncStatus('disconnected');
+    throw new Error('Token expired');
+  }
+  return resp;
+}
+
+async function findOrCreateFolder() {
+  const search = await driveAPI(`https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false&fields=files(id)`);
+  const result = await search.json();
+  if (result.files?.length > 0) return result.files[0].id;
+  
+  const create = await driveAPI('https://www.googleapis.com/drive/v3/files', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: DRIVE_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' }),
+  });
+  const folder = await create.json();
+  return folder.id;
+}
+
+async function loadDriveFileIds() {
+  const resp = await driveAPI(`https://www.googleapis.com/drive/v3/files?q='${driveFolderId}' in parents and trashed=false&fields=files(id,name)`);
+  const result = await resp.json();
+  driveFileIds = {};
+  (result.files || []).forEach(f => { driveFileIds[f.name.replace('.json', '')] = f.id; });
+}
+
+async function readDriveFile(storeName) {
+  const fileId = driveFileIds[storeName];
+  if (!fileId) return null;
+  const resp = await driveAPI(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`);
+  return resp.json();
+}
+
+async function writeDriveFile(storeName, data) {
+  const fileId = driveFileIds[storeName];
+  const content = JSON.stringify(data, null, 2);
+  const blob = new Blob([content], { type: 'application/json' });
+  
+  if (fileId) {
+    await driveAPI(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: blob,
+    });
+  } else {
+    const metadata = { name: `${storeName}.json`, parents: [driveFolderId], mimeType: 'application/json' };
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+    form.append('file', blob);
+    const resp = await driveAPI('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', { method: 'POST', body: form });
+    const created = await resp.json();
+    driveFileIds[storeName] = created.id;
+  }
+}
+
+// ============ STATUS UI ============
 function updateSyncStatus(status) {
   const el = document.getElementById('sync-status');
   if (el) {
@@ -3064,7 +3367,7 @@ function updateSyncStatus(status) {
       case 'connected':
         el.className = 'sync-badge connected';
         el.innerHTML = "<i class='bx bx-cloud-upload'></i>";
-        el.title = 'متصل بـ Google Drive';
+        el.title = 'متصل — المزامنة تعمل';
         break;
       case 'syncing':
         el.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i>";
@@ -3076,266 +3379,15 @@ function updateSyncStatus(status) {
         break;
       default:
         el.innerHTML = "<i class='bx bx-cloud-upload'></i>";
-        el.title = 'غير متصل بـ Google Drive';
+        el.title = 'غير متصل';
     }
   }
-  // Update settings Drive section
   const indicator = document.getElementById('drive-status-indicator');
   const text = document.getElementById('drive-status-text');
   const overviewStatus = document.getElementById('settings-drive-status');
-  if (indicator && text) {
-    if (status === 'connected') {
-      indicator.style.background = 'var(--success)';
-      text.textContent = 'متصل ✅';
-    } else if (status === 'syncing') {
-      indicator.style.background = 'var(--warning)';
-      text.textContent = 'جاري المزامنة...';
-    } else if (status === 'error') {
-      indicator.style.background = 'var(--danger)';
-      text.textContent = 'خطأ في الاتصال';
-    } else {
-      indicator.style.background = 'var(--text-muted)';
-      text.textContent = 'غير متصل';
-    }
-  }
-  if (overviewStatus) {
-    overviewStatus.textContent = status === 'connected' ? 'متصل ✅' : status === 'syncing' ? 'مزامنة...' : status === 'error' ? 'خطأ' : 'غير متصل';
-  }
-}
-
-// ============ DRIVE API CALLS ============
-async function driveAPI(url, options = {}) {
-  if (!driveToken) throw new Error('Not authenticated');
-  
-  const resp = await fetch(url, {
-    ...options,
-    headers: {
-      'Authorization': `Bearer ${driveToken}`,
-      ...(options.headers || {}),
-    },
-  });
-  
-  if (resp.status === 401) {
-    // Token expired — re-auth
-    driveToken = null;
-    localStorage.removeItem('sms_drive_token');
-    updateSyncStatus('disconnected');
-    toast('انتهت صلاحية الاتصال — اعد الاتصال بـ Drive', 'warning');
-    throw new Error('Token expired');
-  }
-  
-  if (!resp.ok) throw new Error(`Drive API error: ${resp.status}`);
-  return resp;
-}
-
-async function findOrCreateFolder() {
-  // Search for existing folder
-  const query = `name='${DRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
-  const resp = await driveAPI(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,name)`);
-  const data = await resp.json();
-  
-  if (data.files && data.files.length > 0) {
-    return data.files[0].id;
-  }
-  
-  // Create folder
-  const createResp = await driveAPI('https://www.googleapis.com/drive/v3/files', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name: DRIVE_FOLDER_NAME,
-      mimeType: 'application/vnd.google-apps.folder',
-    }),
-  });
-  const folder = await createResp.json();
-  return folder.id;
-}
-
-async function loadDriveFileIds() {
-  // List files in our folder
-  const query = `'${driveFolderId}' in parents and trashed=false`;
-  const resp = await driveAPI(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,name)`);
-  const data = await resp.json();
-  
-  driveFileIds = {};
-  if (data.files) {
-    data.files.forEach(f => {
-      const name = f.name.replace('.json', '');
-      driveFileIds[name] = f.id;
-    });
-  }
-}
-
-// ============ READ/WRITE DATA ============
-async function readDriveFile(storeName) {
-  const fileId = driveFileIds[storeName];
-  if (!fileId) return null;
-  
-  const resp = await driveAPI(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`);
-  return await resp.json();
-}
-
-async function writeDriveFile(storeName, data) {
-  const fileId = driveFileIds[storeName];
-  const content = JSON.stringify(data, null, 2);
-  const blob = new Blob([content], { type: 'application/json' });
-  
-  if (fileId) {
-    // Update existing file
-    await driveAPI(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: blob,
-    });
-  } else {
-    // Create new file
-    const metadata = {
-      name: `${storeName}.json`,
-      parents: [driveFolderId],
-      mimeType: 'application/json',
-    };
-    
-    const form = new FormData();
-    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-    form.append('file', blob);
-    
-    const resp = await driveAPI('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-      method: 'POST',
-      body: form,
-    });
-    // Remove the extra Authorization header issue with FormData
-    const created = await resp.json();
-    driveFileIds[storeName] = created.id;
-  }
-}
-
-// ============ SYNC ============
-async function pullFromDrive() {
-  if (!driveReady) return;
-  
-  updateSyncStatus('syncing');
-  
-  try {
-    const storeNames = Object.keys(STORES);
-    
-    for (const store of storeNames) {
-      const data = await readDriveFile(store);
-      if (data && Array.isArray(data) && data.length > 0) {
-        await dbClear(store);
-        for (const record of data) {
-          try { await _origDbAdd(store, record); } catch(e) { /* skip duplicates */ }
-        }
-      }
-    }
-    
-    updateSyncStatus('connected');
-    
-    // Reload current page data
-    const activePage = document.querySelector('.nav-item.active');
-    if (activePage) {
-      const page = activePage.dataset.page;
-      if (page === 'inventory') loadInventory();
-      if (page === 'dashboard') loadDashboard();
-    }
-    
-  } catch (err) {
-    console.error('Pull error:', err);
-    updateSyncStatus('error');
-  }
-}
-
-async function pushToDrive() {
-  if (!driveReady) return;
-  
-  updateSyncStatus('syncing');
-  
-  try {
-    const storeNames = Object.keys(STORES);
-    
-    for (const store of storeNames) {
-      const data = await dbGetAll(store);
-      await writeDriveFile(store, data);
-    }
-    
-    lastPullTime = Date.now();
-    updateSyncStatus('connected');
-  } catch (err) {
-    console.error('Push error:', err);
-    updateSyncStatus('error');
-  }
-}
-
-// Auto-sync after data changes
-let syncTimeout = null;
-function scheduleDriveSync() {
-  if (!driveReady) return;
-  if (syncTimeout) clearTimeout(syncTimeout);
-  syncTimeout = setTimeout(() => pushToDrive(), 3000); // Debounce 3 seconds
-}
-
-// Auto-pull from Drive periodically (every 30 seconds)
-let autoPullInterval = null;
-let lastPullTime = 0;
-
-function startAutoPull() {
-  if (autoPullInterval) return;
-  autoPullInterval = setInterval(async () => {
-    if (!driveReady || document.hidden) return; // Skip if tab not visible
-    // Don't pull if we just pushed (within 5 seconds)
-    if (Date.now() - lastPullTime < 25000) return;
-    await silentPull();
-  }, 2000); // Every 2 seconds
-}
-
-function stopAutoPull() {
-  if (autoPullInterval) { clearInterval(autoPullInterval); autoPullInterval = null; }
-}
-
-// Check if Drive folder was modified since last pull
-let lastDriveMod = null;
-
-async function silentPull() {
-  if (!driveReady || !driveFolderId) return;
-  try {
-    // Quick check: get folder's modifiedTime (1 API call only)
-    const meta = await driveAPI(`https://www.googleapis.com/drive/v3/files/${driveFolderId}?fields=modifiedTime`);
-    const info = await meta.json();
-    const mod = info.modifiedTime;
-    
-    // No change since last pull — skip
-    if (lastDriveMod && mod === lastDriveMod) return;
-    lastDriveMod = mod;
-    
-    // Something changed — pull all stores
-    const storeNames = Object.keys(STORES);
-    let changed = false;
-    
-    for (const store of storeNames) {
-      const driveData = await readDriveFile(store);
-      if (!driveData || !Array.isArray(driveData)) continue;
-      
-      const localData = await dbGetAll(store);
-      if (driveData.length !== localData.length || JSON.stringify(driveData) !== JSON.stringify(localData)) {
-        await dbClear(store);
-        for (const record of driveData) {
-          try { await _origDbAdd(store, record); } catch(e) {}
-        }
-        changed = true;
-      }
-    }
-    
-    if (changed) {
-      lastPullTime = Date.now();
-      const hash = localStorage.getItem('sms_last_page') || 'dashboard';
-      const page = hash.split('/')[0];
-      if (page === 'inventory') loadInventory();
-      else if (page === 'dashboard') loadDashboard();
-      else if (page === 'sales') loadSalesPage();
-      else if (page === 'purchases') loadPurchasesPage();
-      else if (page === 'maintenance') loadMaintenancePage();
-      else if (page === 'accounting') loadAccountingPage();
-    }
-  } catch (e) { /* silent fail */ }
+  if (indicator) indicator.style.background = status === 'connected' ? 'var(--success)' : status === 'syncing' ? 'var(--warning)' : status === 'error' ? 'var(--danger)' : 'var(--text-muted)';
+  if (text) text.textContent = status === 'connected' ? 'متصل ✅' : status === 'syncing' ? 'مزامنة...' : status === 'error' ? 'خطأ' : 'غير متصل';
+  if (overviewStatus) overviewStatus.textContent = status === 'connected' ? 'متصل ✅' : status === 'syncing' ? 'مزامنة...' : status === 'error' ? 'خطأ' : 'غير متصل';
 }
 
 // Override db functions to trigger sync
@@ -3361,15 +3413,12 @@ dbDelete = async function(store, id) {
   return result;
 };
 
-// ============ DRIVE SETUP UI ============
-function openDriveSetup() {
-  openModal('modal-drive-setup');
-}
+// ============ DRIVE SETUP UI / EXPORT/IMPORT ============
+function openDriveSetup() { openModal('modal-drive-setup'); }
 
 function saveDriveClientId() {
   const clientId = document.getElementById('drive-client-id').value.trim();
   if (!clientId) return toast('أدخل Client ID', 'warning');
-  
   localStorage.setItem('sms_drive_client_id', clientId);
   closeModal('modal-drive-setup');
   toast('تم حفظ الإعدادات — جاري الاتصال...', 'info');
@@ -3377,14 +3426,6 @@ function saveDriveClientId() {
   setTimeout(() => connectDrive(), 1500);
 }
 
-function changeDriveAccount() {
-  disconnectDrive();
-  // Clear client ID to force re-setup
-  // localStorage.removeItem('sms_drive_client_id');
-  setTimeout(() => connectDrive(), 500);
-}
-
-// ============ FULL EXPORT/IMPORT ============
 async function exportAllToFile() {
   const data = await exportAllData();
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -3404,23 +3445,15 @@ function importFromFile() {
   input.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (!confirm('سيتم استبدال كل البيانات الحالية بالنسخة الاحتياطية. متابعة؟')) return;
-    
+    if (!confirm('سيتم استبدال كل البيانات الحالية. متابعة؟')) return;
     try {
       const text = await file.text();
       const data = JSON.parse(text);
       await importAllData(data);
-      toast('تم استيراد النسخة الاحتياطية ✅');
-      
-      // Re-sync to Drive
-      if (driveReady) await pushToDrive();
-      
-      // Reload
-      loadInventory();
-      loadDashboard();
-    } catch (err) {
-      toast('خطأ في قراءة الملف', 'error');
-    }
+      toast('تم الاستيراد ✅');
+      if (syncReady || driveReady) await pushToCloud();
+      reloadActivePage();
+    } catch(e) { toast('خطأ في الملف', 'error'); }
   };
   input.click();
 }
@@ -4080,12 +4113,15 @@ async function loadSettingsOverview() {
   if (companyEl) companyEl.textContent = company?.value?.name || '—';
   
   // Drive status
+  const isConnected = syncReady || driveReady;
   const driveEl = document.getElementById('settings-drive-status');
-  if (driveEl) driveEl.textContent = driveReady ? 'متصل ✅' : 'غير متصل';
+  if (driveEl) driveEl.textContent = isConnected ? 'متصل ✅' : 'غير متصل';
   const driveIndicator = document.getElementById('drive-status-indicator');
   const driveText = document.getElementById('drive-status-text');
-  if (driveIndicator) driveIndicator.style.background = driveReady ? 'var(--success)' : 'var(--text-muted)';
-  if (driveText) driveText.textContent = driveReady ? 'متصل ✅' : 'غير متصل';
+  if (driveIndicator) driveIndicator.style.background = isConnected ? 'var(--success)' : 'var(--text-muted)';
+  if (driveText) driveText.textContent = isConnected ? 'متصل ✅' : 'غير متصل';
+  const syncInput = document.getElementById('sync-url-input');
+  if (syncInput) syncInput.value = localStorage.getItem('sms_sync_url') || '';
   
   // Team count
   const users = await dbGetAll('users');
@@ -4171,6 +4207,14 @@ async function shareInvoiceWhatsApp(id) {
   
   const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
   window.open(url, '_blank');
+}
+
+// Copy Apps Script code
+function copySyncScript() {
+  const script = `const FOLDER_NAME = 'SMS-System-Data';\n\nfunction doPost(e) {\n  try {\n    const data = JSON.parse(e.postData.contents);\n    const action = data.action;\n    const folder = getOrCreateFolder();\n\n    if (action === 'pushAll') {\n      for (const [name, records] of Object.entries(data.stores)) {\n        const content = JSON.stringify(records);\n        const files = folder.getFilesByName(name + '.json');\n        if (files.hasNext()) files.next().setContent(content);\n        else folder.createFile(name + '.json', content, 'application/json');\n      }\n      const ts = new Date().toISOString();\n      const tsF = folder.getFilesByName('_lastModified.txt');\n      if (tsF.hasNext()) tsF.next().setContent(ts);\n      else folder.createFile('_lastModified.txt', ts, 'text/plain');\n      return ContentService.createTextOutput(JSON.stringify({ok:true})).setMimeType(ContentService.MimeType.JSON);\n    }\n\n    if (action === 'pullAll') {\n      const result = {};\n      const files = folder.getFiles();\n      while (files.hasNext()) {\n        const f = files.next();\n        if (f.getName().endsWith('.json')) result[f.getName().replace('.json','')] = JSON.parse(f.getBlob().getDataAsString());\n      }\n      return ContentService.createTextOutput(JSON.stringify({ok:true, data:result})).setMimeType(ContentService.MimeType.JSON);\n    }\n\n    if (action === 'lastModified') {\n      const f = folder.getFilesByName('_lastModified.txt');\n      const ts = f.hasNext() ? f.next().getBlob().getDataAsString() : null;\n      return ContentService.createTextOutput(JSON.stringify({ok:true, ts:ts})).setMimeType(ContentService.MimeType.JSON);\n    }\n\n    return ContentService.createTextOutput(JSON.stringify({ok:false})).setMimeType(ContentService.MimeType.JSON);\n  } catch(err) {\n    return ContentService.createTextOutput(JSON.stringify({ok:false, error:err.message})).setMimeType(ContentService.MimeType.JSON);\n  }\n}\n\nfunction doGet(e) {\n  return ContentService.createTextOutput(JSON.stringify({ok:true, msg:'SMS Sync Active'})).setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction getOrCreateFolder() {\n  const folders = DriveApp.getFoldersByName(FOLDER_NAME);\n  if (folders.hasNext()) return folders.next();\n  return DriveApp.createFolder(FOLDER_NAME);\n}`;
+  navigator.clipboard.writeText(script).then(() => toast('تم نسخ الكود ✅ — الصقه في Google Apps Script')).catch(() => {
+    const ta = document.createElement('textarea'); ta.value = script; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('تم نسخ الكود ✅');
+  });
 }
 
 // Start
