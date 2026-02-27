@@ -748,22 +748,28 @@ tr:hover { background: rgba(108,60,233,0.02); }
 /* ========== Invoice Items ========== */
 .invoice-items-container { max-height: 300px; overflow-y: auto; }
 .invoice-item-row {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
   margin-bottom: 8px;
   padding: 10px;
   background: var(--bg);
   border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-sizing: border-box;
+  max-width: 100%;
 }
-.invoice-item-row select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: var(--bg-card); box-sizing: border-box; }
+.invoice-item-row select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: var(--bg-card); box-sizing: border-box; min-width: 0; }
 .invoice-item-row .inv-item-details {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
-.invoice-item-row input { flex: 1; min-width: 0; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; text-align: center; background: var(--bg-card); box-sizing: border-box; }
-.invoice-item-row .inv-total { min-width: 60px; text-align: center; font-weight: 700; font-size: 13px; white-space: nowrap; }
+.invoice-item-row input { flex: 1; min-width: 0; padding: 8px 4px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; text-align: center; background: var(--bg-card); box-sizing: border-box; }
+.invoice-item-row .inv-total { font-weight: 700; font-size: 12px; white-space: nowrap; }
+.invoice-items-container { overflow-x: hidden; }
 
 .invoice-summary {
   margin-top: 16px;
