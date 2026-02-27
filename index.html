@@ -3513,7 +3513,7 @@ async function initDynamicLists() {
 function enhanceAllSelects() {
   document.querySelectorAll('select').forEach(select => {
     if (select.dataset.enhanced) return;
-    if (select.closest('.inv-item-row, .part-item, .invoice-item-row, .part-row')) return; // skip dynamic product selects
+    // All selects get the custom popup
     select.dataset.enhanced = '1';
     const label = select.closest('.form-group')?.querySelector('label');
     const labelText = label ? label.textContent.replace('*','').trim() : 'اختر';
@@ -3527,7 +3527,7 @@ function enhanceAllSelects() {
 // Global delegation: catch any select that slips through
 document.addEventListener('click', (e) => {
   const select = e.target.closest('select');
-  if (select && !select.dataset.enhanced && !select.closest('.inv-item-row, .part-item, .invoice-item-row, .part-row')) {
+  if (select && !select.dataset.enhanced) {
     e.preventDefault();
     const label = select.closest('.form-group')?.querySelector('label');
     const labelText = label ? label.textContent.replace('*','').trim() : 'اختر';
@@ -4186,8 +4186,11 @@ function toggleSidebar() {
 
 // Modal management
 function openModal(id) {
-  document.getElementById(id).classList.add('active');
+  const modal = document.getElementById(id);
+  modal.classList.add('active');
   setTimeout(enhanceAllSelects, 50);
+  // Close on tap outside modal content
+  modal.onclick = (e) => { if (e.target === modal) closeModal(id); };
 }
 function closeModal(id) {
   document.getElementById(id).classList.remove('active');
@@ -6368,7 +6371,7 @@ function renderInvoiceItems() {
   
   container.innerHTML = currentInvoiceItems.map((item, idx) => `
     <div class="invoice-item-row">
-      <select class="inv-product-select" data-enhanced="skip" onchange="onInvoiceItemProductChange(${idx}, this)">
+      <select class="inv-product-select" onchange="onInvoiceItemProductChange(${idx}, this)">
         <option value="">اختر صنف</option>
         ${productsOptions}
       </select>
@@ -7057,7 +7060,7 @@ function renderDeviceParts() {
         <button class="btn-icon danger btn-sm" onclick="removeDevicePart(${idx})"><i class='bx bx-trash'></i></button>
       </div>
       ${part.fromStock ? `
-        <select data-enhanced="skip" onchange="onPartProductChange(${idx}, this.value)">
+        <select onchange="onPartProductChange(${idx}, this.value)">
           <option value="">اختر قطعة</option>
           ${productOptions}
         </select>
