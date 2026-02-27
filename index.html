@@ -4277,6 +4277,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 let syncReady = false;
 let autoPullInterval = null;
 let lastPullTime = 0;
+let lastPushTime = 0;
 let isPushing = false;
 let isPulling = false;
 let lastRemoteTs = null;
@@ -4362,6 +4363,7 @@ async function pushToCloud() {
     });
     
     lastPullTime = Date.now();
+    lastPushTime = Date.now();
     lastRemoteTs = now;
     updateSyncStatus('connected');
   } catch(e) {
@@ -4386,10 +4388,11 @@ async function pullFromCloud() {
         if (!STORES[row.store_name] || !Array.isArray(row.data) || row.data.length === 0) continue;
         await dbClear(row.store_name);
         for (const record of row.data) {
-          try { await _origDbAdd(row.store_name, record); } catch(e) {}
+          try { await _origDbPut(row.store_name, record); } catch(e) { console.warn('Pull error:', row.store_name, e); }
         }
       }
       lastPullTime = Date.now();
+      lastPushTime = Date.now(); // Prevent immediate re-push
       reloadActivePage();
     }
     updateSyncStatus('connected');
@@ -4402,7 +4405,9 @@ async function pullFromCloud() {
 
 // ============ SILENT PULL ============
 async function silentPull() {
-  if (!syncReady || isPulling || isPushing) return;
+  if (!syncReady || isPulling || isPushing || pushQueue) return;
+  // Don't pull within 5 seconds of last push to avoid race conditions
+  if (Date.now() - lastPushTime < 5000) return;
   try {
     // Check latest timestamp
     const resp = await sbAPI('/sync_data?select=updated_at&order=updated_at.desc&limit=1');
@@ -4422,13 +4427,15 @@ async function silentPull() {
     
     let changed = false;
     for (const row of allRows) {
-      if (!STORES[row.store_name] || !Array.isArray(row.data) || row.data.length === 0) continue;
+      if (!STORES[row.store_name] || !Array.isArray(row.data)) continue;
       const local = await dbGetAll(row.store_name);
-      if (JSON.stringify(row.data) !== JSON.stringify(local)) {
-        await dbClear(row.store_name);
-        for (const r of row.data) { try { await _origDbAdd(row.store_name, r); } catch(e) {} }
-        changed = true;
-      }
+      // Skip if data identical
+      if (JSON.stringify(row.data) === JSON.stringify(local)) continue;
+      // Don't overwrite with empty if local has data (safety)
+      if (row.data.length === 0 && local.length > 0) continue;
+      await dbClear(row.store_name);
+      for (const r of row.data) { try { await _origDbPut(row.store_name, r); } catch(e) { console.warn('Pull add error:', row.store_name, e); } }
+      changed = true;
     }
     
     if (changed) { lastPullTime = Date.now(); reloadActivePage(); }
@@ -4441,9 +4448,9 @@ function startAutoPull() {
   if (autoPullInterval) return;
   autoPullInterval = setInterval(async () => {
     if (document.hidden) return;
-    if (Date.now() - lastPullTime < 2000) return;
+    if (Date.now() - lastPullTime < 10000) return;
     await silentPull();
-  }, 2000); // Every 2 seconds
+  }, 10000); // Every 10 seconds
 }
 
 function stopAutoPull() {
