@@ -9802,6 +9802,44 @@ async function saveBotToken() {
   toast('تم حفظ التوكن ✅');
 }
 
+async function autoReplyWithChatId() {
+  const telegram = await dbGet('settings', 'telegram');
+  const token = telegram?.value?.botToken;
+  if (!token) return;
+  
+  try {
+    const lastUpdateKey = 'telegram_last_update_id';
+    const lastId = parseInt(localStorage.getItem(lastUpdateKey) || '0');
+    const resp = await fetch(`https://api.telegram.org/bot${token}/getUpdates?offset=${lastId + 1}&timeout=0`);
+    const data = await resp.json();
+    if (!data.ok || !data.result?.length) return;
+    
+    for (const update of data.result) {
+      localStorage.setItem(lastUpdateKey, String(update.update_id));
+      const msg = update.message;
+      if (!msg) continue;
+      
+      const chat = msg.chat;
+      const name = chat.first_name ? `${chat.first_name} ${chat.last_name || ''}`.trim() : chat.title || '';
+      const text = msg.text || '';
+      
+      if (text === '/start' || text === '/chatid' || text === '/id') {
+        await sendTelegram(token, chat.id, 
+          `مرحباً ${name}! 👋\n\n` +
+          `🆔 الـ Chat ID بتاعك هو:\n<code>${chat.id}</code>\n\n` +
+          `📋 انسخ الرقم ده وابعته للمدير عشان يضيفك في نظام الإشعارات.\n\n` +
+          `أو المدير يقدر يجلب الـ Chat ID تلقائي من إعدادات النظام.`
+        );
+      }
+    }
+  } catch(e) { /* silent */ }
+}
+
+// Auto-reply every 30 seconds
+setInterval(autoReplyWithChatId, 30000);
+// Run once on load
+setTimeout(autoReplyWithChatId, 3000);
+
 async function fetchChatIds() {
   const token = document.getElementById('telegram-bot-token').value.trim();
   if (!token) return toast('أدخل التوكن أولاً', 'warning');
