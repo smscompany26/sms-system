@@ -2843,7 +2843,21 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="form-group"><label>اسم الجهاز *</label><input type="text" id="device-name" required></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>المهندس/الفني المسؤول</label><select id="device-engineer"><option value="">اختر المهندس/الفني</option></select></div>
+        <div class="form-group"><label>المهندس/الفني المسؤول</label>
+          <select id="device-engineer" onchange="onEngineerSelect(this)"><option value="">اختر المهندس/الفني</option></select>
+          <div id="new-engineer-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
+              <input type="text" id="new-engineer-name" placeholder="اسم المهندس" style="flex:2;min-width:120px">
+              <input type="text" id="new-engineer-phone" placeholder="الهاتف (اختياري)" style="flex:1;min-width:100px">
+              <select id="new-engineer-specialty" style="flex:1;min-width:100px">
+                <option value="عام">عام</option><option value="موبايلات">موبايلات</option><option value="لابتوب">لابتوب</option>
+                <option value="كمبيوتر">كمبيوتر</option><option value="طابعات">طابعات</option><option value="شبكات">شبكات</option>
+                <option value="كاميرات">كاميرات</option><option value="أخرى">أخرى</option>
+              </select>
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineEngineer()" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
+            </div>
+          </div>
+        </div>
         <div class="form-group"><label>المواصفات</label><input type="text" id="device-specs" placeholder="الموديل، الرقم التسلسلي..."></div>
       </div>
       <div class="form-row">
@@ -3020,6 +3034,14 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </div>
       
       <div class="form-group"><label>ملاحظات</label><textarea id="invoice-notes" rows="2"></textarea></div>
+      
+      <!-- Photo attachments section -->
+      <div class="form-group" id="invoice-photos-section">
+        <label><i class='bx bx-camera' style="color:var(--primary)"></i> مرفقات صور (للفواتير)</label>
+        <input type="file" id="invoice-photos" accept="image/*" multiple onchange="previewInvoicePhotos(this)">
+        <div id="invoice-photos-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+      </div>
+      
       <div class="modal-footer">
         <button type="button" class="btn btn-outline" onclick="closeModal('modal-invoice')">إلغاء</button>
         <button type="submit" class="btn btn-primary">حفظ الفاتورة</button>
@@ -6645,6 +6667,20 @@ async function saveInvoice(e) {
     supplierId = partyId;
   }
   
+  // Handle photo attachments
+  let photos = [];
+  const fileInput = document.getElementById('invoice-photos');
+  if (fileInput.files.length > 0) {
+    for (let i = 0; i < fileInput.files.length; i++) {
+      const base64 = await fileToBase64(fileInput.files[i]);
+      photos.push(base64);
+    }
+  } else if (id) {
+    // Keep existing photos when editing
+    const existing = await dbGet('invoices', parseInt(id));
+    photos = existing?.photos || [];
+  }
+
   const data = {
     type, number, date: new Date(date).toISOString(),
     clientId, clientName, supplierId, supplierName,
@@ -6652,6 +6688,7 @@ async function saveInvoice(e) {
     subtotal: total, total,
     paymentStatus, paidAmount,
     notes,
+    photos,
   };
   
   if (id) {
@@ -7213,6 +7250,46 @@ function updateMaintenanceStats() {
 }
 
 // ============ DEVICE INTAKE ============
+function populateEngineerDropdown(selectedId) {
+  const sel = document.getElementById('device-engineer');
+  sel.innerHTML = '<option value="">اختر المهندس/الفني</option>' +
+    allEngineers.map(e => `<option value="${e.id}">${e.name} (${e.specialty})</option>`).join('') +
+    '<option value="__other__">+ أخرى (إضافة مهندس جديد)</option>';
+  if (selectedId) sel.value = selectedId;
+  document.getElementById('new-engineer-inline').style.display = 'none';
+}
+
+function onEngineerSelect(sel) {
+  const inlineDiv = document.getElementById('new-engineer-inline');
+  if (sel.value === '__other__') {
+    inlineDiv.style.display = 'block';
+    document.getElementById('new-engineer-name').focus();
+  } else {
+    inlineDiv.style.display = 'none';
+  }
+}
+
+async function saveInlineEngineer() {
+  const name = document.getElementById('new-engineer-name').value.trim();
+  if (!name) { toast('أدخل اسم المهندس', 'error'); return; }
+  const phone = document.getElementById('new-engineer-phone').value.trim();
+  const specialty = document.getElementById('new-engineer-specialty').value;
+  
+  const engineer = { name, phone, specialty, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+  const id = await dbPut('engineers', engineer);
+  engineer.id = id;
+  allEngineers.push(engineer);
+  autoPush();
+  
+  // Reset inline form
+  document.getElementById('new-engineer-name').value = '';
+  document.getElementById('new-engineer-phone').value = '';
+  
+  // Repopulate and select new engineer
+  populateEngineerDropdown(id);
+  toast('تم إضافة المهندس بنجاح');
+}
+
 function openNewDevice() {
   document.getElementById('modal-device-title').textContent = 'إذن استلام جهاز جديد';
   document.getElementById('device-form').reset();
@@ -7228,9 +7305,7 @@ function openNewDevice() {
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('');
   
   // Populate engineer dropdown
-  const engineerSel = document.getElementById('device-engineer');
-  engineerSel.innerHTML = '<option value="">اختر المهندس/الفني</option>' +
-    allEngineers.map(e => `<option value="${e.id}">${e.name} (${e.specialty})</option>`).join('');
+  populateEngineerDropdown();
   
   // Reset parts
   currentDeviceParts = [];
@@ -7265,10 +7340,7 @@ async function editDevice(id) {
   sel.value = d.clientId || '';
   
   // Populate engineer dropdown
-  const engineerSel = document.getElementById('device-engineer');
-  engineerSel.innerHTML = '<option value="">اختر المهندس/الفني</option>' +
-    allEngineers.map(e => `<option value="${e.id}">${e.name} (${e.specialty})</option>`).join('');
-  engineerSel.value = d.engineerId || '';
+  populateEngineerDropdown(d.engineerId);
   
   // Load photos
   const preview = document.getElementById('device-photos-preview');
