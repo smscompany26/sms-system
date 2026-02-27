@@ -1027,6 +1027,79 @@ tr:hover { background: rgba(108,60,233,0.02); }
   #settings-back { display: none !important; }
 }
 
+/* ========== Repair History ========== */
+.device-header-info {
+  background: var(--bg);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+.device-info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.device-info-row:last-child {
+  margin-bottom: 0;
+}
+
+.repair-timeline {
+  position: relative;
+  padding-left: 30px;
+}
+.repair-timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+  background: var(--bg-lighter);
+  border-radius: 8px;
+  padding: 16px;
+  border-left: 4px solid var(--primary);
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -21px;
+  top: 20px;
+  width: 12px;
+  height: 12px;
+  background: var(--primary);
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.timeline-date {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.timeline-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.timeline-content {
+  font-size: 14px;
+  line-height: 1.4;
+}
+.timeline-engineer {
+  display: inline-block;
+  background: rgba(108,60,233,0.1);
+  color: var(--primary);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  margin-top: 8px;
+}
+
 /* Mobile: show nav, hide sections */
 @media (max-width: 768px) {
   .settings-nav { display: flex; }
@@ -2288,6 +2361,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <h4 style="margin:20px 0 12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-calendar'></i> إدارة يومية</h4>
           <div class="settings-nav" id="settings-nav-daily">
             <div class="settings-nav-item" onclick="openSettingsSection('users')"><i class='bx bx-group'></i><div><strong>فريق العمل</strong><small>المستخدمين والصلاحيات</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('engineers')"><i class='bx bx-hard-hat'></i><div><strong>المهندسين والفنيين</strong><small>إدارة فريق الصيانة</small></div><i class='bx bx-chevron-left'></i></div>
             <div class="settings-nav-item" onclick="openSettingsSection('backup')"><i class='bx bx-data'></i><div><strong>النسخ الاحتياطي</strong><small>تصدير/استيراد البيانات</small></div><i class='bx bx-chevron-left'></i></div>
             <div class="settings-nav-item" onclick="openSettingsSection('activity')"><i class='bx bx-history'></i><div><strong>سجل النشاط</strong><small>من عمل ايه وامتى</small></div><i class='bx bx-chevron-left'></i></div>
           </div>
@@ -2430,6 +2504,27 @@ tr:hover { background: rgba(108,60,233,0.02); }
         </div>
 
         </div><!-- end section-users -->
+
+        <!-- Engineers Management -->
+        <div class="settings-section" id="section-engineers">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 style="margin:0"><i class='bx bx-hard-hat'></i> المهندسين والفنيين</h3>
+            <button class="btn btn-primary" onclick="openAddEngineer()"><i class='bx bx-plus'></i> إضافة مهندس/فني</button>
+          </div>
+          <div class="table-responsive">
+            <table id="engineers-table">
+              <thead><tr><th>الاسم</th><th>التليفون</th><th>التخصص</th><th>إجراءات</th></tr></thead>
+              <tbody id="engineers-tbody"></tbody>
+            </table>
+          </div>
+          <div id="engineers-empty" class="empty-state">
+            <i class='bx bx-hard-hat' style="font-size:48px;color:#ccc"></i>
+            <p>لا يوجد مهندسين أو فنيين</p>
+            <button class="btn btn-primary" onclick="openAddEngineer()">إضافة أول مهندس/فني</button>
+          </div>
+        </div>
+        </div><!-- end section-engineers -->
 
         <!-- Activity Log -->
         <div class="settings-section" id="section-activity">
@@ -2688,6 +2783,34 @@ tr:hover { background: rgba(108,60,233,0.02); }
   </div>
 </div>
 
+<!-- Engineer Modal -->
+<div id="modal-engineer" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3 id="modal-engineer-title">إضافة مهندس/فني</h3><button class="modal-close" onclick="closeModal('modal-engineer')">&times;</button></div>
+    <form id="engineer-form" onsubmit="return saveEngineer(event)">
+      <input type="hidden" id="engineer-id">
+      <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="engineer-name" required></div>
+      <div class="form-group"><label>رقم التليفون</label><input type="tel" id="engineer-phone" dir="ltr"></div>
+      <div class="form-group"><label>التخصص</label>
+        <select id="engineer-specialty">
+          <option value="عام">عام</option>
+          <option value="موبايلات">موبايلات</option>
+          <option value="لابتوب">لابتوب</option>
+          <option value="كمبيوتر">كمبيوتر</option>
+          <option value="طابعات">طابعات</option>
+          <option value="شبكات">شبكات</option>
+          <option value="كاميرات">كاميرات</option>
+          <option value="أخرى">أخرى</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-engineer')">إلغاء</button>
+        <button type="submit" class="btn btn-primary">حفظ</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Device Intake Modal -->
 <div id="modal-device" class="modal">
   <div class="modal-content modal-lg" style="max-width:800px">
@@ -2713,7 +2836,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="form-group"><label>العميل</label><select id="device-client"></select></div>
         <div class="form-group"><label>اسم الجهاز *</label><input type="text" id="device-name" required></div>
       </div>
-      <div class="form-group"><label>المواصفات</label><input type="text" id="device-specs" placeholder="الموديل، الرقم التسلسلي..."></div>
+      <div class="form-row">
+        <div class="form-group"><label>المهندس/الفني المسؤول</label><select id="device-engineer"><option value="">اختر المهندس/الفني</option></select></div>
+        <div class="form-group"><label>المواصفات</label><input type="text" id="device-specs" placeholder="الموديل، الرقم التسلسلي..."></div>
+      </div>
       <div class="form-row">
         <div class="form-group"><label class="perm-checkbox"><input type="checkbox" id="device-warranty" onchange="toggleWarrantyField()"> الجهاز عليه ضمان</label></div>
         <div class="form-group" id="warranty-months-group" style="display:none"><label>مدة الضمان (شهور)</label><input type="number" id="device-warranty-months" min="1" max="120" value="12"></div>
@@ -2784,6 +2910,36 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <button type="submit" class="btn btn-primary">حفظ</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Repair History Modal -->
+<div id="modal-repair-history" class="modal">
+  <div class="modal-content modal-lg" style="max-width:900px">
+    <div class="modal-header">
+      <h3 id="repair-history-title">تاريخ صيانة الجهاز</h3>
+      <button class="modal-close" onclick="closeModal('modal-repair-history')">&times;</button>
+    </div>
+    <div id="repair-history-content">
+      <div class="device-header-info">
+        <div class="device-info-row">
+          <span><strong>رقم الأمر:</strong> <span id="history-device-order"></span></span>
+          <span><strong>الجهاز:</strong> <span id="history-device-name"></span></span>
+        </div>
+        <div class="device-info-row">
+          <span><strong>العميل:</strong> <span id="history-client-name"></span></span>
+          <span><strong>تاريخ الدخول:</strong> <span id="history-intake-date"></span></span>
+        </div>
+      </div>
+      
+      <div class="repair-timeline" id="repair-timeline">
+        <!-- Timeline items will be populated here -->
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-repair-history')">إغلاق</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2926,6 +3082,7 @@ const STORES = {
   expenses: { keyPath: 'id', autoIncrement: true, indexes: ['date', 'category', 'expenseType'] },
   services: { keyPath: 'id', autoIncrement: true, indexes: ['date', 'clientId', 'status'] },
   users: { keyPath: 'id', autoIncrement: true, indexes: ['username'] },
+  engineers: { keyPath: 'id', autoIncrement: true, indexes: ['name', 'phone', 'specialty'] },
   settings: { keyPath: 'key' },
   activityLog: { keyPath: 'id', autoIncrement: true, indexes: ['userId', 'date', 'action'] },
   customLists: { keyPath: 'key' },
@@ -6691,9 +6848,9 @@ function printHTML(html) {
   doc.write(html);
   // Add close button and print button for mobile
   doc.write(`<style>@media print{.print-actions{display:none!important}}</style>
-  <div class="print-actions" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:100000;direction:rtl">
-    <button onclick="window.print()" style="background:#6c3ce9;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:16px;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700">🖨️ طباعة / PDF</button>
-    <button onclick="parent.document.querySelector('iframe').remove()" style="background:#ef4444;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:16px;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700">✕ إغلاق</button>
+  <div class="print-actions" style="position:fixed;bottom:0;left:0;right:0;display:flex;flex-direction:row;justify-content:center;gap:10px;z-index:100000;padding:12px 16px;background:rgba(255,255,255,0.95);box-shadow:0 -2px 10px rgba(0,0,0,0.1)">
+    <button onclick="window.print()" style="background:#6c3ce9;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700;flex:1;max-width:160px">🖨️ طباعة / PDF</button>
+    <button onclick="parent.document.querySelector('iframe').remove()" style="background:#ef4444;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700;flex:1;max-width:160px">✕ إغلاق</button>
   </div>`);
   doc.close();
 }
@@ -6827,17 +6984,12 @@ async function printReceipt(invoiceId) {
     
     itemsHtml += `
       <div class="item-row">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
-          <span style="font-weight:bold;font-size:12px">${item.productName}</span>
-          <span style="font-weight:bold;font-size:12px">${formatMoney(item.total)}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#444">
+        <div style="font-weight:bold;font-size:11px;margin-bottom:1px">${item.productName}</div>
+        <div style="display:flex;justify-content:space-between;font-size:10px">
           <span>${item.quantity} × ${formatMoney(item.unitPrice)}</span>
-          <span style="direction:ltr">${barcode}</span>
+          <span style="font-weight:bold">${formatMoney(item.total)}</span>
         </div>
-        <div style="text-align:center;margin-top:4px">
-          <img src="${barcodeQr}" style="width:40px;height:40px">
-        </div>
+        <div style="font-size:9px;color:#555;margin-top:1px;direction:ltr;text-align:left">#${barcode}</div>
       </div>`;
   }
   
@@ -6880,12 +7032,11 @@ async function printReceipt(invoiceId) {
         margin: 8px 0;
       }
       .item-row {
-        margin-bottom: 8px;
-        padding: 6px;
-        border: 1px dashed #ccc;
-        border-radius: 4px;
-        background: #fafafa;
+        margin-bottom: 6px;
+        padding: 4px 0;
+        border-bottom: 1px dotted #999;
       }
+      .item-row:last-child { border-bottom: none; }
       .totals-section {
         margin-top: 8px;
       }
@@ -7063,6 +7214,7 @@ function renderDevicesTable(filter) {
       <td class="actions-cell">
         <button class="btn-icon" title="عرض" onclick="viewDevice(${d.id})"><i class='bx bx-show'></i></button>
         <button class="btn-icon" title="تعديل" onclick="editDevice(${d.id})"><i class='bx bx-edit'></i></button>
+        <button class="btn-icon" title="تاريخ الصيانة" onclick="viewRepairHistory(${d.id})"><i class='bx bx-history'></i></button>
         <button class="btn-icon" title="QR Code" onclick="showDeviceQR(${d.id})"><i class='bx bx-qr'></i></button>
         ${d.status !== 'completed' ? `<button class="btn-icon" title="تغيير الحالة" onclick="changeDeviceStatus(${d.id})"><i class='bx bx-transfer'></i></button>` : ''}
         <button class="btn-icon danger" title="حذف" onclick="deleteDevice(${d.id})"><i class='bx bx-trash'></i></button>
