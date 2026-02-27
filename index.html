@@ -2708,7 +2708,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <h3 id="modal-product-title">إضافة صنف جديد</h3>
       <button class="modal-close" onclick="closeModal('modal-product')">&times;</button>
     </div>
-    <form id="product-form" onsubmit="return saveProduct(event)">
+    <form id="product-form" novalidate onsubmit="return saveProduct(event)">
       <input type="hidden" id="product-id">
       <div class="form-row">
         <div class="form-group">
@@ -2887,7 +2887,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
 <div id="modal-expense" class="modal">
   <div class="modal-content">
     <div class="modal-header"><h3>إضافة مصروف</h3><button class="modal-close" onclick="closeModal('modal-expense')">&times;</button></div>
-    <form id="expense-form" onsubmit="return saveExpense(event)">
+    <form id="expense-form" novalidate onsubmit="return saveExpense(event)">
       <input type="hidden" id="expense-id">
       <div class="form-row">
         <div class="form-group"><label>التاريخ</label><input type="date" id="expense-date" required></div>
@@ -2944,7 +2944,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
 <div id="modal-engineer" class="modal">
   <div class="modal-content">
     <div class="modal-header"><h3 id="modal-engineer-title">إضافة مهندس/فني</h3><button class="modal-close" onclick="closeModal('modal-engineer')">&times;</button></div>
-    <form id="engineer-form" onsubmit="return saveEngineer(event)">
+    <form id="engineer-form" novalidate onsubmit="return saveEngineer(event)">
       <input type="hidden" id="engineer-id">
       <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="engineer-name" required></div>
       <div class="form-group"><label>رقم التليفون</label><input type="tel" id="engineer-phone" dir="ltr"></div>
@@ -2975,7 +2975,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <h3 id="modal-device-title">إذن استلام جهاز جديد</h3>
       <button class="modal-close" onclick="closeModal('modal-device')">&times;</button>
     </div>
-    <form id="device-form" onsubmit="return saveDevice(event)">
+    <form id="device-form" novalidate onsubmit="return saveDevice(event)">
       <input type="hidden" id="device-id">
       <div class="form-row">
         <div class="form-group"><label>رقم أمر الصيانة</label><input type="text" id="device-order-number" readonly class="readonly-input"></div>
@@ -3645,6 +3645,37 @@ function closeCustomSelect() {
     setTimeout(() => overlay.remove(), 300);
   }
 }
+
+// Auto-commit any pending "أخرى" inputs before form save
+function commitPendingOtherInputs(form) {
+  form.querySelectorAll('.other-input-wrapper').forEach(wrapper => {
+    if (wrapper.style.display === 'none') return;
+    const textInput = wrapper.querySelector('.other-text-input');
+    const val = textInput?.value?.trim();
+    if (!val) {
+      // No value typed — reset select from __other__ to first real option
+      const selectId = wrapper.id?.replace('other-', '');
+      const select = selectId ? document.getElementById(selectId) : null;
+      if (select && select.value === '__other__') {
+        const firstReal = Array.from(select.options).find(o => o.value && o.value !== '__other__');
+        select.value = firstReal ? firstReal.value : '';
+      }
+      wrapper.style.display = 'none';
+      return;
+    }
+    // Click the ✓ button to commit the value
+    const addBtn = wrapper.querySelector('.other-add-btn');
+    if (addBtn) addBtn.click();
+  });
+}
+
+// Intercept all form submits to auto-commit pending "أخرى" values
+document.addEventListener('submit', (e) => {
+  const form = e.target;
+  if (form && form.tagName === 'FORM') {
+    commitPendingOtherInputs(form);
+  }
+}, true); // capture phase to run before onsubmit
 
 function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
@@ -5915,8 +5946,14 @@ async function saveProduct(e) {
   const id = document.getElementById('product-id').value;
   let sku = document.getElementById('product-sku').value.trim();
   const name = document.getElementById('product-name').value.trim();
-  const condition = document.getElementById('product-condition').value;
-  const type = document.getElementById('product-type').value;
+  let condition = document.getElementById('product-condition').value;
+  let type = document.getElementById('product-type').value;
+  
+  // Clean __other__ values
+  if (condition === '__other__') condition = '';
+  if (type === '__other__') type = '';
+  
+  if (!name) { toast('اكتب اسم الصنف', 'error'); return; }
   const category = document.getElementById('product-category').value;
   const buyPrice = parseFloat(document.getElementById('product-buy-price').value) || 0;
   const sellPrice = parseFloat(document.getElementById('product-sell-price').value) || 0;
