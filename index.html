@@ -1466,7 +1466,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
         </div>
 
-                <!-- Quick stats row 2 -->
+                <!-- Debug (temporary) -->
+        <pre id="dash-debug" style="background:#1a1a2e;color:#4ade80;padding:12px;border-radius:8px;font-size:11px;font-family:'JetBrains Mono',monospace;white-space:pre-wrap;direction:ltr;text-align:left;max-height:200px;overflow:auto;"></pre>
+
+        <!-- Quick stats row 2 -->
         <div class="stats-grid" id="dash-quick-stats" style="grid-template-columns:repeat(4,1fr)">
           <div class="stat-card clickable-stat" style="border-right-color:var(--accent)" onclick="navigate('inventory')">
             <div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-package'></i></div>
@@ -3570,10 +3573,15 @@ async function loadDashboard() {
   }
 
   const today = new Date().toISOString().split('T')[0];
-  console.log('[DASH] Today:', today, '| Total invoices:', invoices.length);
-  invoices.slice(0,5).forEach((inv,i) => console.log(`[DASH] Invoice ${i}: type=${inv.type} date="${inv.date}" total=${inv.total}`));
+  // Debug: show invoice data in alert
+  if (invoices.length > 0) {
+    const dbg = invoices.slice(0,10).map((inv,i) => `${i+1}. type=${inv.type} | date="${inv.date}" | total=${inv.total}`).join('\n');
+    console.log('[DASH] Invoices:\n' + dbg);
+    // Show on page temporarily
+    const dbgEl = document.getElementById('dash-debug');
+    if (dbgEl) dbgEl.textContent = `Invoices (${invoices.length}):\n` + dbg;
+  }
   const todayInvoices = invoices.filter(i => invDay(i) === today);
-  console.log('[DASH] Today invoices:', todayInvoices.length);
   
   let salesToday = 0, purchasesToday = 0;
   todayInvoices.forEach(inv => {
