@@ -7543,6 +7543,12 @@ async function recordPayment(id) {
 async function viewInvoice(id) {
   const inv = await dbGet('invoices', id);
   if (!inv) return;
+  // Normalize item fields
+  if (inv.items) inv.items = inv.items.map(item => {
+    if (item.unitPrice === undefined && item.price !== undefined) item.unitPrice = item.price;
+    if (!item.unitPrice && item.total && item.quantity) item.unitPrice = item.total / item.quantity;
+    return item;
+  });
   
   const settings = await dbGet('settings', 'company') || {};
   const companyName = settings.value?.name || 'SMS Company';
@@ -7635,10 +7641,14 @@ function printHTML(html) {
 }
 
 async function printInvoice(invoiceId) {
-  // If called with an ID, fetch the invoice; otherwise use current view
   let inv = null;
   if (invoiceId) {
     inv = await dbGet('invoices', invoiceId);
+    if (inv?.items) inv.items = inv.items.map(item => {
+      if (item.unitPrice === undefined && item.price !== undefined) item.unitPrice = item.price;
+      if (!item.unitPrice && item.total && item.quantity) item.unitPrice = item.total / item.quantity;
+      return item;
+    });
   }
   
   const settings = await dbGet('settings', 'company') || {};
@@ -7777,6 +7787,11 @@ async function printBarcodeSticker(productId) {
 async function printReceipt(invoiceId) {
   const inv = await dbGet('invoices', invoiceId);
   if (!inv) return;
+  if (inv.items) inv.items = inv.items.map(item => {
+    if (item.unitPrice === undefined && item.price !== undefined) item.unitPrice = item.price;
+    if (!item.unitPrice && item.total && item.quantity) item.unitPrice = item.total / item.quantity;
+    return item;
+  });
   
   const settings = await dbGet('settings', 'company') || {};
   const companyName = settings.value?.name || 'SMS Company';
