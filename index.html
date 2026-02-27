@@ -3482,6 +3482,7 @@ async function addToCustomList(listKey, newItem) {
   if (items.includes(newItem)) return;
   items.push(newItem);
   await dbPut('customLists', { key: listKey, items });
+  autoPush();
   return items;
 }
 
@@ -3489,6 +3490,7 @@ async function removeFromCustomList(listKey, item) {
   let items = await getCustomList(listKey);
   items = items.filter(i => i !== item);
   await dbPut('customLists', { key: listKey, items });
+  autoPush();
   return items;
 }
 
@@ -6994,6 +6996,7 @@ function renderInvoiceItems() {
       <select class="inv-product-select" onchange="onInvoiceItemProductChange(${idx}, this)">
         <option value="">اختر صنف</option>
         ${productsOptions}
+        <option value="__other__">+ أخرى (إضافة صنف جديد)</option>
       </select>
       <div class="inv-item-details">
         <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="الكمية" onchange="onInvoiceItemChange(${idx})">
@@ -7013,7 +7016,10 @@ function renderInvoiceItems() {
 }
 
 function onInvoiceItemProductChange(idx, sel) {
-  const opt = sel.options[sel.selectedIndex];
+  if (sel.value === '__other__') {
+    showInlineProductAdd(idx);
+    return;
+  }
   const product = allProducts.find(p => p.id === parseInt(sel.value));
   if (!product) return;
   
@@ -7028,6 +7034,64 @@ function onInvoiceItemProductChange(idx, sel) {
   }
   
   currentInvoiceItems[idx].total = currentInvoiceItems[idx].quantity * currentInvoiceItems[idx].unitPrice;
+  renderInvoiceItems();
+  updateInvoiceTotals();
+}
+
+function showInlineProductAdd(idx) {
+  // Remove any existing inline form
+  document.querySelectorAll('.inline-product-add').forEach(el => el.remove());
+  
+  const row = document.querySelectorAll('.invoice-item-row')[idx];
+  if (!row) return;
+  
+  const form = document.createElement('div');
+  form.className = 'inline-product-add';
+  form.style.cssText = 'margin-top:8px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px dashed var(--primary)';
+  form.innerHTML = `
+    <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--primary)">إضافة صنف جديد</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
+      <input type="text" id="inline-prod-name-${idx}" placeholder="اسم الصنف *" style="flex:2;min-width:120px">
+      <input type="number" id="inline-prod-price-${idx}" placeholder="السعر" style="flex:1;min-width:80px" step="0.01">
+      <input type="number" id="inline-prod-cost-${idx}" placeholder="التكلفة" style="flex:1;min-width:80px" step="0.01">
+      <input type="text" id="inline-prod-sku-${idx}" placeholder="الكود (اختياري)" style="flex:1;min-width:80px">
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px;justify-content:flex-end">
+      <button type="button" class="btn btn-outline btn-sm" onclick="this.closest('.inline-product-add').remove();renderInvoiceItems()">إلغاء</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineProduct(${idx})"><i class='bx bx-check'></i> حفظ وإضافة</button>
+    </div>
+  `;
+  row.appendChild(form);
+  document.getElementById(`inline-prod-name-${idx}`).focus();
+}
+
+async function saveInlineProduct(idx) {
+  const name = document.getElementById(`inline-prod-name-${idx}`).value.trim();
+  if (!name) { toast('أدخل اسم الصنف', 'error'); return; }
+  
+  const sellPrice = parseFloat(document.getElementById(`inline-prod-price-${idx}`).value) || 0;
+  const buyPrice = parseFloat(document.getElementById(`inline-prod-cost-${idx}`).value) || 0;
+  const sku = document.getElementById(`inline-prod-sku-${idx}`).value.trim() || ('SMS-' + Math.floor(10000 + Math.random() * 90000));
+  
+  const product = {
+    name, sku, barcode: '', category: '', condition: 'جديد', type: 'part',
+    quantity: 0, minStock: 0, sellPrice, buyPrice, price: sellPrice, cost: buyPrice,
+    description: '', image: '',
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+  };
+  
+  const id = await dbPut('products', product);
+  product.id = id;
+  allProducts.push(product);
+  autoPush();
+  
+  // Set the item
+  currentInvoiceItems[idx].productId = id;
+  currentInvoiceItems[idx].productName = name;
+  currentInvoiceItems[idx].unitPrice = editingInvoiceType === 'sale' ? sellPrice : buyPrice;
+  currentInvoiceItems[idx].total = currentInvoiceItems[idx].quantity * currentInvoiceItems[idx].unitPrice;
+  
+  toast(`تم إضافة "${name}" ✅`);
   renderInvoiceItems();
   updateInvoiceTotals();
 }
