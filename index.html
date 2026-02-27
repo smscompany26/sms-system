@@ -3455,6 +3455,52 @@ async function initDynamicLists() {
   });
 }
 
+// Enhance ALL remaining native selects with glassmorphic popup
+function enhanceAllSelects() {
+  document.querySelectorAll('select').forEach(select => {
+    if (select.dataset.enhanced) return;
+    if (select.closest('.inv-item-row, .part-item')) return; // skip dynamic product selects
+    if (select.options.length < 2) return; // skip empty/single-option selects
+    select.dataset.enhanced = '1';
+    const label = select.closest('.form-group')?.querySelector('label');
+    const labelText = label ? label.textContent.replace('*','').trim() : 'اختر';
+    select.addEventListener('mousedown', (e) => { e.preventDefault(); openStaticSelect(select, labelText); });
+    select.addEventListener('touchstart', (e) => { e.preventDefault(); openStaticSelect(select, labelText); }, { passive: false });
+  });
+}
+
+function openStaticSelect(select, title) {
+  closeCustomSelect();
+  const overlay = document.createElement('div');
+  overlay.className = 'custom-select-overlay';
+  overlay.id = 'custom-select-overlay';
+  const optionsHtml = Array.from(select.options).map((opt, i) => {
+    const selected = opt.value === select.value ? ' selected' : '';
+    const divider = i > 0 ? '<div class="cs-divider"></div>' : '';
+    return `${divider}<div class="cs-option${selected}" data-value="${escHtml(opt.value)}">${escHtml(opt.textContent)}</div>`;
+  }).join('');
+  overlay.innerHTML = `
+    <div class="custom-select-sheet">
+      <div class="cs-handle"></div>
+      <div class="cs-title">${title}</div>
+      <div class="cs-options">${optionsHtml}</div>
+    </div>`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add('show'));
+  overlay.querySelectorAll('.cs-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      select.value = opt.dataset.value;
+      select.dispatchEvent(new Event('change'));
+      closeCustomSelect();
+    });
+  });
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeCustomSelect(); });
+  const sheet = overlay.querySelector('.custom-select-sheet');
+  let startY = 0;
+  sheet.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
+  sheet.addEventListener('touchmove', (e) => { if (e.touches[0].clientY - startY > 80) closeCustomSelect(); }, { passive: true });
+}
+
 // Activity Log helper
 function logActivity(action, details) {
   const user = getCurrentUser();
@@ -4071,6 +4117,7 @@ function toggleSidebar() {
 // Modal management
 function openModal(id) {
   document.getElementById(id).classList.add('active');
+  setTimeout(enhanceAllSelects, 50);
 }
 function closeModal(id) {
   document.getElementById(id).classList.remove('active');
@@ -4732,6 +4779,8 @@ async function initApp() {
     
     // Init dynamic lists (customizable dropdowns)
     await initDynamicLists();
+    // Enhance all remaining native selects with glassmorphic popup
+    enhanceAllSelects();
     
     // Init Google Drive connection
     initDriveAuth();
