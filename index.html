@@ -1051,60 +1051,104 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
 .repair-timeline {
   position: relative;
-  padding-left: 30px;
-}
-.repair-timeline::before {
-  content: '';
-  position: absolute;
-  left: 15px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: var(--border);
+  padding: 0 8px;
+  margin-top: 16px;
 }
 
 .timeline-item {
   position: relative;
-  margin-bottom: 20px;
-  background: var(--bg-lighter);
-  border-radius: 8px;
-  padding: 16px;
-  border-left: 4px solid var(--primary);
+  display: flex;
+  gap: 12px;
+  margin-bottom: 0;
+  padding-bottom: 20px;
 }
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: -21px;
-  top: 20px;
-  width: 12px;
-  height: 12px;
-  background: var(--primary);
+.timeline-item:last-child { padding-bottom: 0; }
+.timeline-item:last-child .tl-line { display: none; }
+
+.tl-dot-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 36px;
+}
+.tl-dot {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: 2px solid white;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(108,60,233,0.3);
+}
+.tl-line {
+  flex: 1;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--primary-light), var(--border));
+  margin-top: 4px;
+  min-height: 20px;
 }
 
-.timeline-date {
-  color: var(--text-muted);
-  font-size: 12px;
-  margin-bottom: 4px;
+.tl-card {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
 }
-.timeline-title {
-  font-weight: 600;
-  margin-bottom: 8px;
+.tl-card:hover { box-shadow: var(--shadow-lg); }
+
+.tl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+  gap: 4px;
 }
-.timeline-content {
+.tl-title {
+  font-weight: 700;
   font-size: 14px;
-  line-height: 1.4;
+  color: var(--text);
 }
-.timeline-engineer {
-  display: inline-block;
-  background: rgba(108,60,233,0.1);
-  color: var(--primary);
-  padding: 2px 8px;
-  border-radius: 12px;
+.tl-date {
   font-size: 11px;
-  margin-top: 8px;
+  color: var(--text-muted);
+  direction: ltr;
 }
+.tl-body {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.tl-engineer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, rgba(108,60,233,0.08), rgba(0,200,255,0.08));
+  color: var(--primary);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.device-header-info {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.device-header-info .device-info-row { margin-bottom: 6px; }
+.device-header-info .device-info-row:last-child { margin-bottom: 0; }
+.device-header-info strong { opacity: 0.8; }
 
 /* Mobile: show nav, hide sections */
 @media (max-width: 768px) {
@@ -4414,12 +4458,16 @@ function toggleSidebar() {
 function openModal(id) {
   const modal = document.getElementById(id);
   modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
   setTimeout(enhanceAllSelects, 50);
-  // Close on tap outside modal content
   modal.onclick = (e) => { if (e.target === modal) closeModal(id); };
 }
 function closeModal(id) {
   document.getElementById(id).classList.remove('active');
+  // Restore scroll only if no other modals are open
+  if (!document.querySelector('.modal.active')) {
+    document.body.style.overflow = '';
+  }
 }
 
 // Toast notifications
@@ -8956,13 +9004,23 @@ function generateRepairTimeline(device) {
   return timeline.map(entry => {
     const engineer = entry.engineer ? allEngineers.find(e => e.id === entry.engineer) : null;
     const engName = engineer?.name || entry.engineerName || null;
+    const icons = { 'استلام الجهاز': '📥', 'استلام': '📥', 'intake': '📥', 'فحص وتشخيص': '🔍', 'diagnosis': '🔍', 'إصلاح': '🔧', 'repair': '🔧', 'اختبار': '✅', 'testing': '✅', 'اكتمال': '🎉', 'completed': '🎉', 'تسليم': '📦', 'delivered': '📦', 'انتهاء الصيانة': '🎉', 'تسليم الجهاز للعميل': '📦', 'اكتمال العملية': '🏁', 'تحديث الحالة': '🔄' };
+    const icon = icons[entry.title] || '📌';
     
     return `
       <div class="timeline-item">
-        <div class="timeline-date">${formatDateTime(entry.date)}</div>
-        <div class="timeline-title">${entry.title}</div>
-        <div class="timeline-content">${entry.content}</div>
-        ${engName ? `<div class="timeline-engineer">👷 ${engName}</div>` : ''}
+        <div class="tl-dot-col">
+          <div class="tl-dot">${icon}</div>
+          <div class="tl-line"></div>
+        </div>
+        <div class="tl-card">
+          <div class="tl-header">
+            <span class="tl-title">${entry.title}</span>
+            <span class="tl-date">${formatDateTime(entry.date)}</span>
+          </div>
+          ${entry.content ? `<div class="tl-body">${entry.content}</div>` : ''}
+          ${engName ? `<div class="tl-engineer">👷 ${engName}</div>` : ''}
+        </div>
       </div>
     `;
   }).join('');
