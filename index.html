@@ -7553,8 +7553,9 @@ async function printInvoice(invoiceId) {
   const partyLabel = isSale ? 'العميل' : 'المورد';
   const partyName = isSale ? inv.clientName : inv.supplierName;
   const remaining = inv.total - (inv.paidAmount || 0);
-  const qrData = encodeURIComponent(JSON.stringify({ inv: inv.number, total: inv.total, date: inv.date, party: partyName }));
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
+  const qrPayload = { inv: inv.number, type: inv.type, total: inv.total, paid: inv.paidAmount || 0, date: inv.date, party: partyName, company: companyName, phone: companyPhone, items: (inv.items||[]).map(it => ({ n: it.productName, q: it.quantity, t: it.total })) };
+  const verifyUrl = `https://smscompany26.github.io/sms-system/verify.html#${encodeURIComponent(JSON.stringify(qrPayload))}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verifyUrl)}`;
   
   const html = `<html dir="rtl"><head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7682,9 +7683,10 @@ async function printReceipt(invoiceId) {
   const partyName = isSale ? inv.clientName : inv.supplierName;
   const remaining = inv.total - (inv.paidAmount || 0);
   
-  // Generate main invoice QR
-  const qrData = encodeURIComponent(JSON.stringify({ inv: inv.number, total: inv.total, date: inv.date, party: partyName }));
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${qrData}`;
+  // Generate main invoice QR — links to verification page
+  const qrPayloadR = { inv: inv.number, type: inv.type, total: inv.total, paid: inv.paidAmount || 0, date: inv.date, party: partyName, company: companyName, phone: companyPhone, items: (inv.items||[]).map(it => ({ n: it.productName, q: it.quantity, t: it.total })) };
+  const verifyUrlR = `https://smscompany26.github.io/sms-system/verify.html#${encodeURIComponent(JSON.stringify(qrPayloadR))}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(verifyUrlR)}`;
   
   // Build items table rows
   let itemsRows = '';

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>التحقق من الفاتورة — SMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Cairo', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1040 50%, #0a0a1a 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.card {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 32px 28px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34,197,94,0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34,197,94,0.3);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.badge i { font-size: 18px; }
+.company-name {
+  font-size: 24px;
+  font-weight: 800;
+  color: #a78bfa;
+  margin-bottom: 4px;
+}
+.company-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 24px;
+}
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  margin: 16px 0;
+}
+.info-grid {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.info-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+}
+.info-value {
+  font-size: 14px;
+  font-weight: 600;
+}
+.info-value.total {
+  font-size: 18px;
+  color: #a78bfa;
+}
+.info-value.status-paid {
+  color: #22c55e;
+}
+.info-value.status-partial {
+  color: #f59e0b;
+}
+.info-value.status-unpaid {
+  color: #ef4444;
+}
+.footer {
+  margin-top: 24px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+}
+.error-card {
+  text-align: center;
+}
+.error-card i {
+  font-size: 48px;
+  color: #ef4444;
+  margin-bottom: 12px;
+}
+.error-card h2 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+.error-card p {
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+}
+.items-list {
+  text-align: right;
+  margin-top: 8px;
+}
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.item-row:last-child { border-bottom: none; }
+.item-name { color: rgba(255,255,255,0.7); }
+.item-total { font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="card" id="content">
+  <div style="padding:40px 0;color:rgba(255,255,255,0.5)">جاري التحميل...</div>
+</div>
+
+<script>
+try {
+  const hash = window.location.hash.substring(1);
+  if (!hash) throw new Error('no data');
+  
+  const data = JSON.parse(decodeURIComponent(hash));
+  const card = document.getElementById('content');
+  
+  const remaining = (data.total || 0) - (data.paid || 0);
+  let statusText, statusClass;
+  if (remaining <= 0) { statusText = 'مدفوعة بالكامل'; statusClass = 'status-paid'; }
+  else if ((data.paid || 0) > 0) { statusText = 'مدفوعة جزئياً'; statusClass = 'status-partial'; }
+  else { statusText = 'غير مدفوعة'; statusClass = 'status-unpaid'; }
+  
+  let itemsHtml = '';
+  if (data.items && data.items.length > 0) {
+    itemsHtml = `<div class="divider"></div>
+      <div class="info-row" style="margin-bottom:4px"><span class="info-label">الأصناف</span><span class="info-label">${data.items.length} صنف</span></div>
+      <div class="items-list">${data.items.map(it => 
+        `<div class="item-row"><span class="item-name">${it.n} × ${it.q}</span><span class="item-total">${Number(it.t).toLocaleString('ar-EG')} ج.م</span></div>`
+      ).join('')}</div>`;
+  }
+  
+  card.innerHTML = `
+    <div class="badge"><i class='bx bx-check-circle'></i> فاتورة موثقة</div>
+    <div class="company-name">${data.company || 'SMS Company'}</div>
+    ${data.phone ? `<div class="company-sub">${data.phone}</div>` : '<div class="company-sub">نظام إدارة المخزون والصيانة</div>'}
+    <div class="divider"></div>
+    <div class="info-grid">
+      <div class="info-row"><span class="info-label">رقم الفاتورة</span><span class="info-value">${data.inv || '-'}</span></div>
+      <div class="info-row"><span class="info-label">النوع</span><span class="info-value">${data.type === 'sale' ? 'فاتورة بيع' : 'فاتورة شراء'}</span></div>
+      <div class="info-row"><span class="info-label">التاريخ</span><span class="info-value">${data.date || '-'}</span></div>
+      <div class="info-row"><span class="info-label">${data.type === 'sale' ? 'العميل' : 'المورد'}</span><span class="info-value">${data.party || '-'}</span></div>
+      ${itemsHtml}
+      <div class="divider"></div>
+      <div class="info-row"><span class="info-label">الإجمالي</span><span class="info-value total">${Number(data.total || 0).toLocaleString('ar-EG')} ج.م</span></div>
+      <div class="info-row"><span class="info-label">المدفوع</span><span class="info-value">${Number(data.paid || 0).toLocaleString('ar-EG')} ج.م</span></div>
+      <div class="info-row"><span class="info-label">المتبقي</span><span class="info-value">${Number(remaining).toLocaleString('ar-EG')} ج.م</span></div>
+      <div class="info-row"><span class="info-label">الحالة</span><span class="info-value ${statusClass}">${statusText}</span></div>
+    </div>
+    <div class="footer">تم التحقق عبر نظام SMS — ${new Date().toLocaleDateString('ar-EG')}</div>
+  `;
+} catch(e) {
+  document.getElementById('content').innerHTML = `
+    <div class="error-card">
+      <i class='bx bx-error-circle'></i>
+      <h2>رابط غير صالح</h2>
+      <p>لم يتم العثور على بيانات فاتورة صالحة في هذا الرابط</p>
+    </div>`;
+}
+</script>
+</body>
+</html>
