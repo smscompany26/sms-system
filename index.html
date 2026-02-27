@@ -2223,7 +2223,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div class="table-responsive">
             <table id="devices-table">
               <thead><tr>
-                <th>رقم الأمر</th><th>الجهاز</th><th>العميل</th><th>المشكلة</th><th>الحالة</th><th>تاريخ الدخول</th><th>السعر</th><th>إجراءات</th>
+                <th>رقم الأمر</th><th>الجهاز</th><th>العميل</th><th>المهندس</th><th>المشكلة</th><th>الحالة</th><th>تاريخ الدخول</th><th>السعر</th><th>إجراءات</th>
               </tr></thead>
               <tbody id="devices-tbody"></tbody>
             </table>
@@ -5120,6 +5120,7 @@ function openSettingsSection(section) {
   if (back) { back.style.display = 'flex'; back.classList.add('settings-back-visible'); }
   
   if (section === 'users') loadUsersPage();
+  if (section === 'engineers') loadEngineersPage();
   if (section === 'activity') loadActivityLog();
   if (section === 'company') loadCompanySettings();
   if (section === 'notifications') loadNotificationSettings();
@@ -6981,22 +6982,20 @@ async function printReceipt(invoiceId) {
   const qrData = encodeURIComponent(JSON.stringify({ inv: inv.number, total: inv.total, date: inv.date, party: partyName }));
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${qrData}`;
   
-  // Build items with barcodes
-  let itemsHtml = '';
+  // Build items table rows
+  let itemsRows = '';
+  let itemNum = 0;
   for (const item of inv.items) {
     const product = await dbGet('products', item.productId);
-    const barcode = product?.barcode || 'N/A';
-    const barcodeQr = `https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=${encodeURIComponent(barcode)}`;
-    
-    itemsHtml += `
-      <div class="item-row">
-        <div style="font-weight:bold;font-size:11px;margin-bottom:1px">${item.productName}</div>
-        <div style="display:flex;justify-content:space-between;font-size:10px">
-          <span>${item.quantity} × ${formatMoney(item.unitPrice)}</span>
-          <span style="font-weight:bold">${formatMoney(item.total)}</span>
-        </div>
-        <div style="font-size:9px;color:#555;margin-top:1px;direction:ltr;text-align:left">#${barcode}</div>
-      </div>`;
+    const barcode = product?.barcode || '-';
+    itemNum++;
+    itemsRows += `<tr>
+      <td style="text-align:center">${itemNum}</td>
+      <td>${item.productName}<br><span style="font-size:8px;color:#777">#${barcode}</span></td>
+      <td style="text-align:center">${item.quantity}</td>
+      <td>${formatMoney(item.unitPrice)}</td>
+      <td style="font-weight:600">${formatMoney(item.total)}</td>
+    </tr>`;
   }
   
   const receiptHtml = `
@@ -7007,126 +7006,93 @@ async function printReceipt(invoiceId) {
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
-        font-family: 'Courier New', 'Cairo', monospace;
+        font-family: 'Cairo', sans-serif;
         width: 80mm;
         max-width: 80mm;
         margin: 0 auto;
-        padding: 8px;
+        padding: 10px 8px;
         font-size: 11px;
-        line-height: 1.2;
+        line-height: 1.4;
         color: #000;
         background: #fff;
       }
-      .center { text-align: center; }
-      .bold { font-weight: bold; }
-      .separator {
-        border: none;
-        border-top: 1px dashed #000;
-        margin: 8px 0;
-      }
-      .company-info {
-        text-align: center;
-        margin-bottom: 8px;
-      }
-      .company-info .name {
-        font-size: 14px;
-        font-weight: bold;
-        margin-bottom: 3px;
-      }
-      .invoice-header {
-        text-align: center;
-        margin: 8px 0;
-      }
-      .item-row {
-        margin-bottom: 6px;
-        padding: 4px 0;
-        border-bottom: 1px dotted #999;
-      }
-      .item-row:last-child { border-bottom: none; }
-      .totals-section {
-        margin-top: 8px;
-      }
-      .totals-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 2px;
-      }
-      .qr-section {
-        text-align: center;
-        margin: 12px 0;
-      }
-      .thanks {
-        text-align: center;
-        margin-top: 12px;
-        font-size: 10px;
-        font-style: italic;
-      }
+      .sep { border: none; border-top: 1px dashed #555; margin: 8px 0; }
+      .sep-double { border: none; border-top: 2px solid #000; margin: 8px 0; }
+      .header { text-align: center; margin-bottom: 6px; }
+      .header .name { font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+      .header .sub { font-size: 9px; color: #555; }
+      .info { margin: 6px 0; }
+      .info-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 2px; }
+      .info-row .label { color: #555; }
+      .info-row .val { font-weight: 600; }
+      .items-table { width: 100%; border-collapse: collapse; margin: 4px 0; }
+      .items-table th { font-size: 9px; color: #555; font-weight: 600; padding: 3px 2px; border-bottom: 1px solid #000; text-align: right; }
+      .items-table td { font-size: 10px; padding: 4px 2px; border-bottom: 1px dotted #ccc; text-align: right; vertical-align: top; }
+      .items-table tr:last-child td { border-bottom: none; }
+      .total-section { margin: 6px 0; }
+      .total-row { display: flex; justify-content: space-between; font-size: 11px; padding: 2px 0; }
+      .total-row.final { font-weight: 700; font-size: 12px; border-top: 1px solid #000; padding-top: 4px; margin-top: 2px; }
+      .qr-area { text-align: center; margin: 10px 0 6px; }
+      .footer { text-align: center; font-size: 9px; color: #555; margin-top: 8px; padding-bottom: 60px; }
       @media print {
         body { width: auto; max-width: none; }
-        .print-actions { display: none !important; }
+        .no-print { display: none !important; }
+        .footer { padding-bottom: 0; }
       }
     </style>
   </head>
   <body>
-    <!-- Company Header -->
-    <div class="company-info">
+    <!-- Header -->
+    <div class="header">
       <div class="name">${companyName}</div>
-      ${companyAddress ? `<div style="font-size:9px">${companyAddress}</div>` : ''}
-      ${companyPhone ? `<div style="font-size:9px">${companyPhone}</div>` : ''}
+      ${companyAddress ? `<div class="sub">${companyAddress}</div>` : ''}
+      ${companyPhone ? `<div class="sub">${companyPhone}</div>` : ''}
     </div>
     
-    <hr class="separator">
+    <hr class="sep-double">
     
     <!-- Invoice Info -->
-    <div class="invoice-header">
-      <div class="bold" style="font-size:12px">${invoiceType}</div>
-      <div>رقم: ${inv.number}</div>
-      <div>التاريخ: ${formatDate(inv.date)}</div>
-      <div>${isSale ? 'العميل' : 'المورد'}: ${partyName}</div>
+    <div style="text-align:center;font-size:13px;font-weight:700;margin-bottom:4px">${invoiceType}</div>
+    <div class="info">
+      <div class="info-row"><span class="label">رقم الفاتورة:</span><span class="val">${inv.number}</span></div>
+      <div class="info-row"><span class="label">التاريخ:</span><span class="val">${formatDate(inv.date)}</span></div>
+      <div class="info-row"><span class="label">${isSale ? 'العميل' : 'المورد'}:</span><span class="val">${partyName || 'غير محدد'}</span></div>
     </div>
     
-    <hr class="separator">
+    <hr class="sep">
     
-    <!-- Items -->
-    <div class="items-section">
-      ${itemsHtml}
-    </div>
+    <!-- Items Table -->
+    <table class="items-table">
+      <thead>
+        <tr><th style="text-align:center;width:20px">#</th><th>الصنف</th><th style="text-align:center;width:30px">الكمية</th><th style="width:55px">السعر</th><th style="width:60px">الإجمالي</th></tr>
+      </thead>
+      <tbody>${itemsRows}</tbody>
+    </table>
     
-    <hr class="separator">
+    <hr class="sep">
     
     <!-- Totals -->
-    <div class="totals-section">
-      <div class="totals-row">
-        <span>الإجمالي:</span>
-        <span class="bold">${formatMoney(inv.total)}</span>
-      </div>
-      <div class="totals-row">
-        <span>المدفوع:</span>
-        <span class="bold">${formatMoney(inv.paidAmount || 0)}</span>
-      </div>
-      <div class="totals-row">
-        <span>المتبقي:</span>
-        <span class="bold">${formatMoney(remaining)}</span>
-      </div>
+    <div class="total-section">
+      <div class="total-row"><span>الإجمالي:</span><span>${formatMoney(inv.total)}</span></div>
+      <div class="total-row"><span>المدفوع:</span><span>${formatMoney(inv.paidAmount || 0)}</span></div>
+      <div class="total-row final"><span>المتبقي:</span><span>${formatMoney(remaining)}</span></div>
     </div>
     
-    <hr class="separator">
+    <hr class="sep">
     
-    <!-- Invoice QR -->
-    <div class="qr-section">
-      <img src="${qrUrl}" style="width:80px;height:80px">
-      <div style="font-size:9px;margin-top:4px">فاتورة ${inv.number}</div>
+    <!-- QR -->
+    <div class="qr-area">
+      <img src="${qrUrl}" style="width:70px;height:70px">
+      <div style="font-size:8px;color:#777;margin-top:3px">${inv.number}</div>
     </div>
     
-    <!-- Thank you message -->
-    <div class="thanks">
-      شكراً لتعاملكم معنا
-    </div>
+    <!-- Footer -->
+    <div class="footer">شكراً لتعاملكم معنا ❤️</div>
     
-    <!-- Print Actions (hidden when printing) -->
-    <div class="print-actions" style="position:fixed;bottom:15px;left:0;right:0;display:flex;flex-direction:row;justify-content:center;gap:10px;z-index:100000;padding:0 10px">
-      <button onclick="window.print()" style="background:#6c3ce9;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-size:13px;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700;white-space:nowrap;flex:1;max-width:140px">🖨️ طباعة / PDF</button>
-      <button onclick="parent.document.querySelector('iframe').remove()" style="background:#ef4444;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-size:13px;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700;white-space:nowrap;flex:1;max-width:140px">✕ إغلاق</button>
+    <!-- Buttons -->
+    <div class="no-print" style="position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:10px;padding:12px;background:rgba(255,255,255,0.95);box-shadow:0 -2px 10px rgba(0,0,0,0.1)">
+      <button onclick="window.print()" style="background:#6c3ce9;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700;flex:1;max-width:140px">🖨️ طباعة</button>
+      <button onclick="parent.document.querySelector('iframe').remove()" style="background:#ef4444;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700;flex:1;max-width:140px">✕ إغلاق</button>
     </div>
   </body>
   </html>`;
@@ -7182,6 +7148,7 @@ const DEVICE_STATUSES = {
 async function loadMaintenancePage() {
   allDevices = await dbGetAll('devices');
   await loadClients();
+  allEngineers = await dbGetAll('engineers');
   allProducts = await dbGetAll('products');
   renderDevicesTable();
   updateMaintenanceStats();
@@ -7209,10 +7176,12 @@ function renderDevicesTable(filter) {
   tbody.innerHTML = devices.map(d => {
     const st = DEVICE_STATUSES[d.status] || DEVICE_STATUSES.under_repair;
     const client = allClients.find(c => c.id === d.clientId);
+    const engineer = allEngineers.find(e => e.id === d.engineerId);
     return `<tr>
       <td><strong>${d.orderNumber}</strong></td>
       <td>${d.deviceName}${d.hasWarranty ? ' <span class="badge" style="background:rgba(34,197,94,0.1);color:var(--success);font-size:10px">🛡️ ضمان '+d.warrantyMonths+' شهر</span>' : ''}</td>
       <td>${client?.name || d.clientName || '-'}</td>
+      <td>${engineer ? `<span class="badge" style="background:rgba(108,60,233,0.1);color:var(--primary);font-size:11px">👷 ${engineer.name}</span>` : '-'}</td>
       <td>${d.problem ? d.problem.substring(0, 40) + (d.problem.length > 40 ? '...' : '') : '-'}</td>
       <td><span class="badge" style="background:${st.bg};color:${st.color}">${st.label}</span></td>
       <td>${formatDate(d.intakeDate)}</td>
@@ -7258,6 +7227,11 @@ function openNewDevice() {
   sel.innerHTML = '<option value="">اختر العميل أو أضف جديد</option>' +
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('');
   
+  // Populate engineer dropdown
+  const engineerSel = document.getElementById('device-engineer');
+  engineerSel.innerHTML = '<option value="">اختر المهندس/الفني</option>' +
+    allEngineers.map(e => `<option value="${e.id}">${e.name} (${e.specialty})</option>`).join('');
+  
   // Reset parts
   currentDeviceParts = [];
   renderDeviceParts();
@@ -7289,6 +7263,12 @@ async function editDevice(id) {
   sel.innerHTML = '<option value="">اختر العميل</option>' +
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('');
   sel.value = d.clientId || '';
+  
+  // Populate engineer dropdown
+  const engineerSel = document.getElementById('device-engineer');
+  engineerSel.innerHTML = '<option value="">اختر المهندس/الفني</option>' +
+    allEngineers.map(e => `<option value="${e.id}">${e.name} (${e.specialty})</option>`).join('');
+  engineerSel.value = d.engineerId || '';
   
   // Load photos
   const preview = document.getElementById('device-photos-preview');
@@ -7323,6 +7303,7 @@ async function saveDevice(e) {
     problem: document.getElementById('device-problem').value.trim(),
     notes: document.getElementById('device-notes').value.trim(),
     status: document.getElementById('device-status-select').value,
+    engineerId: parseInt(document.getElementById('device-engineer').value) || null,
     parts: currentDeviceParts,
     extraExpenses: parseFloat(document.getElementById('device-extra-expenses').value) || 0,
     sellingPrice: parseFloat(document.getElementById('device-selling-price').value) || 0,
@@ -7531,6 +7512,7 @@ async function viewDevice(id) {
   
   const st = DEVICE_STATUSES[d.status] || {};
   const client = d.clientId ? await dbGet('clients', d.clientId) : null;
+  const engineer = d.engineerId ? await dbGet('engineers', d.engineerId) : null;
   const showPrices = canSeePrices();
   
   let html = `<div class="view-grid">
@@ -7542,6 +7524,7 @@ async function viewDevice(id) {
     <div class="view-item"><div class="view-label">تاريخ الدخول</div><div class="view-value">${formatDate(d.intakeDate)}</div></div>
     <div class="view-item"><div class="view-label">العميل</div><div class="view-value">${client?.name || d.clientName || '-'}</div></div>
     <div class="view-item"><div class="view-label">مصنع العميل</div><div class="view-value">${client?.factoryName || '-'}</div></div>
+    <div class="view-item"><div class="view-label">المهندس المسؤول</div><div class="view-value">${engineer ? `<span class="badge" style="background:rgba(108,60,233,0.1);color:var(--primary)">👷 ${engineer.name} (${engineer.specialty})</span>` : '-'}</div></div>
     <div class="view-item"><div class="view-label">الضمان</div><div class="view-value">${d.hasWarranty ? '<span class="badge badge-new">🛡️ ضمان ' + d.warrantyMonths + ' شهر</span>' : 'لا يوجد ضمان'}</div></div>
   </div>`;
   
