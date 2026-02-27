@@ -748,18 +748,22 @@ tr:hover { background: rgba(108,60,233,0.02); }
 /* ========== Invoice Items ========== */
 .invoice-items-container { max-height: 300px; overflow-y: auto; }
 .invoice-item-row {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 8px;
-  align-items: center;
   margin-bottom: 8px;
   padding: 10px;
   background: var(--bg);
   border-radius: var(--radius-sm);
 }
-.invoice-item-row select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: var(--bg-card); }
-.invoice-item-row input { flex: 1; min-width: 60px; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; text-align: center; background: var(--bg-card); box-sizing: border-box; }
-.invoice-item-row .inv-total { min-width: 70px; text-align: center; font-weight: 700; font-size: 13px; white-space: nowrap; }
+.invoice-item-row select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: var(--bg-card); box-sizing: border-box; }
+.invoice-item-row .inv-item-details {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.invoice-item-row input { flex: 1; min-width: 0; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; text-align: center; background: var(--bg-card); box-sizing: border-box; }
+.invoice-item-row .inv-total { min-width: 60px; text-align: center; font-weight: 700; font-size: 13px; white-space: nowrap; }
 
 .invoice-summary {
   margin-top: 16px;
@@ -6364,14 +6368,16 @@ function renderInvoiceItems() {
   
   container.innerHTML = currentInvoiceItems.map((item, idx) => `
     <div class="invoice-item-row">
-      <select class="inv-product-select" onchange="onInvoiceItemProductChange(${idx}, this)">
+      <select class="inv-product-select" data-enhanced="skip" onchange="onInvoiceItemProductChange(${idx}, this)">
         <option value="">اختر صنف</option>
         ${productsOptions}
       </select>
-      <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="الكمية" onchange="onInvoiceItemChange(${idx})">
-      <input type="number" class="inv-price" value="${item.unitPrice}" step="0.01" min="0" placeholder="السعر" onchange="onInvoiceItemChange(${idx})">
-      <span class="inv-total">${formatMoney(item.total)}</span>
-      <button class="btn-icon danger" onclick="removeInvoiceItem(${idx})"><i class='bx bx-trash'></i></button>
+      <div class="inv-item-details">
+        <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="الكمية" onchange="onInvoiceItemChange(${idx})">
+        <input type="number" class="inv-price" value="${item.unitPrice}" step="0.01" min="0" placeholder="السعر" onchange="onInvoiceItemChange(${idx})">
+        <span class="inv-total">${formatMoney(item.total)}</span>
+        <button class="btn-icon danger" onclick="removeInvoiceItem(${idx})"><i class='bx bx-trash'></i></button>
+      </div>
     </div>
   `).join('');
   
@@ -7051,7 +7057,7 @@ function renderDeviceParts() {
         <button class="btn-icon danger btn-sm" onclick="removeDevicePart(${idx})"><i class='bx bx-trash'></i></button>
       </div>
       ${part.fromStock ? `
-        <select onchange="onPartProductChange(${idx}, this.value)">
+        <select data-enhanced="skip" onchange="onPartProductChange(${idx}, this.value)">
           <option value="">اختر قطعة</option>
           ${productOptions}
         </select>
