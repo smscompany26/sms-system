@@ -3330,8 +3330,8 @@ function enhanceSelect(selectId, listKey, options = {}) {
   selectRow.appendChild(editBtn);
   
   // Intercept click to show custom bottom sheet
-  select.addEventListener('mousedown', (e) => { e.preventDefault(); openCustomSelect(select, listKey, options, labelText); });
-  select.addEventListener('touchstart', (e) => { e.preventDefault(); openCustomSelect(select, listKey, options, labelText); }, { passive: false });
+  select.addEventListener('click', (e) => { e.preventDefault(); openCustomSelect(select, listKey, options, labelText); });
+  select.addEventListener('mousedown', (e) => { e.preventDefault(); });
   
   // Other input area
   const otherDiv = document.createElement('div');
@@ -3741,39 +3741,25 @@ async function initDynamicLists() {
 function enhanceAllSelects() {
   document.querySelectorAll('select').forEach(select => {
     if (select.dataset.enhanced) return;
-    // All selects get the custom popup
     select.dataset.enhanced = '1';
     const label = select.closest('.form-group')?.querySelector('label');
     const labelText = label ? label.textContent.replace('*','').trim() : 'اختر';
-    select.addEventListener('mousedown', (e) => { e.preventDefault(); openStaticSelect(select, labelText); });
-    select.addEventListener('touchstart', (e) => { e.preventDefault(); openStaticSelect(select, labelText); }, { passive: false });
-    // Also intercept focus to prevent native dropdown on programmatic focus
+    select.addEventListener('click', (e) => { e.preventDefault(); openStaticSelect(select, labelText); });
+    select.addEventListener('mousedown', (e) => { e.preventDefault(); });
     select.addEventListener('focus', (e) => { e.preventDefault(); select.blur(); });
   });
 }
 
-// Global delegation: catch any select that slips through (mousedown to beat native)
-document.addEventListener('mousedown', (e) => {
+// Global delegation: catch any select that slips through
+document.addEventListener('click', (e) => {
   const select = e.target.closest('select');
   if (select && !select.dataset.enhanced) {
     e.preventDefault();
     const label = select.closest('.form-group')?.querySelector('label');
     const labelText = label ? label.textContent.replace('*','').trim() : 'اختر';
     select.dataset.enhanced = '1';
-    select.addEventListener('mousedown', (ev) => { ev.preventDefault(); openStaticSelect(select, labelText); });
-    select.addEventListener('touchstart', (ev) => { ev.preventDefault(); openStaticSelect(select, labelText); }, { passive: false });
-    openStaticSelect(select, labelText);
-  }
-}, true);
-document.addEventListener('touchstart', (e) => {
-  const select = e.target.closest('select');
-  if (select && !select.dataset.enhanced) {
-    e.preventDefault();
-    const label = select.closest('.form-group')?.querySelector('label');
-    const labelText = label ? label.textContent.replace('*','').trim() : 'اختر';
-    select.dataset.enhanced = '1';
-    select.addEventListener('mousedown', (ev) => { ev.preventDefault(); openStaticSelect(select, labelText); });
-    select.addEventListener('touchstart', (ev) => { ev.preventDefault(); openStaticSelect(select, labelText); }, { passive: false });
+    select.addEventListener('click', (ev) => { ev.preventDefault(); openStaticSelect(select, labelText); });
+    select.addEventListener('mousedown', (ev) => { ev.preventDefault(); });
     openStaticSelect(select, labelText);
   }
 }, true);
@@ -8933,11 +8919,13 @@ function generateRepairTimeline(device) {
   // Status changes (if available)
   if (device.repairHistory && device.repairHistory.length > 0) {
     device.repairHistory.forEach(entry => {
+      const actionLabels = { 'intake': 'استلام', 'diagnosis': 'فحص وتشخيص', 'repair': 'إصلاح', 'testing': 'اختبار', 'completed': 'اكتمال', 'delivered': 'تسليم' };
       timeline.push({
         date: entry.date,
-        title: entry.title,
-        content: entry.content,
-        engineer: entry.engineerId
+        title: entry.title || actionLabels[entry.action] || entry.action || 'تحديث',
+        content: entry.content || (entry.note ? `<div>${entry.note}</div>` : ''),
+        engineer: entry.engineerId,
+        engineerName: entry.engineerName
       });
     });
   }
@@ -8967,13 +8955,14 @@ function generateRepairTimeline(device) {
   // Generate HTML
   return timeline.map(entry => {
     const engineer = entry.engineer ? allEngineers.find(e => e.id === entry.engineer) : null;
+    const engName = engineer?.name || entry.engineerName || null;
     
     return `
       <div class="timeline-item">
         <div class="timeline-date">${formatDateTime(entry.date)}</div>
         <div class="timeline-title">${entry.title}</div>
         <div class="timeline-content">${entry.content}</div>
-        ${engineer ? `<div class="timeline-engineer">👷 ${engineer.name}</div>` : ''}
+        ${engName ? `<div class="timeline-engineer">👷 ${engName}</div>` : ''}
       </div>
     `;
   }).join('');
