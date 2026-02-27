@@ -749,16 +749,17 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .invoice-items-container { max-height: 300px; overflow-y: auto; }
 .invoice-item-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
   margin-bottom: 8px;
-  padding: 8px;
+  padding: 10px;
   background: var(--bg);
   border-radius: var(--radius-sm);
 }
-.invoice-item-row select { flex: 3; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: var(--bg-card); }
-.invoice-item-row input { flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; text-align: center; background: var(--bg-card); }
-.invoice-item-row .inv-total { flex: 1.5; text-align: center; font-weight: 700; font-size: 13px; white-space: nowrap; }
+.invoice-item-row select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: var(--bg-card); }
+.invoice-item-row input { flex: 1; min-width: 60px; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; text-align: center; background: var(--bg-card); box-sizing: border-box; }
+.invoice-item-row .inv-total { min-width: 70px; text-align: center; font-weight: 700; font-size: 13px; white-space: nowrap; }
 
 .invoice-summary {
   margin-top: 16px;
@@ -3508,7 +3509,7 @@ async function initDynamicLists() {
 function enhanceAllSelects() {
   document.querySelectorAll('select').forEach(select => {
     if (select.dataset.enhanced) return;
-    if (select.closest('.inv-item-row, .part-item')) return; // skip dynamic product selects in invoice/maintenance rows
+    if (select.closest('.inv-item-row, .part-item, .invoice-item-row, .part-row')) return; // skip dynamic product selects
     select.dataset.enhanced = '1';
     const label = select.closest('.form-group')?.querySelector('label');
     const labelText = label ? label.textContent.replace('*','').trim() : 'اختر';
@@ -3522,7 +3523,7 @@ function enhanceAllSelects() {
 // Global delegation: catch any select that slips through
 document.addEventListener('click', (e) => {
   const select = e.target.closest('select');
-  if (select && !select.dataset.enhanced && !select.closest('.inv-item-row, .part-item')) {
+  if (select && !select.dataset.enhanced && !select.closest('.inv-item-row, .part-item, .invoice-item-row, .part-row')) {
     e.preventDefault();
     const label = select.closest('.form-group')?.querySelector('label');
     const labelText = label ? label.textContent.replace('*','').trim() : 'اختر';
