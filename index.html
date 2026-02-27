@@ -3583,8 +3583,14 @@ async function loadDashboard() {
   const clients = await dbGetAll('clients');
   const suppliers = await dbGetAll('suppliers');
   
+  // Helper: normalize date to YYYY-MM-DD
+  function invDay(inv) {
+    if (!inv.date) return '';
+    return (inv.date || '').slice(0, 10);
+  }
+
   const today = new Date().toISOString().split('T')[0];
-  const todayInvoices = invoices.filter(i => i.date?.startsWith(today));
+  const todayInvoices = invoices.filter(i => invDay(i) === today);
   
   let salesToday = 0, purchasesToday = 0;
   todayInvoices.forEach(inv => {
@@ -3599,7 +3605,7 @@ async function loadDashboard() {
   // Weekly stats
   const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
   const weekStr = weekAgo.toISOString().split('T')[0];
-  const weekInvoices = invoices.filter(i => (i.date || '') >= weekStr);
+  const weekInvoices = invoices.filter(i => invDay(i) >= weekStr);
   let salesWeek = 0, purchasesWeek = 0, invoiceCountWeek = 0;
   weekInvoices.forEach(inv => {
     if (inv.type === 'sale') { salesWeek += (inv.total || 0); invoiceCountWeek++; }
@@ -3708,8 +3714,8 @@ function renderSalesPurchasesChart(invoices) {
   
   let maxVal = 1;
   const data = days.map(day => {
-    const s = invoices.filter(i => i.type === 'sale' && i.date?.startsWith(day)).reduce((sum, i) => sum + (i.total || 0), 0);
-    const p = invoices.filter(i => i.type === 'purchase' && i.date?.startsWith(day)).reduce((sum, i) => sum + (i.total || 0), 0);
+    const s = invoices.filter(i => i.type === 'sale' && (i.date||'').slice(0,10) === day).reduce((sum, i) => sum + (i.total || 0), 0);
+    const p = invoices.filter(i => i.type === 'purchase' && (i.date||'').slice(0,10) === day).reduce((sum, i) => sum + (i.total || 0), 0);
     maxVal = Math.max(maxVal, s, p);
     return { day, sales: s, purchases: p };
   });
@@ -3794,7 +3800,7 @@ function renderRevenueSparkline(invoices) {
     months.push(d.toISOString().slice(0, 7));
   }
   
-  const data = months.map(m => invoices.filter(i => i.type === 'sale' && i.date?.startsWith(m)).reduce((s, i) => s + (i.total || 0), 0));
+  const data = months.map(m => invoices.filter(i => i.type === 'sale' && (i.date||'').slice(0,7) === m).reduce((s, i) => s + (i.total || 0), 0));
   const maxVal = Math.max(...data, 1);
   
   container.innerHTML = `
