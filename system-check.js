@@ -1,7 +1,7 @@
 // System Control Client — kill-switch + trial management
 (function() {
   const SYSTEM_ID = 'sms-system';
-  const STATUS_URL = 'https://api.github.com/repos/smscompany26/system-control/contents/status.json';
+  const STATUS_URL = 'https://api.github.com/repos/smscompany26/system-status/contents/status.json';
   const CHECK_INTERVAL = 60000;
   
   async function fetchStatus() {
@@ -18,7 +18,7 @@
     } catch(e) {}
     // Fallback: raw URL
     try {
-      const res = await fetch('https://raw.githubusercontent.com/smscompany26/system-control/main/status.json?t=' + Date.now());
+      const res = await fetch('https://raw.githubusercontent.com/smscompany26/system-status/main/status.json?t=' + Date.now());
       if (res.ok) return await res.json();
     } catch(e) {}
     return null;
@@ -30,7 +30,8 @@
     
     const sys = data.systems && data.systems[SYSTEM_ID];
     if (!sys) return;
-    const owner = data.owner || {};
+    // Contact info encoded (not plaintext in public repo)
+    const owner = { label: (data.contact||{}).label || 'تواصل مع المطور' };
     
     // 1. Disabled permanently
     if (sys.status === 'disabled') {
@@ -110,9 +111,8 @@
         '<div class="blk-contact">' +
           '<div class="blk-contact-title">تواصل مع المطور</div>' +
           '<div class="blk-btns">' +
-            '<a href="https://wa.me/' + (owner.whatsapp||'').replace('+','') + '" target="_blank" class="blk-btn blk-wa">💬 واتساب</a>' +
-            '<a href="tel:' + (owner.phone||'') + '" class="blk-btn blk-call">📱 ' + (owner.phone||'') + '</a>' +
-            (owner.website ? '<a href="' + owner.website + '" target="_blank" class="blk-btn blk-web">🌐 الموقع</a>' : '') +
+            '<a href="https://wa.me/' + atob('MjAxMjI4MzcwODA5') + '?text=' + encodeURIComponent('مرحبا، أحتاج مساعدة بخصوص النظام') + '" target="_blank" class="blk-btn blk-wa">💬 واتساب</a>' +
+            '<a href="tel:' + atob('MDEyMjgzNzA4MDk=') + '" class="blk-btn blk-call">📱 اتصل بنا</a>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -166,7 +166,7 @@
         '<div style="font-size:13px;color:#d29922;margin-bottom:16px;">ينتهي في: ' + endDate.toLocaleDateString('ar-EG', {year:'numeric',month:'long',day:'numeric'}) + '</div>' +
         '<div class="tr-msg">' + (trial.message || 'للاستمرار في استخدام جميع المميزات، يرجى ترقية الاشتراك.') + '</div>' +
         '<div class="tr-btns">' +
-          '<a href="https://wa.me/' + (owner.whatsapp||'').replace('+','') + '" target="_blank" class="tr-btn tr-primary">ترقية الآن</a>' +
+          '<a href="https://wa.me/' + atob('MjAxMjI4MzcwODA5') + '?text=' + encodeURIComponent('أريد ترقية الاشتراك') + '" target="_blank" class="tr-btn tr-primary">ترقية الآن</a>' +
           '<button class="tr-btn tr-secondary" id="trial-close">لاحقاً</button>' +
         '</div>' +
       '</div>';
