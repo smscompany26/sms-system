@@ -4466,6 +4466,10 @@ function scheduleDriveSync() {
 }
 
 function reloadActivePage() {
+  // Don't reload while user has a modal/form open — it would reset their inputs
+  const openModal = document.querySelector('.modal.active');
+  if (openModal) return;
+  
   const hash = localStorage.getItem('sms_last_page') || 'dashboard';
   const page = hash.split('/')[0];
   try {
