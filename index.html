@@ -1713,16 +1713,14 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .repair-history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .repair-timeline-item { position: relative; }
 .repair-timeline-item .timeline-actions {
-  position: absolute; top: 8px; left: 8px; opacity: 0; transition: var(--transition);
-  display: flex; gap: 4px;
+  display: flex; gap: 6px; margin-top: 8px; justify-content: flex-end;
 }
-.repair-timeline-item:hover .timeline-actions { opacity: 1; }
 .timeline-action-btn {
-  background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 24px; height: 24px;
-  display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 6px; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px;
   color: var(--text-muted); transition: var(--transition);
 }
-.timeline-action-btn:hover { background: var(--primary); color: white; }
+.timeline-action-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
 .add-history-entry { margin-bottom: 20px; }
 
 /* ========== History Entry Form ========== */
@@ -9264,16 +9262,6 @@ function generateRepairTimeline(device) {
     
     return `
       <div class="timeline-item repair-timeline-item" style="animation-delay:${idx * 0.06}s">
-        ${isEditable ? `
-          <div class="timeline-actions">
-            <button class="timeline-action-btn" onclick="editHistoryEntry(${entry.historyIndex ?? -1}, ${idx})" title="تعديل">
-              <i class='bx bx-edit'></i>
-            </button>
-            <button class="timeline-action-btn" onclick="deleteHistoryEntry(${entry.historyIndex ?? -1}, ${idx})" title="حذف" style="color:var(--danger)">
-              <i class='bx bx-trash'></i>
-            </button>
-          </div>
-        ` : ''}
         <div class="tl-card type-${statusType}">
           <div class="tl-header">
             <span class="tl-title">${entry.title}</span>
@@ -9281,6 +9269,16 @@ function generateRepairTimeline(device) {
           </div>
           ${entry.content ? `<div class="tl-body">${entry.content}</div>` : ''}
           ${engName ? `<div class="tl-engineer"><i class='bx bx-wrench'></i> ${engName}</div>` : ''}
+          ${isEditable ? `
+            <div class="timeline-actions">
+              <button class="timeline-action-btn" onclick="editHistoryEntry(${entry.historyIndex ?? -1}, ${idx})" title="تعديل">
+                <i class='bx bx-edit'></i>
+              </button>
+              <button class="timeline-action-btn" onclick="deleteHistoryEntry(${entry.historyIndex ?? -1}, ${idx})" title="حذف" style="color:var(--danger)">
+                <i class='bx bx-trash'></i>
+              </button>
+            </div>
+          ` : ''}
         </div>
       </div>
     `;
