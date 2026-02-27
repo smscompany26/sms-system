@@ -424,6 +424,13 @@ input, select, textarea, button { font-family: var(--font); }
   max-height: 250px;
   overflow-y: auto;
 }
+.activity-tab {
+  flex: 1; padding: 8px 12px; border: none; background: none; font-family: var(--font);
+  font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -2px; transition: var(--transition);
+}
+.activity-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.activity-tab:hover { color: var(--primary); }
 .alert-item, .transaction-item {
   display: flex;
   align-items: center;
@@ -2010,9 +2017,16 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="dashboard-grid">
           <div class="card">
             <h3><i class='bx bx-history'></i> آخر الحركات</h3>
+            <div style="display:flex;gap:0;margin-bottom:12px;border-bottom:2px solid var(--border)">
+              <button class="activity-tab active" data-tab="operations" onclick="switchActivityTab('operations')">العمليات</button>
+              <button class="activity-tab" data-tab="logins" onclick="switchActivityTab('logins')">تسجيل الدخول</button>
+            </div>
             <div id="recent-transactions" class="transactions-list">
               <p class="empty-state">لا توجد حركات</p>
             </div>
+            <button id="show-all-activities-btn" class="btn btn-outline" style="width:100%;margin-top:8px;font-size:12px" onclick="navigate('settings');setTimeout(()=>document.getElementById('activity-log-list')?.scrollIntoView(),300)">
+              <i class='bx bx-list-ul'></i> عرض كل الحركات
+            </button>
           </div>
           <div class="card">
             <h3><i class='bx bx-rocket'></i> إجراءات سريعة</h3>
@@ -4836,13 +4850,34 @@ async function loadDashboard() {
   const alertsList = document.getElementById('alerts-list');
   alertsList.innerHTML = alertsHtml.length > 0 ? alertsHtml.join('') : '<p class="empty-state" style="padding:20px">لا توجد تنبيهات</p>';
   
-  // Recent activities (from activityLog — has username)
+  // Load activity logs and render based on current tab
+  window._allActivityLogs = (await dbGetAll('activityLog')).sort((a, b) => new Date(b.date) - new Date(a.date));
+  renderActivityTab(window._currentActivityTab || 'operations');
+}
+
+// ===== ACTIVITY TABS =====
+window._currentActivityTab = 'operations';
+
+function switchActivityTab(tab) {
+  window._currentActivityTab = tab;
+  document.querySelectorAll('.activity-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  renderActivityTab(tab);
+}
+
+function renderActivityTab(tab) {
   const recentList = document.getElementById('recent-transactions');
-  const logs = (await dbGetAll('activityLog')).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
-  if (logs.length > 0) {
-    recentList.innerHTML = logs.map(log => {
-      const iconMap = { 'stock_in': 'bx-plus-circle', 'stock_out': 'bx-minus-circle', 'login': 'bx-log-in', 'logout': 'bx-log-out', 'invoice_sale': 'bx-receipt', 'invoice_purchase': 'bx-cart-download', 'device_add': 'bx-wrench', 'device_edit': 'bx-edit', 'device_delete': 'bx-trash', 'product_add': 'bx-package', 'product_edit': 'bx-edit' };
-      const colorMap = { 'stock_in': 'color:var(--success)', 'stock_out': 'color:var(--danger)', 'login': 'color:var(--primary)', 'logout': 'color:var(--text-muted)', 'invoice_sale': 'color:var(--success)', 'invoice_purchase': 'color:var(--warning)', 'device_add': 'color:var(--accent)', 'device_delete': 'color:var(--danger)' };
+  const logs = window._allActivityLogs || [];
+  
+  const loginActions = ['login', 'logout'];
+  const filtered = tab === 'logins' 
+    ? logs.filter(l => loginActions.includes(l.action)).slice(0, 15)
+    : logs.filter(l => !loginActions.includes(l.action)).slice(0, 15);
+  
+  if (filtered.length > 0) {
+    const iconMap = { 'stock_in': 'bx-plus-circle', 'stock_out': 'bx-minus-circle', 'login': 'bx-log-in', 'logout': 'bx-log-out', 'invoice_sale': 'bx-receipt', 'invoice_purchase': 'bx-cart-download', 'device_add': 'bx-wrench', 'device_edit': 'bx-edit', 'device_delete': 'bx-trash', 'product_add': 'bx-package', 'product_edit': 'bx-edit' };
+    const colorMap = { 'stock_in': 'color:var(--success)', 'stock_out': 'color:var(--danger)', 'login': 'color:var(--primary)', 'logout': 'color:var(--text-muted)', 'invoice_sale': 'color:var(--success)', 'invoice_purchase': 'color:var(--warning)', 'device_add': 'color:var(--accent)', 'device_delete': 'color:var(--danger)' };
+    
+    recentList.innerHTML = filtered.map(log => {
       const icon = iconMap[log.action] || 'bx-history';
       const color = colorMap[log.action] || '';
       return `<div class="transaction-item">
@@ -4855,7 +4890,7 @@ async function loadDashboard() {
       </div>`;
     }).join('');
   } else {
-    recentList.innerHTML = '<p class="empty-state" style="padding:20px">لا توجد حركات بعد</p>';
+    recentList.innerHTML = `<p class="empty-state" style="padding:20px">${tab === 'logins' ? 'لا توجد عمليات تسجيل دخول' : 'لا توجد حركات'}</p>`;
   }
 }
 
