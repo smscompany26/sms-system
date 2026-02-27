@@ -1330,6 +1330,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -1559,15 +1560,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="chart-section-title" style="margin:0;"><i class='bx bx-chart'></i> تفاصيل الفترة</div>
             <div class="chart-toggle">
               <button class="toggle-btn active" data-view="line" onclick="toggleChartView('line')" title="رسم بياني"><i class='bx bx-line-chart'></i></button>
-              <button class="toggle-btn" data-view="bars" onclick="toggleChartView('bars')" title="أعمدة"><i class='bx bx-bar-chart-alt-2'></i></button>
+              <button class="toggle-btn" data-view="bar" onclick="toggleChartView('bar')" title="أعمدة"><i class='bx bx-bar-chart-alt-2'></i></button>
             </div>
           </div>
-          <canvas id="dash-sales-canvas" height="200" style="width:100%;display:block;"></canvas>
-          <div id="dash-sales-chart" class="h-bar-chart" style="display:none;"></div>
-          <div class="chart-legend">
-            <span><span class="legend-dot" style="background:var(--success);"></span> مبيعات</span>
-            <span><span class="legend-dot" style="background:var(--danger);"></span> مشتريات</span>
-          </div>
+          <div style="position:relative;height:280px;"><canvas id="salesChartCanvas"></canvas></div>
         </div>
 
         <!-- Maintenance -->
@@ -3755,6 +3751,7 @@ function getWarrantyAlerts(devices, clients) {
 // ===== DASHBOARD CHARTS =====
 window._chartView = 'line';
 window._currentPeriod = 'week';
+window._salesChart = null;
 
 function switchSalesPeriod(period) {
   window._currentPeriod = period;
@@ -3768,17 +3765,14 @@ function toggleChartView(view) {
   if (window._dashInvoices) renderSalesOverview(window._dashInvoices, window._currentPeriod);
 }
 
-// Hide year tab if system < 1 year old
 function checkYearTab() {
   const yearTab = document.querySelector('.period-tab[data-period="year"]');
   if (!yearTab) return;
-  // Check oldest invoice
   const invs = window._dashInvoices || [];
   if (invs.length === 0) { yearTab.style.display = 'none'; return; }
   const oldest = invs.reduce((min, i) => { const d = (i.date||''); return d < min ? d : min; }, invs[0].date || '');
   const daysDiff = (Date.now() - new Date(oldest).getTime()) / 86400000;
-  if (daysDiff < 365) yearTab.style.display = 'none';
-  else yearTab.style.display = '';
+  yearTab.style.display = daysDiff < 365 ? 'none' : '';
 }
 
 function renderSalesOverview(invoices, period) {
@@ -3874,203 +3868,121 @@ function renderSalesOverview(invoices, period) {
     });
   }
 
-  const canvas = document.getElementById('dash-sales-canvas');
-  const barsDiv = document.getElementById('dash-sales-chart');
+  // Render Chart.js
+  const canvas = document.getElementById('salesChartCanvas');
+  if (!canvas) return;
   
-  if (window._chartView === 'line') {
-    canvas.style.display = 'block';
-    barsDiv.style.display = 'none';
-    drawLineChart(canvas, data, maxVal);
-  } else {
-    canvas.style.display = 'none';
-    barsDiv.style.display = '';
-    barsDiv.innerHTML = data.map(d => {
-      const sW = Math.max(2, (d.sales / maxVal) * 100);
-      const pW = Math.max(2, (d.purchases / maxVal) * 100);
-      return `<div class="h-bar-row">
-        <span class="h-bar-label">${d.label}</span>
-        <div style="flex:1;display:flex;flex-direction:column;gap:3px">
-          <div class="h-bar-track"><div class="h-bar-fill sales" style="width:${sW}%">${d.sales > 0 ? formatMoney(d.sales) : ''}</div></div>
-          <div class="h-bar-track"><div class="h-bar-fill purchases" style="width:${pW}%">${d.purchases > 0 ? formatMoney(d.purchases) : ''}</div></div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-}
-
-function drawLineChart(canvas, data, maxVal) {
-  const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.parentElement.getBoundingClientRect();
-  const W = rect.width;
-  const H = 260;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
-  
-  const ctx = canvas.getContext('2d');
-  ctx.scale(dpr, dpr);
-  ctx.clearRect(0, 0, W, H);
-  
-  const padL = 50, padR = 15, padT = 30, padB = 50;
-  const chartW = W - padL - padR;
-  const chartH = H - padT - padB;
-  const n = data.length;
-  if (n === 0) return;
-  
-  // If all zeros, set maxVal to 100 for visual
-  if (maxVal <= 0) maxVal = 100;
-  // Add 20% padding to top
-  maxVal = maxVal * 1.2;
-  
-  const step = n > 1 ? chartW / (n - 1) : chartW;
-
-  // Background
-  ctx.fillStyle = 'rgba(13,17,23,0.5)';
-  ctx.beginPath();
-  ctx.roundRect(0, 0, W, H, 12);
-  ctx.fill();
-  
-  // Grid lines + Y labels
-  const gridSteps = 5;
-  for (let i = 0; i <= gridSteps; i++) {
-    const y = padT + (chartH / gridSteps) * i;
-    const val = maxVal - (maxVal / gridSteps) * i;
-    
-    // Grid line
-    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-    
-    // Y label
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
-    ctx.font = '11px Cairo, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'middle';
-    const label = val >= 1000 ? (val/1000).toFixed(1) + 'k' : Math.round(val);
-    ctx.fillText(label, padL - 8, y);
+  if (window._salesChart) {
+    window._salesChart.destroy();
+    window._salesChart = null;
   }
   
-  function getPoints(key) {
-    return data.map((d, i) => ({
-      x: padL + (n > 1 ? i * step : chartW / 2),
-      y: padT + chartH - (d[key] / maxVal) * chartH,
-      val: d[key]
-    }));
-  }
+  const labels = data.map(d => d.label);
+  const salesData = data.map(d => d.sales);
+  const purchData = data.map(d => d.purchases);
+  const chartType = window._chartView === 'bar' ? 'bar' : 'line';
   
-  function drawArea(points, color, alpha) {
-    if (points.every(p => p.val === 0)) return;
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
-    for (let i = 1; i < points.length; i++) {
-      const prev = points[i-1], curr = points[i];
-      const cpx = (prev.x + curr.x) / 2;
-      ctx.bezierCurveTo(cpx, prev.y, cpx, curr.y, curr.x, curr.y);
-    }
-    ctx.lineTo(points[points.length-1].x, padT + chartH);
-    ctx.lineTo(points[0].x, padT + chartH);
-    ctx.closePath();
-    const grad = ctx.createLinearGradient(0, padT, 0, padT + chartH);
-    grad.addColorStop(0, color.replace('1)', alpha + ')'));
-    grad.addColorStop(1, color.replace('1)', '0.01)'));
-    ctx.fillStyle = grad;
-    ctx.fill();
-  }
+  const salesDataset = {
+    label: 'المبيعات',
+    data: salesData,
+    borderColor: '#22c55e',
+    backgroundColor: chartType === 'line' ? 'rgba(34,197,94,0.1)' : 'rgba(34,197,94,0.7)',
+    borderWidth: chartType === 'line' ? 3 : 0,
+    fill: chartType === 'line',
+    tension: 0.4,
+    pointRadius: chartType === 'line' ? 5 : 0,
+    pointBackgroundColor: '#22c55e',
+    pointBorderColor: '#0d1117',
+    pointBorderWidth: 2,
+    pointHoverRadius: 7,
+    borderRadius: chartType === 'bar' ? 6 : 0,
+    order: 1,
+  };
   
-  function drawLine(points, color, width) {
-    if (points.every(p => p.val === 0)) return;
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
-    for (let i = 1; i < points.length; i++) {
-      const prev = points[i-1], curr = points[i];
-      const cpx = (prev.x + curr.x) / 2;
-      ctx.bezierCurveTo(cpx, prev.y, cpx, curr.y, curr.x, curr.y);
-    }
-    ctx.strokeStyle = color;
-    ctx.lineWidth = width;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    // Shadow
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 8;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-  }
+  const purchDataset = {
+    label: 'المشتريات',
+    data: purchData,
+    borderColor: '#ef4444',
+    backgroundColor: chartType === 'line' ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.7)',
+    borderWidth: chartType === 'line' ? 2.5 : 0,
+    fill: chartType === 'line',
+    tension: 0.4,
+    pointRadius: chartType === 'line' ? 4 : 0,
+    pointBackgroundColor: '#ef4444',
+    pointBorderColor: '#0d1117',
+    pointBorderWidth: 2,
+    pointHoverRadius: 6,
+    borderRadius: chartType === 'bar' ? 6 : 0,
+    order: 2,
+  };
   
-  function drawDotsAndValues(points, color, showAll) {
-    points.forEach((p, i) => {
-      // Dot
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-      ctx.fillStyle = '#0d1117';
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.fill();
-      
-      // Value label on dot (show if > 0)
-      if (p.val > 0 && (showAll || n <= 8 || i % 2 === 0 || i === n - 1)) {
-        const valText = p.val >= 1000 ? (p.val/1000).toFixed(1) + 'k' : Math.round(p.val).toString();
-        ctx.font = 'bold 10px Cairo, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        
-        // Background pill for value
-        const tw = ctx.measureText(valText).width + 8;
-        const tx = p.x;
-        const ty = p.y - 10;
-        ctx.fillStyle = 'rgba(13,17,23,0.85)';
-        ctx.beginPath();
-        ctx.roundRect(tx - tw/2, ty - 12, tw, 16, 4);
-        ctx.fill();
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
-        
-        ctx.fillStyle = color;
-        ctx.fillText(valText, tx, ty + 2);
+  window._salesChart = new Chart(canvas, {
+    type: chartType,
+    data: { labels, datasets: [salesDataset, purchDataset] },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          rtl: true,
+          labels: {
+            color: 'rgba(255,255,255,0.6)',
+            font: { family: 'Cairo', size: 12, weight: '600' },
+            padding: 20,
+            usePointStyle: true,
+            pointStyle: 'circle',
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(13,17,23,0.95)',
+          titleColor: '#e6edf3',
+          bodyColor: '#e6edf3',
+          titleFont: { family: 'Cairo', size: 13, weight: '700' },
+          bodyFont: { family: 'Cairo', size: 12 },
+          padding: 12,
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          cornerRadius: 10,
+          displayColors: true,
+          rtl: true,
+          callbacks: {
+            label: function(ctx) {
+              return ctx.dataset.label + ': ' + formatMoney(ctx.parsed.y);
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+          ticks: {
+            color: 'rgba(255,255,255,0.5)',
+            font: { family: 'Cairo', size: 11, weight: '600' },
+            maxRotation: 0,
+          },
+          border: { display: false },
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+          ticks: {
+            color: 'rgba(255,255,255,0.4)',
+            font: { family: 'Cairo', size: 11 },
+            callback: function(val) { return val >= 1000 ? (val/1000).toFixed(0) + 'k' : val; },
+            maxTicksLimit: 6,
+          },
+          border: { display: false },
+        }
+      },
+      animation: {
+        duration: 600,
+        easing: 'easeInOutQuart',
       }
-    });
-  }
-  
-  const salesPts = getPoints('sales');
-  const purchPts = getPoints('purchases');
-  const salesColor = 'rgba(34,197,94,1)';
-  const purchColor = 'rgba(239,68,68,1)';
-  
-  // Draw areas (behind)
-  drawArea(salesPts, salesColor, 0.2);
-  drawArea(purchPts, purchColor, 0.12);
-  
-  // Draw lines
-  drawLine(purchPts, purchColor, 2);
-  drawLine(salesPts, salesColor, 2.5);
-  
-  // Draw dots + values (sales on top)
-  drawDotsAndValues(purchPts, purchColor, false);
-  drawDotsAndValues(salesPts, salesColor, true);
-  
-  // X labels
-  ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  ctx.font = 'bold 11px Cairo, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'top';
-  data.forEach((d, i) => {
-    if (n > 10 && i % 2 !== 0 && i !== n - 1) return;
-    const x = padL + (n > 1 ? i * step : chartW / 2);
-    ctx.fillText(d.label, x, padT + chartH + 10);
+    }
   });
-  
-  // Empty state
-  if (data.every(d => d.sales === 0 && d.purchases === 0)) {
-    ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.font = '14px Cairo, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('لا توجد بيانات لهذه الفترة', W / 2, H / 2);
-  }
 }
 
 function renderMaintenanceDonut(devices) {
