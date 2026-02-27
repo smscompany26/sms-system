@@ -2545,7 +2545,15 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <h3><i class='bx bx-bot'></i> إعدادات Telegram Bot</h3>
           <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px">التوكن مشترك — كل مستلم يتم إضافته بـ Chat ID خاص</p>
           <div class="form-group"><label>Bot Token</label><input type="text" id="telegram-bot-token" dir="ltr" placeholder="123456:ABC..."></div>
-          <button class="btn btn-primary" onclick="saveBotToken()" style="margin-top:8px"><i class='bx bx-save'></i> حفظ التوكن</button>
+          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="saveBotToken()"><i class='bx bx-save'></i> حفظ التوكن</button>
+            <button class="btn btn-outline" onclick="fetchChatIds()"><i class='bx bx-refresh'></i> جلب Chat IDs</button>
+          </div>
+          <div id="fetched-chat-ids" style="display:none;margin-top:12px"></div>
+          <div class="alert-warning" style="margin-top:12px;padding:10px;border-radius:8px;font-size:12px">
+            <i class='bx bx-info-circle'></i> <strong>كيف يحصل المستلم على Chat ID؟</strong><br>
+            يبعت أي رسالة للبوت على Telegram (مثلاً /start) → ثم دوس "جلب Chat IDs" هنا → هيظهر الـ Chat ID تلقائي
+          </div>
         </div>
 
         <div class="card">
@@ -9792,6 +9800,68 @@ async function saveBotToken() {
   telegram.value.botToken = token;
   await dbPut('settings', telegram);
   toast('تم حفظ التوكن ✅');
+}
+
+async function fetchChatIds() {
+  const token = document.getElementById('telegram-bot-token').value.trim();
+  if (!token) return toast('أدخل التوكن أولاً', 'warning');
+  
+  try {
+    const resp = await fetch(`https://api.telegram.org/bot${token}/getUpdates`);
+    const data = await resp.json();
+    
+    if (!data.ok) return toast('فشل — تأكد من التوكن', 'error');
+    
+    const chats = {};
+    (data.result || []).forEach(update => {
+      const msg = update.message || update.my_chat_member?.chat;
+      if (msg) {
+        const chat = msg.chat || msg;
+        const name = chat.first_name ? `${chat.first_name} ${chat.last_name || ''}`.trim() : chat.title || 'مجهول';
+        chats[chat.id] = { id: chat.id, name, username: chat.username || '' };
+      }
+    });
+    
+    const chatList = Object.values(chats);
+    const container = document.getElementById('fetched-chat-ids');
+    
+    if (chatList.length === 0) {
+      container.style.display = 'block';
+      container.innerHTML = '<div style="padding:10px;background:var(--bg);border-radius:8px;font-size:13px;color:var(--text-muted)">لا توجد رسائل جديدة. اطلب من المستلم يبعت /start للبوت وجرب تاني</div>';
+      return;
+    }
+    
+    container.style.display = 'block';
+    container.innerHTML = `
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px">الأشخاص اللي بعتوا للبوت:</div>
+      ${chatList.map(c => `
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border-radius:8px;margin-bottom:6px">
+          <i class='bx bx-user' style="font-size:18px;color:var(--primary)"></i>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:13px">${c.name}</div>
+            ${c.username ? `<div style="font-size:11px;color:var(--text-muted)">@${c.username}</div>` : ''}
+          </div>
+          <div style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:700">${c.id}</div>
+          <button class="btn btn-primary btn-sm" onclick="useChatId('${c.id}', '${c.name.replace(/'/g, '')}')" style="font-size:11px;padding:4px 10px">استخدام</button>
+        </div>
+      `).join('')}
+    `;
+    
+    toast(`تم العثور على ${chatList.length} محادثة`);
+  } catch(e) {
+    toast('خطأ في الاتصال', 'error');
+  }
+}
+
+function useChatId(chatId, name) {
+  document.getElementById('recipient-chat-id').value = chatId;
+  document.getElementById('recipient-name').value = name;
+  openAddRecipient();
+  setTimeout(() => {
+    document.getElementById('recipient-chat-id').value = chatId;
+    document.getElementById('recipient-name').value = name;
+  }, 100);
+  toast(`تم نسخ Chat ID: ${chatId}`);
 }
 
 async function testRecipient() {
