@@ -3698,6 +3698,16 @@ async function initDynamicLists() {
       return map[label] || label;
     }
   });
+  
+  // Engineer specialty dropdown
+  enhanceSelect('engineer-specialty', 'engineer-specialties', {
+    includeEmpty: false
+  });
+
+  // New engineer inline specialty dropdown
+  enhanceSelect('new-engineer-specialty', 'engineer-specialties', {
+    includeEmpty: false
+  });
 }
 
 // Enhance ALL remaining native selects with glassmorphic popup
@@ -5876,6 +5886,108 @@ function fileToBase64(file) {
   });
 }
 
+// ============ INVOICE PHOTO PREVIEW ============
+function previewInvoicePhotos(input) {
+  const preview = document.getElementById('invoice-photos-preview');
+  preview.innerHTML = '';
+  
+  if (input.files && input.files.length > 0) {
+    Array.from(input.files).forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const photoDiv = document.createElement('div');
+        photoDiv.style.cssText = 'position:relative;display:inline-block;margin:4px;border:2px solid var(--border);border-radius:8px;overflow:hidden;';
+        photoDiv.innerHTML = `
+          <img src="${e.target.result}" style="width:80px;height:80px;object-fit:cover;display:block;">
+          <button type="button" onclick="removeInvoicePhotoPreview(${index})" 
+                  style="position:absolute;top:2px;right:2px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+        `;
+        preview.appendChild(photoDiv);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+}
+
+function removeInvoicePhotoPreview(index) {
+  const fileInput = document.getElementById('invoice-photos');
+  const dt = new DataTransfer();
+  
+  // Re-add all files except the one to remove
+  Array.from(fileInput.files).forEach((file, i) => {
+    if (i !== index) dt.items.add(file);
+  });
+  
+  fileInput.files = dt.files;
+  previewInvoicePhotos(fileInput);
+}
+
+// ============ FULL SIZE PHOTO VIEWER ============
+function viewFullSizePhoto(photoBase64, index) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    cursor: pointer;
+  `;
+  
+  const img = document.createElement('img');
+  img.src = photoBase64;
+  img.style.cssText = `
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: 8px;
+  `;
+  
+  const closeBtn = document.createElement('button');
+  closeBtn.innerHTML = '×';
+  closeBtn.style.cssText = `
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `;
+  
+  overlay.appendChild(img);
+  overlay.appendChild(closeBtn);
+  document.body.appendChild(overlay);
+  
+  // Close on click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay || e.target === closeBtn) {
+      document.body.removeChild(overlay);
+    }
+  });
+  
+  // Close on escape key
+  const handleKeydown = (e) => {
+    if (e.key === 'Escape') {
+      document.body.removeChild(overlay);
+      document.removeEventListener('keydown', handleKeydown);
+    }
+  };
+  document.addEventListener('keydown', handleKeydown);
+}
+
 // ============ IMPORT/EXPORT ============
 function openImportExport() {
   openModal('modal-import-export');
@@ -6551,6 +6663,10 @@ async function editInvoice(id) {
   
   renderInvoiceItems();
   updateInvoiceTotals();
+  
+  // Load existing photos
+  loadExistingInvoicePhotos(inv.photos);
+  
   openModal('modal-invoice');
 }
 
@@ -6864,6 +6980,20 @@ async function viewInvoice(id) {
       <div><span>المتبقي:</span><strong style="color:${inv.total - (inv.paidAmount||0) > 0 ? 'var(--danger)' : 'var(--success)'}">${formatMoney(inv.total - (inv.paidAmount || 0))}</strong></div>
     </div>
     ${inv.notes ? `<p style="margin-top:12px"><strong>ملاحظات:</strong> ${inv.notes}</p>` : ''}
+    
+    ${inv.photos && inv.photos.length > 0 ? `
+    <div style="margin-top:16px">
+      <h4 style="font-size:14px;margin-bottom:8px;color:var(--text-muted)"><i class='bx bx-camera'></i> الصور المرفقة (${inv.photos.length})</h4>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+        ${inv.photos.map((photo, index) => `
+          <div style="position:relative;border:2px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer" onclick="viewFullSizePhoto('${photo}', ${index})">
+            <img src="${photo}" style="width:80px;height:80px;object-fit:cover;display:block;" title="انقر للعرض بالحجم الكامل">
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : ''}
+    
     <div style="text-align:center;margin-top:20px">
       <div id="invoice-qr" style="display:inline-block"></div>
     </div>
