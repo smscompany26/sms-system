@@ -9259,17 +9259,17 @@ function generateRepairTimeline(device) {
     const typeMap = { 'استلام الجهاز': 'intake', 'استلام': 'intake', 'intake': 'intake', 'فحص وتشخيص': 'diagnosis', 'diagnosis': 'diagnosis', 'إصلاح': 'repair', 'repair': 'repair', 'اختبار': 'testing', 'testing': 'testing', 'اكتمال': 'completed', 'completed': 'completed', 'تسليم': 'delivered', 'delivered': 'delivered', 'انتهاء الصيانة': 'completed', 'تسليم الجهاز للعميل': 'delivered', 'اكتمال العملية': 'completed', 'تحديث الحالة': 'default' };
     const statusType = typeMap[entry.title] || 'default';
     
-    // Check if this is an editable entry (admin only)
-    const isEditable = isAdmin() && entry.historyIndex !== undefined;
+    // Admin can edit/delete all entries except auto-generated intake
+    const isEditable = isAdmin() && idx > 0;
     
     return `
       <div class="timeline-item repair-timeline-item" style="animation-delay:${idx * 0.06}s">
         ${isEditable ? `
           <div class="timeline-actions">
-            <button class="timeline-action-btn" onclick="editHistoryEntry(${entry.historyIndex})" title="تعديل">
+            <button class="timeline-action-btn" onclick="editHistoryEntry(${entry.historyIndex ?? -1}, ${idx})" title="تعديل">
               <i class='bx bx-edit'></i>
             </button>
-            <button class="timeline-action-btn" onclick="deleteHistoryEntry(${entry.historyIndex})" title="حذف" style="color:var(--danger)">
+            <button class="timeline-action-btn" onclick="deleteHistoryEntry(${entry.historyIndex ?? -1}, ${idx})" title="حذف" style="color:var(--danger)">
               <i class='bx bx-trash'></i>
             </button>
           </div>
