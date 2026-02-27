@@ -4293,6 +4293,7 @@ let syncReady = false;
 let autoPullInterval = null;
 let lastPullTime = 0;
 let lastPushTime = 0;
+const _recentlyDeleted = {}; // { 'storeName': Set of deleted IDs } — prevents pull from restoring
 let isPushing = false;
 let isPulling = false;
 let lastRemoteTs = null;
@@ -4449,8 +4450,15 @@ async function silentPull() {
       if (JSON.stringify(row.data) === JSON.stringify(local)) continue;
       // Don't overwrite with empty if local has data (safety)
       if (row.data.length === 0 && local.length > 0) continue;
+      // Filter out recently deleted items
+      const deletedSet = _recentlyDeleted[row.store_name];
+      let pullData = row.data;
+      if (deletedSet && deletedSet.size > 0) {
+        const keyPath = STORES[row.store_name]?.keyPath || 'id';
+        pullData = row.data.filter(r => !deletedSet.has(r[keyPath]));
+      }
       await dbClear(row.store_name);
-      for (const r of row.data) { try { await _origDbPut(row.store_name, r); } catch(e) { console.warn('Pull add error:', row.store_name, e); } }
+      for (const r of pullData) { try { await _origDbPut(row.store_name, r); } catch(e) {} }
       changed = true;
     }
     
@@ -4558,6 +4566,12 @@ dbPut = async function(store, data) {
 };
 
 dbDelete = async function(store, id) {
+  // Track deletion to prevent pull from restoring
+  if (!_recentlyDeleted[store]) _recentlyDeleted[store] = new Set();
+  _recentlyDeleted[store].add(id);
+  // Clear from tracking after 30 seconds (push should be done by then)
+  setTimeout(() => _recentlyDeleted[store]?.delete(id), 30000);
+  
   const result = await _origDbDelete(store, id);
   scheduleDriveSync();
   return result;
@@ -6082,10 +6096,14 @@ async function deleteProduct(id) {
   const p = await dbGet('products', id);
   if (!confirm(`حذف الصنف "${p?.name}"؟`)) return;
   
+  // Instant hide
+  allProducts = allProducts.filter(pr => pr.id !== id);
+  renderProducts(allProducts);
+  toast('تم حذف الصنف');
+  
+  // Background delete + sync
   await dbDelete('products', id);
   await logActivity('delete_product', `حذف صنف: ${p?.name}`);
-  toast('تم حذف الصنف');
-  await loadInventory();
 }
 
 // ============ VIEW PRODUCT ============
@@ -7470,19 +7488,21 @@ async function bulkDeleteInvoices(type) {
   
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   
+  // Instant hide from UI
+  allInvoices = allInvoices.filter(inv => !ids.includes(inv.id));
+  if (type === 'sale') renderSalesInvoices();
+  else renderPurchaseInvoices();
+  toast(`تم حذف ${ids.length} فاتورة`);
+  
+  // Background: reverse stock + delete + sync
   for (const id of ids) {
     try {
       const inv = await dbGet('invoices', id);
       if (inv?.items) await reverseStockChanges(inv);
       await dbDelete('invoices', id);
-    } catch(e) { console.warn('Bulk delete error:', id, e); }
+    } catch(e) {}
   }
-  
-  allInvoices = allInvoices.filter(inv => !ids.includes(inv.id));
   await updateBalances();
-  toast(`تم حذف ${ids.length} فاتورة`);
-  if (type === 'sale') renderSalesInvoices();
-  else renderPurchaseInvoices();
 }
 
 async function bulkDeleteProducts() {
@@ -7504,16 +7524,16 @@ async function deleteInvoice(id) {
   const inv = await dbGet('invoices', id);
   if (!confirm(`حذف الفاتورة ${inv?.number}؟`)) return;
   
-  // Reverse stock
-  if (inv?.items) await reverseStockChanges(inv);
-  
-  await dbDelete('invoices', id);
-  await updateBalances();
-  toast('تم حذف الفاتورة');
-  
-  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
+  // Instant hide from UI
+  allInvoices = allInvoices.filter(i => i.id !== id);
   renderSalesInvoices();
   renderPurchaseInvoices();
+  toast('تم حذف الفاتورة');
+  
+  // Background: reverse stock + delete + sync
+  if (inv?.items) await reverseStockChanges(inv);
+  await dbDelete('invoices', id);
+  await updateBalances();
 }
 
 // ============ PAYMENT ============
