@@ -2334,7 +2334,8 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
         </div>
 
-        <div class="card table-card">
+        <!-- Table View -->
+        <div class="card table-card" id="devices-table-container">
           <div class="table-responsive">
             <table id="devices-table">
               <thead><tr>
@@ -2344,6 +2345,18 @@ tr:hover { background: rgba(108,60,233,0.02); }
             </table>
           </div>
           <div id="devices-empty" class="empty-state">
+            <i class='bx bx-wrench' style="font-size:48px;color:#ccc"></i>
+            <p>لا توجد أجهزة في الصيانة</p>
+            <button class="btn btn-primary" onclick="openNewDevice()">إذن استلام أول جهاز</button>
+          </div>
+        </div>
+
+        <!-- Cards View -->
+        <div class="devices-cards-container" id="devices-cards-container">
+          <div class="devices-cards-grid" id="devices-cards-grid">
+            <!-- Cards will be populated here -->
+          </div>
+          <div id="devices-cards-empty" class="empty-state" style="display:none;">
             <i class='bx bx-wrench' style="font-size:48px;color:#ccc"></i>
             <p>لا توجد أجهزة في الصيانة</p>
             <button class="btn btn-primary" onclick="openNewDevice()">إذن استلام أول جهاز</button>
@@ -3059,7 +3072,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
 <!-- Repair History Modal -->
 <div id="modal-repair-history" class="modal">
-  <div class="modal-content" style="max-width:600px">
+  <div class="modal-content" style="max-width:900px">
     <div class="modal-header">
       <h3 id="repair-history-title">تاريخ الصيانة</h3>
       <button class="modal-close" onclick="closeModal('modal-repair-history')">&times;</button>
@@ -3071,6 +3084,51 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <span><strong>الجهاز:</strong> <span id="history-device-name"></span></span>
           <span><strong>العميل:</strong> <span id="history-client-name"></span></span>
           <span><strong>الدخول:</strong> <span id="history-intake-date"></span></span>
+        </div>
+      </div>
+
+      <!-- Add Entry Button -->
+      <div class="add-history-entry" style="padding:16px;">
+        <button class="btn btn-primary" onclick="showAddHistoryForm()">
+          <i class='bx bx-plus'></i> إضافة سجل
+        </button>
+      </div>
+
+      <!-- Add/Edit History Entry Form -->
+      <div id="history-entry-form" class="history-entry-form" style="display:none;margin:0 16px;">
+        <input type="hidden" id="history-entry-index">
+        <div class="history-form-grid">
+          <div class="form-group">
+            <label>التاريخ</label>
+            <input type="datetime-local" id="history-entry-date" class="form-input">
+          </div>
+          <div class="form-group">
+            <label>نوع الإجراء</label>
+            <select id="history-entry-action" class="form-input">
+              <option value="استلام">استلام</option>
+              <option value="فحص">فحص</option>
+              <option value="إصلاح">إصلاح</option>
+              <option value="اختبار">اختبار</option>
+              <option value="تسليم">تسليم</option>
+              <option value="أخرى">أخرى</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>الوصف / الملاحظات</label>
+          <textarea id="history-entry-note" class="form-input" rows="3" placeholder="اكتب الوصف أو الملاحظات..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>المهندس</label>
+          <select id="history-entry-engineer" class="form-input">
+            <option value="">-- اختر المهندس --</option>
+            <!-- Will be populated dynamically -->
+            <option value="__other__">مهندس آخر...</option>
+          </select>
+        </div>
+        <div class="form-actions" style="display:flex;gap:8px;margin-top:12px;">
+          <button class="btn btn-primary" onclick="saveHistoryEntry()">حفظ</button>
+          <button class="btn btn-outline" onclick="cancelHistoryEntry()">إلغاء</button>
         </div>
       </div>
       
@@ -7512,6 +7570,10 @@ async function loadMaintenancePage() {
   allProducts = await dbGetAll('products');
   renderDevicesTable();
   updateMaintenanceStats();
+  
+  // Restore view preference
+  const viewPreference = localStorage.getItem('devicesViewPreference') || 'list';
+  switchDevicesView(viewPreference);
 }
 
 function renderDevicesTable(filter) {
@@ -7528,10 +7590,10 @@ function renderDevicesTable(filter) {
   if (devices.length === 0) {
     table.style.display = 'none';
     empty.style.display = 'block';
-    return;
+  } else {
+    table.style.display = '';
+    empty.style.display = 'none';
   }
-  table.style.display = '';
-  empty.style.display = 'none';
   
   tbody.innerHTML = devices.map(d => {
     const st = DEVICE_STATUSES[d.status] || DEVICE_STATUSES.under_repair;
@@ -7556,6 +7618,12 @@ function renderDevicesTable(filter) {
       </td>
     </tr>`;
   }).join('');
+
+  // Also update cards view if active
+  const cardsContainer = document.getElementById('devices-cards-container');
+  if (cardsContainer && cardsContainer.classList.contains('active')) {
+    renderDevicesCards(filter);
+  }
 }
 
 function updateMaintenanceStats() {
@@ -7570,6 +7638,105 @@ function updateMaintenanceStats() {
   // Update dashboard maintenance stat
   const dashStat = document.getElementById('stat-maintenance');
   if (dashStat) dashStat.textContent = counts.under_repair;
+}
+
+// ============ VIEW TOGGLE ============
+function switchDevicesView(view) {
+  const preference = localStorage.getItem('devicesViewPreference') || 'list';
+  const newView = view || preference;
+  
+  const listBtn = document.getElementById('list-view-btn');
+  const cardBtn = document.getElementById('card-view-btn');
+  const tableContainer = document.getElementById('devices-table-container');
+  const cardsContainer = document.getElementById('devices-cards-container');
+  
+  if (newView === 'cards') {
+    listBtn.classList.remove('active');
+    cardBtn.classList.add('active');
+    tableContainer.style.display = 'none';
+    cardsContainer.classList.add('active');
+    cardsContainer.style.display = 'block';
+    renderDevicesCards();
+  } else {
+    listBtn.classList.add('active');
+    cardBtn.classList.remove('active');
+    tableContainer.style.display = 'block';
+    cardsContainer.classList.remove('active');
+    cardsContainer.style.display = 'none';
+  }
+  
+  localStorage.setItem('devicesViewPreference', newView);
+}
+
+function renderDevicesCards(filter) {
+  let devices = allDevices.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  
+  if (filter && filter !== 'all') {
+    devices = devices.filter(d => d.status === filter);
+  }
+  
+  const cardsGrid = document.getElementById('devices-cards-grid');
+  const cardsEmpty = document.getElementById('devices-cards-empty');
+  const cardsContainer = document.getElementById('devices-cards-container');
+  
+  if (devices.length === 0) {
+    cardsGrid.style.display = 'none';
+    cardsEmpty.style.display = 'block';
+    return;
+  }
+  cardsGrid.style.display = 'grid';
+  cardsEmpty.style.display = 'none';
+  
+  cardsGrid.innerHTML = devices.map(d => {
+    const st = DEVICE_STATUSES[d.status] || DEVICE_STATUSES.under_repair;
+    const client = allClients.find(c => c.id === d.clientId);
+    const engineer = allEngineers.find(e => e.id === d.engineerId);
+    
+    return `
+      <div class="device-card">
+        <div class="device-card-header">
+          <div>
+            <h3 class="device-card-title">${d.deviceName}</h3>
+            <div class="device-card-order">رقم الأمر: <strong>${d.orderNumber}</strong></div>
+            ${d.hasWarranty ? `<div class="badge" style="background:rgba(34,197,94,0.1);color:var(--success);font-size:10px;margin-top:4px;display:inline-block">🛡️ ضمان ${d.warrantyMonths} شهر</div>` : ''}
+          </div>
+          <span class="badge device-card-status" style="background:${st.bg};color:${st.color}">${st.label}</span>
+        </div>
+        
+        <div class="device-card-body">
+          <div class="device-card-info">
+            <div class="device-card-field">
+              <strong>العميل</strong>
+              <span>${client?.name || d.clientName || '-'}</span>
+            </div>
+            <div class="device-card-field">
+              <strong>المهندس</strong>
+              <span>${engineer ? engineer.name : '-'}</span>
+            </div>
+            <div class="device-card-field">
+              <strong>تاريخ الدخول</strong>
+              <span>${formatDate(d.intakeDate)}</span>
+            </div>
+            <div class="device-card-field">
+              <strong>السعر</strong>
+              <span>${canSeePrices() ? formatMoney(d.sellingPrice || 0) : '—'}</span>
+            </div>
+          </div>
+          
+          ${d.problem ? `<div class="device-card-problem"><strong>المشكلة:</strong> ${d.problem}</div>` : ''}
+        </div>
+        
+        <div class="device-card-actions">
+          <button class="btn-icon" title="عرض" onclick="viewDevice(${d.id})"><i class='bx bx-show'></i></button>
+          <button class="btn-icon" title="تعديل" onclick="editDevice(${d.id})"><i class='bx bx-edit'></i></button>
+          <button class="btn-icon" title="تاريخ الصيانة" onclick="viewRepairHistory(${d.id})"><i class='bx bx-history'></i></button>
+          <button class="btn-icon" title="QR Code" onclick="showDeviceQR(${d.id})"><i class='bx bx-qr'></i></button>
+          ${d.status !== 'completed' ? `<button class="btn-icon" title="تغيير الحالة" onclick="changeDeviceStatus(${d.id})"><i class='bx bx-transfer'></i></button>` : ''}
+          <button class="btn-icon danger" title="حذف" onclick="deleteDevice(${d.id})"><i class='bx bx-trash'></i></button>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 // ============ DEVICE INTAKE ============
@@ -9001,6 +9168,9 @@ async function viewRepairHistory(deviceId) {
   const device = await dbGet('devices', deviceId);
   if (!device) return;
   
+  // Store current device for editing functions
+  currentDeviceForHistory = device;
+  
   const client = allClients.find(c => c.id === device.clientId);
   
   // Populate device info
@@ -9033,14 +9203,16 @@ function generateRepairTimeline(device) {
   
   // Status changes (if available)
   if (device.repairHistory && device.repairHistory.length > 0) {
-    device.repairHistory.forEach(entry => {
+    device.repairHistory.forEach((entry, index) => {
       const actionLabels = { 'intake': 'استلام', 'diagnosis': 'فحص وتشخيص', 'repair': 'إصلاح', 'testing': 'اختبار', 'completed': 'اكتمال', 'delivered': 'تسليم' };
       timeline.push({
         date: entry.date,
         title: entry.title || actionLabels[entry.action] || entry.action || 'تحديث',
         content: entry.content || (entry.note ? `<div>${entry.note}</div>` : ''),
         engineer: entry.engineerId,
-        engineerName: entry.engineerName
+        engineerName: entry.engineerName,
+        isEditable: true,
+        historyIndex: index
       });
     });
   }
@@ -9074,8 +9246,21 @@ function generateRepairTimeline(device) {
     const typeMap = { 'استلام الجهاز': 'intake', 'استلام': 'intake', 'intake': 'intake', 'فحص وتشخيص': 'diagnosis', 'diagnosis': 'diagnosis', 'إصلاح': 'repair', 'repair': 'repair', 'اختبار': 'testing', 'testing': 'testing', 'اكتمال': 'completed', 'completed': 'completed', 'تسليم': 'delivered', 'delivered': 'delivered', 'انتهاء الصيانة': 'completed', 'تسليم الجهاز للعميل': 'delivered', 'اكتمال العملية': 'completed', 'تحديث الحالة': 'default' };
     const statusType = typeMap[entry.title] || 'default';
     
+    // Check if this is an editable entry (from repairHistory array)
+    const isEditable = entry.isEditable !== false && entry.title !== 'استلام الجهاز'; // Don't allow editing the intake entry
+    
     return `
-      <div class="timeline-item" style="animation-delay:${idx * 0.06}s">
+      <div class="timeline-item repair-timeline-item" style="animation-delay:${idx * 0.06}s">
+        ${isEditable ? `
+          <div class="timeline-actions">
+            <button class="timeline-action-btn" onclick="editHistoryEntry(${entry.historyIndex})" title="تعديل">
+              <i class='bx bx-edit'></i>
+            </button>
+            <button class="timeline-action-btn" onclick="deleteHistoryEntry(${entry.historyIndex})" title="حذف" style="color:var(--danger)">
+              <i class='bx bx-trash'></i>
+            </button>
+          </div>
+        ` : ''}
         <div class="tl-card type-${statusType}">
           <div class="tl-header">
             <span class="tl-title">${entry.title}</span>
@@ -9087,6 +9272,142 @@ function generateRepairTimeline(device) {
       </div>
     `;
   }).join('');
+}
+
+// ============ EDITABLE REPAIR HISTORY ============
+let currentDeviceForHistory = null;
+
+function showAddHistoryForm() {
+  const form = document.getElementById('history-entry-form');
+  const indexField = document.getElementById('history-entry-index');
+  
+  // Reset form
+  document.getElementById('history-entry-date').value = new Date().toISOString().slice(0, 16);
+  document.getElementById('history-entry-action').value = 'إصلاح';
+  document.getElementById('history-entry-note').value = '';
+  document.getElementById('history-entry-engineer').value = '';
+  indexField.value = '';
+  
+  // Populate engineers dropdown
+  populateEngineersDropdown();
+  
+  form.style.display = 'block';
+  document.getElementById('history-entry-note').focus();
+}
+
+function populateEngineersDropdown() {
+  const select = document.getElementById('history-entry-engineer');
+  const currentOptions = select.innerHTML;
+  
+  // Clear current options except for default and "other"
+  const defaultOption = '<option value="">-- اختر المهندس --</option>';
+  const otherOption = '<option value="__other__">مهندس آخر...</option>';
+  
+  const engineerOptions = allEngineers.map(eng => 
+    `<option value="${eng.id}">${eng.name}</option>`
+  ).join('');
+  
+  select.innerHTML = defaultOption + engineerOptions + otherOption;
+}
+
+function cancelHistoryEntry() {
+  document.getElementById('history-entry-form').style.display = 'none';
+}
+
+async function saveHistoryEntry() {
+  const device = currentDeviceForHistory;
+  if (!device) return;
+  
+  const date = document.getElementById('history-entry-date').value;
+  const action = document.getElementById('history-entry-action').value;
+  const note = document.getElementById('history-entry-note').value.trim();
+  const engineerId = document.getElementById('history-entry-engineer').value;
+  const index = document.getElementById('history-entry-index').value;
+  
+  if (!date || !action) {
+    toast('يرجى ملء التاريخ ونوع الإجراء', 'error');
+    return;
+  }
+  
+  const engineer = engineerId ? allEngineers.find(e => e.id == engineerId) : null;
+  
+  const entry = {
+    date: new Date(date).toISOString(),
+    action: action,
+    title: action,
+    note: note,
+    content: note ? `<div>${note}</div>` : '',
+    engineerId: engineerId || null,
+    engineerName: engineer?.name || null,
+    timestamp: Date.now()
+  };
+  
+  // Initialize repairHistory array if not exists
+  if (!device.repairHistory) {
+    device.repairHistory = [];
+  }
+  
+  if (index === '') {
+    // Add new entry
+    device.repairHistory.push(entry);
+    toast('تم إضافة السجل');
+  } else {
+    // Edit existing entry
+    device.repairHistory[parseInt(index)] = entry;
+    toast('تم تحديث السجل');
+  }
+  
+  // Save to database
+  await dbPut('devices', device);
+  autoPush();
+  
+  // Refresh timeline
+  const timeline = generateRepairTimeline(device);
+  document.getElementById('repair-timeline').innerHTML = timeline;
+  
+  // Hide form
+  cancelHistoryEntry();
+}
+
+function editHistoryEntry(index) {
+  const device = currentDeviceForHistory;
+  if (!device || !device.repairHistory || !device.repairHistory[index]) return;
+  
+  const entry = device.repairHistory[index];
+  
+  // Populate form
+  document.getElementById('history-entry-date').value = new Date(entry.date).toISOString().slice(0, 16);
+  document.getElementById('history-entry-action').value = entry.action || entry.title || 'إصلاح';
+  document.getElementById('history-entry-note').value = entry.note || '';
+  document.getElementById('history-entry-engineer').value = entry.engineerId || '';
+  document.getElementById('history-entry-index').value = index;
+  
+  // Populate engineers dropdown
+  populateEngineersDropdown();
+  
+  // Show form
+  document.getElementById('history-entry-form').style.display = 'block';
+  document.getElementById('history-entry-note').focus();
+}
+
+async function deleteHistoryEntry(index) {
+  const device = currentDeviceForHistory;
+  if (!device || !device.repairHistory || !device.repairHistory[index]) return;
+  
+  if (!confirm('هل أنت متأكد من حذف هذا السجل؟')) return;
+  
+  // Remove entry
+  device.repairHistory.splice(index, 1);
+  
+  // Save to database
+  await dbPut('devices', device);
+  autoPush();
+  
+  // Refresh timeline
+  const timeline = generateRepairTimeline(device);
+  document.getElementById('repair-timeline').innerHTML = timeline;
+  
+  toast('تم حذف السجل');
 }
 
 // ============ DEFAULT CATEGORIES ============
