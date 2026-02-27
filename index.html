@@ -4360,6 +4360,7 @@ async function sbHasData() {
 async function pushToCloud() {
   if (!syncReady || isPushing) return;
   isPushing = true;
+  lastPushTime = Date.now(); // Block pulls immediately
   updateSyncStatus('syncing');
   
   try {
@@ -4421,8 +4422,8 @@ async function pullFromCloud() {
 // ============ SILENT PULL ============
 async function silentPull() {
   if (!syncReady || isPulling || isPushing || pushQueue) return;
-  // Don't pull within 5 seconds of last push to avoid race conditions
-  if (Date.now() - lastPushTime < 5000) return;
+  // Don't pull within 15 seconds of last push to avoid race conditions
+  if (Date.now() - lastPushTime < 15000) return;
   try {
     // Check latest timestamp
     const resp = await sbAPI('/sync_data?select=updated_at&order=updated_at.desc&limit=1');
@@ -4474,6 +4475,7 @@ function stopAutoPull() {
 
 function scheduleDriveSync() {
   if (!syncReady) return;
+  lastPushTime = Date.now(); // Block pulls immediately when sync is scheduled
   if (isPushing) { pushQueue = true; return; }
   pushToCloud().then(() => {
     if (pushQueue) { pushQueue = false; pushToCloud(); }
