@@ -165,7 +165,7 @@
         '<div class="tr-title">الفترة التجريبية على وشك الانتهاء</div>' +
         '<div class="tr-days">' + days + '</div>' +
         '<div class="tr-sub">يوم متبقي</div>' +
-        '<div class="tr-cd" id="trial-cd"></div>' +
+        '<div style="font-size:13px;color:#d29922;margin-bottom:16px;">ينتهي في: ' + endDate.toLocaleDateString('ar-EG', {year:'numeric',month:'long',day:'numeric'}) + '</div>' +
         '<div class="tr-msg">' + (trial.message || 'للاستمرار في استخدام جميع المميزات، يرجى ترقية الاشتراك.') + '</div>' +
         '<div class="tr-btns">' +
           '<a href="https://wa.me/' + (owner.whatsapp||'').replace('+','') + '" target="_blank" class="tr-btn tr-primary">ترقية الآن</a>' +
@@ -179,19 +179,6 @@
       overlay.remove();
     };
     
-    function updateTrialCD() {
-      var el = document.getElementById('trial-cd');
-      if (!el) return;
-      var diff = endDate - new Date();
-      if (diff <= 0) { location.reload(); return; }
-      var dd = Math.floor(diff/86400000);
-      var hh = Math.floor((diff%86400000)/3600000);
-      var mm = Math.floor((diff%3600000)/60000);
-      var ss = Math.floor((diff%60000)/1000);
-      el.textContent = dd + ' يوم : ' + String(hh).padStart(2,'0') + ' : ' + String(mm).padStart(2,'0') + ' : ' + String(ss).padStart(2,'0');
-    }
-    updateTrialCD();
-    setInterval(updateTrialCD, 1000);
   }
   
   function removeBlockScreen() {
