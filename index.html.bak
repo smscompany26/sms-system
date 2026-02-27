@@ -2200,7 +2200,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="table-responsive">
               <table id="clients-table">
                 <thead><tr>
-                  <th style="width:36px"><input type="checkbox" id="clients-select-all" onchange="toggleSelectAll('clients')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>الكود</th><th>الاسم</th><th>التليفون</th><th>المصنع</th><th>النشاط</th><th>الرصيد</th><th>إجراءات</th>
+                  <th>الكود</th><th>الاسم</th><th>التليفون</th><th>المصنع</th><th>النشاط</th><th>الرصيد</th><th>إجراءات</th>
                 </tr></thead>
                 <tbody id="clients-tbody"></tbody>
               </table>
@@ -2210,10 +2210,6 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <p>لا يوجد عملاء</p>
               <button class="btn btn-primary" onclick="openAddClient()">إضافة أول عميل</button>
             </div>
-          <div id="clients-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
-            <span style="color:#fff;font-size:13px;font-weight:600" id="clients-selected-count">0 محدد</span>
-            <button class="btn" onclick="bulkDeleteClients()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
-          </div>
           </div>
         </div>
       
@@ -2234,7 +2230,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="table-responsive">
               <table id="services-table">
                 <thead><tr>
-                  <th style="width:36px"><input type="checkbox" id="services-select-all" onchange="toggleSelectAll('services')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>العميل</th><th>الوصف</th><th>الموقع</th><th>السعر</th><th>الحالة</th><th>إجراءات</th>
+                  <th>التاريخ</th><th>العميل</th><th>الوصف</th><th>الموقع</th><th>السعر</th><th>الحالة</th><th>إجراءات</th>
                 </tr></thead>
                 <tbody id="services-tbody"></tbody>
               </table>
@@ -2244,10 +2240,6 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <p>لا توجد زيارات أو خدمات</p>
               <button class="btn btn-primary" onclick="openNewService()">إضافة أول زيارة</button>
             </div>
-          <div id="services-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
-            <span style="color:#fff;font-size:13px;font-weight:600" id="services-selected-count">0 محدد</span>
-            <button class="btn" onclick="bulkDeleteServices()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
-          </div>
           </div>
         </div>
 
@@ -2310,7 +2302,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="table-responsive">
               <table id="suppliers-table">
                 <thead><tr>
-                  <th style="width:36px"><input type="checkbox" id="suppliers-select-all" onchange="toggleSelectAll('suppliers')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>الكود</th><th>الاسم</th><th>التليفون</th><th>الشركة</th><th>الرصيد</th><th>إجراءات</th>
+                  <th>الكود</th><th>الاسم</th><th>التليفون</th><th>الشركة</th><th>الرصيد</th><th>إجراءات</th>
                 </tr></thead>
                 <tbody id="suppliers-tbody"></tbody>
               </table>
@@ -2320,10 +2312,6 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <p>لا يوجد موردين</p>
               <button class="btn btn-primary" onclick="openAddSupplier()">إضافة أول مورد</button>
             </div>
-          <div id="suppliers-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
-            <span style="color:#fff;font-size:13px;font-weight:600" id="suppliers-selected-count">0 محدد</span>
-            <button class="btn" onclick="bulkDeleteSuppliers()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
-          </div>
           </div>
         </div>
       </section>
@@ -2382,7 +2370,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div class="table-responsive">
             <table id="devices-table">
               <thead><tr>
-                <th style="width:36px"><input type="checkbox" id="devices-select-all" onchange="toggleSelectAll('devices')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>رقم الأمر</th><th>الجهاز</th><th>العميل</th><th>المهندس</th><th>المشكلة</th><th>الحالة</th><th>تاريخ الدخول</th><th>السعر</th><th>إجراءات</th>
+                <th>رقم الأمر</th><th>الجهاز</th><th>العميل</th><th>المهندس</th><th>المشكلة</th><th>الحالة</th><th>تاريخ الدخول</th><th>السعر</th><th>إجراءات</th>
               </tr></thead>
               <tbody id="devices-tbody"></tbody>
             </table>
@@ -2391,10 +2379,6 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <i class='bx bx-wrench' style="font-size:48px;color:#ccc"></i>
             <p>لا توجد أجهزة في الصيانة</p>
             <button class="btn btn-primary" onclick="openNewDevice()">إذن استلام أول جهاز</button>
-          </div>
-          <div id="devices-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
-            <span style="color:#fff;font-size:13px;font-weight:600" id="devices-selected-count">0 محدد</span>
-            <button class="btn" onclick="bulkDeleteDevices()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
           </div>
         </div>
 
@@ -2427,7 +2411,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div class="card table-card">
             <div class="table-responsive">
               <table id="maint-services-table">
-                <thead><tr><th style="width:36px"><input type="checkbox" id="maint-services-select-all" onchange="toggleSelectAll('maint-services')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>العميل</th><th>الوصف</th><th>الموقع</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                <thead><tr><th>التاريخ</th><th>العميل</th><th>الوصف</th><th>الموقع</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead>
                 <tbody id="maint-services-tbody"></tbody>
               </table>
             </div>
@@ -2436,10 +2420,6 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <p>لا توجد زيارات</p>
               <button class="btn btn-primary" onclick="openNewService()">إضافة أول زيارة</button>
             </div>
-          <div id="maint-services-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
-            <span style="color:#fff;font-size:13px;font-weight:600" id="maint-services-selected-count">0 محدد</span>
-            <button class="btn" onclick="bulkDeleteMaintServices()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
-          </div>
           </div>
         </div>
       </section>
@@ -2480,34 +2460,22 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div id="expense-tab-treasury" class="tab-content active">
             <div class="stat-card" style="margin-bottom:12px;border-right-color:var(--warning)"><div class="stat-info"><span class="stat-value" id="treasury-total" style="font-size:18px">0</span><span class="stat-label">إجمالي مصروفات الخزينة</span></div></div>
             <div class="table-responsive">
-              <table id="treasury-expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="treasury-expenses-select-all" onchange="toggleSelectAll('treasury-expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="treasury-expenses-tbody"></tbody></table>
+              <table id="treasury-expenses-table"><thead><tr><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="treasury-expenses-tbody"></tbody></table>
             </div>
             <div id="treasury-expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات خزينة</p></div>
-          <div id="treasury-expenses-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
-            <span style="color:#fff;font-size:13px;font-weight:600" id="treasury-expenses-selected-count">0 محدد</span>
-            <button class="btn" onclick="bulkDeleteExpenses('treasury-expenses')" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
-          </div>
           </div>
           <div id="expense-tab-indirect" class="tab-content">
             <div class="stat-card" style="margin-bottom:12px;border-right-color:var(--primary)"><div class="stat-info"><span class="stat-value" id="indirect-total" style="font-size:18px">0</span><span class="stat-label">إجمالي المصروفات غير المباشرة</span></div></div>
             <div class="table-responsive">
-              <table id="indirect-expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="indirect-expenses-select-all" onchange="toggleSelectAll('indirect-expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="indirect-expenses-tbody"></tbody></table>
+              <table id="indirect-expenses-table"><thead><tr><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="indirect-expenses-tbody"></tbody></table>
             </div>
             <div id="indirect-expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات غير مباشرة</p></div>
-          <div id="indirect-expenses-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
-            <span style="color:#fff;font-size:13px;font-weight:600" id="indirect-expenses-selected-count">0 محدد</span>
-            <button class="btn" onclick="bulkDeleteExpenses('indirect-expenses')" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
-          </div>
           </div>
           <div id="expense-tab-all" class="tab-content">
             <div class="table-responsive">
-              <table id="expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="expenses-select-all" onchange="toggleSelectAll('expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>النوع</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="expenses-tbody"></tbody></table>
+              <table id="expenses-table"><thead><tr><th>التاريخ</th><th>النوع</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="expenses-tbody"></tbody></table>
             </div>
             <div id="expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات</p></div>
-          <div id="expenses-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
-            <span style="color:#fff;font-size:13px;font-weight:600" id="expenses-selected-count">0 محدد</span>
-            <button class="btn" onclick="bulkDeleteExpenses('expenses')" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
-          </div>
           </div>
         </div>
       </section>
@@ -2719,7 +2687,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
           <div class="table-responsive">
             <table id="engineers-table">
-              <thead><tr><th style="width:36px"><input type="checkbox" id="engineers-select-all" onchange="toggleSelectAll('engineers')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>الاسم</th><th>التليفون</th><th>التخصص</th><th>إجراءات</th></tr></thead>
+              <thead><tr><th>الاسم</th><th>التليفون</th><th>التخصص</th><th>إجراءات</th></tr></thead>
               <tbody id="engineers-tbody"></tbody>
             </table>
           </div>
@@ -2727,10 +2695,6 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <i class='bx bx-hard-hat' style="font-size:48px;color:#ccc"></i>
             <p>لا يوجد مهندسين أو فنيين</p>
             <button class="btn btn-primary" onclick="openAddEngineer()">إضافة أول مهندس/فني</button>
-          </div>
-          <div id="engineers-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
-            <span style="color:#fff;font-size:13px;font-weight:600" id="engineers-selected-count">0 محدد</span>
-            <button class="btn" onclick="bulkDeleteEngineers()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
           </div>
         </div>
         </div><!-- end section-engineers -->
@@ -6756,10 +6720,7 @@ function renderClientsTable() {
   table.style.display = '';
   empty.style.display = 'none';
   
-  const sa1 = document.getElementById('clients-select-all'); if(sa1) sa1.checked = false;
-  updateBulkBar('clients');
   tbody.innerHTML = allClients.map(c => `<tr>
-    <td><input type="checkbox" class="row-select" data-id="${c.id}" data-section="clients" onchange="updateBulkBar('clients')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></td>
     <td><strong>${c.code || '-'}</strong></td>
     <td>${c.name}</td>
     <td dir="ltr" style="text-align:right">${c.phone || '-'}</td>
@@ -6787,10 +6748,7 @@ function renderSuppliersTable() {
   table.style.display = '';
   empty.style.display = 'none';
   
-  const sa2 = document.getElementById('suppliers-select-all'); if(sa2) sa2.checked = false;
-  updateBulkBar('suppliers');
   tbody.innerHTML = allSuppliers.map(s => `<tr>
-    <td><input type="checkbox" class="row-select" data-id="${s.id}" data-section="suppliers" onchange="updateBulkBar('suppliers')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></td>
     <td><strong>${s.code || '-'}</strong></td>
     <td>${s.name}</td>
     <td dir="ltr" style="text-align:right">${s.phone || '-'}</td>
@@ -6860,12 +6818,12 @@ async function saveClient(e) {
 }
 
 async function deleteClient(id) {
-  const c = allClients.find(x => x.id === id);
+  const c = await dbGet('clients', id);
   if (!confirm(`حذف العميل "${c?.name}"؟`)) return;
-  allClients = allClients.filter(x => x.id !== id);
-  renderClientsTable();
+  await dbDelete('clients', id);
   toast('تم حذف العميل');
-  try { await dbDelete('clients', id); } catch(e) {}
+  await loadClients();
+  renderClientsTable();
 }
 
 async function viewClient(id) {
@@ -6959,12 +6917,12 @@ async function saveSupplier(e) {
 }
 
 async function deleteSupplier(id) {
-  const s = allSuppliers.find(x => x.id === id);
+  const s = await dbGet('suppliers', id);
   if (!confirm(`حذف المورد "${s?.name}"؟`)) return;
-  allSuppliers = allSuppliers.filter(x => x.id !== id);
-  renderSuppliersTable();
+  await dbDelete('suppliers', id);
   toast('تم حذف المورد');
-  try { await dbDelete('suppliers', id); } catch(e) {}
+  await loadSuppliers();
+  renderSuppliersTable();
 }
 
 // ============ SEARCH ============
@@ -7547,86 +7505,6 @@ async function bulkDeleteInvoices(type) {
   await updateBalances();
 }
 
-
-
-async function bulkDeleteClients() {
-  const checked = document.querySelectorAll('#clients-tbody .row-select:checked');
-  if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} عميل؟`)) return;
-  const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
-  allClients = allClients.filter(c => !ids.includes(c.id));
-  renderClientsTable();
-  toast(`تم حذف ${checked.length} عميل`);
-  for (const id of ids) { try { await dbDelete('clients', id); } catch(e) {} }
-}
-
-async function bulkDeleteSuppliers() {
-  const checked = document.querySelectorAll('#suppliers-tbody .row-select:checked');
-  if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} مورد؟`)) return;
-  const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
-  allSuppliers = allSuppliers.filter(s => !ids.includes(s.id));
-  renderSuppliersTable();
-  toast(`تم حذف ${checked.length} مورد`);
-  for (const id of ids) { try { await dbDelete('suppliers', id); } catch(e) {} }
-}
-
-async function bulkDeleteMaintServices() {
-  const checked = document.querySelectorAll('#maint-services-tbody .row-select:checked');
-  if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} خدمة؟`)) return;
-  const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
-  _allServicesLoaded = _allServicesLoaded.filter(s => !ids.includes(s.id));
-  renderServicesInAllPages();
-  toast(`تم حذف ${checked.length} خدمة`);
-  for (const id of ids) { try { await dbDelete('services', id); } catch(e) {} }
-}
-
-async function bulkDeleteServices() {
-  const checked = document.querySelectorAll('#services-tbody .row-select:checked');
-  if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} خدمة؟`)) return;
-  const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
-  _allServicesLoaded = _allServicesLoaded.filter(s => !ids.includes(s.id));
-  renderServicesInAllPages();
-  toast(`تم حذف ${checked.length} خدمة`);
-  for (const id of ids) { try { await dbDelete('services', id); } catch(e) {} }
-}
-
-async function bulkDeleteDevices() {
-  const checked = document.querySelectorAll('#devices-tbody .row-select:checked');
-  if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} جهاز؟`)) return;
-  const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
-  allDevices = allDevices.filter(d => !ids.includes(d.id));
-  renderDevicesTable();
-  updateMaintenanceStats();
-  toast(`تم حذف ${checked.length} جهاز`);
-  for (const id of ids) { try { await dbDelete('devices', id); } catch(e) {} }
-}
-
-async function bulkDeleteExpenses(section) {
-  const checked = document.querySelectorAll(`#${section}-tbody .row-select:checked`);
-  if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} مصروف؟`)) return;
-  const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
-  allExpenses = allExpenses.filter(e => !ids.includes(e.id));
-  renderExpensesTable();
-  toast(`تم حذف ${checked.length} مصروف`);
-  for (const id of ids) { try { await dbDelete('expenses', id); } catch(e) {} }
-}
-
-async function bulkDeleteEngineers() {
-  const checked = document.querySelectorAll('#engineers-tbody .row-select:checked');
-  if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} مهندس؟`)) return;
-  const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
-  allEngineers = allEngineers.filter(e => !ids.includes(e.id));
-  renderEngineersTable();
-  toast(`تم حذف ${checked.length} مهندس`);
-  for (const id of ids) { try { await dbDelete('engineers', id); } catch(e) {} }
-}
-
 async function bulkDeleteProducts() {
   if (!isAdmin()) { toast('مسح الأصناف متاح للمدير فقط', 'error'); return; }
   const checked = document.querySelectorAll('#products-tbody .row-select:checked');
@@ -8152,7 +8030,6 @@ function renderDevicesTable(filter) {
     const client = allClients.find(c => c.id === d.clientId);
     const engineer = allEngineers.find(e => e.id === d.engineerId);
     return `<tr>
-      <td><input type="checkbox" class="row-select" data-id="${d.id}" data-section="devices" onchange="updateBulkBar('devices')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></td>
       <td><strong>${d.orderNumber}</strong></td>
       <td>${d.deviceName}${d.hasWarranty ? ' <span class="badge" style="background:rgba(34,197,94,0.1);color:var(--success);font-size:10px">🛡️ ضمان '+d.warrantyMonths+' شهر</span>' : ''}</td>
       <td>${client?.name || d.clientName || '-'}</td>
@@ -8607,13 +8484,11 @@ async function saveDevice(e) {
 }
 
 async function deleteDevice(id) {
-  const d = allDevices.find(x => x.id === id);
+  const d = await dbGet('devices', id);
   if (!confirm(`حذف أمر الصيانة ${d?.orderNumber}؟`)) return;
-  allDevices = allDevices.filter(x => x.id !== id);
-  renderDevicesTable();
-  updateMaintenanceStats();
+  await dbDelete('devices', id);
   toast('تم حذف أمر الصيانة');
-  try { await dbDelete('devices', id); } catch(e) {}
+  await loadMaintenancePage();
 }
 
 // ============ PARTS ============
@@ -9173,7 +9048,7 @@ function renderExpensesTable() {
   const tTable = document.getElementById('treasury-expenses-table');
   if (treasuryFiltered.length === 0) { tTable.style.display = 'none'; tEmpty.style.display = 'block'; }
   else { tTable.style.display = ''; tEmpty.style.display = 'none'; }
-  tTbody.innerHTML = treasuryFiltered.map(e => expenseRow(e, 'treasury-expenses')).join('');
+  tTbody.innerHTML = treasuryFiltered.map(e => expenseRow(e)).join('');
   
   const treasuryTotal = treasuryFiltered.reduce((s, e) => s + (e.amount || 0), 0);
   document.getElementById('treasury-total').textContent = formatMoney(treasuryTotal);
@@ -9184,7 +9059,7 @@ function renderExpensesTable() {
   const iTable = document.getElementById('indirect-expenses-table');
   if (indirect.length === 0) { iTable.style.display = 'none'; iEmpty.style.display = 'block'; }
   else { iTable.style.display = ''; iEmpty.style.display = 'none'; }
-  iTbody.innerHTML = indirect.map(e => expenseRow(e, 'indirect-expenses')).join('');
+  iTbody.innerHTML = indirect.map(e => expenseRow(e)).join('');
   
   const indirectTotal = indirect.reduce((s, e) => s + (e.amount || 0), 0);
   document.getElementById('indirect-total').textContent = formatMoney(indirectTotal);
@@ -9196,7 +9071,6 @@ function renderExpensesTable() {
   if (sorted.length === 0) { table.style.display = 'none'; empty.style.display = 'block'; }
   else { table.style.display = ''; empty.style.display = 'none'; }
   tbody.innerHTML = sorted.map(e => `<tr>
-    <td><input type="checkbox" class="row-select" data-id="${e.id}" data-section="expenses" onchange="updateBulkBar('expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></td>
     <td>${formatDate(e.date)}</td>
     <td><span class="badge" style="background:${e.expenseType === 'indirect' ? 'rgba(108,60,233,0.1);color:var(--primary)' : 'rgba(245,158,11,0.1);color:var(--warning)'}">${e.expenseType === 'indirect' ? 'غير مباشرة' : 'خزينة'}</span></td>
     <td>${e.category || '-'}</td>
@@ -9209,9 +9083,8 @@ function renderExpensesTable() {
   </tr>`).join('');
 }
 
-function expenseRow(e, section) {
+function expenseRow(e) {
   return `<tr>
-    <td><input type="checkbox" class="row-select" data-id="${e.id}" data-section="${section}" onchange="updateBulkBar('${section}')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></td>
     <td>${formatDate(e.date)}</td>
     <td>${e.category || '-'}</td>
     <td>${e.description}</td>
@@ -9269,10 +9142,9 @@ async function saveExpense(e) {
 
 async function deleteExpense(id) {
   if (!confirm('حذف هذا المصروف؟')) return;
-  allExpenses = allExpenses.filter(x => x.id !== id);
-  renderExpensesTable();
+  await dbDelete('expenses', id);
   toast('تم حذف المصروف');
-  try { await dbDelete('expenses', id); } catch(e) {}
+  await loadAccountingPage();
 }
 
 // ============ SERVICES CRUD ============
@@ -9349,10 +9221,9 @@ async function saveService(e) {
 
 async function deleteService(id) {
   if (!confirm('حذف هذه الخدمة؟')) return;
-  _allServicesLoaded = _allServicesLoaded.filter(x => x.id !== id);
-  renderServicesInAllPages();
+  await dbDelete('services', id);
   toast('تم حذف الخدمة');
-  try { await dbDelete('services', id); } catch(e) {}
+  renderServicesInAllPages();
 }
 
 async function renderServicesInAllPages() {
@@ -9368,7 +9239,6 @@ function renderServicesTableInto(tbodyId, tableId, emptyId, services) {
   const table = document.getElementById(tableId);
   const empty = document.getElementById(emptyId);
   if (!tbody || !table) return;
-  const sectionName = tbodyId.replace('-tbody','');
   
   if (services.length === 0) { table.style.display = 'none'; if (empty) empty.style.display = 'block'; return; }
   table.style.display = ''; if (empty) empty.style.display = 'none';
@@ -9381,7 +9251,6 @@ function renderServicesTableInto(tbodyId, tableId, emptyId, services) {
   };
   
   tbody.innerHTML = services.map(s => `<tr>
-    <td><input type="checkbox" class="row-select" data-id="${s.id}" data-section="${sectionName}" onchange="updateBulkBar('${sectionName}')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></td>
     <td>${formatDate(s.date)}</td>
     <td>${s.clientName || '-'}</td>
     <td>${s.description || '-'}</td>
@@ -9811,7 +9680,6 @@ function renderEngineersTable() {
   
   tbody.innerHTML = allEngineers.map(eng => `
     <tr>
-      <td><input type="checkbox" class="row-select" data-id="${eng.id}" data-section="engineers" onchange="updateBulkBar('engineers')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></td>
       <td><strong>${eng.name}</strong></td>
       <td>${eng.phone || '-'}</td>
       <td><span class="badge" style="background:rgba(108,60,233,0.1);color:var(--primary)">${eng.specialty}</span></td>
@@ -9872,15 +9740,18 @@ async function saveEngineer(e) {
 async function deleteEngineer(id) {
   if (!confirm('حذف هذا المهندس/الفني؟')) return;
   
-  const assignedDevices = allDevices.filter(d => d.engineerId === id);
+  // Check if engineer is assigned to any devices
+  const devices = await dbGetAll('devices');
+  const assignedDevices = devices.filter(d => d.engineerId === id);
+  
   if (assignedDevices.length > 0) {
     if (!confirm(`هذا المهندس/الفني مسؤول عن ${assignedDevices.length} جهاز. هل تريد المتابعة؟`)) return;
   }
   
-  allEngineers = allEngineers.filter(x => x.id !== id);
-  renderEngineersTable();
+  await dbDelete('engineers', id);
   toast('تم حذف المهندس/الفني');
-  try { await dbDelete('engineers', id); await autoPush(); } catch(e) {}
+  await autoPush();
+  await loadEngineersPage();
 }
 
 // ============ REPAIR HISTORY ============
