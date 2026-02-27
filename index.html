@@ -4847,8 +4847,22 @@ async function loadDashboard() {
     alertsHtml.push(`<div class="warranty-alert ${a.type}"><i class='bx ${a.type==='danger'?'bx-error-circle':'bx-error'}'></i> <span>${a.message}</span></div>`);
   });
   
+  // Devices ready for delivery
+  const readyDevices = devices.filter(d => d.status === 'done_not_delivered');
+  readyDevices.forEach(d => {
+    const client = clients.find(c => c.id === d.clientId);
+    alertsHtml.push(`<div class="alert-item"><i class='bx bx-package' style="color:var(--accent)"></i> <span><strong>${d.deviceName}</strong> جاهز للتسليم — ${client?.name || d.clientName || 'غير محدد'}</span></div>`);
+  });
+  
+  // Unpaid invoices
+  const unpaidInvoices = invoices.filter(i => i.type === 'sale' && i.paymentStatus === 'unpaid');
+  if (unpaidInvoices.length > 0) {
+    const totalUnpaid = unpaidInvoices.reduce((s, i) => s + (i.total - (i.paidAmount || 0)), 0);
+    alertsHtml.push(`<div class="alert-item"><i class='bx bx-money' style="color:var(--warning)"></i> <span><strong>${unpaidInvoices.length}</strong> فاتورة غير مدفوعة — الإجمالي: ${formatMoney(totalUnpaid)}</span></div>`);
+  }
+  
   const alertsList = document.getElementById('alerts-list');
-  alertsList.innerHTML = alertsHtml.length > 0 ? alertsHtml.join('') : '<p class="empty-state" style="padding:20px">لا توجد تنبيهات</p>';
+  alertsList.innerHTML = alertsHtml.length > 0 ? alertsHtml.join('') : '<p class="empty-state" style="padding:20px">لا توجد تنبيهات ✅</p>';
   
   // Load activity logs and render based on current tab
   window._allActivityLogs = (await dbGetAll('activityLog')).sort((a, b) => new Date(b.date) - new Date(a.date));
