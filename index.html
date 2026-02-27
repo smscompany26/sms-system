@@ -3306,6 +3306,44 @@ tr:hover { background: rgba(108,60,233,0.02); }
   </div>
 </div>
 
+<!-- Adjust Balance Modal -->
+<div id="modal-adjust-balance" class="modal">
+  <div class="modal-content" style="max-width:400px">
+    <div class="modal-header"><h3 id="modal-adjust-balance-title">تعديل رصيد</h3><button class="modal-close" onclick="closeModal('modal-adjust-balance')">&times;</button></div>
+    <form id="adjust-balance-form" onsubmit="return saveAdjustedBalance(event)">
+      <input type="hidden" id="adj-type">
+      <div class="form-group">
+        <label>اختر</label>
+        <select id="adj-entity" required></select>
+      </div>
+      <div class="form-group">
+        <label>الرصيد الحالي</label>
+        <input type="text" id="adj-current" readonly style="background:var(--bg);opacity:0.7">
+      </div>
+      <div class="form-group">
+        <label>العملية</label>
+        <select id="adj-operation">
+          <option value="set">تعيين رصيد جديد</option>
+          <option value="add">إضافة مبلغ (زيادة دين)</option>
+          <option value="subtract">خصم مبلغ (سداد)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>المبلغ</label>
+        <input type="number" id="adj-amount" step="0.01" min="0" required>
+      </div>
+      <div class="form-group">
+        <label>ملاحظات</label>
+        <input type="text" id="adj-notes" placeholder="سبب التعديل...">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">حفظ</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-adjust-balance')">إلغاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast-container"></div>
 
@@ -8665,17 +8703,96 @@ function renderAccountingDashboard() {
   
   // Client balances
   const clientBalances = document.getElementById('acc-client-balances');
-  const owingClients = allClients.filter(c => c.balance > 0).sort((a, b) => b.balance - a.balance);
-  clientBalances.innerHTML = owingClients.length > 0 
-    ? owingClients.map(c => `<div class="balance-row"><span>${c.name}</span><span style="color:var(--danger)">${formatMoney(c.balance)}</span></div>`).join('')
-    : '<p class="empty-state" style="padding:12px">لا يوجد عملاء مدينين</p>';
+  const clientsWithBalance = allClients.filter(c => (c.balance || 0) !== 0).sort((a, b) => (b.balance || 0) - (a.balance || 0));
+  clientBalances.innerHTML = clientsWithBalance.length > 0 
+    ? clientsWithBalance.map(c => `<div class="balance-row" style="cursor:pointer" onclick="openAdjustBalance('client', ${c.id})">
+        <span>${c.name}</span>
+        <span style="color:${c.balance > 0 ? 'var(--danger)' : 'var(--success)'}">${formatMoney(c.balance || 0)}</span>
+      </div>`).join('')
+    + `<div style="text-align:center;margin-top:8px"><button class="btn btn-outline" onclick="openAdjustBalance('client')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تعديل رصيد</button></div>`
+    : `<p class="empty-state" style="padding:12px">لا يوجد عملاء مدينين</p>
+       <div style="text-align:center"><button class="btn btn-outline" onclick="openAdjustBalance('client')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تعديل رصيد</button></div>`;
   
   // Supplier balances
   const supplierBalances = document.getElementById('acc-supplier-balances');
-  const owingSuppliers = allSuppliers.filter(s => s.balance > 0).sort((a, b) => b.balance - a.balance);
-  supplierBalances.innerHTML = owingSuppliers.length > 0
-    ? owingSuppliers.map(s => `<div class="balance-row"><span>${s.name}</span><span style="color:var(--warning)">${formatMoney(s.balance)}</span></div>`).join('')
-    : '<p class="empty-state" style="padding:12px">لا يوجد موردين دائنين</p>';
+  const suppliersWithBalance = allSuppliers.filter(s => (s.balance || 0) !== 0).sort((a, b) => (b.balance || 0) - (a.balance || 0));
+  supplierBalances.innerHTML = suppliersWithBalance.length > 0
+    ? suppliersWithBalance.map(s => `<div class="balance-row" style="cursor:pointer" onclick="openAdjustBalance('supplier', ${s.id})">
+        <span>${s.name}</span>
+        <span style="color:${s.balance > 0 ? 'var(--warning)' : 'var(--success)'}">${formatMoney(s.balance || 0)}</span>
+      </div>`).join('')
+    + `<div style="text-align:center;margin-top:8px"><button class="btn btn-outline" onclick="openAdjustBalance('supplier')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تعديل رصيد</button></div>`
+    : `<p class="empty-state" style="padding:12px">لا يوجد موردين دائنين</p>
+       <div style="text-align:center"><button class="btn btn-outline" onclick="openAdjustBalance('supplier')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تعديل رصيد</button></div>`;
+}
+
+// ============ BALANCE ADJUSTMENT ============
+function openAdjustBalance(type, preselectedId) {
+  const isClient = type === 'client';
+  document.getElementById('modal-adjust-balance-title').textContent = isClient ? 'تعديل رصيد عميل' : 'تعديل رصيد مورد';
+  document.getElementById('adj-type').value = type;
+  
+  const sel = document.getElementById('adj-entity');
+  const list = isClient ? allClients : allSuppliers;
+  sel.innerHTML = '<option value="">اختر...</option>' + list.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
+  
+  if (preselectedId) {
+    sel.value = preselectedId;
+    updateAdjCurrentBalance();
+  }
+  
+  document.getElementById('adj-operation').value = 'set';
+  document.getElementById('adj-amount').value = '';
+  document.getElementById('adj-notes').value = '';
+  document.getElementById('adj-current').value = '';
+  
+  if (preselectedId) updateAdjCurrentBalance();
+  
+  sel.onchange = updateAdjCurrentBalance;
+  openModal('modal-adjust-balance');
+}
+
+function updateAdjCurrentBalance() {
+  const type = document.getElementById('adj-type').value;
+  const id = parseInt(document.getElementById('adj-entity').value);
+  if (!id) { document.getElementById('adj-current').value = ''; return; }
+  const list = type === 'client' ? allClients : allSuppliers;
+  const entity = list.find(e => e.id === id);
+  document.getElementById('adj-current').value = entity ? formatMoney(entity.balance || 0) : '';
+}
+
+async function saveAdjustedBalance(e) {
+  e.preventDefault();
+  const type = document.getElementById('adj-type').value;
+  const id = parseInt(document.getElementById('adj-entity').value);
+  const operation = document.getElementById('adj-operation').value;
+  const amount = parseFloat(document.getElementById('adj-amount').value) || 0;
+  const notes = document.getElementById('adj-notes').value.trim();
+  
+  if (!id) { toast('اختر عميل أو مورد', 'error'); return; }
+  if (amount < 0) { toast('المبلغ لازم يكون موجب', 'error'); return; }
+  
+  const store = type === 'client' ? 'clients' : 'suppliers';
+  const entity = await dbGet(store, id);
+  if (!entity) { toast('غير موجود', 'error'); return; }
+  
+  const oldBalance = entity.balance || 0;
+  let newBalance;
+  if (operation === 'set') newBalance = amount;
+  else if (operation === 'add') newBalance = oldBalance + amount;
+  else newBalance = oldBalance - amount;
+  
+  entity.balance = Math.max(0, Math.round(newBalance * 100) / 100);
+  await dbPut(store, entity);
+  
+  await logActivity('adjust_balance', `${type === 'client' ? 'عميل' : 'مورد'}: ${entity.name} | ${formatMoney(oldBalance)} → ${formatMoney(entity.balance)}${notes ? ' | ' + notes : ''}`);
+  
+  toast(`تم تعديل رصيد ${entity.name}`);
+  closeModal('modal-adjust-balance');
+  
+  if (type === 'client') await loadClients();
+  else await loadSuppliers();
+  renderAccountingDashboard();
 }
 
 // ============ EXPENSES ============
