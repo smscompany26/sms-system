@@ -592,6 +592,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
   align-items: center;
   justify-content: center;
   padding: 20px;
+  overflow: hidden;
 }
 .modal.active { display: flex; }
 .modal-content {
@@ -606,6 +607,8 @@ tr:hover { background: rgba(108,60,233,0.02); }
   overflow-y: auto;
   overflow-x: hidden;
   box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 [data-theme="dark"] .modal-content {
   background: rgba(26,26,46,0.75);
@@ -1486,7 +1489,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
 .cs-title { font-size:15px; font-weight:700; color:var(--text); text-align:center; padding:8px 20px 12px; }
 
-.cs-options { overflow-y:auto; -webkit-overflow-scrolling:touch; padding:0 12px 12px; flex:1; }
+.cs-options { overflow-y:auto; -webkit-overflow-scrolling:touch; padding:0 12px 12px; flex:1; overscroll-behavior:contain; }
 
 .cs-option {
   display:flex; align-items:center; justify-content:space-between; gap:12px;
