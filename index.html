@@ -1234,6 +1234,26 @@ tr:hover { background: rgba(108,60,233,0.02); }
 }
 @keyframes scanLine { 0%,100%{opacity:0.3} 50%{opacity:1} }
 
+/* ========== Period Tabs ========== */
+.period-tabs { display:flex; gap:4px; background:rgba(255,255,255,0.05); border-radius:10px; padding:3px; }
+.period-tab { padding:6px 14px; border:none; background:transparent; color:var(--text-muted); font-size:12px; font-weight:600; border-radius:8px; cursor:pointer; font-family:inherit; transition:all 0.2s; }
+.period-tab.active { background:var(--primary); color:#fff; }
+.period-tab:hover:not(.active) { background:rgba(255,255,255,0.08); }
+
+.sales-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.summary-item { display:flex; align-items:center; gap:10px; padding:14px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+.summary-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.summary-sales .summary-icon { background:rgba(34,197,94,0.1); color:var(--success); }
+.summary-purchases .summary-icon { background:rgba(239,68,68,0.1); color:var(--danger); }
+.summary-profit .summary-icon { background:rgba(108,60,233,0.1); color:var(--primary); }
+.summary-value { display:block; font-size:16px; font-weight:700; color:var(--text); }
+.summary-label { display:block; font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+@media(max-width:640px) {
+  .sales-summary { grid-template-columns:1fr; gap:8px; }
+  .summary-item { padding:10px; }
+}
+
 /* ========== Dashboard Charts ========== */
 .chart-card { padding: 20px; }
 .chart-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--text); }
@@ -1466,9 +1486,6 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
         </div>
 
-                <!-- Debug (temporary) -->
-        <pre id="dash-debug" style="background:#1a1a2e;color:#4ade80;padding:12px;border-radius:8px;font-size:11px;font-family:'JetBrains Mono',monospace;white-space:pre-wrap;direction:ltr;text-align:left;max-height:200px;overflow:auto;"></pre>
-
         <!-- Quick stats row 2 -->
         <div class="stats-grid" id="dash-quick-stats" style="grid-template-columns:repeat(4,1fr)">
           <div class="stat-card clickable-stat" style="border-right-color:var(--accent)" onclick="navigate('inventory')">
@@ -1489,17 +1506,39 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
         </div>
 
-        <!-- Charts row -->
-        <div class="dashboard-grid">
-          <div class="card chart-card">
-            <h4><i class='bx bx-bar-chart-alt-2'></i> المبيعات vs المشتريات (7 أيام)</h4>
-            <div id="dash-sales-chart" class="h-bar-chart"></div>
+        <!-- Sales Overview Widget -->
+        <div class="card chart-card" style="margin-bottom:16px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+            <h4 style="margin:0;"><i class='bx bx-bar-chart-alt-2'></i> نظرة عامة على المبيعات</h4>
+            <div class="period-tabs" id="salesPeriodTabs">
+              <button class="period-tab active" data-period="week" onclick="switchSalesPeriod('week')">أسبوع</button>
+              <button class="period-tab" data-period="month" onclick="switchSalesPeriod('month')">شهر</button>
+              <button class="period-tab" data-period="year" onclick="switchSalesPeriod('year')">سنة</button>
+            </div>
           </div>
+          <div class="sales-summary" id="salesSummary">
+            <div class="summary-item summary-sales">
+              <div class="summary-icon"><i class='bx bx-trending-up'></i></div>
+              <div><span class="summary-value" id="period-sales">0</span><span class="summary-label">المبيعات</span></div>
+            </div>
+            <div class="summary-item summary-purchases">
+              <div class="summary-icon"><i class='bx bx-trending-down'></i></div>
+              <div><span class="summary-value" id="period-purchases">0</span><span class="summary-label">المشتريات</span></div>
+            </div>
+            <div class="summary-item summary-profit">
+              <div class="summary-icon"><i class='bx bx-money'></i></div>
+              <div><span class="summary-value" id="period-profit">0</span><span class="summary-label">صافي الربح</span></div>
+            </div>
+          </div>
+          <div id="dash-sales-chart" class="h-bar-chart" style="margin-top:16px;"></div>
+        </div>
+
+        <!-- Maintenance -->
+        <div class="dashboard-grid">
           <div class="card chart-card">
             <h4><i class='bx bx-pie-chart-alt'></i> حالة الصيانة</h4>
             <div id="dash-maint-donut" style="text-align:center"></div>
           </div>
-        </div>
 
         <div class="dashboard-grid">
           <div class="card chart-card">
@@ -3573,14 +3612,6 @@ async function loadDashboard() {
   }
 
   const today = new Date().toISOString().split('T')[0];
-  // Debug: show invoice data in alert
-  if (invoices.length > 0) {
-    const dbg = invoices.slice(0,10).map((inv,i) => `${i+1}. type=${inv.type} | date="${inv.date}" | total=${inv.total}`).join('\n');
-    console.log('[DASH] Invoices:\n' + dbg);
-    // Show on page temporarily
-    const dbgEl = document.getElementById('dash-debug');
-    if (dbgEl) dbgEl.textContent = `Invoices (${invoices.length}):\n` + dbg;
-  }
   const todayInvoices = invoices.filter(i => invDay(i) === today);
   
   let salesToday = 0, purchasesToday = 0;
@@ -3605,8 +3636,9 @@ async function loadDashboard() {
   document.getElementById('stat-active-devices').textContent = activeDevices.length;
   
   // ===== CHARTS =====
-  // Sales vs Purchases last 7 days
-  renderSalesPurchasesChart(invoices);
+  // Sales overview with period tabs
+  window._dashInvoices = invoices;
+  renderSalesOverview(invoices, 'week');
   
   // Maintenance donut
   renderMaintenanceDonut(devices);
@@ -3683,34 +3715,120 @@ function getWarrantyAlerts(devices, clients) {
 }
 
 // ===== DASHBOARD CHARTS =====
-function renderSalesPurchasesChart(invoices) {
+function switchSalesPeriod(period) {
+  document.querySelectorAll('.period-tab').forEach(t => t.classList.toggle('active', t.dataset.period === period));
+  if (window._dashInvoices) renderSalesOverview(window._dashInvoices, period);
+}
+
+function renderSalesOverview(invoices, period) {
   const container = document.getElementById('dash-sales-chart');
-  const days = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    days.push(d.toISOString().split('T')[0]);
+  const now = new Date();
+  let buckets = [], labelFn, sliceFn;
+
+  if (period === 'week') {
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      buckets.push(d.toISOString().split('T')[0]);
+    }
+    labelFn = day => new Date(day).toLocaleDateString('ar-EG', { weekday: 'short' });
+    sliceFn = inv => (inv.date || '').slice(0, 10);
+  } else if (period === 'month') {
+    for (let i = 29; i >= 0; i -= 5) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      buckets.push(d.toISOString().split('T')[0]);
+    }
+    // Group by 5-day ranges
+    labelFn = day => new Date(day).toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+    sliceFn = inv => (inv.date || '').slice(0, 10);
+  } else { // year
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      buckets.push(d.toISOString().slice(0, 7));
+    }
+    labelFn = m => { const [y, mo] = m.split('-'); return new Date(y, mo - 1).toLocaleDateString('ar-EG', { month: 'short' }); };
+    sliceFn = inv => (inv.date || '').slice(0, 7);
   }
+
+  // Calculate period totals
+  let periodStart;
+  if (period === 'week') {
+    periodStart = new Date(); periodStart.setDate(periodStart.getDate() - 7);
+  } else if (period === 'month') {
+    periodStart = new Date(); periodStart.setDate(periodStart.getDate() - 30);
+  } else {
+    periodStart = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+  }
+  const periodStr = periodStart.toISOString().slice(0, 10);
   
-  let maxVal = 1;
-  const data = days.map(day => {
-    const s = invoices.filter(i => i.type === 'sale' && (i.date||'').slice(0,10) === day).reduce((sum, i) => sum + (i.total || 0), 0);
-    const p = invoices.filter(i => i.type === 'purchase' && (i.date||'').slice(0,10) === day).reduce((sum, i) => sum + (i.total || 0), 0);
-    maxVal = Math.max(maxVal, s, p);
-    return { day, sales: s, purchases: p };
+  let totalSales = 0, totalPurchases = 0;
+  invoices.forEach(inv => {
+    const d = (inv.date || '').slice(0, 10);
+    if (d >= periodStr) {
+      if (inv.type === 'sale') totalSales += (inv.total || 0);
+      if (inv.type === 'purchase') totalPurchases += (inv.total || 0);
+    }
   });
   
+  document.getElementById('period-sales').textContent = formatMoney(totalSales);
+  document.getElementById('period-purchases').textContent = formatMoney(totalPurchases);
+  const profit = totalSales - totalPurchases;
+  const profitEl = document.getElementById('period-profit');
+  profitEl.textContent = formatMoney(Math.abs(profit));
+  profitEl.style.color = profit >= 0 ? 'var(--success)' : 'var(--danger)';
+
+  // Build chart
+  let maxVal = 1;
+  let data;
+  
+  if (period === 'month') {
+    // Group into 5-day ranges
+    data = [];
+    for (let i = 0; i < buckets.length; i++) {
+      const from = buckets[i];
+      const to = i < buckets.length - 1 ? buckets[i + 1] : '9999';
+      let s = 0, p = 0;
+      invoices.forEach(inv => {
+        const d = (inv.date || '').slice(0, 10);
+        if (d >= from && d < to) {
+          if (inv.type === 'sale') s += (inv.total || 0);
+          if (inv.type === 'purchase') p += (inv.total || 0);
+        }
+      });
+      maxVal = Math.max(maxVal, s, p);
+      data.push({ label: labelFn(from), sales: s, purchases: p });
+    }
+  } else if (period === 'year') {
+    data = buckets.map(m => {
+      const s = invoices.filter(i => i.type === 'sale' && sliceFn(i) === m).reduce((sum, i) => sum + (i.total || 0), 0);
+      const p = invoices.filter(i => i.type === 'purchase' && sliceFn(i) === m).reduce((sum, i) => sum + (i.total || 0), 0);
+      maxVal = Math.max(maxVal, s, p);
+      return { label: labelFn(m), sales: s, purchases: p };
+    });
+  } else {
+    data = buckets.map(day => {
+      const s = invoices.filter(i => i.type === 'sale' && sliceFn(i) === day).reduce((sum, i) => sum + (i.total || 0), 0);
+      const p = invoices.filter(i => i.type === 'purchase' && sliceFn(i) === day).reduce((sum, i) => sum + (i.total || 0), 0);
+      maxVal = Math.max(maxVal, s, p);
+      return { label: labelFn(day), sales: s, purchases: p };
+    });
+  }
+
   container.innerHTML = data.map(d => {
-    const dayLabel = new Date(d.day).toLocaleDateString('ar-EG', { weekday: 'short' });
     const sW = Math.max(2, (d.sales / maxVal) * 100);
     const pW = Math.max(2, (d.purchases / maxVal) * 100);
     return `<div class="h-bar-row">
-      <span class="h-bar-label">${dayLabel}</span>
+      <span class="h-bar-label">${d.label}</span>
       <div style="flex:1;display:flex;flex-direction:column;gap:3px">
         <div class="h-bar-track"><div class="h-bar-fill sales" style="width:${sW}%">${d.sales > 0 ? formatMoney(d.sales) : ''}</div></div>
         <div class="h-bar-track"><div class="h-bar-fill purchases" style="width:${pW}%">${d.purchases > 0 ? formatMoney(d.purchases) : ''}</div></div>
       </div>
     </div>`;
   }).join('');
+
+  // Legend
+  if (!document.getElementById('chart-legend')) {
+    container.insertAdjacentHTML('afterend', '<div id="chart-legend" style="display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:11px;color:var(--text-muted)"><span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--success);margin-left:4px;"></span> مبيعات</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--danger);margin-left:4px;"></span> مشتريات</span></div>');
+  }
 }
 
 function renderMaintenanceDonut(devices) {
