@@ -6943,9 +6943,27 @@ let allInvoices = [];
 let currentInvoiceItems = [];
 let editingInvoiceType = 'sale'; // sale or purchase
 
+// Normalize invoice items (handle legacy field names)
+function normalizeInvoiceItems(invoices) {
+  for (const inv of invoices) {
+    if (inv.items) {
+      inv.items = inv.items.map(item => {
+        if (item.unitPrice === undefined && item.price !== undefined) {
+          item.unitPrice = item.price;
+        }
+        if (!item.unitPrice && item.total && item.quantity) {
+          item.unitPrice = item.total / item.quantity;
+        }
+        return item;
+      });
+    }
+  }
+  return invoices;
+}
+
 // ============ LOAD ============
 async function loadSalesPage() {
-  allInvoices = await dbGetAll('invoices');
+  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
   await loadClients();
   await loadSuppliers();
   allProducts = await dbGetAll('products');
@@ -6953,7 +6971,7 @@ async function loadSalesPage() {
 }
 
 async function loadPurchasesPage() {
-  allInvoices = await dbGetAll('invoices');
+  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
   await loadClients();
   await loadSuppliers();
   allProducts = await dbGetAll('products');
@@ -7088,7 +7106,11 @@ async function editInvoice(id) {
   if (!inv) return;
   
   editingInvoiceType = inv.type;
-  currentInvoiceItems = inv.items || [];
+  currentInvoiceItems = (inv.items || []).map(item => {
+    if (item.unitPrice === undefined && item.price !== undefined) item.unitPrice = item.price;
+    if (!item.unitPrice && item.total && item.quantity) item.unitPrice = item.total / item.quantity;
+    return item;
+  });
   
   document.getElementById('modal-invoice-title').textContent = inv.type === 'sale' ? 'تعديل فاتورة بيع' : 'تعديل فاتورة شراء';
   document.getElementById('invoice-id').value = inv.id;
@@ -7485,7 +7507,7 @@ async function deleteInvoice(id) {
   await updateBalances();
   toast('تم حذف الفاتورة');
   
-  allInvoices = await dbGetAll('invoices');
+  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
   renderSalesInvoices();
   renderPurchaseInvoices();
 }
@@ -7511,7 +7533,7 @@ async function recordPayment(id) {
   await updateBalances();
   toast('تم تسجيل الدفع');
   
-  allInvoices = await dbGetAll('invoices');
+  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
   renderSalesInvoices();
 }
 
@@ -8810,7 +8832,7 @@ let allServices = [];
 // ============ LOAD ============
 async function loadAccountingPage() {
   allExpenses = await dbGetAll('expenses');
-  allInvoices = await dbGetAll('invoices');
+  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
   allDevices = await dbGetAll('devices');
   allServices = await dbGetAll('services');
   await loadClients();
