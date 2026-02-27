@@ -3902,7 +3902,7 @@ function drawLineChart(canvas, data, maxVal) {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.parentElement.getBoundingClientRect();
   const W = rect.width;
-  const H = 200;
+  const H = 260;
   canvas.width = W * dpr;
   canvas.height = H * dpr;
   canvas.style.width = W + 'px';
@@ -3912,40 +3912,55 @@ function drawLineChart(canvas, data, maxVal) {
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, W, H);
   
-  const padL = 10, padR = 10, padT = 20, padB = 40;
+  const padL = 50, padR = 15, padT = 30, padB = 50;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
   const n = data.length;
   if (n === 0) return;
   
-  const step = chartW / Math.max(n - 1, 1);
+  // If all zeros, set maxVal to 100 for visual
+  if (maxVal <= 0) maxVal = 100;
+  // Add 20% padding to top
+  maxVal = maxVal * 1.2;
   
-  // Grid lines
-  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const y = padT + (chartH / 4) * i;
+  const step = n > 1 ? chartW / (n - 1) : chartW;
+
+  // Background
+  ctx.fillStyle = 'rgba(13,17,23,0.5)';
+  ctx.beginPath();
+  ctx.roundRect(0, 0, W, H, 12);
+  ctx.fill();
+  
+  // Grid lines + Y labels
+  const gridSteps = 5;
+  for (let i = 0; i <= gridSteps; i++) {
+    const y = padT + (chartH / gridSteps) * i;
+    const val = maxVal - (maxVal / gridSteps) * i;
+    
+    // Grid line
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-  }
-  
-  // Y-axis labels
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
-  ctx.font = '10px Cairo, sans-serif';
-  ctx.textAlign = 'right';
-  for (let i = 0; i <= 4; i++) {
-    const y = padT + (chartH / 4) * i;
-    const val = maxVal - (maxVal / 4) * i;
-    ctx.fillText(val >= 1000 ? Math.round(val/1000) + 'k' : Math.round(val), padL + 30, y + 3);
+    
+    // Y label
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font = '11px Cairo, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    const label = val >= 1000 ? (val/1000).toFixed(1) + 'k' : Math.round(val);
+    ctx.fillText(label, padL - 8, y);
   }
   
   function getPoints(key) {
     return data.map((d, i) => ({
-      x: padL + i * step,
-      y: padT + chartH - (d[key] / maxVal) * chartH
+      x: padL + (n > 1 ? i * step : chartW / 2),
+      y: padT + chartH - (d[key] / maxVal) * chartH,
+      val: d[key]
     }));
   }
   
   function drawArea(points, color, alpha) {
+    if (points.every(p => p.val === 0)) return;
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
     for (let i = 1; i < points.length; i++) {
@@ -3958,12 +3973,13 @@ function drawLineChart(canvas, data, maxVal) {
     ctx.closePath();
     const grad = ctx.createLinearGradient(0, padT, 0, padT + chartH);
     grad.addColorStop(0, color.replace('1)', alpha + ')'));
-    grad.addColorStop(1, color.replace('1)', '0)'));
+    grad.addColorStop(1, color.replace('1)', '0.01)'));
     ctx.fillStyle = grad;
     ctx.fill();
   }
   
   function drawLine(points, color, width) {
+    if (points.every(p => p.val === 0)) return;
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
     for (let i = 1; i < points.length; i++) {
@@ -3975,19 +3991,47 @@ function drawLineChart(canvas, data, maxVal) {
     ctx.lineWidth = width;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
+    // Shadow
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 8;
     ctx.stroke();
+    ctx.shadowBlur = 0;
   }
   
-  function drawDots(points, color) {
-    points.forEach(p => {
+  function drawDotsAndValues(points, color, showAll) {
+    points.forEach((p, i) => {
+      // Dot
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
       ctx.fillStyle = '#0d1117';
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
       ctx.fillStyle = color;
       ctx.fill();
+      
+      // Value label on dot (show if > 0)
+      if (p.val > 0 && (showAll || n <= 8 || i % 2 === 0 || i === n - 1)) {
+        const valText = p.val >= 1000 ? (p.val/1000).toFixed(1) + 'k' : Math.round(p.val).toString();
+        ctx.font = 'bold 10px Cairo, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        
+        // Background pill for value
+        const tw = ctx.measureText(valText).width + 8;
+        const tx = p.x;
+        const ty = p.y - 10;
+        ctx.fillStyle = 'rgba(13,17,23,0.85)';
+        ctx.beginPath();
+        ctx.roundRect(tx - tw/2, ty - 12, tw, 16, 4);
+        ctx.fill();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+        
+        ctx.fillStyle = color;
+        ctx.fillText(valText, tx, ty + 2);
+      }
     });
   }
   
@@ -3996,27 +4040,37 @@ function drawLineChart(canvas, data, maxVal) {
   const salesColor = 'rgba(34,197,94,1)';
   const purchColor = 'rgba(239,68,68,1)';
   
-  // Draw areas
-  drawArea(salesPts, salesColor, 0.15);
-  drawArea(purchPts, purchColor, 0.1);
+  // Draw areas (behind)
+  drawArea(salesPts, salesColor, 0.2);
+  drawArea(purchPts, purchColor, 0.12);
   
   // Draw lines
-  drawLine(salesPts, salesColor, 2.5);
   drawLine(purchPts, purchColor, 2);
+  drawLine(salesPts, salesColor, 2.5);
   
-  // Draw dots
-  drawDots(salesPts, salesColor);
-  drawDots(purchPts, purchColor);
+  // Draw dots + values (sales on top)
+  drawDotsAndValues(purchPts, purchColor, false);
+  drawDotsAndValues(salesPts, salesColor, true);
   
   // X labels
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.font = '10px Cairo, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = 'bold 11px Cairo, sans-serif';
   ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
   data.forEach((d, i) => {
-    // Skip some labels if too many
-    if (n > 8 && i % 2 !== 0 && i !== n - 1) return;
-    ctx.fillText(d.label, padL + i * step, H - 8);
+    if (n > 10 && i % 2 !== 0 && i !== n - 1) return;
+    const x = padL + (n > 1 ? i * step : chartW / 2);
+    ctx.fillText(d.label, x, padT + chartH + 10);
   });
+  
+  // Empty state
+  if (data.every(d => d.sales === 0 && d.purchases === 0)) {
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '14px Cairo, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('لا توجد بيانات لهذه الفترة', W / 2, H / 2);
+  }
 }
 
 function renderMaintenanceDonut(devices) {
