@@ -3459,18 +3459,34 @@ async function initDynamicLists() {
 function enhanceAllSelects() {
   document.querySelectorAll('select').forEach(select => {
     if (select.dataset.enhanced) return;
-    if (select.closest('.inv-item-row, .part-item')) return; // skip dynamic product selects
-    if (select.options.length < 2) return; // skip empty/single-option selects
+    if (select.closest('.inv-item-row, .part-item')) return; // skip dynamic product selects in invoice/maintenance rows
     select.dataset.enhanced = '1';
     const label = select.closest('.form-group')?.querySelector('label');
     const labelText = label ? label.textContent.replace('*','').trim() : 'اختر';
     select.addEventListener('mousedown', (e) => { e.preventDefault(); openStaticSelect(select, labelText); });
     select.addEventListener('touchstart', (e) => { e.preventDefault(); openStaticSelect(select, labelText); }, { passive: false });
+    // Also intercept focus to prevent native dropdown on programmatic focus
+    select.addEventListener('focus', (e) => { e.preventDefault(); select.blur(); });
   });
 }
 
+// Global delegation: catch any select that slips through
+document.addEventListener('click', (e) => {
+  const select = e.target.closest('select');
+  if (select && !select.dataset.enhanced && !select.closest('.inv-item-row, .part-item')) {
+    e.preventDefault();
+    const label = select.closest('.form-group')?.querySelector('label');
+    const labelText = label ? label.textContent.replace('*','').trim() : 'اختر';
+    select.dataset.enhanced = '1';
+    select.addEventListener('mousedown', (ev) => { ev.preventDefault(); openStaticSelect(select, labelText); });
+    select.addEventListener('touchstart', (ev) => { ev.preventDefault(); openStaticSelect(select, labelText); }, { passive: false });
+    openStaticSelect(select, labelText);
+  }
+}, true);
+
 function openStaticSelect(select, title) {
   closeCustomSelect();
+  if (select.options.length === 0) return; // nothing to show
   const overlay = document.createElement('div');
   overlay.className = 'custom-select-overlay';
   overlay.id = 'custom-select-overlay';
