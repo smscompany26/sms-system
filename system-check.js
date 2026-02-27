@@ -153,7 +153,6 @@
       '.tr-days{font-size:48px;font-weight:800;color:#f85149;line-height:1;margin:12px 0;}' +
       '.tr-sub{color:#a0a0b8;font-size:13px;margin-bottom:6px;}' +
       '.tr-msg{color:#8888a8;font-size:12px;line-height:1.6;margin-bottom:20px;}' +
-      '.tr-cd{font-family:monospace;font-size:13px;color:#d29922;margin-bottom:16px;direction:ltr;}' +
       '.tr-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}' +
       '.tr-btn{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all 0.2s;}' +
       '.tr-primary{background:linear-gradient(135deg,#6c3ce9,#8b5cf6);color:#fff;text-decoration:none;}' +
@@ -164,7 +163,6 @@
         '<div class="tr-icon">⏰</div>' +
         '<div class="tr-title">الفترة التجريبية على وشك الانتهاء</div>' +
         '<div class="tr-days">' + days + '</div>' +
-        '<div class="tr-sub">يوم متبقي</div>' +
         '<div style="font-size:13px;color:#d29922;margin-bottom:16px;">ينتهي في: ' + endDate.toLocaleDateString('ar-EG', {year:'numeric',month:'long',day:'numeric'}) + '</div>' +
         '<div class="tr-msg">' + (trial.message || 'للاستمرار في استخدام جميع المميزات، يرجى ترقية الاشتراك.') + '</div>' +
         '<div class="tr-btns">' +
