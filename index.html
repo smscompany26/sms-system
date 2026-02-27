@@ -1745,6 +1745,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 </head>
 <body>
 
@@ -6024,7 +6025,7 @@ async function viewProduct(id) {
     <div class="view-item"><div class="view-label">الحالة</div><div class="view-value">${p.condition === 'new' ? 'جديد' : 'مستعمل'}</div></div>
     <div class="view-item"><div class="view-label">النوع</div><div class="view-value">${p.type === 'device' ? 'جهاز' : 'قطعة غيار'}</div></div>
     <div class="view-item"><div class="view-label">التصنيف</div><div class="view-value">${catName}</div></div>
-    <div class="view-item"><div class="view-label">الباركود</div><div class="view-value">${p.barcode || '-'}</div></div>
+    <div class="view-item"><div class="view-label">الباركود</div><div class="view-value" style="font-family:monospace;letter-spacing:1px">${p.barcode || '-'}</div></div>
     ${showPrices ? `
     <div class="view-item"><div class="view-label">سعر الشراء</div><div class="view-value">${formatMoney(p.buyPrice)}</div></div>
     <div class="view-item"><div class="view-label">سعر البيع</div><div class="view-value">${formatMoney(p.sellPrice)}</div></div>
@@ -6042,11 +6043,36 @@ async function viewProduct(id) {
     html += `<div style="margin-top:16px"><img src="${p.image}" style="max-width:200px;border-radius:8px"></div>`;
   }
   
-  // Barcode display
-  html += `<div style="margin-top:20px;padding:12px;background:var(--bg);border-radius:8px;text-align:center">
-    <div style="font-family:monospace;font-size:28px;letter-spacing:4px;margin-bottom:4px">${p.barcode || p.sku}</div>
-    <div style="font-size:12px;color:var(--text-muted)">باركود</div>
-  </div>`;
+  // Barcode display with real scannable barcode
+  const barcodeVal = p.barcode || p.sku || '';
+  if (barcodeVal) {
+    html += `<div id="barcode-section" style="margin-top:20px;padding:16px;background:var(--bg);border-radius:12px;text-align:center">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text)">${p.name}</div>
+      <svg id="barcode-svg-${p.id}"></svg>
+      <div style="margin-top:12px">
+        <button type="button" class="btn btn-outline" onclick="printBarcodeSticker(${p.id})" style="font-size:13px;padding:6px 16px">
+          <i class='bx bx-printer'></i> طباعة باركود
+        </button>
+      </div>
+    </div>`;
+    // Render barcode after DOM update
+    setTimeout(() => {
+      try {
+        JsBarcode('#barcode-svg-' + p.id, barcodeVal, {
+          format: 'CODE128',
+          width: 2,
+          height: 60,
+          displayValue: true,
+          fontSize: 14,
+          font: 'monospace',
+          textMargin: 4,
+          margin: 8,
+          background: 'transparent',
+          lineColor: getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#333'
+        });
+      } catch(e) { console.warn('Barcode render error:', e); }
+    }, 100);
+  }
   
   // Movement history
   if (movements.length > 0) {
@@ -7545,6 +7571,43 @@ function exportInvoicePDF() {
 }
 
 // Thermal Receipt Printing
+async function printBarcodeSticker(productId) {
+  const p = await dbGet('products', productId);
+  if (!p) return;
+  const barcodeVal = p.barcode || p.sku || '';
+  if (!barcodeVal) { toast('لا يوجد باركود', 'error'); return; }
+  
+  const printWin = window.open('', '_blank');
+  printWin.document.write(`<!DOCTYPE html><html><head>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: Arial, sans-serif; }
+      .sticker { text-align: center; padding: 8px; width: 58mm; }
+      .sticker .name { font-size: 11px; font-weight: bold; margin-bottom: 4px; word-wrap: break-word; }
+      .sticker svg { width: 100%; height: auto; }
+      @media print {
+        @page { size: 58mm 40mm; margin: 2mm; }
+        body { min-height: auto; }
+      }
+    </style>
+  </head><body>
+    <div class="sticker">
+      <div class="name">${p.name}</div>
+      <svg id="bc"></svg>
+    </div>
+    <script>
+      JsBarcode('#bc', '${barcodeVal}', {
+        format: 'CODE128', width: 1.5, height: 40, displayValue: true,
+        fontSize: 10, font: 'monospace', textMargin: 2, margin: 4,
+        background: 'transparent', lineColor: '#000'
+      });
+      setTimeout(() => { window.print(); }, 300);
+    <\/script>
+  </body></html>`);
+  printWin.document.close();
+}
+
 async function printReceipt(invoiceId) {
   const inv = await dbGet('invoices', invoiceId);
   if (!inv) return;
