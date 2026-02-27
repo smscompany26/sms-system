@@ -5922,6 +5922,43 @@ function removeInvoicePhotoPreview(index) {
   previewInvoicePhotos(fileInput);
 }
 
+// Load existing photos when editing an invoice
+function loadExistingInvoicePhotos(photos) {
+  const preview = document.getElementById('invoice-photos-preview');
+  const fileInput = document.getElementById('invoice-photos');
+  
+  // Clear file input
+  fileInput.value = '';
+  preview.innerHTML = '';
+  
+  if (photos && photos.length > 0) {
+    photos.forEach((photo, index) => {
+      const photoDiv = document.createElement('div');
+      photoDiv.style.cssText = 'position:relative;display:inline-block;margin:4px;border:2px solid var(--primary);border-radius:8px;overflow:hidden;';
+      photoDiv.innerHTML = `
+        <img src="${photo}" style="width:80px;height:80px;object-fit:cover;display:block;">
+        <button type="button" onclick="removeExistingInvoicePhoto(${index})" 
+                style="position:absolute;top:2px;right:2px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+        <span style="position:absolute;bottom:0;left:0;right:0;background:rgba(108,60,233,0.8);color:#fff;font-size:10px;text-align:center;padding:2px;">موجود</span>
+      `;
+      preview.appendChild(photoDiv);
+    });
+  }
+}
+
+// Global variable to track existing photos during edit
+let existingInvoicePhotos = [];
+
+function removeExistingInvoicePhoto(index) {
+  const preview = document.getElementById('invoice-photos-preview');
+  const photoDiv = preview.children[index];
+  if (photoDiv) {
+    photoDiv.remove();
+  }
+  // Mark photo for removal by updating the visual state
+  existingInvoicePhotos[index] = null;
+}
+
 // ============ FULL SIZE PHOTO VIEWER ============
 function viewFullSizePhoto(photoBase64, index) {
   const overlay = document.createElement('div');
@@ -6609,6 +6646,12 @@ function openNewSaleInvoice() {
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('');
   
   document.getElementById('invoice-party-label').textContent = 'العميل';
+  
+  // Clear photos
+  document.getElementById('invoice-photos').value = '';
+  document.getElementById('invoice-photos-preview').innerHTML = '';
+  existingInvoicePhotos = [];
+  
   renderInvoiceItems();
   updateInvoiceTotals();
   openModal('modal-invoice');
@@ -6629,6 +6672,12 @@ function openNewPurchaseInvoice() {
     allSuppliers.map(s => `<option value="${s.id}">${s.name} (${s.code})</option>`).join('');
   
   document.getElementById('invoice-party-label').textContent = 'المورد';
+  
+  // Clear photos
+  document.getElementById('invoice-photos').value = '';
+  document.getElementById('invoice-photos-preview').innerHTML = '';
+  existingInvoicePhotos = [];
+  
   renderInvoiceItems();
   updateInvoiceTotals();
   openModal('modal-invoice');
@@ -6665,6 +6714,7 @@ async function editInvoice(id) {
   updateInvoiceTotals();
   
   // Load existing photos
+  existingInvoicePhotos = inv.photos || [];
   loadExistingInvoicePhotos(inv.photos);
   
   openModal('modal-invoice');
@@ -6786,15 +6836,28 @@ async function saveInvoice(e) {
   // Handle photo attachments
   let photos = [];
   const fileInput = document.getElementById('invoice-photos');
+  
+  if (id) {
+    // When editing, start with existing photos
+    const existing = await dbGet('invoices', parseInt(id));
+    const existingPhotos = existing?.photos || [];
+    
+    // Keep existing photos that weren't removed
+    const preview = document.getElementById('invoice-photos-preview');
+    const existingElements = Array.from(preview.children).filter(el => el.querySelector('span') && el.querySelector('span').textContent === 'موجود');
+    
+    existingElements.forEach((el) => {
+      const imgSrc = el.querySelector('img').src;
+      photos.push(imgSrc);
+    });
+  }
+  
+  // Add new photos
   if (fileInput.files.length > 0) {
     for (let i = 0; i < fileInput.files.length; i++) {
       const base64 = await fileToBase64(fileInput.files[i]);
       photos.push(base64);
     }
-  } else if (id) {
-    // Keep existing photos when editing
-    const existing = await dbGet('invoices', parseInt(id));
-    photos = existing?.photos || [];
   }
 
   const data = {
