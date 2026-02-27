@@ -3882,6 +3882,15 @@ function renderSalesOverview(invoices, period) {
   const purchData = data.map(d => d.purchases);
   const chartType = window._chartView === 'bar' ? 'bar' : 'line';
   
+  // Theme-aware colors
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
+  const tickColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.6)';
+  const legendColor = isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.7)';
+  const tooltipBg = isDark ? 'rgba(13,17,23,0.95)' : 'rgba(255,255,255,0.95)';
+  const tooltipText = isDark ? '#e6edf3' : '#1f2937';
+  const tooltipBorder = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+  
   const salesDataset = {
     label: 'المبيعات',
     data: salesData,
@@ -3929,7 +3938,7 @@ function renderSalesOverview(invoices, period) {
           position: 'bottom',
           rtl: true,
           labels: {
-            color: 'rgba(255,255,255,0.6)',
+            color: legendColor,
             font: { family: 'Cairo', size: 12, weight: '600' },
             padding: 20,
             usePointStyle: true,
@@ -3937,13 +3946,13 @@ function renderSalesOverview(invoices, period) {
           }
         },
         tooltip: {
-          backgroundColor: 'rgba(13,17,23,0.95)',
-          titleColor: '#e6edf3',
-          bodyColor: '#e6edf3',
+          backgroundColor: tooltipBg,
+          titleColor: tooltipText,
+          bodyColor: tooltipText,
           titleFont: { family: 'Cairo', size: 13, weight: '700' },
           bodyFont: { family: 'Cairo', size: 12 },
           padding: 12,
-          borderColor: 'rgba(255,255,255,0.1)',
+          borderColor: tooltipBorder,
           borderWidth: 1,
           cornerRadius: 10,
           displayColors: true,
@@ -3957,9 +3966,9 @@ function renderSalesOverview(invoices, period) {
       },
       scales: {
         x: {
-          grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+          grid: { color: gridColor, drawBorder: false },
           ticks: {
-            color: 'rgba(255,255,255,0.5)',
+            color: tickColor,
             font: { family: 'Cairo', size: 11, weight: '600' },
             maxRotation: 0,
           },
@@ -3967,9 +3976,9 @@ function renderSalesOverview(invoices, period) {
         },
         y: {
           beginAtZero: true,
-          grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+          grid: { color: gridColor, drawBorder: false },
           ticks: {
-            color: 'rgba(255,255,255,0.4)',
+            color: tickColor,
             font: { family: 'Cairo', size: 11 },
             callback: function(val) { return val >= 1000 ? (val/1000).toFixed(0) + 'k' : val; },
             maxTicksLimit: 6,
