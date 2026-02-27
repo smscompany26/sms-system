@@ -7798,10 +7798,19 @@ async function saveInlineClient(context) {
 
 function populateEngineerDropdown(selectedId) {
   const sel = document.getElementById('device-engineer');
+  // Remove enhanced flag so it gets re-enhanced with new options
+  delete sel.dataset.enhanced;
   sel.innerHTML = '<option value="">اختر المهندس/الفني</option>' +
     allEngineers.map(e => `<option value="${e.id}">${e.name} (${e.specialty})</option>`).join('') +
     '<option value="__other__">+ أخرى (إضافة مهندس جديد)</option>';
-  if (selectedId) sel.value = selectedId;
+  if (selectedId) {
+    sel.value = String(selectedId);
+    // If value didn't match (type mismatch), try finding the option
+    if (!sel.value || sel.value === '') {
+      const opt = Array.from(sel.options).find(o => String(o.value) === String(selectedId));
+      if (opt) opt.selected = true;
+    }
+  }
   document.getElementById('new-engineer-inline').style.display = 'none';
 }
 
