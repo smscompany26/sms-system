@@ -1262,6 +1262,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .summary-change.down { background:rgba(239,68,68,0.1); color:var(--danger); }
 
 .chart-section-title { font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.chart-toggle { display:flex; gap:2px; background:rgba(255,255,255,0.06); border-radius:8px; padding:2px; }
+.toggle-btn { width:32px; height:28px; border:none; background:transparent; color:var(--text-muted); border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
+.toggle-btn.active { background:rgba(108,60,233,0.2); color:var(--primary); }
 .chart-legend { display:flex; gap:16px; justify-content:center; margin-top:12px; font-size:11px; color:var(--text-muted); }
 .legend-dot { display:inline-block; width:10px; height:10px; border-radius:4px; margin-left:4px; vertical-align:middle; }
 
@@ -1552,8 +1555,15 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <span class="summary-label">صافي الربح</span>
             </div>
           </div>
-          <div class="chart-section-title"><i class='bx bx-chart'></i> تفاصيل الفترة</div>
-          <div id="dash-sales-chart" class="h-bar-chart"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div class="chart-section-title" style="margin:0;"><i class='bx bx-chart'></i> تفاصيل الفترة</div>
+            <div class="chart-toggle">
+              <button class="toggle-btn active" data-view="line" onclick="toggleChartView('line')" title="رسم بياني"><i class='bx bx-line-chart'></i></button>
+              <button class="toggle-btn" data-view="bars" onclick="toggleChartView('bars')" title="أعمدة"><i class='bx bx-bar-chart-alt-2'></i></button>
+            </div>
+          </div>
+          <canvas id="dash-sales-canvas" height="200" style="width:100%;display:block;"></canvas>
+          <div id="dash-sales-chart" class="h-bar-chart" style="display:none;"></div>
           <div class="chart-legend">
             <span><span class="legend-dot" style="background:var(--success);"></span> مبيعات</span>
             <span><span class="legend-dot" style="background:var(--danger);"></span> مشتريات</span>
@@ -3665,7 +3675,8 @@ async function loadDashboard() {
   // ===== CHARTS =====
   // Sales overview with period tabs
   window._dashInvoices = invoices;
-  renderSalesOverview(invoices, 'week');
+  renderSalesOverview(invoices, window._currentPeriod || 'week');
+  checkYearTab();
   
   // Maintenance donut
   renderMaintenanceDonut(devices);
@@ -3742,9 +3753,32 @@ function getWarrantyAlerts(devices, clients) {
 }
 
 // ===== DASHBOARD CHARTS =====
+window._chartView = 'line';
+window._currentPeriod = 'week';
+
 function switchSalesPeriod(period) {
+  window._currentPeriod = period;
   document.querySelectorAll('.period-tab').forEach(t => t.classList.toggle('active', t.dataset.period === period));
   if (window._dashInvoices) renderSalesOverview(window._dashInvoices, period);
+}
+
+function toggleChartView(view) {
+  window._chartView = view;
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+  if (window._dashInvoices) renderSalesOverview(window._dashInvoices, window._currentPeriod);
+}
+
+// Hide year tab if system < 1 year old
+function checkYearTab() {
+  const yearTab = document.querySelector('.period-tab[data-period="year"]');
+  if (!yearTab) return;
+  // Check oldest invoice
+  const invs = window._dashInvoices || [];
+  if (invs.length === 0) { yearTab.style.display = 'none'; return; }
+  const oldest = invs.reduce((min, i) => { const d = (i.date||''); return d < min ? d : min; }, invs[0].date || '');
+  const daysDiff = (Date.now() - new Date(oldest).getTime()) / 86400000;
+  if (daysDiff < 365) yearTab.style.display = 'none';
+  else yearTab.style.display = '';
 }
 
 function renderSalesOverview(invoices, period) {
@@ -3840,18 +3874,149 @@ function renderSalesOverview(invoices, period) {
     });
   }
 
-  container.innerHTML = data.map(d => {
-    const sW = Math.max(2, (d.sales / maxVal) * 100);
-    const pW = Math.max(2, (d.purchases / maxVal) * 100);
-    return `<div class="h-bar-row">
-      <span class="h-bar-label">${d.label}</span>
-      <div style="flex:1;display:flex;flex-direction:column;gap:3px">
-        <div class="h-bar-track"><div class="h-bar-fill sales" style="width:${sW}%">${d.sales > 0 ? formatMoney(d.sales) : ''}</div></div>
-        <div class="h-bar-track"><div class="h-bar-fill purchases" style="width:${pW}%">${d.purchases > 0 ? formatMoney(d.purchases) : ''}</div></div>
-      </div>
-    </div>`;
-  }).join('');
+  const canvas = document.getElementById('dash-sales-canvas');
+  const barsDiv = document.getElementById('dash-sales-chart');
+  
+  if (window._chartView === 'line') {
+    canvas.style.display = 'block';
+    barsDiv.style.display = 'none';
+    drawLineChart(canvas, data, maxVal);
+  } else {
+    canvas.style.display = 'none';
+    barsDiv.style.display = '';
+    barsDiv.innerHTML = data.map(d => {
+      const sW = Math.max(2, (d.sales / maxVal) * 100);
+      const pW = Math.max(2, (d.purchases / maxVal) * 100);
+      return `<div class="h-bar-row">
+        <span class="h-bar-label">${d.label}</span>
+        <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+          <div class="h-bar-track"><div class="h-bar-fill sales" style="width:${sW}%">${d.sales > 0 ? formatMoney(d.sales) : ''}</div></div>
+          <div class="h-bar-track"><div class="h-bar-fill purchases" style="width:${pW}%">${d.purchases > 0 ? formatMoney(d.purchases) : ''}</div></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
 
+function drawLineChart(canvas, data, maxVal) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const W = rect.width;
+  const H = 200;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+  
+  const padL = 10, padR = 10, padT = 20, padB = 40;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+  const n = data.length;
+  if (n === 0) return;
+  
+  const step = chartW / Math.max(n - 1, 1);
+  
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padT + (chartH / 4) * i;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+  }
+  
+  // Y-axis labels
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '10px Cairo, sans-serif';
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= 4; i++) {
+    const y = padT + (chartH / 4) * i;
+    const val = maxVal - (maxVal / 4) * i;
+    ctx.fillText(val >= 1000 ? Math.round(val/1000) + 'k' : Math.round(val), padL + 30, y + 3);
+  }
+  
+  function getPoints(key) {
+    return data.map((d, i) => ({
+      x: padL + i * step,
+      y: padT + chartH - (d[key] / maxVal) * chartH
+    }));
+  }
+  
+  function drawArea(points, color, alpha) {
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i-1], curr = points[i];
+      const cpx = (prev.x + curr.x) / 2;
+      ctx.bezierCurveTo(cpx, prev.y, cpx, curr.y, curr.x, curr.y);
+    }
+    ctx.lineTo(points[points.length-1].x, padT + chartH);
+    ctx.lineTo(points[0].x, padT + chartH);
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(0, padT, 0, padT + chartH);
+    grad.addColorStop(0, color.replace('1)', alpha + ')'));
+    grad.addColorStop(1, color.replace('1)', '0)'));
+    ctx.fillStyle = grad;
+    ctx.fill();
+  }
+  
+  function drawLine(points, color, width) {
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i-1], curr = points[i];
+      const cpx = (prev.x + curr.x) / 2;
+      ctx.bezierCurveTo(cpx, prev.y, cpx, curr.y, curr.x, curr.y);
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  }
+  
+  function drawDots(points, color) {
+    points.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#0d1117';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    });
+  }
+  
+  const salesPts = getPoints('sales');
+  const purchPts = getPoints('purchases');
+  const salesColor = 'rgba(34,197,94,1)';
+  const purchColor = 'rgba(239,68,68,1)';
+  
+  // Draw areas
+  drawArea(salesPts, salesColor, 0.15);
+  drawArea(purchPts, purchColor, 0.1);
+  
+  // Draw lines
+  drawLine(salesPts, salesColor, 2.5);
+  drawLine(purchPts, purchColor, 2);
+  
+  // Draw dots
+  drawDots(salesPts, salesColor);
+  drawDots(purchPts, purchColor);
+  
+  // X labels
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '10px Cairo, sans-serif';
+  ctx.textAlign = 'center';
+  data.forEach((d, i) => {
+    // Skip some labels if too many
+    if (n > 8 && i % 2 !== 0 && i !== n - 1) return;
+    ctx.fillText(d.label, padL + i * step, H - 8);
+  });
 }
 
 function renderMaintenanceDonut(devices) {
