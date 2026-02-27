@@ -3087,8 +3087,8 @@ tr:hover { background: rgba(108,60,233,0.02); }
         </div>
       </div>
 
-      <!-- Add Entry Button -->
-      <div class="add-history-entry" style="padding:16px;">
+      <!-- Add Entry Button (Admin only) -->
+      <div class="add-history-entry" id="add-history-btn-wrapper" style="padding:16px;display:none">
         <button class="btn btn-primary" onclick="showAddHistoryForm()">
           <i class='bx bx-plus'></i> إضافة سجل
         </button>
@@ -9183,6 +9183,10 @@ async function viewRepairHistory(deviceId) {
   const timeline = generateRepairTimeline(device);
   document.getElementById('repair-timeline').innerHTML = timeline;
   
+  // Show add/edit buttons only for admin
+  const addBtn = document.getElementById('add-history-btn-wrapper');
+  if (addBtn) addBtn.style.display = isAdmin() ? '' : 'none';
+  
   openModal('modal-repair-history');
 }
 
@@ -9246,8 +9250,8 @@ function generateRepairTimeline(device) {
     const typeMap = { 'استلام الجهاز': 'intake', 'استلام': 'intake', 'intake': 'intake', 'فحص وتشخيص': 'diagnosis', 'diagnosis': 'diagnosis', 'إصلاح': 'repair', 'repair': 'repair', 'اختبار': 'testing', 'testing': 'testing', 'اكتمال': 'completed', 'completed': 'completed', 'تسليم': 'delivered', 'delivered': 'delivered', 'انتهاء الصيانة': 'completed', 'تسليم الجهاز للعميل': 'delivered', 'اكتمال العملية': 'completed', 'تحديث الحالة': 'default' };
     const statusType = typeMap[entry.title] || 'default';
     
-    // Check if this is an editable entry (from repairHistory array)
-    const isEditable = entry.isEditable !== false && entry.title !== 'استلام الجهاز'; // Don't allow editing the intake entry
+    // Check if this is an editable entry (admin only, not intake)
+    const isEditable = isAdmin() && entry.isEditable !== false && entry.title !== 'استلام الجهاز';
     
     return `
       <div class="timeline-item repair-timeline-item" style="animation-delay:${idx * 0.06}s">
