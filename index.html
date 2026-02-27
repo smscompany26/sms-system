@@ -782,12 +782,18 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
 /* Invoice print styles */
 .invoice-print { padding: 20px; }
-.inv-header { display: flex; justify-content: space-between; }
-.inv-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-.inv-table th, .inv-table td { padding: 8px 12px; border: 1px solid var(--border); text-align: right; }
-.inv-table th { background: var(--bg); }
+.inv-header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.inv-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+.inv-table th, .inv-table td { padding: 6px 8px; border: 1px solid var(--border); text-align: right; }
+.inv-table th { background: var(--bg); font-size: 12px; }
 .inv-totals { text-align: left; margin-top: 16px; }
-.inv-totals div { display: flex; justify-content: space-between; max-width: 300px; margin-right: auto; padding: 4px 0; }
+.inv-totals div { display: flex; justify-content: space-between; max-width: 300px; margin-right: auto; padding: 4px 0; font-size: 14px; }
+@media (max-width: 480px) {
+  .inv-header { flex-direction: column; }
+  .inv-header > div:last-child { text-align: right !important; }
+  .inv-table th, .inv-table td { padding: 5px 4px; font-size: 12px; }
+  .inv-totals div { max-width: 100%; }
+}
 
 /* ========== Parts Rows ========== */
 .part-row {
@@ -6824,11 +6830,11 @@ async function viewInvoice(id) {
       <div id="invoice-qr" style="display:inline-block"></div>
     </div>
   </div>
-  <div style="text-align:center;margin-top:16px;padding:0 20px 20px">
-    <button class="btn btn-primary" onclick="printInvoice()"><i class='bx bx-printer'></i> طباعة</button>
-    <button class="btn btn-outline" onclick="exportInvoicePDF()"><i class='bx bx-file'></i> PDF</button>
-    <button class="btn btn-outline" onclick="printReceipt(${inv.id})" style="background:#333;color:#fff"><i class='bx bx-receipt'></i> ريسيت</button>
-    <button class="btn btn-success" onclick="shareInvoiceWhatsApp(${inv.id})" style="background:#25d366"><i class='bx bxl-whatsapp'></i> مشاركة واتساب</button>
+  <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px;padding:0 12px 20px">
+    <button class="btn btn-primary" onclick="printInvoice()" style="flex:1;min-width:100px;max-width:160px;font-size:13px;padding:8px 12px"><i class='bx bx-printer'></i> طباعة</button>
+    <button class="btn btn-outline" onclick="exportInvoicePDF()" style="flex:1;min-width:80px;max-width:120px;font-size:13px;padding:8px 12px"><i class='bx bx-file'></i> PDF</button>
+    <button class="btn btn-outline" onclick="printReceipt(${inv.id})" style="flex:1;min-width:80px;max-width:120px;font-size:13px;padding:8px 12px;background:#333;color:#fff"><i class='bx bx-receipt'></i> ريسيت</button>
+    <button class="btn btn-success" onclick="shareInvoiceWhatsApp(${inv.id})" style="flex:1;min-width:130px;max-width:180px;font-size:13px;padding:8px 12px;background:#25d366"><i class='bx bxl-whatsapp'></i> واتساب</button>
   </div>`;
   
   document.getElementById('view-product-content').innerHTML = html;
@@ -8458,6 +8464,188 @@ async function deleteUser(id) {
   await dbDelete('users', id);
   toast('تم حذف المستخدم');
   await loadUsersPage();
+}
+
+// ============ ENGINEERS MANAGEMENT ============
+let allEngineers = [];
+
+async function loadEngineersPage() {
+  allEngineers = await dbGetAll('engineers');
+  renderEngineersTable();
+}
+
+function renderEngineersTable() {
+  const tbody = document.getElementById('engineers-tbody');
+  const empty = document.getElementById('engineers-empty');
+  const table = document.getElementById('engineers-table');
+  
+  if (allEngineers.length === 0) {
+    table.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+  
+  table.style.display = '';
+  empty.style.display = 'none';
+  
+  tbody.innerHTML = allEngineers.map(eng => `
+    <tr>
+      <td><strong>${eng.name}</strong></td>
+      <td>${eng.phone || '-'}</td>
+      <td><span class="badge" style="background:rgba(108,60,233,0.1);color:var(--primary)">${eng.specialty}</span></td>
+      <td class="actions-cell">
+        <button class="btn-icon" title="تعديل" onclick="editEngineer(${eng.id})"><i class='bx bx-edit'></i></button>
+        <button class="btn-icon danger" title="حذف" onclick="deleteEngineer(${eng.id})"><i class='bx bx-trash'></i></button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openAddEngineer() {
+  document.getElementById('modal-engineer-title').textContent = 'إضافة مهندس/فني جديد';
+  document.getElementById('engineer-form').reset();
+  document.getElementById('engineer-id').value = '';
+  openModal('modal-engineer');
+}
+
+async function editEngineer(id) {
+  const engineer = await dbGet('engineers', id);
+  if (!engineer) return;
+  
+  document.getElementById('modal-engineer-title').textContent = 'تعديل المهندس/الفني';
+  document.getElementById('engineer-id').value = engineer.id;
+  document.getElementById('engineer-name').value = engineer.name;
+  document.getElementById('engineer-phone').value = engineer.phone || '';
+  document.getElementById('engineer-specialty').value = engineer.specialty || 'عام';
+  
+  openModal('modal-engineer');
+}
+
+async function saveEngineer(e) {
+  e.preventDefault();
+  
+  const id = document.getElementById('engineer-id').value;
+  const engineer = {
+    name: document.getElementById('engineer-name').value,
+    phone: document.getElementById('engineer-phone').value,
+    specialty: document.getElementById('engineer-specialty').value,
+    createdAt: new Date().toISOString(),
+  };
+  
+  if (id) {
+    engineer.id = parseInt(id);
+    engineer.updatedAt = new Date().toISOString();
+    await dbPut('engineers', engineer);
+    toast('تم تحديث المهندس/الفني');
+  } else {
+    await dbAdd('engineers', engineer);
+    toast('تم إضافة المهندس/الفني');
+  }
+  
+  await autoPush();
+  closeModal('modal-engineer');
+  await loadEngineersPage();
+}
+
+async function deleteEngineer(id) {
+  if (!confirm('حذف هذا المهندس/الفني؟')) return;
+  
+  // Check if engineer is assigned to any devices
+  const devices = await dbGetAll('devices');
+  const assignedDevices = devices.filter(d => d.engineerId === id);
+  
+  if (assignedDevices.length > 0) {
+    if (!confirm(`هذا المهندس/الفني مسؤول عن ${assignedDevices.length} جهاز. هل تريد المتابعة؟`)) return;
+  }
+  
+  await dbDelete('engineers', id);
+  toast('تم حذف المهندس/الفني');
+  await autoPush();
+  await loadEngineersPage();
+}
+
+// ============ REPAIR HISTORY ============
+async function viewRepairHistory(deviceId) {
+  const device = await dbGet('devices', deviceId);
+  if (!device) return;
+  
+  const client = allClients.find(c => c.id === device.clientId);
+  
+  // Populate device info
+  document.getElementById('history-device-order').textContent = device.orderNumber;
+  document.getElementById('history-device-name').textContent = device.deviceName;
+  document.getElementById('history-client-name').textContent = client?.name || device.clientName || '-';
+  document.getElementById('history-intake-date').textContent = formatDate(device.intakeDate);
+  
+  // Generate timeline
+  const timeline = generateRepairTimeline(device);
+  document.getElementById('repair-timeline').innerHTML = timeline;
+  
+  openModal('modal-repair-history');
+}
+
+function generateRepairTimeline(device) {
+  let timeline = [];
+  
+  // Device intake
+  timeline.push({
+    date: device.intakeDate,
+    title: 'استلام الجهاز',
+    content: `
+      <div><strong>الجهاز:</strong> ${device.deviceName}</div>
+      <div><strong>المشكلة:</strong> ${device.problem || 'غير محددة'}</div>
+      ${device.notes ? `<div><strong>ملاحظات:</strong> ${device.notes}</div>` : ''}
+    `,
+    engineer: null
+  });
+  
+  // Status changes (if available)
+  if (device.repairHistory && device.repairHistory.length > 0) {
+    device.repairHistory.forEach(entry => {
+      timeline.push({
+        date: entry.date,
+        title: entry.title,
+        content: entry.content,
+        engineer: entry.engineerId
+      });
+    });
+  }
+  
+  // Current status
+  if (device.status !== 'under_repair') {
+    const statusLabels = {
+      'done_not_delivered': 'انتهاء الصيانة',
+      'delivered_not_paid': 'تسليم الجهاز للعميل',
+      'completed': 'اكتمال العملية'
+    };
+    
+    timeline.push({
+      date: device.completedDate || device.updatedAt || device.createdAt,
+      title: statusLabels[device.status] || 'تحديث الحالة',
+      content: `
+        <div><strong>الحالة الجديدة:</strong> ${DEVICE_STATUSES[device.status]?.label || device.status}</div>
+        ${device.sellingPrice ? `<div><strong>سعر البيع:</strong> ${formatMoney(device.sellingPrice)}</div>` : ''}
+      `,
+      engineer: device.engineerId
+    });
+  }
+  
+  // Sort by date
+  timeline.sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  // Generate HTML
+  return timeline.map(entry => {
+    const engineer = entry.engineer ? allEngineers.find(e => e.id === entry.engineer) : null;
+    
+    return `
+      <div class="timeline-item">
+        <div class="timeline-date">${formatDateTime(entry.date)}</div>
+        <div class="timeline-title">${entry.title}</div>
+        <div class="timeline-content">${entry.content}</div>
+        ${engineer ? `<div class="timeline-engineer">👷 ${engineer.name}</div>` : ''}
+      </div>
+    `;
+  }).join('');
 }
 
 // ============ DEFAULT CATEGORIES ============
