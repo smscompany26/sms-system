@@ -3616,7 +3616,50 @@ function enhanceSelect(selectId, listKey, options = {}) {
   populateSelect(selectId, listKey, options);
 }
 
-// Custom bottom sheet select
+// Shared: build bottom sheet with search
+function _buildSelectSheet(overlay, title, optionsData, onSelect, showSearch) {
+  const searchHtml = showSearch ? `<div style="padding:8px 16px 4px"><input type="text" class="cs-search" placeholder="بحث..." style="width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;outline:none" autofocus></div>` : '';
+  
+  const optionsHtml = optionsData.map(o => o.html).join('');
+  
+  overlay.innerHTML = `
+    <div class="custom-select-sheet">
+      <div class="cs-handle"></div>
+      <div class="cs-title">${title || 'اختر'}</div>
+      ${searchHtml}
+      <div class="cs-options">${optionsHtml}</div>
+    </div>`;
+  
+  // Search filter
+  const searchInput = overlay.querySelector('.cs-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim().toLowerCase();
+      overlay.querySelectorAll('.cs-option').forEach(opt => {
+        if (opt.classList.contains('cs-other')) { opt.style.display = ''; return; }
+        const text = opt.textContent.toLowerCase();
+        const val = (opt.dataset.value || '').toLowerCase();
+        opt.style.display = (!q || text.includes(q) || val.includes(q)) ? '' : 'none';
+      });
+      overlay.querySelectorAll('.cs-divider').forEach(d => d.style.display = q ? 'none' : '');
+    });
+    setTimeout(() => searchInput.focus(), 300);
+  }
+  
+  // Click handlers
+  overlay.querySelectorAll('.cs-option').forEach(opt => {
+    opt.addEventListener('click', () => onSelect(opt));
+  });
+  
+  // Close + swipe
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeCustomSelect(); });
+  const sheet = overlay.querySelector('.custom-select-sheet');
+  let startY = 0;
+  sheet.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
+  sheet.addEventListener('touchmove', (e) => { if (e.touches[0].clientY - startY > 80) closeCustomSelect(); }, { passive: true });
+}
+
+// Custom bottom sheet select (enhanced selects with "أخرى")
 function openCustomSelect(select, listKey, options, title) {
   closeCustomSelect();
   
@@ -3624,60 +3667,33 @@ function openCustomSelect(select, listKey, options, title) {
   overlay.className = 'custom-select-overlay';
   overlay.id = 'custom-select-overlay';
   
-  const optionsHtml = Array.from(select.options).map((opt, i) => {
+  const optionsData = Array.from(select.options).map((opt, i) => {
     if (opt.value === '__other__') {
-      return `<div class="cs-divider"></div><div class="cs-option cs-other" data-value="__other__">أخرى...</div>`;
+      return { html: `<div class="cs-divider"></div><div class="cs-option cs-other" data-value="__other__">أخرى...</div>` };
     }
     const selected = opt.value === select.value ? ' selected' : '';
     const divider = i > 0 && select.options[i-1].value !== '' ? '<div class="cs-divider"></div>' : '';
-    return `${divider}<div class="cs-option${selected}" data-value="${escHtml(opt.value)}">${escHtml(opt.textContent)}</div>`;
-  }).join('');
+    return { html: `${divider}<div class="cs-option${selected}" data-value="${escHtml(opt.value)}">${escHtml(opt.textContent)}</div>` };
+  });
   
-  overlay.innerHTML = `
-    <div class="custom-select-sheet">
-      <div class="cs-handle"></div>
-      <div class="cs-title">${title || 'اختر'}</div>
-      <div class="cs-options">${optionsHtml}</div>
-    </div>`;
+  const showSearch = select.options.length > 5;
+  
+  _buildSelectSheet(overlay, title, optionsData, (opt) => {
+    const val = opt.dataset.value;
+    select.value = val;
+    select.dispatchEvent(new Event('change'));
+    const otherDiv = document.getElementById(`other-${select.dataset.selectId}`);
+    if (val === '__other__' && otherDiv) {
+      otherDiv.style.display = 'block';
+      setTimeout(() => otherDiv.querySelector('.other-text-input')?.focus(), 300);
+    } else if (otherDiv) {
+      otherDiv.style.display = 'none';
+    }
+    closeCustomSelect();
+  }, showSearch);
   
   document.body.appendChild(overlay);
   requestAnimationFrame(() => overlay.classList.add('show'));
-  
-  // Click handlers
-  overlay.querySelectorAll('.cs-option').forEach(opt => {
-    opt.addEventListener('click', () => {
-      const val = opt.dataset.value;
-      select.value = val;
-      select.dispatchEvent(new Event('change'));
-      
-      // Handle "other"
-      const otherDiv = document.getElementById(`other-${select.dataset.selectId}`);
-      if (val === '__other__' && otherDiv) {
-        otherDiv.style.display = 'block';
-        setTimeout(() => otherDiv.querySelector('.other-text-input')?.focus(), 300);
-      } else if (otherDiv) {
-        otherDiv.style.display = 'none';
-      }
-      
-      closeCustomSelect();
-    });
-  });
-  
-  // Close on overlay click
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closeCustomSelect();
-  });
-  
-  // Swipe down to close
-  let startY = 0;
-  const sheet = overlay.querySelector('.custom-select-sheet');
-  sheet.addEventListener('touchstart', (e) => {
-    startY = e.touches[0].clientY;
-  }, { passive: true });
-  sheet.addEventListener('touchmove', (e) => {
-    const dy = e.touches[0].clientY - startY;
-    if (dy > 80) closeCustomSelect();
-  }, { passive: true });
 }
 
 function closeCustomSelect() {
@@ -4033,35 +4049,27 @@ document.addEventListener('click', (e) => {
 
 function openStaticSelect(select, title) {
   closeCustomSelect();
-  if (select.options.length === 0) return; // nothing to show
+  if (select.options.length === 0) return;
   const overlay = document.createElement('div');
   overlay.className = 'custom-select-overlay';
   overlay.id = 'custom-select-overlay';
-  const optionsHtml = Array.from(select.options).map((opt, i) => {
+  
+  const optionsData = Array.from(select.options).map((opt, i) => {
     const selected = opt.value === select.value ? ' selected' : '';
     const divider = i > 0 ? '<div class="cs-divider"></div>' : '';
-    return `${divider}<div class="cs-option${selected}" data-value="${escHtml(opt.value)}">${escHtml(opt.textContent)}</div>`;
-  }).join('');
-  overlay.innerHTML = `
-    <div class="custom-select-sheet">
-      <div class="cs-handle"></div>
-      <div class="cs-title">${title}</div>
-      <div class="cs-options">${optionsHtml}</div>
-    </div>`;
+    return { html: `${divider}<div class="cs-option${selected}" data-value="${escHtml(opt.value)}">${escHtml(opt.textContent)}</div>` };
+  });
+  
+  const showSearch = select.options.length > 5;
+  
+  _buildSelectSheet(overlay, title, optionsData, (opt) => {
+    select.value = opt.dataset.value;
+    select.dispatchEvent(new Event('change'));
+    closeCustomSelect();
+  }, showSearch);
+  
   document.body.appendChild(overlay);
   requestAnimationFrame(() => overlay.classList.add('show'));
-  overlay.querySelectorAll('.cs-option').forEach(opt => {
-    opt.addEventListener('click', () => {
-      select.value = opt.dataset.value;
-      select.dispatchEvent(new Event('change'));
-      closeCustomSelect();
-    });
-  });
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeCustomSelect(); });
-  const sheet = overlay.querySelector('.custom-select-sheet');
-  let startY = 0;
-  sheet.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
-  sheet.addEventListener('touchmove', (e) => { if (e.touches[0].clientY - startY > 80) closeCustomSelect(); }, { passive: true });
 }
 
 // Activity Log helper
