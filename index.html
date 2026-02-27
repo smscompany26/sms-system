@@ -1051,97 +1051,40 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
 .repair-timeline {
   position: relative;
-  padding: 0;
-  margin-top: 20px;
-  padding-right: 24px;
-}
-.repair-timeline::before {
-  content: '';
-  position: absolute;
-  right: 11px;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: linear-gradient(180deg, var(--primary) 0%, var(--accent) 50%, var(--success) 100%);
-  border-radius: 3px;
+  padding: 8px 16px;
+  margin-top: 16px;
 }
 
 .timeline-item {
   position: relative;
-  margin-bottom: 24px;
-  animation: tlFadeIn 0.4s ease both;
+  margin-bottom: 12px;
+  animation: tlSlide 0.3s ease both;
 }
 .timeline-item:last-child { margin-bottom: 0; }
-
-@keyframes tlFadeIn {
-  from { opacity: 0; transform: translateX(-12px); }
-  to { opacity: 1; transform: translateX(0); }
+@keyframes tlSlide {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
-.tl-dot-col { display: none; }
-
-.tl-node {
-  position: absolute;
-  right: -24px;
-  top: 16px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 3px solid var(--bg-card);
-  box-shadow: 0 0 0 2px var(--primary), 0 2px 8px rgba(108,60,233,0.25);
-  z-index: 1;
-}
-.tl-node.status-intake { background: var(--primary); }
-.tl-node.status-diagnosis { background: var(--warning); }
-.tl-node.status-repair { background: var(--accent); }
-.tl-node.status-testing { background: var(--success); }
-.tl-node.status-completed { background: var(--success); }
-.tl-node.status-delivered { background: #10b981; }
-.tl-node.status-default { background: var(--primary-light); }
-.tl-node::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  border-radius: 50%;
-  background: inherit;
-  opacity: 0.4;
-  animation: tlPulse 2s ease-in-out infinite;
-}
-@keyframes tlPulse {
-  0%, 100% { transform: scale(1); opacity: 0.4; }
-  50% { transform: scale(1.6); opacity: 0; }
-}
-.timeline-item:not(:last-child) .tl-node::after { animation: none; opacity: 0; }
-.timeline-item:last-child .tl-node::after { animation: tlPulse 2s ease-in-out infinite; }
+.tl-dot-col, .tl-node { display: none; }
 
 .tl-card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 18px;
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
   box-shadow: var(--shadow);
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
+  border: 1px solid var(--border);
+  border-right: 4px solid var(--primary);
 }
-.tl-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 4px;
-  height: 100%;
-  border-radius: 0 var(--radius) var(--radius) 0;
-}
-.tl-card.type-intake::before { background: var(--primary); }
-.tl-card.type-diagnosis::before { background: var(--warning); }
-.tl-card.type-repair::before { background: var(--accent); }
-.tl-card.type-testing::before { background: var(--success); }
-.tl-card.type-completed::before { background: var(--success); }
-.tl-card.type-delivered::before { background: #10b981; }
-.tl-card.type-default::before { background: var(--primary-light); }
-
-.tl-card:hover { transform: translateX(-4px); box-shadow: var(--shadow-lg); }
+.tl-card.type-intake { border-right-color: var(--primary); }
+.tl-card.type-diagnosis { border-right-color: var(--warning); }
+.tl-card.type-repair { border-right-color: var(--accent); }
+.tl-card.type-testing { border-right-color: var(--success); }
+.tl-card.type-completed { border-right-color: var(--success); }
+.tl-card.type-delivered { border-right-color: #10b981; }
+.tl-card.type-default { border-right-color: var(--primary-light); }
 
 .tl-header {
   display: flex;
@@ -1186,33 +1129,22 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .tl-engineer i { font-size: 14px; }
 
 .device-header-info {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: #fff;
-  border-radius: var(--radius);
-  padding: 20px;
-  margin-bottom: 16px;
-  position: relative;
-  overflow: hidden;
-}
-.device-header-info::after {
-  content: '';
-  position: absolute;
-  top: -30px;
-  left: -30px;
-  width: 120px;
-  height: 120px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin: 0 16px 8px;
 }
 .device-header-info .device-info-row {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   flex-wrap: wrap;
+  font-size: 13px;
 }
 .device-header-info .device-info-row:last-child { margin-bottom: 0; }
-.device-header-info strong { opacity: 0.7; font-weight: 500; }
+.device-header-info strong { color: var(--text-muted); font-weight: 500; }
 
 /* Mobile: show nav, hide sections */
 @media (max-width: 768px) {
@@ -9072,15 +9004,14 @@ function generateRepairTimeline(device) {
     const statusType = typeMap[entry.title] || 'default';
     
     return `
-      <div class="timeline-item" style="animation-delay:${idx * 0.08}s">
-        <div class="tl-node status-${statusType}"></div>
+      <div class="timeline-item" style="animation-delay:${idx * 0.06}s">
         <div class="tl-card type-${statusType}">
           <div class="tl-header">
             <span class="tl-title">${entry.title}</span>
             <span class="tl-date">${formatDateTime(entry.date)}</span>
           </div>
           ${entry.content ? `<div class="tl-body">${entry.content}</div>` : ''}
-          ${engName ? `<div class="tl-engineer"><i class='bx bx-user-circle'></i> ${engName}</div>` : ''}
+          ${engName ? `<div class="tl-engineer"><i class='bx bx-wrench'></i> ${engName}</div>` : ''}
         </div>
       </div>
     `;
