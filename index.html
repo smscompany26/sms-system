@@ -1051,104 +1051,168 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
 .repair-timeline {
   position: relative;
-  padding: 0 8px;
-  margin-top: 16px;
+  padding: 0;
+  margin-top: 20px;
+  padding-right: 24px;
+}
+.repair-timeline::before {
+  content: '';
+  position: absolute;
+  right: 11px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--primary) 0%, var(--accent) 50%, var(--success) 100%);
+  border-radius: 3px;
 }
 
 .timeline-item {
   position: relative;
-  display: flex;
-  gap: 12px;
-  margin-bottom: 0;
-  padding-bottom: 20px;
+  margin-bottom: 24px;
+  animation: tlFadeIn 0.4s ease both;
 }
-.timeline-item:last-child { padding-bottom: 0; }
-.timeline-item:last-child .tl-line { display: none; }
+.timeline-item:last-child { margin-bottom: 0; }
 
-.tl-dot-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 36px;
+@keyframes tlFadeIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
 }
-.tl-dot {
-  width: 36px;
-  height: 36px;
+
+.tl-dot-col { display: none; }
+
+.tl-node {
+  position: absolute;
+  right: -24px;
+  top: 16px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: var(--primary);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(108,60,233,0.3);
+  border: 3px solid var(--bg-card);
+  box-shadow: 0 0 0 2px var(--primary), 0 2px 8px rgba(108,60,233,0.25);
+  z-index: 1;
 }
-.tl-line {
-  flex: 1;
-  width: 2px;
-  background: linear-gradient(to bottom, var(--primary-light), var(--border));
-  margin-top: 4px;
-  min-height: 20px;
+.tl-node.status-intake { background: var(--primary); }
+.tl-node.status-diagnosis { background: var(--warning); }
+.tl-node.status-repair { background: var(--accent); }
+.tl-node.status-testing { background: var(--success); }
+.tl-node.status-completed { background: var(--success); }
+.tl-node.status-delivered { background: #10b981; }
+.tl-node.status-default { background: var(--primary-light); }
+.tl-node::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.4;
+  animation: tlPulse 2s ease-in-out infinite;
 }
+@keyframes tlPulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.6); opacity: 0; }
+}
+.timeline-item:not(:last-child) .tl-node::after { animation: none; opacity: 0; }
+.timeline-item:last-child .tl-node::after { animation: tlPulse 2s ease-in-out infinite; }
 
 .tl-card {
-  flex: 1;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
+  border-radius: var(--radius);
+  padding: 16px 18px;
   box-shadow: var(--shadow);
-  transition: var(--transition);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
 }
-.tl-card:hover { box-shadow: var(--shadow-lg); }
+.tl-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.tl-card.type-intake::before { background: var(--primary); }
+.tl-card.type-diagnosis::before { background: var(--warning); }
+.tl-card.type-repair::before { background: var(--accent); }
+.tl-card.type-testing::before { background: var(--success); }
+.tl-card.type-completed::before { background: var(--success); }
+.tl-card.type-delivered::before { background: #10b981; }
+.tl-card.type-default::before { background: var(--primary-light); }
+
+.tl-card:hover { transform: translateX(-4px); box-shadow: var(--shadow-lg); }
 
 .tl-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-  flex-wrap: wrap;
-  gap: 4px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 8px;
 }
 .tl-title {
   font-weight: 700;
   font-size: 14px;
   color: var(--text);
+  letter-spacing: -0.2px;
 }
 .tl-date {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
-  direction: ltr;
+  background: var(--bg);
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  font-weight: 500;
 }
 .tl-body {
   font-size: 13px;
-  line-height: 1.5;
-  color: var(--text);
-  margin-bottom: 6px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-bottom: 8px;
 }
 .tl-engineer {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  background: linear-gradient(135deg, rgba(108,60,233,0.08), rgba(0,200,255,0.08));
-  color: var(--primary);
-  padding: 3px 10px;
+  gap: 6px;
+  padding: 4px 12px;
   border-radius: 20px;
   font-size: 11px;
   font-weight: 600;
+  color: var(--primary);
+  background: rgba(108,60,233,0.06);
+  border: 1px solid rgba(108,60,233,0.12);
 }
+.tl-engineer i { font-size: 14px; }
 
 .device-header-info {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: #fff;
-  border-radius: var(--radius-sm);
-  padding: 16px;
-  margin-bottom: 12px;
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
 }
-.device-header-info .device-info-row { margin-bottom: 6px; }
+.device-header-info::after {
+  content: '';
+  position: absolute;
+  top: -30px;
+  left: -30px;
+  width: 120px;
+  height: 120px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+}
+.device-header-info .device-info-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
 .device-header-info .device-info-row:last-child { margin-bottom: 0; }
-.device-header-info strong { opacity: 0.8; }
+.device-header-info strong { opacity: 0.7; font-weight: 500; }
 
 /* Mobile: show nav, hide sections */
 @media (max-width: 768px) {
@@ -9001,25 +9065,22 @@ function generateRepairTimeline(device) {
   timeline.sort((a, b) => new Date(a.date) - new Date(b.date));
   
   // Generate HTML
-  return timeline.map(entry => {
+  return timeline.map((entry, idx) => {
     const engineer = entry.engineer ? allEngineers.find(e => e.id === entry.engineer) : null;
     const engName = engineer?.name || entry.engineerName || null;
-    const icons = { 'استلام الجهاز': '📥', 'استلام': '📥', 'intake': '📥', 'فحص وتشخيص': '🔍', 'diagnosis': '🔍', 'إصلاح': '🔧', 'repair': '🔧', 'اختبار': '✅', 'testing': '✅', 'اكتمال': '🎉', 'completed': '🎉', 'تسليم': '📦', 'delivered': '📦', 'انتهاء الصيانة': '🎉', 'تسليم الجهاز للعميل': '📦', 'اكتمال العملية': '🏁', 'تحديث الحالة': '🔄' };
-    const icon = icons[entry.title] || '📌';
+    const typeMap = { 'استلام الجهاز': 'intake', 'استلام': 'intake', 'intake': 'intake', 'فحص وتشخيص': 'diagnosis', 'diagnosis': 'diagnosis', 'إصلاح': 'repair', 'repair': 'repair', 'اختبار': 'testing', 'testing': 'testing', 'اكتمال': 'completed', 'completed': 'completed', 'تسليم': 'delivered', 'delivered': 'delivered', 'انتهاء الصيانة': 'completed', 'تسليم الجهاز للعميل': 'delivered', 'اكتمال العملية': 'completed', 'تحديث الحالة': 'default' };
+    const statusType = typeMap[entry.title] || 'default';
     
     return `
-      <div class="timeline-item">
-        <div class="tl-dot-col">
-          <div class="tl-dot">${icon}</div>
-          <div class="tl-line"></div>
-        </div>
-        <div class="tl-card">
+      <div class="timeline-item" style="animation-delay:${idx * 0.08}s">
+        <div class="tl-node status-${statusType}"></div>
+        <div class="tl-card type-${statusType}">
           <div class="tl-header">
             <span class="tl-title">${entry.title}</span>
             <span class="tl-date">${formatDateTime(entry.date)}</span>
           </div>
           ${entry.content ? `<div class="tl-body">${entry.content}</div>` : ''}
-          ${engName ? `<div class="tl-engineer">👷 ${engName}</div>` : ''}
+          ${engName ? `<div class="tl-engineer"><i class='bx bx-user-circle'></i> ${engName}</div>` : ''}
         </div>
       </div>
     `;
