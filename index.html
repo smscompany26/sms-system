@@ -4740,7 +4740,9 @@ function toast(message, type = 'success') {
 
 // Format currency
 function formatMoney(amount) {
-  return new Intl.NumberFormat('ar-EG', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(amount) + ' ج.م';
+  const n = parseFloat(amount);
+  if (isNaN(n) || amount === undefined || amount === null) return '٠ ج.م';
+  return new Intl.NumberFormat('ar-EG', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(n) + ' ج.م';
 }
 
 // Format date
