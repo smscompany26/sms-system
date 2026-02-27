@@ -1234,24 +1234,43 @@ tr:hover { background: rgba(108,60,233,0.02); }
 }
 @keyframes scanLine { 0%,100%{opacity:0.3} 50%{opacity:1} }
 
-/* ========== Period Tabs ========== */
-.period-tabs { display:flex; gap:4px; background:rgba(255,255,255,0.05); border-radius:10px; padding:3px; }
-.period-tab { padding:6px 14px; border:none; background:transparent; color:var(--text-muted); font-size:12px; font-weight:600; border-radius:8px; cursor:pointer; font-family:inherit; transition:all 0.2s; }
-.period-tab.active { background:var(--primary); color:#fff; }
-.period-tab:hover:not(.active) { background:rgba(255,255,255,0.08); }
+/* ========== Sales Overview Widget ========== */
+.sales-widget { padding:20px; border-radius:16px; background:var(--card-bg); border:1px solid var(--border); }
+.sales-widget-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
+.sales-widget-title { font-size:16px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.sales-widget-title i { color:var(--primary); font-size:20px; }
 
-.sales-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-.summary-item { display:flex; align-items:center; gap:10px; padding:14px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
-.summary-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-.summary-sales .summary-icon { background:rgba(34,197,94,0.1); color:var(--success); }
-.summary-purchases .summary-icon { background:rgba(239,68,68,0.1); color:var(--danger); }
-.summary-profit .summary-icon { background:rgba(108,60,233,0.1); color:var(--primary); }
-.summary-value { display:block; font-size:16px; font-weight:700; color:var(--text); }
-.summary-label { display:block; font-size:11px; color:var(--text-muted); margin-top:2px; }
+.period-tabs { display:flex; gap:2px; background:rgba(255,255,255,0.06); border-radius:12px; padding:3px; }
+.period-tab { padding:7px 16px; border:none; background:transparent; color:var(--text-muted); font-size:12px; font-weight:600; border-radius:10px; cursor:pointer; font-family:inherit; transition:all 0.25s; }
+.period-tab.active { background:linear-gradient(135deg,var(--primary),var(--primary-light)); color:#fff; box-shadow:0 2px 8px rgba(108,60,233,0.3); }
+.period-tab:hover:not(.active) { background:rgba(255,255,255,0.08); color:var(--text); }
+
+.sales-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+.summary-item { padding:16px 14px; border-radius:14px; text-align:center; position:relative; overflow:hidden; }
+.summary-item::before { content:''; position:absolute; inset:0; opacity:0.06; border-radius:14px; }
+.summary-sales { background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.15); }
+.summary-purchases { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.15); }
+.summary-profit { background:rgba(108,60,233,0.08); border:1px solid rgba(108,60,233,0.15); }
+.summary-icon-top { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; margin:0 auto 8px; }
+.summary-sales .summary-icon-top { background:rgba(34,197,94,0.15); color:var(--success); }
+.summary-purchases .summary-icon-top { background:rgba(239,68,68,0.15); color:var(--danger); }
+.summary-profit .summary-icon-top { background:rgba(108,60,233,0.15); color:var(--primary); }
+.summary-value { display:block; font-size:18px; font-weight:800; color:var(--text); margin-bottom:2px; }
+.summary-label { display:block; font-size:11px; color:var(--text-muted); font-weight:500; }
+.summary-change { display:inline-block; font-size:10px; font-weight:600; padding:2px 6px; border-radius:6px; margin-top:4px; }
+.summary-change.up { background:rgba(34,197,94,0.1); color:var(--success); }
+.summary-change.down { background:rgba(239,68,68,0.1); color:var(--danger); }
+
+.chart-section-title { font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.chart-legend { display:flex; gap:16px; justify-content:center; margin-top:12px; font-size:11px; color:var(--text-muted); }
+.legend-dot { display:inline-block; width:10px; height:10px; border-radius:4px; margin-left:4px; vertical-align:middle; }
 
 @media(max-width:640px) {
-  .sales-summary { grid-template-columns:1fr; gap:8px; }
-  .summary-item { padding:10px; }
+  .sales-summary { grid-template-columns:repeat(3,1fr); gap:6px; }
+  .summary-item { padding:12px 8px; }
+  .summary-value { font-size:14px; }
+  .summary-icon-top { width:32px; height:32px; font-size:16px; }
+  .period-tab { padding:6px 12px; font-size:11px; }
 }
 
 /* ========== Dashboard Charts ========== */
@@ -1507,30 +1526,38 @@ tr:hover { background: rgba(108,60,233,0.02); }
         </div>
 
         <!-- Sales Overview Widget -->
-        <div class="card chart-card" style="margin-bottom:16px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
-            <h4 style="margin:0;"><i class='bx bx-bar-chart-alt-2'></i> نظرة عامة على المبيعات</h4>
-            <div class="period-tabs" id="salesPeriodTabs">
+        <div class="sales-widget" style="margin-bottom:16px;">
+          <div class="sales-widget-header">
+            <div class="sales-widget-title"><i class='bx bx-bar-chart-alt-2'></i> نظرة عامة على المبيعات</div>
+            <div class="period-tabs">
               <button class="period-tab active" data-period="week" onclick="switchSalesPeriod('week')">أسبوع</button>
               <button class="period-tab" data-period="month" onclick="switchSalesPeriod('month')">شهر</button>
               <button class="period-tab" data-period="year" onclick="switchSalesPeriod('year')">سنة</button>
             </div>
           </div>
-          <div class="sales-summary" id="salesSummary">
+          <div class="sales-summary">
             <div class="summary-item summary-sales">
-              <div class="summary-icon"><i class='bx bx-trending-up'></i></div>
-              <div><span class="summary-value" id="period-sales">0</span><span class="summary-label">المبيعات</span></div>
+              <div class="summary-icon-top"><i class='bx bx-trending-up'></i></div>
+              <span class="summary-value" id="period-sales">0</span>
+              <span class="summary-label">المبيعات</span>
             </div>
             <div class="summary-item summary-purchases">
-              <div class="summary-icon"><i class='bx bx-trending-down'></i></div>
-              <div><span class="summary-value" id="period-purchases">0</span><span class="summary-label">المشتريات</span></div>
+              <div class="summary-icon-top"><i class='bx bx-trending-down'></i></div>
+              <span class="summary-value" id="period-purchases">0</span>
+              <span class="summary-label">المشتريات</span>
             </div>
             <div class="summary-item summary-profit">
-              <div class="summary-icon"><i class='bx bx-money'></i></div>
-              <div><span class="summary-value" id="period-profit">0</span><span class="summary-label">صافي الربح</span></div>
+              <div class="summary-icon-top"><i class='bx bx-money'></i></div>
+              <span class="summary-value" id="period-profit">0</span>
+              <span class="summary-label">صافي الربح</span>
             </div>
           </div>
-          <div id="dash-sales-chart" class="h-bar-chart" style="margin-top:16px;"></div>
+          <div class="chart-section-title"><i class='bx bx-chart'></i> تفاصيل الفترة</div>
+          <div id="dash-sales-chart" class="h-bar-chart"></div>
+          <div class="chart-legend">
+            <span><span class="legend-dot" style="background:var(--success);"></span> مبيعات</span>
+            <span><span class="legend-dot" style="background:var(--danger);"></span> مشتريات</span>
+          </div>
         </div>
 
         <!-- Maintenance -->
@@ -3825,10 +3852,6 @@ function renderSalesOverview(invoices, period) {
     </div>`;
   }).join('');
 
-  // Legend
-  if (!document.getElementById('chart-legend')) {
-    container.insertAdjacentHTML('afterend', '<div id="chart-legend" style="display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:11px;color:var(--text-muted)"><span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--success);margin-left:4px;"></span> مبيعات</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--danger);margin-left:4px;"></span> مشتريات</span></div>');
-  }
 }
 
 function renderMaintenanceDonut(devices) {
@@ -7565,6 +7588,83 @@ async function saveCompanySettings() {
   
   toast('تم حفظ بيانات الشركة ✅');
 }
+</script>
+<script>
+// Seed test invoices (run once)
+async function seedTestInvoices() {
+  if (!db) return;
+  const existing = await dbGetAll('invoices');
+  if (existing.length > 0) return; // already has data
+  
+  const products = await dbGetAll('products');
+  if (products.length === 0) return;
+  const clients = await dbGetAll('clients');
+  const suppliers = await dbGetAll('suppliers');
+  
+  const now = new Date();
+  const testData = [];
+  
+  // Generate sales for last 14 days
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString();
+    const numSales = Math.floor(Math.random() * 3) + 1;
+    
+    for (let j = 0; j < numSales; j++) {
+      const prod = products[Math.floor(Math.random() * products.length)];
+      const qty = Math.floor(Math.random() * 5) + 1;
+      const price = prod.salePrice || prod.price || (Math.random() * 500 + 50);
+      const total = qty * price;
+      
+      testData.push({
+        type: 'sale',
+        number: `INV-${1000 + testData.length}`,
+        date: dateStr,
+        clientId: clients.length > 0 ? clients[0].id : null,
+        clientName: clients.length > 0 ? clients[0].name : 'عميل تجريبي',
+        supplierId: null, supplierName: '',
+        items: [{ productId: prod.id, productName: prod.name, quantity: qty, price: price, total: total }],
+        subtotal: total, total: total,
+        paymentStatus: 'paid', paidAmount: total,
+        notes: 'فاتورة اختبارية',
+      });
+    }
+    
+    // Some purchase days
+    if (i % 3 === 0) {
+      const prod = products[Math.floor(Math.random() * products.length)];
+      const qty = Math.floor(Math.random() * 10) + 5;
+      const price = prod.purchasePrice || prod.costPrice || (Math.random() * 200 + 30);
+      const total = qty * price;
+      
+      testData.push({
+        type: 'purchase',
+        number: `PO-${500 + testData.length}`,
+        date: dateStr,
+        clientId: null, clientName: '',
+        supplierId: suppliers.length > 0 ? suppliers[0].id : null,
+        supplierName: suppliers.length > 0 ? suppliers[0].name : 'مورد تجريبي',
+        items: [{ productId: prod.id, productName: prod.name, quantity: qty, price: price, total: total }],
+        subtotal: total, total: total,
+        paymentStatus: 'paid', paidAmount: total,
+        notes: 'فاتورة شراء اختبارية',
+      });
+    }
+  }
+  
+  for (const inv of testData) {
+    await dbAdd('invoices', inv);
+  }
+  console.log('[SEED] Added', testData.length, 'test invoices');
+  toast('تم إضافة ' + testData.length + ' فاتورة اختبارية ✅');
+  
+  // Refresh dashboard
+  if (typeof loadDashboard === 'function') loadDashboard();
+  else location.reload();
+}
+
+// Run seed after DB is ready
+setTimeout(() => { if (db) seedTestInvoices(); }, 2000);
 </script>
 <script src="system-check.js"></script>
 </body>
