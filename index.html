@@ -1023,6 +1023,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
 /* ========== Mobile Bottom Nav ========== */
 @media (max-width: 768px) {
   .sidebar { display: none !important; }
+  html, body { overflow-x: hidden !important; width: 100% !important; }
+  .app { overflow-x: hidden !important; width: 100% !important; }
+  .main-content { width: 100% !important; max-width: 100vw !important; margin: 0 !important; }
   .sidebar.mobile-open { display: flex !important; }
   
   .app { padding-bottom: 64px; }
