@@ -162,7 +162,7 @@
       '<div class="tr-box">' +
         '<div class="tr-icon">⏰</div>' +
         '<div class="tr-title">الفترة التجريبية على وشك الانتهاء</div>' +
-        '<div class="tr-days">' + days + '</div>' +
+        '<div class="tr-days">' + days + '</div>' + '<div style="color:#a0a0b8;font-size:14px;margin-bottom:8px;">أيام</div>' +
         '<div style="font-size:13px;color:#d29922;margin-bottom:16px;">ينتهي في: ' + endDate.toLocaleDateString('ar-EG', {year:'numeric',month:'long',day:'numeric'}) + '</div>' +
         '<div class="tr-msg">' + (trial.message || 'للاستمرار في استخدام جميع المميزات، يرجى ترقية الاشتراك.') + '</div>' +
         '<div class="tr-btns">' +
