@@ -1262,6 +1262,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .summary-change.down { background:rgba(239,68,68,0.1); color:var(--danger); }
 
 .chart-section-title { font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+/* Other input wrapper */
+.other-input-wrapper input[type="text"]:focus { border-color: var(--primary); outline: none; }
+.other-input-wrapper .other-add-btn:hover { opacity: 0.85; }
+
 .chart-toggle { display:flex; gap:2px; background:rgba(255,255,255,0.06); border-radius:8px; padding:2px; }
 .toggle-btn { width:32px; height:28px; border:none; background:transparent; color:var(--text-muted); border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
 .toggle-btn.active { background:rgba(108,60,233,0.2); color:var(--primary); }
@@ -2252,17 +2256,11 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div class="form-row">
         <div class="form-group">
           <label>الحالة *</label>
-          <select id="product-condition" required>
-            <option value="new">جديد</option>
-            <option value="used">مستعمل</option>
-          </select>
+          <select id="product-condition" required></select>
         </div>
         <div class="form-group">
           <label>النوع *</label>
-          <select id="product-type" required>
-            <option value="device">جهاز</option>
-            <option value="part">قطعة غيار</option>
-          </select>
+          <select id="product-type" required></select>
         </div>
         <div class="form-group">
           <label>التصنيف</label>
@@ -2424,22 +2422,13 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div class="form-row">
         <div class="form-group"><label>التاريخ</label><input type="date" id="expense-date" required></div>
         <div class="form-group"><label>نوع المصروف</label>
-          <select id="expense-type">
-            <option value="treasury">مصروفات خزينة</option>
-            <option value="indirect">مصروفات غير مباشرة</option>
-          </select>
+          <select id="expense-type"></select>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group"><label>التصنيف</label>
           <select id="expense-category">
             <option value="">عام</option>
-            <option value="إيجار">إيجار</option>
-            <option value="مرتبات">مرتبات</option>
-            <option value="كهرباء ومياه">كهرباء ومياه</option>
-            <option value="نقل">نقل ومواصلات</option>
-            <option value="صيانة">صيانة</option>
-            <option value="أخرى">أخرى</option>
           </select>
         </div>
       </div>
@@ -2705,7 +2694,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
  */
 
 const DB_NAME = 'sms_system';
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 let db = null;
 
 const STORES = {
@@ -2721,6 +2710,7 @@ const STORES = {
   users: { keyPath: 'id', autoIncrement: true, indexes: ['username'] },
   settings: { keyPath: 'key' },
   activityLog: { keyPath: 'id', autoIncrement: true, indexes: ['userId', 'date', 'action'] },
+  customLists: { keyPath: 'key' },
 };
 
 function openDB() {
@@ -2840,6 +2830,174 @@ function dbClear(storeName) {
     const req = tx.objectStore(storeName).clear();
     req.onsuccess = () => resolve();
     req.onerror = () => reject(req.error);
+  });
+}
+
+// ============ DYNAMIC LISTS (Custom Options) ============
+// Default lists for each customizable dropdown
+const DEFAULT_LISTS = {
+  'expense-categories': ['إيجار', 'مرتبات', 'كهرباء ومياه', 'نقل ومواصلات', 'صيانة'],
+  'expense-types': ['مصروفات خزينة', 'مصروفات غير مباشرة'],
+  'product-conditions': ['جديد', 'مستعمل'],
+  'product-types': ['جهاز', 'قطعة غيار', 'اكسسوار', 'كابل', 'شاحن'],
+  'payment-statuses': ['مدفوع', 'غير مدفوع', 'جزئي'],
+  'device-statuses': ['تحت الصيانة', 'تم الإصلاح', 'تم التسليم', 'مكتملة'],
+  'service-statuses': ['مجدول', 'جاري', 'مكتمل', 'ملغي'],
+};
+
+async function getCustomList(listKey) {
+  try {
+    const saved = await dbGet('customLists', listKey);
+    if (saved && saved.items && saved.items.length > 0) return saved.items;
+  } catch(e) {}
+  return DEFAULT_LISTS[listKey] || [];
+}
+
+async function addToCustomList(listKey, newItem) {
+  if (!newItem || !newItem.trim()) return;
+  newItem = newItem.trim();
+  let items = await getCustomList(listKey);
+  if (items.includes(newItem)) return;
+  items.push(newItem);
+  await dbPut('customLists', { key: listKey, items });
+  return items;
+}
+
+async function removeFromCustomList(listKey, item) {
+  let items = await getCustomList(listKey);
+  items = items.filter(i => i !== item);
+  await dbPut('customLists', { key: listKey, items });
+  return items;
+}
+
+// Enhance a <select> with "Other" + add option
+function enhanceSelect(selectId, listKey, options = {}) {
+  const select = document.getElementById(selectId);
+  if (!select || select.dataset.enhanced) return;
+  select.dataset.enhanced = '1';
+  
+  const wrapper = select.parentElement;
+  const { valueMap, emptyLabel, includeEmpty } = options;
+  
+  // Create the "other" input area (hidden initially)
+  const otherDiv = document.createElement('div');
+  otherDiv.className = 'other-input-wrapper';
+  otherDiv.style.cssText = 'display:none;margin-top:8px;';
+  otherDiv.innerHTML = `
+    <div style="display:flex;gap:6px;align-items:center;">
+      <input type="text" class="other-text-input" placeholder="اكتب هنا..." style="flex:1;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:13px;">
+      <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted);white-space:nowrap;cursor:pointer;">
+        <input type="checkbox" class="other-save-cb" style="accent-color:var(--primary);">
+        <span>احفظ</span>
+      </label>
+      <button type="button" class="other-add-btn" style="padding:6px 12px;background:var(--primary);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;">✓</button>
+    </div>`;
+  wrapper.appendChild(otherDiv);
+  
+  const textInput = otherDiv.querySelector('.other-text-input');
+  const saveCb = otherDiv.querySelector('.other-save-cb');
+  const addBtn = otherDiv.querySelector('.other-add-btn');
+  
+  select.addEventListener('change', () => {
+    otherDiv.style.display = select.value === '__other__' ? 'block' : 'none';
+    if (select.value === '__other__') textInput.focus();
+  });
+  
+  addBtn.addEventListener('click', async () => {
+    const val = textInput.value.trim();
+    if (!val) return;
+    
+    // Add to list permanently if checkbox checked
+    if (saveCb.checked) {
+      await addToCustomList(listKey, val);
+      toast('تم إضافة "' + val + '" للقائمة ✅');
+    }
+    
+    // Add option to select and select it
+    const opt = document.createElement('option');
+    opt.value = valueMap ? (valueMap(val) || val) : val;
+    opt.textContent = val;
+    // Insert before "أخرى"
+    const otherOpt = select.querySelector('option[value="__other__"]');
+    if (otherOpt) select.insertBefore(opt, otherOpt);
+    else select.appendChild(opt);
+    
+    select.value = opt.value;
+    otherDiv.style.display = 'none';
+    textInput.value = '';
+    saveCb.checked = false;
+  });
+  
+  // Populate from custom list
+  populateSelect(selectId, listKey, options);
+}
+
+async function populateSelect(selectId, listKey, options = {}) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  
+  const { valueMap, emptyLabel, includeEmpty } = options;
+  const items = await getCustomList(listKey);
+  const currentVal = select.value;
+  
+  select.innerHTML = '';
+  if (includeEmpty !== false) {
+    const empty = document.createElement('option');
+    empty.value = '';
+    empty.textContent = emptyLabel || 'اختر...';
+    select.appendChild(empty);
+  }
+  
+  items.forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = valueMap ? (valueMap(item) || item) : item;
+    opt.textContent = item;
+    select.appendChild(opt);
+  });
+  
+  // Add "Other" option
+  const otherOpt = document.createElement('option');
+  otherOpt.value = '__other__';
+  otherOpt.textContent = '➕ أخرى...';
+  otherOpt.style.color = 'var(--primary)';
+  select.appendChild(otherOpt);
+  
+  // Restore value
+  if (currentVal) select.value = currentVal;
+}
+
+// Initialize all enhanced selects after DB ready
+async function initDynamicLists() {
+  // Expense categories
+  enhanceSelect('expense-category', 'expense-categories', { emptyLabel: 'عام', includeEmpty: true });
+  
+  // Product category is already dynamic from categories store, skip
+  
+  // Expense type
+  enhanceSelect('expense-type', 'expense-types', {
+    includeEmpty: false,
+    valueMap: (label) => {
+      const map = { 'مصروفات خزينة': 'treasury', 'مصروفات غير مباشرة': 'indirect' };
+      return map[label] || label;
+    }
+  });
+  
+  // Product condition
+  enhanceSelect('product-condition', 'product-conditions', {
+    includeEmpty: false,
+    valueMap: (label) => {
+      const map = { 'جديد': 'new', 'مستعمل': 'used' };
+      return map[label] || label;
+    }
+  });
+  
+  // Product type
+  enhanceSelect('product-type', 'product-types', {
+    includeEmpty: false,
+    valueMap: (label) => {
+      const map = { 'جهاز': 'device', 'قطعة غيار': 'part', 'اكسسوار': 'accessory', 'كابل': 'cable', 'شاحن': 'charger' };
+      return map[label] || label;
+    }
   });
 }
 
@@ -4117,6 +4275,9 @@ async function initApp() {
     
     // Load default categories (first run only)
     await loadDefaultCategories();
+    
+    // Init dynamic lists (customizable dropdowns)
+    await initDynamicLists();
     
     // Init Google Drive connection
     initDriveAuth();
@@ -5501,7 +5662,7 @@ function renderSalesInvoices() {
       <button class="btn-icon" title="عرض/طباعة" onclick="viewInvoice(${inv.id})"><i class='bx bx-printer'></i></button>
       <button class="btn-icon" title="تعديل" onclick="editInvoice(${inv.id})"><i class='bx bx-edit'></i></button>
       ${inv.paymentStatus !== 'paid' ? `<button class="btn-icon" title="تسجيل دفع" onclick="recordPayment(${inv.id})"><i class='bx bx-money'></i></button>` : ''}
-      <button class="btn-icon danger" title="حذف" onclick="deleteInvoice(${inv.id})"><i class='bx bx-trash'></i></button>
+      ${isAdmin() ? `<button class="btn-icon danger" title="حذف" onclick="deleteInvoice(${inv.id})"><i class='bx bx-trash'></i></button>` : ''}
     </td>
   </tr>`).join('');
 }
@@ -5525,7 +5686,7 @@ function renderPurchaseInvoices() {
     <td class="actions-cell">
       <button class="btn-icon" title="عرض" onclick="viewInvoice(${inv.id})"><i class='bx bx-printer'></i></button>
       <button class="btn-icon" title="تعديل" onclick="editInvoice(${inv.id})"><i class='bx bx-edit'></i></button>
-      <button class="btn-icon danger" title="حذف" onclick="deleteInvoice(${inv.id})"><i class='bx bx-trash'></i></button>
+      ${isAdmin() ? `<button class="btn-icon danger" title="حذف" onclick="deleteInvoice(${inv.id})"><i class='bx bx-trash'></i></button>` : ''}
     </td>
   </tr>`).join('');
 }
@@ -5818,6 +5979,7 @@ async function updateBalances() {
 
 // ============ DELETE ============
 async function deleteInvoice(id) {
+  if (!isAdmin()) { toast('مسح الفواتير متاح للمدير فقط', 'error'); return; }
   const inv = await dbGet('invoices', id);
   if (!confirm(`حذف الفاتورة ${inv?.number}؟`)) return;
   
