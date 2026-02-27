@@ -2839,7 +2839,16 @@ tr:hover { background: rgba(108,60,233,0.02); }
         </div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>العميل</label><select id="device-client"></select></div>
+        <div class="form-group"><label>العميل</label>
+          <select id="device-client" onchange="onClientSelect(this, 'device')"></select>
+          <div id="new-client-device-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
+              <input type="text" id="new-client-device-name" placeholder="اسم العميل" style="flex:2;min-width:120px">
+              <input type="text" id="new-client-device-phone" placeholder="الهاتف" style="flex:1;min-width:100px">
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineClient('device')" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
+            </div>
+          </div>
+        </div>
         <div class="form-group"><label>اسم الجهاز *</label><input type="text" id="device-name" required></div>
       </div>
       <div class="form-row">
@@ -3004,7 +3013,16 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="form-group"><label>التاريخ</label><input type="date" id="invoice-date" required></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label id="invoice-party-label">العميل</label><select id="invoice-party"></select></div>
+        <div class="form-group"><label id="invoice-party-label">العميل</label>
+          <select id="invoice-party" onchange="onClientSelect(this, 'invoice')"></select>
+          <div id="new-client-invoice-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
+              <input type="text" id="new-client-invoice-name" placeholder="الاسم" style="flex:2;min-width:120px">
+              <input type="text" id="new-client-invoice-phone" placeholder="الهاتف" style="flex:1;min-width:100px">
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineClient('invoice')" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
+            </div>
+          </div>
+        </div>
         <div class="form-group">
           <label>حالة الدفع</label>
           <select id="invoice-payment-status">
@@ -3062,7 +3080,16 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <input type="hidden" id="service-id">
       <div class="form-row">
         <div class="form-group"><label>التاريخ</label><input type="date" id="service-date" required></div>
-        <div class="form-group"><label>العميل</label><select id="service-client"><option value="">اختر العميل</option></select></div>
+        <div class="form-group"><label>العميل</label>
+          <select id="service-client" onchange="onClientSelect(this, 'service')"><option value="">اختر العميل</option></select>
+          <div id="new-client-service-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
+              <input type="text" id="new-client-service-name" placeholder="اسم العميل" style="flex:2;min-width:120px">
+              <input type="text" id="new-client-service-phone" placeholder="الهاتف" style="flex:1;min-width:100px">
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineClient('service')" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="form-group"><label>الوصف *</label><input type="text" id="service-description" required placeholder="وصف الخدمة أو الزيارة"></div>
       <div class="form-group"><label>الموقع</label><input type="text" id="service-location" placeholder="عنوان أو موقع الزيارة"></div>
@@ -6643,7 +6670,8 @@ function openNewSaleInvoice() {
   // Populate client dropdown
   const sel = document.getElementById('invoice-party');
   sel.innerHTML = '<option value="">اختر العميل</option>' + 
-    allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('');
+    allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
+    '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
   
   document.getElementById('invoice-party-label').textContent = 'العميل';
   
@@ -6669,7 +6697,8 @@ function openNewPurchaseInvoice() {
   
   const sel = document.getElementById('invoice-party');
   sel.innerHTML = '<option value="">اختر المورد</option>' + 
-    allSuppliers.map(s => `<option value="${s.id}">${s.name} (${s.code})</option>`).join('');
+    allSuppliers.map(s => `<option value="${s.id}">${s.name} (${s.code})</option>`).join('') +
+    '<option value="__other__">+ أخرى (إضافة مورد جديد)</option>';
   
   document.getElementById('invoice-party-label').textContent = 'المورد';
   
@@ -6701,11 +6730,11 @@ async function editInvoice(id) {
   
   const sel = document.getElementById('invoice-party');
   if (inv.type === 'sale') {
-    sel.innerHTML = '<option value="">اختر العميل</option>' + allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    sel.innerHTML = '<option value="">اختر العميل</option>' + allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('') + '<option value="__other__">+ أخرى</option>';
     sel.value = inv.clientId || '';
     document.getElementById('invoice-party-label').textContent = 'العميل';
   } else {
-    sel.innerHTML = '<option value="">اختر المورد</option>' + allSuppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    sel.innerHTML = '<option value="">اختر المورد</option>' + allSuppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('') + '<option value="__other__">+ أخرى</option>';
     sel.value = inv.supplierId || '';
     document.getElementById('invoice-party-label').textContent = 'المورد';
   }
@@ -7443,6 +7472,56 @@ function updateMaintenanceStats() {
 }
 
 // ============ DEVICE INTAKE ============
+// ============ INLINE CLIENT/SUPPLIER ADD ============
+function onClientSelect(sel, context) {
+  const inlineDiv = document.getElementById(`new-client-${context}-inline`);
+  if (!inlineDiv) return;
+  if (sel.value === '__other__') {
+    inlineDiv.style.display = 'block';
+    const nameInput = document.getElementById(`new-client-${context}-name`);
+    if (nameInput) nameInput.focus();
+  } else {
+    inlineDiv.style.display = 'none';
+  }
+}
+
+async function saveInlineClient(context) {
+  const name = document.getElementById(`new-client-${context}-name`).value.trim();
+  if (!name) { toast('أدخل الاسم', 'error'); return; }
+  const phone = document.getElementById(`new-client-${context}-phone`).value.trim();
+  
+  // Determine if this is a supplier (purchase invoice) or client
+  const sel = context === 'invoice' ? document.getElementById('invoice-party') : 
+              context === 'device' ? document.getElementById('device-client') :
+              document.getElementById('service-client');
+  
+  const isSupplier = context === 'invoice' && document.getElementById('invoice-type')?.value === 'purchase';
+  const store = isSupplier ? 'suppliers' : 'clients';
+  const allItems = isSupplier ? allSuppliers : allClients;
+  const code = (isSupplier ? 'SUP-' : 'CL-') + String(allItems.length + 1).padStart(3, '0');
+  
+  const item = { name, phone, code, address: '', createdAt: new Date().toISOString() };
+  const id = await dbPut(store, item);
+  item.id = id;
+  allItems.push(item);
+  autoPush();
+  
+  // Reset inline form
+  document.getElementById(`new-client-${context}-name`).value = '';
+  document.getElementById(`new-client-${context}-phone`).value = '';
+  document.getElementById(`new-client-${context}-inline`).style.display = 'none';
+  
+  // Add new option and select it
+  const newOpt = document.createElement('option');
+  newOpt.value = id;
+  newOpt.textContent = `${name} (${code})`;
+  const otherOpt = sel.querySelector('option[value="__other__"]');
+  sel.insertBefore(newOpt, otherOpt);
+  sel.value = id;
+  
+  toast(`تم إضافة ${isSupplier ? 'المورد' : 'العميل'} بنجاح`);
+}
+
 function populateEngineerDropdown(selectedId) {
   const sel = document.getElementById('device-engineer');
   sel.innerHTML = '<option value="">اختر المهندس/الفني</option>' +
@@ -7494,8 +7573,9 @@ function openNewDevice() {
   
   // Populate client dropdown
   const sel = document.getElementById('device-client');
-  sel.innerHTML = '<option value="">اختر العميل أو أضف جديد</option>' +
-    allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('');
+  sel.innerHTML = '<option value="">اختر العميل</option>' +
+    allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
+    '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
   
   // Populate engineer dropdown
   populateEngineerDropdown();
@@ -7529,7 +7609,8 @@ async function editDevice(id) {
   
   const sel = document.getElementById('device-client');
   sel.innerHTML = '<option value="">اختر العميل</option>' +
-    allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('');
+    allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
+    '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
   sel.value = d.clientId || '';
   
   // Populate engineer dropdown
@@ -8224,7 +8305,8 @@ function openNewService() {
   
   const sel = document.getElementById('service-client');
   sel.innerHTML = '<option value="">اختر العميل</option>' +
-    allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('');
+    allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
+    '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
   
   openModal('modal-service');
 }
@@ -8243,7 +8325,8 @@ async function editService(id) {
   
   const sel = document.getElementById('service-client');
   sel.innerHTML = '<option value="">اختر العميل</option>' +
-    allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('');
+    allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
+    '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
   sel.value = s.clientId || '';
   
   openModal('modal-service');
