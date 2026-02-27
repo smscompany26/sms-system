@@ -2087,6 +2087,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <table id="products-table">
               <thead>
                 <tr>
+                  <th style="width:36px"><input type="checkbox" id="products-select-all" onchange="toggleSelectAll('products')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th>
                   <th>الكود</th>
                   <th>الصنف</th>
                   <th>الحالة</th>
@@ -2102,6 +2103,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <tbody id="products-tbody">
               </tbody>
             </table>
+          </div>
+          <div id="products-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
+            <span style="color:#fff;font-size:13px;font-weight:600" id="products-selected-count">0 محدد</span>
+            <button class="btn" onclick="bulkDeleteProducts()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
           </div>
           <div id="products-empty" class="empty-state">
             <i class='bx bx-package' style="font-size:48px;color:#ccc"></i>
@@ -2160,10 +2165,15 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="table-responsive">
               <table id="sales-table">
                 <thead><tr>
+                  <th style="width:36px"><input type="checkbox" id="sales-select-all" onchange="toggleSelectAll('sales')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th>
                   <th>رقم الفاتورة</th><th>التاريخ</th><th>العميل</th><th>الأصناف</th><th>الإجمالي</th><th>الحالة</th><th>إجراءات</th>
                 </tr></thead>
                 <tbody id="sales-tbody"></tbody>
               </table>
+              <div id="sales-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;display:none;align-items:center;justify-content:space-between;gap:12px">
+                <span style="color:#fff;font-size:13px;font-weight:600" id="sales-selected-count">0 محدد</span>
+                <button class="btn" onclick="bulkDeleteInvoices('sale')" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
+              </div>
             </div>
             <div id="sales-empty" class="empty-state">
               <i class='bx bx-receipt' style="font-size:48px;color:#ccc"></i>
@@ -2258,10 +2268,15 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="table-responsive">
               <table id="purchases-table">
                 <thead><tr>
+                  <th style="width:36px"><input type="checkbox" id="purchases-select-all" onchange="toggleSelectAll('purchases')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th>
                   <th>رقم الفاتورة</th><th>التاريخ</th><th>المورد</th><th>الأصناف</th><th>الإجمالي</th><th>الحالة</th><th>إجراءات</th>
                 </tr></thead>
                 <tbody id="purchases-tbody"></tbody>
               </table>
+              <div id="purchases-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
+                <span style="color:#fff;font-size:13px;font-weight:600" id="purchases-selected-count">0 محدد</span>
+                <button class="btn" onclick="bulkDeleteInvoices('purchase')" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
+              </div>
             </div>
             <div id="purchases-empty" class="empty-state">
               <i class='bx bx-cart-download' style="font-size:48px;color:#ccc"></i>
@@ -5709,6 +5724,7 @@ function renderProducts(products) {
     const catName = getCategoryName(p.category);
     
     return `<tr>
+      <td><input type="checkbox" class="row-select" data-id="${p.id}" data-section="products" onchange="updateBulkBar('products')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></td>
       <td><strong>${p.sku || '-'}</strong></td>
       <td>${p.name}</td>
       <td>${condBadge}</td>
@@ -6954,6 +6970,7 @@ function renderSalesInvoices() {
   table.style.display=''; empty.style.display='none';
   
   tbody.innerHTML = sales.map(inv => `<tr>
+    <td><input type="checkbox" class="row-select" data-id="${inv.id}" data-section="sales" onchange="updateBulkBar('sales')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></td>
     <td><strong>${inv.number}</strong></td>
     <td>${formatDate(inv.date)}</td>
     <td>${inv.clientName || '-'}</td>
@@ -6967,6 +6984,10 @@ function renderSalesInvoices() {
       ${isAdmin() ? `<button class="btn-icon danger" title="حذف" onclick="deleteInvoice(${inv.id})"><i class='bx bx-trash'></i></button>` : ''}
     </td>
   </tr>`).join('');
+  // Reset select all
+  const selectAll = document.getElementById('sales-select-all');
+  if (selectAll) selectAll.checked = false;
+  updateBulkBar('sales');
 }
 
 function renderPurchaseInvoices() {
@@ -6979,6 +7000,7 @@ function renderPurchaseInvoices() {
   table.style.display=''; empty.style.display='none';
   
   tbody.innerHTML = purchases.map(inv => `<tr>
+    <td><input type="checkbox" class="row-select" data-id="${inv.id}" data-section="purchases" onchange="updateBulkBar('purchases')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></td>
     <td><strong>${inv.number}</strong></td>
     <td>${formatDate(inv.date)}</td>
     <td>${inv.supplierName || '-'}</td>
@@ -6991,6 +7013,9 @@ function renderPurchaseInvoices() {
       ${isAdmin() ? `<button class="btn-icon danger" title="حذف" onclick="deleteInvoice(${inv.id})"><i class='bx bx-trash'></i></button>` : ''}
     </td>
   </tr>`).join('');
+  const selectAll = document.getElementById('purchases-select-all');
+  if (selectAll) selectAll.checked = false;
+  updateBulkBar('purchases');
 }
 
 function getPaymentBadge(status) {
@@ -7392,6 +7417,62 @@ async function updateBalances() {
 }
 
 // ============ DELETE ============
+// ============ BULK SELECT & DELETE ============
+function toggleSelectAll(section) {
+  const selectAll = document.getElementById(`${section}-select-all`);
+  const checkboxes = document.querySelectorAll(`#${section}-tbody .row-select`);
+  checkboxes.forEach(cb => cb.checked = selectAll.checked);
+  updateBulkBar(section);
+}
+
+function updateBulkBar(section) {
+  const checked = document.querySelectorAll(`#${section}-tbody .row-select:checked`);
+  const bar = document.getElementById(`${section}-bulk-bar`);
+  const count = document.getElementById(`${section}-selected-count`);
+  if (bar) {
+    bar.style.display = checked.length > 0 ? 'flex' : 'none';
+    if (count) count.textContent = `${checked.length} محدد`;
+  }
+}
+
+async function bulkDeleteInvoices(type) {
+  if (!isAdmin()) { toast('مسح الفواتير متاح للمدير فقط', 'error'); return; }
+  const section = type === 'sale' ? 'sales' : 'purchases';
+  const checked = document.querySelectorAll(`#${section}-tbody .row-select:checked`);
+  if (checked.length === 0) return;
+  if (!confirm(`حذف ${checked.length} فاتورة؟ سيتم إرجاع المخزون. لا يمكن التراجع!`)) return;
+  
+  const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
+  
+  for (const id of ids) {
+    try {
+      const inv = await dbGet('invoices', id);
+      if (inv?.items) await reverseStockChanges(inv);
+      await dbDelete('invoices', id);
+    } catch(e) { console.warn('Bulk delete error:', id, e); }
+  }
+  
+  allInvoices = allInvoices.filter(inv => !ids.includes(inv.id));
+  await updateBalances();
+  toast(`تم حذف ${ids.length} فاتورة`);
+  if (type === 'sale') renderSalesInvoices();
+  else renderPurchaseInvoices();
+}
+
+async function bulkDeleteProducts() {
+  if (!isAdmin()) { toast('مسح الأصناف متاح للمدير فقط', 'error'); return; }
+  const checked = document.querySelectorAll('#products-tbody .row-select:checked');
+  if (checked.length === 0) return;
+  if (!confirm(`حذف ${checked.length} صنف؟ لا يمكن التراجع!`)) return;
+  
+  const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
+  for (const id of ids) {
+    try { await dbDelete('products', id); } catch(e) {}
+  }
+  toast(`تم حذف ${ids.length} صنف`);
+  await loadInventory();
+}
+
 async function deleteInvoice(id) {
   if (!isAdmin()) { toast('مسح الفواتير متاح للمدير فقط', 'error'); return; }
   const inv = await dbGet('invoices', id);
