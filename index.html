@@ -7903,6 +7903,14 @@ async function editDevice(id) {
   updateRepairCost();
   
   openModal('modal-device');
+  
+  // Re-set values after enhanceAllSelects runs (it can reset selects)
+  setTimeout(() => {
+    const engSel = document.getElementById('device-engineer');
+    if (engSel && d.engineerId) engSel.value = d.engineerId;
+    const clientSel = document.getElementById('device-client');
+    if (clientSel && d.clientId) clientSel.value = d.clientId;
+  }, 100);
 }
 
 let currentDeviceParts = [];
