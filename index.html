@@ -9403,15 +9403,24 @@ function editHistoryEntry(index) {
   
   const entry = device.repairHistory[index];
   
-  // Populate form
+  // Populate engineers dropdown FIRST, then set values
+  populateEngineersDropdown();
+  
+  // Now populate form
   document.getElementById('history-entry-date').value = new Date(entry.date).toISOString().slice(0, 16);
   document.getElementById('history-entry-action').value = entry.action || entry.title || 'إصلاح';
   document.getElementById('history-entry-note').value = entry.note || '';
-  document.getElementById('history-entry-engineer').value = entry.engineerId || '';
   document.getElementById('history-entry-index').value = index;
   
-  // Populate engineers dropdown
-  populateEngineersDropdown();
+  // Set engineer value (with type matching)
+  const engSel = document.getElementById('history-entry-engineer');
+  if (entry.engineerId) {
+    engSel.value = String(entry.engineerId);
+    if (!engSel.value || engSel.value === '') {
+      const opt = Array.from(engSel.options).find(o => String(o.value) === String(entry.engineerId));
+      if (opt) opt.selected = true;
+    }
+  }
   
   // Show form
   document.getElementById('history-entry-form').style.display = 'block';
