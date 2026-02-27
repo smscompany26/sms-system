@@ -7695,15 +7695,20 @@ function renderDevicesCards(filter) {
     const client = allClients.find(c => c.id === d.clientId);
     const engineer = allEngineers.find(e => e.id === d.engineerId);
     
+    const photo = d.photos && d.photos.length > 0 ? d.photos[0] : null;
+    
     return `
       <div class="device-card">
-        <div class="device-card-header">
+        <div class="device-card-img" style="background:${photo ? `url('${photo}') center/cover no-repeat` : 'linear-gradient(135deg, var(--primary-light), var(--primary-dark))'};height:140px;border-radius:var(--radius-sm) var(--radius-sm) 0 0;position:relative;display:flex;align-items:center;justify-content:center">
+          ${!photo ? `<i class='bx bx-wrench' style="font-size:48px;color:rgba(255,255,255,0.3)"></i>` : ''}
+          <span class="badge device-card-status" style="background:${st.bg};color:${st.color};position:absolute;top:10px;left:10px">${st.label}</span>
+          ${d.hasWarranty ? `<span class="badge" style="background:rgba(34,197,94,0.9);color:#fff;font-size:10px;position:absolute;top:10px;right:10px">ضمان ${d.warrantyMonths} شهر</span>` : ''}
+        </div>
+        <div class="device-card-header" style="padding-top:12px">
           <div>
             <h3 class="device-card-title">${d.deviceName}</h3>
             <div class="device-card-order">رقم الأمر: <strong>${d.orderNumber}</strong></div>
-            ${d.hasWarranty ? `<div class="badge" style="background:rgba(34,197,94,0.1);color:var(--success);font-size:10px;margin-top:4px;display:inline-block">🛡️ ضمان ${d.warrantyMonths} شهر</div>` : ''}
           </div>
-          <span class="badge device-card-status" style="background:${st.bg};color:${st.color}">${st.label}</span>
         </div>
         
         <div class="device-card-body">
