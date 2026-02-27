@@ -9192,8 +9192,9 @@ async function viewRepairHistory(deviceId) {
   document.getElementById('repair-timeline').innerHTML = timeline;
   
   // Show add/edit buttons only for admin
+  const adminCheck = isAdmin();
   const addBtn = document.getElementById('add-history-btn-wrapper');
-  if (addBtn) addBtn.style.display = isAdmin() ? '' : 'none';
+  if (addBtn) addBtn.style.display = adminCheck ? 'block' : 'none';
   
   openModal('modal-repair-history');
 }
@@ -9258,8 +9259,8 @@ function generateRepairTimeline(device) {
     const typeMap = { 'استلام الجهاز': 'intake', 'استلام': 'intake', 'intake': 'intake', 'فحص وتشخيص': 'diagnosis', 'diagnosis': 'diagnosis', 'إصلاح': 'repair', 'repair': 'repair', 'اختبار': 'testing', 'testing': 'testing', 'اكتمال': 'completed', 'completed': 'completed', 'تسليم': 'delivered', 'delivered': 'delivered', 'انتهاء الصيانة': 'completed', 'تسليم الجهاز للعميل': 'delivered', 'اكتمال العملية': 'completed', 'تحديث الحالة': 'default' };
     const statusType = typeMap[entry.title] || 'default';
     
-    // Check if this is an editable entry (admin only, not intake)
-    const isEditable = isAdmin() && entry.isEditable !== false && entry.title !== 'استلام الجهاز';
+    // Check if this is an editable entry (admin only)
+    const isEditable = isAdmin() && entry.historyIndex !== undefined;
     
     return `
       <div class="timeline-item repair-timeline-item" style="animation-delay:${idx * 0.06}s">
