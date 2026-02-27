@@ -1274,6 +1274,65 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .summary-change.down { background:rgba(239,68,68,0.1); color:var(--danger); }
 
 .chart-section-title { font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+/* Custom Select Bottom Sheet */
+.custom-select-overlay {
+  position:fixed; inset:0; z-index:10000;
+  background:rgba(0,0,0,0.35); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  display:flex; align-items:flex-end; justify-content:center;
+  opacity:0; transition:opacity 0.25s ease; pointer-events:none;
+}
+.custom-select-overlay.show { opacity:1; pointer-events:auto; }
+
+.custom-select-sheet {
+  width:100%; max-width:500px; max-height:70vh;
+  background:rgba(255,255,255,0.92); backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px);
+  border-radius:20px 20px 0 0; border:1px solid rgba(255,255,255,0.3); border-bottom:none;
+  display:flex; flex-direction:column;
+  box-shadow:0 -10px 40px rgba(0,0,0,0.12);
+  transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);
+  padding-bottom:env(safe-area-inset-bottom, 0);
+}
+[data-theme="dark"] .custom-select-sheet {
+  background:rgba(22,22,40,0.95); border-color:rgba(255,255,255,0.08);
+  box-shadow:0 -10px 40px rgba(0,0,0,0.4);
+}
+.custom-select-overlay.show .custom-select-sheet { transform:translateY(0); }
+
+.cs-handle { width:36px; height:4px; background:rgba(128,128,128,0.3); border-radius:2px; margin:10px auto 6px; }
+
+.cs-title { font-size:15px; font-weight:700; color:var(--text); text-align:center; padding:8px 20px 12px; }
+
+.cs-options { overflow-y:auto; -webkit-overflow-scrolling:touch; padding:0 12px 12px; flex:1; }
+
+.cs-option {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:15px 16px; margin-bottom:1px; border-radius:14px;
+  font-size:15px; font-weight:500; color:var(--text);
+  cursor:pointer; -webkit-tap-highlight-color:transparent;
+  transition:background 0.15s;
+}
+.cs-option:active { background:rgba(108,60,233,0.08); }
+.cs-option.selected { color:var(--primary); font-weight:700; }
+.cs-option.selected::after {
+  content:''; width:22px; height:22px; border-radius:50%; flex-shrink:0;
+  border:2px solid var(--primary); background:var(--primary);
+  box-shadow:inset 0 0 0 4px var(--bg-card);
+}
+.cs-option:not(.selected)::after {
+  content:''; width:22px; height:22px; border-radius:50%; flex-shrink:0;
+  border:2px solid var(--border);
+}
+.cs-option.cs-other { color:var(--primary); }
+.cs-option.cs-other::before { content:'＋'; margin-left:4px; font-weight:700; }
+.cs-option.cs-other::after { display:none; }
+
+.cs-divider { height:1px; background:rgba(128,128,128,0.12); margin:0 8px; }
+
+@media(min-width:641px) {
+  .custom-select-sheet { border-radius:16px; margin:0 auto 20vh; max-height:50vh; border-bottom:1px solid rgba(255,255,255,0.3); }
+  [data-theme="dark"] .custom-select-sheet { border-bottom-color:rgba(255,255,255,0.08); }
+}
+
 /* Other input + List editor */
 .other-input-wrapper { animation: slideDown 0.2s ease; }
 @keyframes slideDown { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
@@ -2967,9 +3026,12 @@ function enhanceSelect(selectId, listKey, options = {}) {
   if (!select || select.dataset.enhanced) return;
   select.dataset.enhanced = '1';
   select.dataset.listKey = listKey;
+  select.dataset.selectId = selectId;
   select.dataset.options = JSON.stringify(options);
   
   const wrapper = select.parentElement;
+  const label = wrapper.querySelector('label');
+  const labelText = label ? label.textContent.replace('*','').trim() : '';
   
   // Make select container flex
   const selectRow = document.createElement('div');
@@ -2984,16 +3046,21 @@ function enhanceSelect(selectId, listKey, options = {}) {
   editBtn.className = 'list-edit-btn';
   editBtn.innerHTML = '<i class="bx bx-edit-alt"></i>';
   editBtn.title = 'تعديل القائمة';
-  editBtn.onclick = () => openListEditor(selectId, listKey, options);
+  editBtn.onclick = (e) => { e.stopPropagation(); openListEditor(selectId, listKey, options); };
   selectRow.appendChild(editBtn);
   
-  // Create the "other" input area
+  // Intercept click to show custom bottom sheet
+  select.addEventListener('mousedown', (e) => { e.preventDefault(); openCustomSelect(select, listKey, options, labelText); });
+  select.addEventListener('touchstart', (e) => { e.preventDefault(); openCustomSelect(select, listKey, options, labelText); }, { passive: false });
+  
+  // Other input area
   const otherDiv = document.createElement('div');
   otherDiv.className = 'other-input-wrapper';
+  otherDiv.id = `other-${selectId}`;
   otherDiv.style.cssText = 'display:none;margin-top:8px;';
   otherDiv.innerHTML = `
     <div style="display:flex;gap:6px;align-items:center;">
-      <input type="text" class="other-text-input" placeholder="اكتب هنا..." style="flex:1;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:13px;">
+      <input type="text" class="other-text-input" placeholder="اكتب هنا..." style="flex:1;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;">
       <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted);white-space:nowrap;cursor:pointer;">
         <input type="checkbox" class="other-save-cb" checked style="accent-color:var(--primary);">
         <span>احفظ</span>
@@ -3006,11 +3073,6 @@ function enhanceSelect(selectId, listKey, options = {}) {
   const saveCb = otherDiv.querySelector('.other-save-cb');
   const addBtn = otherDiv.querySelector('.other-add-btn');
   
-  select.addEventListener('change', () => {
-    otherDiv.style.display = select.value === '__other__' ? 'block' : 'none';
-    if (select.value === '__other__') textInput.focus();
-  });
-  
   textInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); addBtn.click(); }
   });
@@ -3018,12 +3080,10 @@ function enhanceSelect(selectId, listKey, options = {}) {
   addBtn.addEventListener('click', async () => {
     const val = textInput.value.trim();
     if (!val) return;
-    
     if (saveCb.checked) {
       await addToCustomList(listKey, val);
       toast('تم إضافة "' + val + '" للقائمة ✅');
     }
-    
     const opt = document.createElement('option');
     const { valueMap } = options;
     opt.value = valueMap ? (valueMap(val) || val) : val;
@@ -3031,14 +3091,88 @@ function enhanceSelect(selectId, listKey, options = {}) {
     const otherOpt = select.querySelector('option[value="__other__"]');
     if (otherOpt) select.insertBefore(opt, otherOpt);
     else select.appendChild(opt);
-    
     select.value = opt.value;
+    select.dispatchEvent(new Event('change'));
     otherDiv.style.display = 'none';
     textInput.value = '';
   });
   
   populateSelect(selectId, listKey, options);
 }
+
+// Custom bottom sheet select
+function openCustomSelect(select, listKey, options, title) {
+  closeCustomSelect();
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'custom-select-overlay';
+  overlay.id = 'custom-select-overlay';
+  
+  const optionsHtml = Array.from(select.options).map((opt, i) => {
+    if (opt.value === '__other__') {
+      return `<div class="cs-divider"></div><div class="cs-option cs-other" data-value="__other__">أخرى...</div>`;
+    }
+    const selected = opt.value === select.value ? ' selected' : '';
+    const divider = i > 0 && select.options[i-1].value !== '' ? '<div class="cs-divider"></div>' : '';
+    return `${divider}<div class="cs-option${selected}" data-value="${escHtml(opt.value)}">${escHtml(opt.textContent)}</div>`;
+  }).join('');
+  
+  overlay.innerHTML = `
+    <div class="custom-select-sheet">
+      <div class="cs-handle"></div>
+      <div class="cs-title">${title || 'اختر'}</div>
+      <div class="cs-options">${optionsHtml}</div>
+    </div>`;
+  
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add('show'));
+  
+  // Click handlers
+  overlay.querySelectorAll('.cs-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const val = opt.dataset.value;
+      select.value = val;
+      select.dispatchEvent(new Event('change'));
+      
+      // Handle "other"
+      const otherDiv = document.getElementById(`other-${select.dataset.selectId}`);
+      if (val === '__other__' && otherDiv) {
+        otherDiv.style.display = 'block';
+        setTimeout(() => otherDiv.querySelector('.other-text-input')?.focus(), 300);
+      } else if (otherDiv) {
+        otherDiv.style.display = 'none';
+      }
+      
+      closeCustomSelect();
+    });
+  });
+  
+  // Close on overlay click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeCustomSelect();
+  });
+  
+  // Swipe down to close
+  let startY = 0;
+  const sheet = overlay.querySelector('.custom-select-sheet');
+  sheet.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  sheet.addEventListener('touchmove', (e) => {
+    const dy = e.touches[0].clientY - startY;
+    if (dy > 80) closeCustomSelect();
+  }, { passive: true });
+}
+
+function closeCustomSelect() {
+  const overlay = document.getElementById('custom-select-overlay');
+  if (overlay) {
+    overlay.classList.remove('show');
+    setTimeout(() => overlay.remove(), 300);
+  }
+}
+
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
 async function populateSelect(selectId, listKey, options = {}) {
   const select = document.getElementById(selectId);
@@ -3218,8 +3352,6 @@ function initListDragDrop(container) {
     if (_listEditorState) _listEditorState._items = newOrder;
   }
 }
-
-function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
 function listEditorAdd() {
   const input = document.getElementById('list-editor-new');
