@@ -1129,22 +1129,19 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .tl-engineer i { font-size: 14px; }
 
 .device-header-info {
-  background: var(--bg);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 16px;
-  margin: 0 16px 8px;
+  padding: 12px 16px;
+  margin: 0 16px 12px;
 }
 .device-header-info .device-info-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 6px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
   font-size: 13px;
 }
-.device-header-info .device-info-row:last-child { margin-bottom: 0; }
-.device-header-info strong { color: var(--text-muted); font-weight: 500; }
+.device-header-info strong { color: var(--text-muted); font-weight: 500; font-size: 12px; }
 
 /* Mobile: show nav, hide sections */
 @media (max-width: 768px) {
@@ -1668,6 +1665,74 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
 .clickable-stat { cursor: pointer; transition: transform var(--transition), box-shadow var(--transition); }
 .clickable-stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+/* ========== View Toggle ========== */
+.view-toggle-group { display: flex; border-radius: var(--radius-sm); overflow: hidden; margin-right: 12px; }
+.view-toggle-btn {
+  background: var(--bg-card); border: 1px solid var(--border); padding: 8px 12px;
+  cursor: pointer; color: var(--text-muted); transition: var(--transition);
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.view-toggle-btn:first-child { border-left: none; }
+.view-toggle-btn:last-child { border-right: none; }
+.view-toggle-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.view-toggle-btn:not(.active):hover { background: var(--border); }
+
+/* ========== Devices Cards View ========== */
+.devices-cards-container { display: none; }
+.devices-cards-container.active { display: block; }
+.devices-cards-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;
+  padding: 20px; animation: fadeIn 0.3s ease;
+}
+@media (max-width: 768px) { .devices-cards-grid { grid-template-columns: 1fr; padding: 16px; } }
+.device-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow); transition: var(--transition); position: relative;
+}
+.device-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.device-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.device-card-title { font-size: 16px; font-weight: 600; color: var(--text); margin: 0; }
+.device-card-order { color: var(--text-muted); font-size: 13px; margin-top: 2px; }
+.device-card-status { font-size: 12px; }
+.device-card-body { margin-bottom: 16px; }
+.device-card-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.device-card-field { font-size: 13px; }
+.device-card-field strong { color: var(--text); display: block; margin-bottom: 2px; }
+.device-card-field span { color: var(--text-muted); }
+.device-card-problem { background: rgba(108,60,233,0.08); padding: 12px; border-radius: var(--radius-sm); font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+.device-card-actions {
+  display: flex; gap: 6px; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 12px;
+}
+.device-card-actions .btn-icon { padding: 6px; font-size: 14px; }
+
+/* ========== Repair History Modal Enhancements ========== */
+.repair-history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.repair-timeline-item { position: relative; }
+.repair-timeline-item .timeline-actions {
+  position: absolute; top: 8px; left: 8px; opacity: 0; transition: var(--transition);
+  display: flex; gap: 4px;
+}
+.repair-timeline-item:hover .timeline-actions { opacity: 1; }
+.timeline-action-btn {
+  background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px;
+  color: var(--text-muted); transition: var(--transition);
+}
+.timeline-action-btn:hover { background: var(--primary); color: white; }
+.add-history-entry { margin-bottom: 20px; }
+
+/* ========== History Entry Form ========== */
+.history-entry-form {
+  background: var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px;
+  border: 2px dashed var(--primary); animation: slideDown 0.3s ease;
+}
+.history-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.history-form-grid .form-group { margin-bottom: 8px; }
+@media (max-width: 768px) { .history-form-grid { grid-template-columns: 1fr; } }
+
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
@@ -2253,6 +2318,16 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <input type="text" id="devices-search" placeholder="بحث بالاسم أو رقم الأمر..." oninput="searchDevices()">
             </div>
             <button class="maint-filter-btn active btn btn-sm btn-outline" onclick="filterDevicesByStatus('all')">الكل</button>
+            
+            <!-- View Toggle Buttons -->
+            <div class="view-toggle-group">
+              <button id="list-view-btn" class="view-toggle-btn active" onclick="switchDevicesView('list')" title="عرض قائمة">
+                <i class='bx bx-list-ul'></i>
+              </button>
+              <button id="card-view-btn" class="view-toggle-btn" onclick="switchDevicesView('cards')" title="عرض البطاقات">
+                <i class='bx bx-grid-alt'></i>
+              </button>
+            </div>
           </div>
           <div class="page-header-btns">
             <button class="btn btn-primary" onclick="openNewDevice()"><i class='bx bx-plus'></i> إذن استلام جهاز</button>
@@ -2984,29 +3059,25 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
 <!-- Repair History Modal -->
 <div id="modal-repair-history" class="modal">
-  <div class="modal-content modal-lg" style="max-width:900px">
+  <div class="modal-content" style="max-width:600px">
     <div class="modal-header">
-      <h3 id="repair-history-title">تاريخ صيانة الجهاز</h3>
+      <h3 id="repair-history-title">تاريخ الصيانة</h3>
       <button class="modal-close" onclick="closeModal('modal-repair-history')">&times;</button>
     </div>
-    <div id="repair-history-content">
+    <div id="repair-history-content" style="padding:0">
       <div class="device-header-info">
         <div class="device-info-row">
-          <span><strong>رقم الأمر:</strong> <span id="history-device-order"></span></span>
+          <span><strong>الأمر:</strong> <span id="history-device-order"></span></span>
           <span><strong>الجهاز:</strong> <span id="history-device-name"></span></span>
-        </div>
-        <div class="device-info-row">
           <span><strong>العميل:</strong> <span id="history-client-name"></span></span>
-          <span><strong>تاريخ الدخول:</strong> <span id="history-intake-date"></span></span>
+          <span><strong>الدخول:</strong> <span id="history-intake-date"></span></span>
         </div>
       </div>
       
-      <div class="repair-timeline" id="repair-timeline">
-        <!-- Timeline items will be populated here -->
-      </div>
+      <div class="repair-timeline" id="repair-timeline"></div>
       
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-repair-history')">إغلاق</button>
+      <div style="padding:12px 16px">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-repair-history')" style="width:100%">إغلاق</button>
       </div>
     </div>
   </div>
