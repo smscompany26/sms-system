@@ -4357,6 +4357,7 @@ let autoPullInterval = null;
 let lastPullTime = 0;
 let lastPushTime = 0;
 const _recentlyDeleted = {}; // { 'storeName': Set of deleted IDs } — prevents pull from restoring
+let _pendingDeletes = {}; // { 'storeName': Set of IDs } — cleared only after successful push
 let isPushing = false;
 let isPulling = false;
 let lastRemoteTs = null;
@@ -4445,6 +4446,8 @@ async function pushToCloud() {
     lastPullTime = Date.now();
     lastPushTime = Date.now();
     lastRemoteTs = now;
+    // Clear pending deletes — they've been pushed successfully
+    _pendingDeletes = {};
     updateSyncStatus('connected');
   } catch(e) {
     console.error('Push error:', e);
@@ -4466,8 +4469,19 @@ async function pullFromCloud() {
     if (Array.isArray(rows)) {
       for (const row of rows) {
         if (!STORES[row.store_name] || !Array.isArray(row.data)) continue;
+        // Filter out pending deletes
+        const deletedSet = _recentlyDeleted[row.store_name];
+        const pendingSet = _pendingDeletes[row.store_name];
+        let pullData = row.data;
+        if ((deletedSet && deletedSet.size > 0) || (pendingSet && pendingSet.size > 0)) {
+          const keyPath = STORES[row.store_name]?.keyPath || 'id';
+          pullData = row.data.filter(r => {
+            const rid = r[keyPath];
+            return !(deletedSet && deletedSet.has(rid)) && !(pendingSet && pendingSet.has(rid));
+          });
+        }
         await dbClear(row.store_name);
-        for (const record of row.data) {
+        for (const record of pullData) {
           try { await _origDbPut(row.store_name, record); } catch(e) { console.warn('Pull error:', row.store_name, e); }
         }
       }
@@ -4513,11 +4527,16 @@ async function silentPull() {
       if (JSON.stringify(row.data) === JSON.stringify(local)) continue;
       // Allow empty data to clear local store (deletions sync)
       // Filter out recently deleted items
+      // Merge both recently deleted and pending deletes
       const deletedSet = _recentlyDeleted[row.store_name];
+      const pendingSet = _pendingDeletes[row.store_name];
       let pullData = row.data;
-      if (deletedSet && deletedSet.size > 0) {
+      if ((deletedSet && deletedSet.size > 0) || (pendingSet && pendingSet.size > 0)) {
         const keyPath = STORES[row.store_name]?.keyPath || 'id';
-        pullData = row.data.filter(r => !deletedSet.has(r[keyPath]));
+        pullData = row.data.filter(r => {
+          const rid = r[keyPath];
+          return !(deletedSet && deletedSet.has(rid)) && !(pendingSet && pendingSet.has(rid));
+        });
       }
       await dbClear(row.store_name);
       for (const r of pullData) { try { await _origDbPut(row.store_name, r); } catch(e) {} }
@@ -4631,8 +4650,9 @@ dbDelete = async function(store, id) {
   // Track deletion to prevent pull from restoring
   if (!_recentlyDeleted[store]) _recentlyDeleted[store] = new Set();
   _recentlyDeleted[store].add(id);
-  // Clear from tracking after 30 seconds (push should be done by then)
-  setTimeout(() => _recentlyDeleted[store]?.delete(id), 30000);
+  // Also track in pending deletes — only cleared after successful push
+  if (!_pendingDeletes[store]) _pendingDeletes[store] = new Set();
+  _pendingDeletes[store].add(id);
   
   const result = await _origDbDelete(store, id);
   scheduleDriveSync();
