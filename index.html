@@ -7907,11 +7907,21 @@ async function printInvoice(invoiceId) {
       <div class="totals-row total-final"><span>المتبقي:</span><strong>${formatMoney(remaining)}</strong></div>
     </div></div>
     ${inv.notes ? `<div class="notes"><strong>ملاحظات:</strong> ${inv.notes}</div>` : ''}
-    <div class="qr-section">
-      <img src="${qrUrl}">
-      <p>QR — فاتورة ${inv.number}</p>
+    <div class="qr-section" style="display:flex;justify-content:center;align-items:center;gap:24px;flex-wrap:wrap">
+      <div style="text-align:center">
+        <svg id="inv-barcode-print"></svg>
+        <p style="font-size:10px;color:#999;margin-top:2px">باركود الفاتورة</p>
+      </div>
+      <div style="text-align:center">
+        <img src="${qrUrl}">
+        <p style="font-size:10px;color:#999;margin-top:2px">QR للتحقق</p>
+      </div>
     </div>
     <div class="footer">${companyName} — ${companyPhone} · تم الإنشاء بواسطة نظام SMS</div>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script>
+    <script>
+      try { JsBarcode('#inv-barcode-print', '${inv.number}', { format:'CODE128', width:1.5, height:45, displayValue:true, fontSize:11, font:'Cairo,sans-serif', textMargin:3, margin:4, background:'transparent', lineColor:'#333' }); } catch(e){}
+    <\/script>
   </body></html>`;
   printHTML(html);
 }
@@ -8081,9 +8091,12 @@ async function printReceipt(invoiceId) {
     <hr class="sep">
     
     <!-- QR -->
+    <div style="text-align:center;margin:8px 0">
+      <svg id="receipt-barcode"></svg>
+    </div>
     <div class="qr-area">
       <img src="${qrUrl}" style="width:70px;height:70px">
-      <div style="font-size:8px;color:#777;margin-top:3px">${inv.number}</div>
+      <div style="font-size:8px;color:#777;margin-top:3px">QR للتحقق</div>
     </div>
     
     <!-- Footer -->
@@ -8094,6 +8107,10 @@ async function printReceipt(invoiceId) {
       <button onclick="window.print()" style="background:#6c3ce9;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700;flex:1;max-width:140px">🖨️ طباعة</button>
       <button onclick="parent.document.querySelector('iframe').remove()" style="background:#ef4444;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-family:Cairo,sans-serif;cursor:pointer;font-weight:700;flex:1;max-width:140px">✕ إغلاق</button>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script>
+    <script>
+      try { JsBarcode('#receipt-barcode', '${inv.number}', { format:'CODE128', width:1.2, height:30, displayValue:true, fontSize:9, font:'monospace', textMargin:2, margin:2, background:'transparent', lineColor:'#000' }); } catch(e){}
+    <\/script>
   </body>
   </html>`;
   
