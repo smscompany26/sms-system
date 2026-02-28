@@ -7718,12 +7718,12 @@ async function printBarcodeSticker(productId) {
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: Arial, sans-serif; }
-      .sticker { text-align: center; padding: 8px; width: 58mm; }
-      .sticker .name { font-size: 11px; font-weight: bold; margin-bottom: 4px; word-wrap: break-word; }
-      .sticker svg { width: 100%; height: auto; }
+      .sticker { text-align: center; padding: 4px; width: 56mm; max-width: 56mm; margin: 0 auto; }
+      .sticker .name { font-size: 10px; font-weight: bold; margin-bottom: 2px; word-wrap: break-word; line-height: 1.2; }
+      .sticker svg { max-width: 100%; height: 28px; }
       @media print {
-        @page { size: 58mm 40mm; margin: 2mm; }
-        body { min-height: auto; }
+        @page { size: 58mm 40mm landscape; margin: 1mm; }
+        html, body { width: 58mm !important; min-height: auto; margin: 0 !important; padding: 0 !important; }
       }
     </style>
   </head><body>
@@ -7820,7 +7820,8 @@ async function printReceipt(invoiceId) {
       .qr-area { text-align: center; margin: 10px 0 6px; }
       .footer { text-align: center; font-size: 9px; color: #555; margin-top: 8px; padding-bottom: 60px; }
       @media print {
-        body { width: auto; max-width: none; }
+        @page { size: 80mm auto; margin: 0; }
+        html, body { width: 80mm !important; max-width: 80mm !important; margin: 0 !important; padding: 8px !important; }
         .no-print { display: none !important; }
         .footer { padding-bottom: 0; }
       }
