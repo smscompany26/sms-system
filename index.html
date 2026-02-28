@@ -8,12 +8,12 @@
 <meta http-equiv="Expires" content="0">
 <title>SMS — نظام إدارة المخزون والصيانة</title>
 <script>
-// v7.2.1 — SMS System
+// v7.3.0 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.2.1');
+console.log('SMS v7.3.0');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -2030,6 +2030,15 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <span class="summary-label" data-i18n="stat_net_profit">صافي الربح</span>
             </div>
           </div>
+          <!-- Chart dataset toggles -->
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;font-size:11px">
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;padding:4px 8px;border-radius:8px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3)"><input type="checkbox" checked onchange="toggleChartDataset('sales',this.checked)" style="accent-color:#22c55e"> المبيعات</label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;padding:4px 8px;border-radius:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3)"><input type="checkbox" checked onchange="toggleChartDataset('purchases',this.checked)" style="accent-color:#ef4444"> المشتريات</label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;padding:4px 8px;border-radius:8px;background:rgba(108,60,233,0.1);border:1px solid rgba(108,60,233,0.3)"><input type="checkbox" onchange="toggleChartDataset('maintenance',this.checked)" style="accent-color:#6c3ce9"> الصيانة</label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;padding:4px 8px;border-radius:8px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3)"><input type="checkbox" onchange="toggleChartDataset('expenses_direct',this.checked)" style="accent-color:#f59e0b"> مصروفات مباشرة</label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;padding:4px 8px;border-radius:8px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3)"><input type="checkbox" onchange="toggleChartDataset('expenses_indirect',this.checked)" style="accent-color:#f97316"> مصروفات غير مباشرة</label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;padding:4px 8px;border-radius:8px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3)"><input type="checkbox" onchange="toggleChartDataset('net_profit',this.checked)" style="accent-color:#3b82f6"> صافي الربح</label>
+          </div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
             <div class="chart-section-title" style="margin:0;"><i class='bx bx-chart'></i> <span data-i18n="period_details">تفاصيل الفترة</span></div>
             <div class="chart-toggle">
@@ -2604,7 +2613,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.1</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.3.0</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i data-i18n="settings_system_setup"> إعداد النظام</h4>
@@ -2818,7 +2827,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.2.1 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.3.0 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -5515,6 +5524,12 @@ function getWarrantyAlerts(devices, clients) {
 window._chartView = 'line';
 window._currentPeriod = 'week';
 window._salesChart = null;
+window._chartDatasets = { sales: true, purchases: true, maintenance: false, expenses_direct: false, expenses_indirect: false, net_profit: false };
+
+function toggleChartDataset(key, checked) {
+  window._chartDatasets[key] = checked;
+  if (window._dashInvoices) renderSalesOverview(window._dashInvoices, window._currentPeriod);
+}
 
 function switchSalesPeriod(period) {
   window._currentPeriod = period;
@@ -5578,7 +5593,7 @@ function renderSalesOverview(invoices, period) {
   }
   const periodStr = periodStart.toISOString().slice(0, 10);
   
-  let totalSales = 0, totalPurchases = 0;
+  let totalSales = 0, totalPurchases = 0, totalMaintenance = 0, totalExpDirect = 0, totalExpIndirect = 0;
   invoices.forEach(inv => {
     const d = (inv.date || '').slice(0, 10);
     if (d >= periodStr) {
@@ -5586,10 +5601,25 @@ function renderSalesOverview(invoices, period) {
       if (inv.type === 'purchase') totalPurchases += (inv.total || 0);
     }
   });
+  // Maintenance revenue (devices with sellingPrice)
+  const allDevicesCache = _cache.devices || [];
+  allDevicesCache.forEach(dev => {
+    const d = (dev.intakeDate || dev.createdAt || '').slice(0, 10);
+    if (d >= periodStr && dev.sellingPrice) totalMaintenance += (dev.sellingPrice || 0);
+  });
+  // Expenses
+  const allExpensesCache = _cache.expenses || [];
+  allExpensesCache.forEach(exp => {
+    const d = (exp.date || '').slice(0, 10);
+    if (d >= periodStr) {
+      if (exp.expenseType === 'indirect') totalExpIndirect += (exp.amount || 0);
+      else totalExpDirect += (exp.amount || 0);
+    }
+  });
   
   document.getElementById('period-sales').textContent = formatMoney(totalSales);
   document.getElementById('period-purchases').textContent = formatMoney(totalPurchases);
-  const profit = totalSales - totalPurchases;
+  const profit = totalSales + totalMaintenance - totalPurchases - totalExpDirect - totalExpIndirect;
   const profitEl = document.getElementById('period-profit');
   profitEl.textContent = formatMoney(Math.abs(profit));
   profitEl.style.color = profit >= 0 ? 'var(--success)' : 'var(--danger)';
@@ -5598,36 +5628,53 @@ function renderSalesOverview(invoices, period) {
   let maxVal = 1;
   let data;
   
+  // Helper to aggregate data for a bucket range
+  function bucketData(from, to) {
+    let s=0, p=0, m=0, ed=0, ei=0;
+    invoices.forEach(inv => {
+      const d = sliceFn(inv);
+      if (d >= from && d < to) {
+        if (inv.type === 'sale') s += (inv.total || 0);
+        if (inv.type === 'purchase') p += (inv.total || 0);
+      }
+    });
+    allDevicesCache.forEach(dev => {
+      const d = period === 'year' ? (dev.intakeDate||dev.createdAt||'').slice(0,7) : (dev.intakeDate||dev.createdAt||'').slice(0,10);
+      if (d >= from && d < to && dev.sellingPrice) m += (dev.sellingPrice || 0);
+    });
+    allExpensesCache.forEach(exp => {
+      const d = period === 'year' ? (exp.date||'').slice(0,7) : (exp.date||'').slice(0,10);
+      if (d >= from && d < to) {
+        if (exp.expenseType === 'indirect') ei += (exp.amount || 0);
+        else ed += (exp.amount || 0);
+      }
+    });
+    const net = s + m - p - ed - ei;
+    return { sales: s, purchases: p, maintenance: m, expenses_direct: ed, expenses_indirect: ei, net_profit: net };
+  }
+
   if (period === 'month') {
-    // Group into 5-day ranges
     data = [];
     for (let i = 0; i < buckets.length; i++) {
       const from = buckets[i];
       const to = i < buckets.length - 1 ? buckets[i + 1] : '9999';
-      let s = 0, p = 0;
-      invoices.forEach(inv => {
-        const d = (inv.date || '').slice(0, 10);
-        if (d >= from && d < to) {
-          if (inv.type === 'sale') s += (inv.total || 0);
-          if (inv.type === 'purchase') p += (inv.total || 0);
-        }
-      });
-      maxVal = Math.max(maxVal, s, p);
-      data.push({ label: labelFn(from), sales: s, purchases: p });
+      const bd = bucketData(from, to);
+      maxVal = Math.max(maxVal, bd.sales, bd.purchases, bd.maintenance, bd.expenses_direct, bd.expenses_indirect, Math.abs(bd.net_profit));
+      data.push({ label: labelFn(from), ...bd });
     }
   } else if (period === 'year') {
-    data = buckets.map(m => {
-      const s = invoices.filter(i => i.type === 'sale' && sliceFn(i) === m).reduce((sum, i) => sum + (i.total || 0), 0);
-      const p = invoices.filter(i => i.type === 'purchase' && sliceFn(i) === m).reduce((sum, i) => sum + (i.total || 0), 0);
-      maxVal = Math.max(maxVal, s, p);
-      return { label: labelFn(m), sales: s, purchases: p };
+    data = buckets.map((m, i) => {
+      const to = i < buckets.length - 1 ? buckets[i + 1] : '9999';
+      const bd = bucketData(m, to);
+      maxVal = Math.max(maxVal, bd.sales, bd.purchases, bd.maintenance, bd.expenses_direct, bd.expenses_indirect, Math.abs(bd.net_profit));
+      return { label: labelFn(m), ...bd };
     });
   } else {
-    data = buckets.map(day => {
-      const s = invoices.filter(i => i.type === 'sale' && sliceFn(i) === day).reduce((sum, i) => sum + (i.total || 0), 0);
-      const p = invoices.filter(i => i.type === 'purchase' && sliceFn(i) === day).reduce((sum, i) => sum + (i.total || 0), 0);
-      maxVal = Math.max(maxVal, s, p);
-      return { label: labelFn(day), sales: s, purchases: p };
+    data = buckets.map((day, i) => {
+      const to = i < buckets.length - 1 ? buckets[i + 1] : '9999';
+      const bd = bucketData(day, to);
+      maxVal = Math.max(maxVal, bd.sales, bd.purchases, bd.maintenance, bd.expenses_direct, bd.expenses_indirect, Math.abs(bd.net_profit));
+      return { label: labelFn(day), ...bd };
     });
   }
 
@@ -5642,6 +5689,10 @@ function renderSalesOverview(invoices, period) {
   
   const labels = data.map(d => d.label);
   const salesData = data.map(d => d.sales);
+  const maintData = data.map(d => d.maintenance);
+  const expDirectData = data.map(d => d.expenses_direct);
+  const expIndirectData = data.map(d => d.expenses_indirect);
+  const netProfitData = data.map(d => d.net_profit);
   const purchData = data.map(d => d.purchases);
   const chartType = window._chartView === 'bar' ? 'bar' : 'line';
   
@@ -5654,43 +5705,41 @@ function renderSalesOverview(invoices, period) {
   const tooltipText = isDark ? '#e6edf3' : '#1f2937';
   const tooltipBorder = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
   
-  const salesDataset = {
-    label: 'المبيعات',
-    data: salesData,
-    borderColor: '#22c55e',
-    backgroundColor: chartType === 'line' ? 'rgba(34,197,94,0.1)' : 'rgba(34,197,94,0.7)',
-    borderWidth: chartType === 'line' ? 3 : 0,
-    fill: chartType === 'line',
-    tension: 0.4,
-    pointRadius: chartType === 'line' ? 5 : 0,
-    pointBackgroundColor: '#22c55e',
-    pointBorderColor: '#0d1117',
-    pointBorderWidth: 2,
-    pointHoverRadius: 7,
-    borderRadius: chartType === 'bar' ? 6 : 0,
-    order: 1,
-  };
+  // Datasets built dynamically below via makeDs()
   
-  const purchDataset = {
-    label: 'المشتريات',
-    data: purchData,
-    borderColor: '#ef4444',
-    backgroundColor: chartType === 'line' ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.7)',
+  const makeDs = (label, dataArr, color, order) => ({
+    label,
+    data: dataArr,
+    borderColor: color,
+    backgroundColor: chartType === 'line' ? color.replace(')', ',0.1)').replace('rgb', 'rgba') : color.replace(')', ',0.7)').replace('rgb', 'rgba'),
     borderWidth: chartType === 'line' ? 2.5 : 0,
     fill: chartType === 'line',
     tension: 0.4,
     pointRadius: chartType === 'line' ? 4 : 0,
-    pointBackgroundColor: '#ef4444',
-    pointBorderColor: '#0d1117',
+    pointBackgroundColor: color,
+    pointBorderColor: isDark ? '#0d1117' : '#fff',
     pointBorderWidth: 2,
     pointHoverRadius: 6,
     borderRadius: chartType === 'bar' ? 6 : 0,
-    order: 2,
-  };
+    order,
+  });
+  
+  const allDatasets = [];
+  const ds = window._chartDatasets;
+  if (ds.sales) allDatasets.push(makeDs('المبيعات', salesData, '#22c55e', 1));
+  if (ds.purchases) allDatasets.push(makeDs('المشتريات', purchData, '#ef4444', 2));
+  if (ds.maintenance) allDatasets.push(makeDs('الصيانة', maintData, '#6c3ce9', 3));
+  if (ds.expenses_direct) allDatasets.push(makeDs('مصروفات مباشرة', expDirectData, '#f59e0b', 4));
+  if (ds.expenses_indirect) allDatasets.push(makeDs('مصروفات غير مباشرة', expIndirectData, '#f97316', 5));
+  if (ds.net_profit) allDatasets.push(makeDs('صافي الربح', netProfitData, '#3b82f6', 6));
+  
+  // Override sales dataset with original styling if present
+  const salesDs = allDatasets.find(d => d.label === 'المبيعات');
+  if (salesDs) { salesDs.borderWidth = chartType === 'line' ? 3 : 0; salesDs.pointRadius = chartType === 'line' ? 5 : 0; }
   
   window._salesChart = new Chart(canvas, {
     type: chartType,
-    data: { labels, datasets: [salesDataset, purchDataset] },
+    data: { labels, datasets: allDatasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -6003,7 +6052,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.2.1';
+  if (backupEl) backupEl.textContent = 'v7.3.0';
 }
 
 // ============ WARRANTY TOGGLE ============
