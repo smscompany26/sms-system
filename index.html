@@ -1816,11 +1816,11 @@ tr:hover { background: rgba(108,60,233,0.02); }
     </div>
     <form id="login-form" onsubmit="return handleLogin(event)">
       <div class="form-group">
-        <label>اسم المستخدم</label>
+        <label data-i18n="label_login_username">اسم المستخدم</label>
         <input type="text" id="login-username" required autocomplete="username">
       </div>
       <div class="form-group">
-        <label>كلمة المرور</label>
+        <label data-i18n="label_login_password">كلمة المرور</label>
         <input type="password" id="login-password" required autocomplete="current-password">
       </div>
       <label class="remember-me"><input type="checkbox" id="login-remember" checked> تذكرني</label>
@@ -2606,19 +2606,19 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.0</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
-          <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
+          <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i data-i18n="settings_system_setup"> إعداد النظام</h4>
           <div class="settings-nav" id="settings-nav-setup">
-            <div class="settings-nav-item" onclick="openSettingsSection('company')"><i class='bx bx-building'></i><div><strong>بيانات الشركة</strong><small>الاسم، اللوجو، العنوان، الضريبة</small></div><i class='bx bx-chevron-left'></i></div>
-            <div class="settings-nav-item" onclick="openSettingsSection('drive')"><i class='bx bx-cloud'></i><div><strong>المزامنة السحابية</strong><small>مزامنة تلقائية، نسخ احتياطي</small></div><i class='bx bx-chevron-left'></i></div>
-            <div class="settings-nav-item" onclick="openSettingsSection('notifications')"><i class='bx bx-bell'></i><div><strong>الإشعارات</strong><small>Telegram، تنبيهات المخزون والفواتير</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('company')"><i class='bx bx-building'></i><div><strong data-i18n="settings_company">بيانات الشركة</strong><small data-i18n="settings_company_desc">الاسم، اللوجو، العنوان، الضريبة</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('drive')"><i class='bx bx-cloud'></i><div><strong data-i18n="settings_cloud_sync">المزامنة السحابية</strong><small data-i18n="settings_cloud_desc">مزامنة تلقائية، نسخ احتياطي</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('notifications')"><i class='bx bx-bell'></i><div><strong data-i18n="nav_notifications">الإشعارات</strong><small data-i18n="settings_notifications_desc">Telegram، تنبيهات المخزون والفواتير</small></div><i class='bx bx-chevron-left'></i></div>
           </div>
 
-          <h4 style="margin:20px 0 12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-calendar'></i> إدارة يومية</h4>
+          <h4 style="margin:20px 0 12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-calendar'></i data-i18n="settings_daily_management"> إدارة يومية</h4>
           <div class="settings-nav" id="settings-nav-daily">
-            <div class="settings-nav-item" onclick="openSettingsSection('users')"><i class='bx bx-group'></i><div><strong>فريق العمل</strong><small>المستخدمين والصلاحيات</small></div><i class='bx bx-chevron-left'></i></div>
-            <div class="settings-nav-item" onclick="openSettingsSection('engineers')"><i class='bx bx-hard-hat'></i><div><strong>المهندسين والفنيين</strong><small>إدارة فريق الصيانة</small></div><i class='bx bx-chevron-left'></i></div>
-            <div class="settings-nav-item" onclick="openSettingsSection('backup')"><i class='bx bx-data'></i><div><strong>النسخ الاحتياطي</strong><small>تصدير/استيراد البيانات</small></div><i class='bx bx-chevron-left'></i></div>
-            <div class="settings-nav-item" onclick="openSettingsSection('activity')"><i class='bx bx-history'></i><div><strong>سجل النشاط</strong><small>من عمل ايه وامتى</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('users')"><i class='bx bx-group'></i><div><strong data-i18n="settings_team">فريق العمل</strong><small data-i18n="settings_team_desc">المستخدمين والصلاحيات</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('engineers')"><i class='bx bx-hard-hat'></i><div><strong data-i18n="settings_engineers">المهندسين والفنيين</strong><small data-i18n="settings_engineers_desc">إدارة فريق الصيانة</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('backup')"><i class='bx bx-data'></i><div><strong data-i18n="settings_backup">النسخ الاحتياطي</strong><small data-i18n="settings_backup_desc">تصدير/استيراد البيانات</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('activity')"><i class='bx bx-history'></i><div><strong data-i18n="settings_activity">سجل النشاط</strong><small data-i18n="settings_activity_desc">من عمل ايه وامتى</small></div><i class='bx bx-chevron-left'></i></div>
           </div>
         </div>
 
@@ -2640,6 +2640,17 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="form-group"><label data-i18n="label_vat_rate">نسبة الضريبة %</label><input type="number" id="company-vat" value="0" min="0" step="0.1"></div>
           </div>
           <div class="form-group"><label data-i18n="label_logo">اللوجو</label><input type="file" id="company-logo" accept="image/*"></div>
+          <div class="form-group">
+            <label data-i18n="label_currency">العملة</label>
+            <select id="company-currency">
+              <option value="ج.م" data-i18n="currency_egp">ج.م (جنيه مصري)</option>
+              <option value="$" data-i18n="currency_usd">$ (USD)</option>
+              <option value="€" data-i18n="currency_eur">€ (EUR)</option>
+              <option value="﷼" data-i18n="currency_sar">﷼ (ريال سعودي)</option>
+              <option value="د.ك" data-i18n="currency_kwd">د.ك (دينار كويتي)</option>
+              <option value="د.إ" data-i18n="currency_aed">د.إ (درهم إماراتي)</option>
+            </select>
+          </div>
           <button class="btn btn-primary" onclick="saveCompanySettings()"><i class='bx bx-save'></i> <span data-i18n="btn_save">حفظ</span></button>
         </div>
 
@@ -2649,15 +2660,15 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="settings-section" id="section-notifications">
         <div class="card" style="margin-bottom:16px">
           <h3><i class='bx bx-bot'></i> <span data-i18n="settings_telegram">إعدادات Telegram Bot</span></h3>
-          <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px">التوكن مشترك — كل مستلم يتم إضافته بـ Chat ID خاص</p>
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:12px" data-i18n="telegram_token_shared">التوكن مشترك — كل مستلم يتم إضافته بـ Chat ID خاص</p>
           <div class="form-group"><label>Bot Token</label><input type="text" id="telegram-bot-token" dir="ltr" placeholder="123456:ABC..."></div>
           <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
-            <button class="btn btn-primary" onclick="saveBotToken()"><i class='bx bx-save'></i> حفظ التوكن</button>
-            <button class="btn btn-outline" onclick="fetchChatIds()"><i class='bx bx-refresh'></i> جلب Chat IDs</button>
+            <button class="btn btn-primary" onclick="saveBotToken()"><i class='bx bx-save'></i data-i18n="btn_save_token"> حفظ التوكن</button>
+            <button class="btn btn-outline" onclick="fetchChatIds()"><i class='bx bx-refresh'></i data-i18n="btn_fetch_chat_ids"> جلب Chat IDs</button>
           </div>
           <div id="fetched-chat-ids" style="display:none;margin-top:12px"></div>
           <div class="alert-warning" style="margin-top:12px;padding:10px;border-radius:8px;font-size:12px">
-            <i class='bx bx-info-circle'></i> <strong>كيف يحصل المستلم على Chat ID؟</strong><br>
+            <i class='bx bx-info-circle'></i> <strong data-i18n="telegram_howto_title">كيف يحصل المستلم على Chat ID؟</strong><br>
             يبعت أي رسالة للبوت على Telegram (مثلاً /start) → ثم دوس "جلب Chat IDs" هنا → هيظهر الـ Chat ID تلقائي
           </div>
         </div>
@@ -2685,12 +2696,12 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="recipient-form" onsubmit="return saveRecipient(event)">
       <input type="hidden" id="recipient-idx" value="">
       <div class="form-row">
-        <div class="form-group"><label>الاسم *</label><input type="text" id="recipient-name" required placeholder="مثلاً: أحمد"></div>
-        <div class="form-group"><label>المسمى الوظيفي</label><input type="text" id="recipient-title" placeholder="مثلاً: مدير المخازن"></div>
+        <div class="form-group"><label data-i18n="label_recipient_name">الاسم *</label><input type="text" id="recipient-name" required placeholder="مثلاً: أحمد"></div>
+        <div class="form-group"><label data-i18n="label_recipient_title">المسمى الوظيفي</label><input type="text" id="recipient-title" placeholder="مثلاً: مدير المخازن"></div>
       </div>
       <div class="form-group"><label>Chat ID *</label><input type="text" id="recipient-chat-id" required dir="ltr" placeholder="مثلاً: 123456789"></div>
       <div class="form-group">
-        <label>الإشعارات المفعلة</label>
+        <label data-i18n="label_enabled_notifications">الإشعارات المفعلة</label>
         <div class="notif-toggles">
           <label class="perm-checkbox"><input type="checkbox" id="rcpt-low-stock" checked> تنبيه مخزون منخفض</label>
           <label class="perm-checkbox"><input type="checkbox" id="rcpt-unpaid" checked> فواتير غير مدفوعة</label>
@@ -2925,15 +2936,15 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <input type="hidden" id="stock-product-id">
       <input type="hidden" id="stock-direction">
       <div class="form-group">
-        <label>الصنف</label>
+        <label data-i18n="label_product">الصنف</label>
         <input type="text" id="stock-product-name" readonly class="readonly-input">
       </div>
       <div class="form-group">
-        <label>الكمية *</label>
+        <label data-i18n="label_qty_req">الكمية *</label>
         <input type="number" id="stock-qty" min="1" required>
       </div>
       <div class="form-group">
-        <label>ملاحظات</label>
+        <label data-i18n="label_stock_notes">ملاحظات</label>
         <textarea id="stock-notes" rows="2"></textarea>
       </div>
       <div class="modal-footer">
@@ -3000,23 +3011,23 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="expense-form" novalidate onsubmit="return saveExpense(event)">
       <input type="hidden" id="expense-id">
       <div class="form-row">
-        <div class="form-group"><label>التاريخ</label><input type="date" id="expense-date" required></div>
-        <div class="form-group"><label>نوع المصروف</label>
+        <div class="form-group"><label data-i18n="label_date">التاريخ</label><input type="date" id="expense-date" required></div>
+        <div class="form-group"><label data-i18n="label_expense_type">نوع المصروف</label>
           <select id="expense-type"></select>
         </div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>التصنيف</label>
+        <div class="form-group"><label data-i18n="label_classification">التصنيف</label>
           <select id="expense-category">
-            <option value="">عام</option>
+            <option value="" data-i18n="label_general">عام</option>
           </select>
         </div>
       </div>
-      <div class="form-group"><label>البيان *</label><input type="text" id="expense-description" required></div>
-      <div class="form-group"><label>المبلغ (ج.م) *</label><input type="number" id="expense-amount" step="0.01" min="0" required></div>
+      <div class="form-group"><label data-i18n="label_statement">البيان *</label><input type="text" id="expense-description" required></div>
+      <div class="form-group"><label data-i18n="label_amount_currency">المبلغ</label><input type="number" id="expense-amount" step="0.01" min="0" required></div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-expense')">إلغاء</button>
-        <button type="submit" class="btn btn-primary">حفظ</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-expense')" data-i18n="btn_cancel">إلغاء</button>
+        <button type="submit" class="btn btn-primary" data-i18n="btn_save">حفظ</button>
       </div>
     </form>
   </div>
@@ -3028,23 +3039,23 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <div class="modal-header"><h3 id="modal-user-title" data-i18n="modal_add_user">إضافة مستخدم</h3><button class="modal-close" onclick="closeModal('modal-user')">&times;</button></div>
     <form id="user-form" onsubmit="return saveUser(event)">
       <input type="hidden" id="user-id">
-      <div class="form-group"><label>الاسم الكامل</label><input type="text" id="user-fullname"></div>
-      <div class="form-group"><label>اسم المستخدم *</label><input type="text" id="user-username" required></div>
-      <div class="form-group"><label>كلمة المرور</label><input type="password" id="user-password"></div>
-      <div class="form-group"><label>الدور *</label>
+      <div class="form-group"><label data-i18n="label_full_name">الاسم الكامل</label><input type="text" id="user-fullname"></div>
+      <div class="form-group"><label data-i18n="label_username">اسم المستخدم *</label><input type="text" id="user-username" required></div>
+      <div class="form-group"><label data-i18n="label_password">كلمة المرور</label><input type="password" id="user-password"></div>
+      <div class="form-group"><label data-i18n="label_role">الدور *</label>
         <select id="user-role" required onchange="onRoleChange()">
-          <option value="admin">مدير — تحكم كامل</option>
-          <option value="manager">مشرف — بدون إعدادات</option>
-          <option value="staff">موظف — صلاحيات محدودة</option>
+          <option value="admin" data-i18n="role_admin_desc">مدير — تحكم كامل</option>
+          <option value="manager" data-i18n="role_manager_desc">مشرف — بدون إعدادات</option>
+          <option value="staff" data-i18n="role_staff_desc">موظف — صلاحيات محدودة</option>
         </select>
       </div>
       <div class="form-group">
-        <label>الصلاحيات المخصصة</label>
+        <label data-i18n="label_custom_permissions">الصلاحيات المخصصة</label>
         <div id="user-permissions-list" class="permissions-grid"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-user')">إلغاء</button>
-        <button type="submit" class="btn btn-primary">حفظ</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-user')" data-i18n="btn_cancel">إلغاء</button>
+        <button type="submit" class="btn btn-primary" data-i18n="btn_save">حفظ</button>
       </div>
     </form>
   </div>
@@ -3056,9 +3067,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <div class="modal-header"><h3 id="modal-engineer-title" data-i18n="modal_add_engineer">إضافة مهندس/فني</h3><button class="modal-close" onclick="closeModal('modal-engineer')">&times;</button></div>
     <form id="engineer-form" novalidate onsubmit="return saveEngineer(event)">
       <input type="hidden" id="engineer-id">
-      <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="engineer-name" required></div>
-      <div class="form-group"><label>رقم التليفون</label><input type="tel" id="engineer-phone" dir="ltr"></div>
-      <div class="form-group"><label>التخصص</label>
+      <div class="form-group"><label data-i18n="label_full_name_req">الاسم الكامل *</label><input type="text" id="engineer-name" required></div>
+      <div class="form-group"><label data-i18n="label_phone_number">رقم التليفون</label><input type="tel" id="engineer-phone" dir="ltr"></div>
+      <div class="form-group"><label data-i18n="label_specialty">التخصص</label>
         <select id="engineer-specialty">
           <option value="عام">عام</option>
           <option value="موبايلات">موبايلات</option>
@@ -3088,19 +3099,19 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="device-form" novalidate onsubmit="return saveDevice(event)">
       <input type="hidden" id="device-id">
       <div class="form-row">
-        <div class="form-group"><label>رقم أمر الصيانة</label><input type="text" id="device-order-number" readonly class="readonly-input"></div>
-        <div class="form-group"><label>تاريخ الدخول</label><input type="date" id="device-intake-date" required></div>
-        <div class="form-group"><label>الحالة</label>
+        <div class="form-group"><label data-i18n="label_order_number">رقم أمر الصيانة</label><input type="text" id="device-order-number" readonly class="readonly-input"></div>
+        <div class="form-group"><label data-i18n="label_intake_date">تاريخ الدخول</label><input type="date" id="device-intake-date" required></div>
+        <div class="form-group"><label data-i18n="label_status">الحالة</label>
           <select id="device-status-select">
-            <option value="under_repair">🔧 تحت الصيانة</option>
-            <option value="done_not_delivered">✅ خلصت ومتسلمتش</option>
-            <option value="delivered_not_paid">📦 اتسلمت ومدفعتش</option>
-            <option value="completed">💰 خلصت واتدفعت</option>
+            <option value="under_repair" data-i18n="device_under_repair">🔧 تحت الصيانة</option>
+            <option value="done_not_delivered" data-i18n="device_done_not_delivered">✅ خلصت ومتسلمتش</option>
+            <option value="delivered_not_paid" data-i18n="device_delivered_not_paid">📦 اتسلمت ومدفعتش</option>
+            <option value="completed" data-i18n="device_completed">💰 خلصت واتدفعت</option>
           </select>
         </div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>العميل</label>
+        <div class="form-group"><label data-i18n="label_client">العميل</label>
           <select id="device-client" onchange="onClientSelect(this, 'device')"></select>
           <div id="new-client-device-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
@@ -3110,57 +3121,57 @@ tr:hover { background: rgba(108,60,233,0.02); }
             </div>
           </div>
         </div>
-        <div class="form-group"><label>اسم الجهاز *</label><input type="text" id="device-name" required></div>
+        <div class="form-group"><label data-i18n="label_device_name">اسم الجهاز *</label><input type="text" id="device-name" required></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>المهندس/الفني المسؤول</label>
-          <select id="device-engineer" onchange="onEngineerSelect(this)"><option value="">اختر المهندس/الفني</option></select>
+        <div class="form-group"><label data-i18n="label_engineer_responsible">المهندس/الفني المسؤول</label>
+          <select id="device-engineer" onchange="onEngineerSelect(this)"><option value="" data-i18n="select_engineer">اختر المهندس/الفني</option></select>
           <div id="new-engineer-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
               <input type="text" id="new-engineer-name" placeholder="اسم المهندس" style="flex:2;min-width:120px">
               <input type="text" id="new-engineer-phone" placeholder="الهاتف (اختياري)" style="flex:1;min-width:100px">
               <select id="new-engineer-specialty" style="flex:1;min-width:100px">
-                <option value="عام">عام</option><option value="موبايلات">موبايلات</option><option value="لابتوب">لابتوب</option>
-                <option value="كمبيوتر">كمبيوتر</option><option value="طابعات">طابعات</option><option value="شبكات">شبكات</option>
-                <option value="كاميرات">كاميرات</option><option value="أخرى">أخرى</option>
+                <option value="عام" data-i18n="specialty_general">عام</option><option value="موبايلات" data-i18n="specialty_mobiles">موبايلات</option><option value="لابتوب" data-i18n="specialty_laptop">لابتوب</option>
+                <option value="كمبيوتر" data-i18n="specialty_computer">كمبيوتر</option><option value="طابعات" data-i18n="specialty_printers">طابعات</option><option value="شبكات" data-i18n="specialty_networks">شبكات</option>
+                <option value="كاميرات" data-i18n="specialty_cameras">كاميرات</option><option value="أخرى" data-i18n="specialty_other">أخرى</option>
               </select>
               <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineEngineer()" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
             </div>
           </div>
         </div>
-        <div class="form-group"><label>المواصفات</label><input type="text" id="device-specs" placeholder="الموديل، الرقم التسلسلي..."></div>
+        <div class="form-group"><label data-i18n="label_specs">المواصفات</label><input type="text" id="device-specs" placeholder="الموديل، الرقم التسلسلي..."></div>
       </div>
       
       <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)">
-      <h4 style="margin-bottom:12px;color:var(--primary)"><i class='bx bx-task'></i> تخصيص المهمة</h4>
+      <h4 style="margin-bottom:12px;color:var(--primary)"><i class='bx bx-task'></i data-i18n="section_task_assignment"> تخصيص المهمة</h4>
       
       <div class="form-row">
-        <div class="form-group"><label>الموعد النهائي (Deadline)</label><input type="datetime-local" id="device-deadline"></div>
-        <div class="form-group"><label>المكافأة عند الإنجاز في الوقت (ج.م)</label><input type="number" id="device-reward" step="0.01" min="0" value="0" placeholder="0"></div>
+        <div class="form-group"><label data-i18n="label_deadline">الموعد النهائي (Deadline)</label><input type="datetime-local" id="device-deadline"></div>
+        <div class="form-group"><label data-i18n="label_reward">المكافأة عند الإنجاز في الوقت</label><input type="number" id="device-reward" step="0.01" min="0" value="0" placeholder="0"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>العقوبة عند التأخير (ج.م)</label><input type="number" id="device-penalty" step="0.01" min="0" value="0" placeholder="0"></div>
-        <div class="form-group"><label>عدد الإنذارات قبل العقوبة</label>
+        <div class="form-group"><label data-i18n="label_penalty">العقوبة عند التأخير</label><input type="number" id="device-penalty" step="0.01" min="0" value="0" placeholder="0"></div>
+        <div class="form-group"><label data-i18n="label_warnings_count">عدد الإنذارات قبل العقوبة</label>
           <select id="device-warnings-limit">
-            <option value="0">بدون إنذارات — عقوبة مباشرة</option>
-            <option value="1">إنذار واحد</option>
-            <option value="2" selected>إنذاران</option>
-            <option value="3">3 إنذارات</option>
+            <option value="0" data-i18n="warning_no_warnings">بدون إنذارات — عقوبة مباشرة</option>
+            <option value="1" data-i18n="warning_one">إنذار واحد</option>
+            <option value="2" selected data-i18n="warning_two">إنذاران</option>
+            <option value="3" data-i18n="warning_three">3 إنذارات</option>
           </select>
         </div>
       </div>
-      <div class="form-group"><label>ملاحظات المهمة</label><textarea id="device-task-notes" rows="2" placeholder="تعليمات خاصة للمهندس..."></textarea></div>
+      <div class="form-group"><label data-i18n="label_task_notes">ملاحظات المهمة</label><textarea id="device-task-notes" rows="2" placeholder="تعليمات خاصة للمهندس..."></textarea></div>
       
       <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)">
       
       <div class="form-row">
-        <div class="form-group"><label class="perm-checkbox"><input type="checkbox" id="device-warranty" onchange="toggleWarrantyField()"> الجهاز عليه ضمان</label></div>
-        <div class="form-group" id="warranty-months-group" style="display:none"><label>مدة الضمان (شهور)</label><input type="number" id="device-warranty-months" min="1" max="120" value="12"></div>
+        <div class="form-group"><label class="perm-checkbox"><input type="checkbox" id="device-warranty" onchange="toggleWarrantyField()"> <span data-i18n="label_warranty_device">الجهاز عليه ضمان</span></label></div>
+        <div class="form-group" id="warranty-months-group" style="display:none"><label data-i18n="label_warranty_months">مدة الضمان (شهور)</label><input type="number" id="device-warranty-months" min="1" max="120" value="12"></div>
       </div>
-      <div class="form-group"><label>المشكلة</label><textarea id="device-problem" rows="2" placeholder="وصف العطل أو المشكلة"></textarea></div>
-      <div class="form-group"><label>ملاحظات</label><textarea id="device-notes" rows="2"></textarea></div>
+      <div class="form-group"><label data-i18n="label_problem">المشكلة</label><textarea id="device-problem" rows="2" placeholder="وصف العطل أو المشكلة"></textarea></div>
+      <div class="form-group"><label data-i18n="label_notes">ملاحظات</label><textarea id="device-notes" rows="2"></textarea></div>
       <div class="form-group">
-        <label>صور الجهاز</label>
+        <label data-i18n="label_device_photos">صور الجهاز</label>
         <input type="file" id="device-photos" accept="image/*" multiple>
         <div id="device-photos-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
       </div>
@@ -3168,28 +3179,28 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)">
       
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <h4><i class='bx bx-cog' style="color:var(--primary)"></i> القطع المستخدمة</h4>
-        <button type="button" class="btn btn-sm btn-primary" onclick="addDevicePart()"><i class='bx bx-plus'></i> إضافة قطعة</button>
+        <h4><i class='bx bx-cog' style="color:var(--primary)"></i> <span data-i18n="label_parts_used">القطع المستخدمة</span></h4>
+        <button type="button" class="btn btn-sm btn-primary" onclick="addDevicePart()"><i class='bx bx-plus'></i data-i18n="btn_add_part"> إضافة قطعة</button>
       </div>
       <div id="device-parts-list"></div>
       
       <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)">
       
       <div class="form-row">
-        <div class="form-group"><label>مصاريف إضافية (ج.م)</label><input type="number" id="device-extra-expenses" value="0" step="0.01" min="0" oninput="updateRepairCost()"></div>
-        <div class="form-group"><label>سعر البيع للعميل (ج.م)</label><input type="number" id="device-selling-price" step="0.01" min="0" oninput="updateRepairCost()"></div>
+        <div class="form-group"><label data-i18n="label_extra_expenses">مصاريف إضافية</label><input type="number" id="device-extra-expenses" value="0" step="0.01" min="0" oninput="updateRepairCost()"></div>
+        <div class="form-group"><label data-i18n="label_selling_price_client">سعر البيع للعميل</label><input type="number" id="device-selling-price" step="0.01" min="0" oninput="updateRepairCost()"></div>
       </div>
       
       <div class="invoice-summary">
-        <div class="inv-summary-row"><span>تكلفة قطع المخزون:</span><span id="repair-stock-cost">0 ج.م</span></div>
-        <div class="inv-summary-row"><span>تكلفة القطع الخارجية:</span><span id="repair-external-cost">0 ج.م</span></div>
-        <div class="inv-summary-row total"><span>التكلفة الإجمالية:</span><strong id="repair-total-cost">0 ج.م</strong></div>
-        <div class="inv-summary-row"><span>الربح:</span><strong id="repair-profit" style="color:var(--success)">0 ج.م</strong></div>
+        <div class="inv-summary-row"><span data-i18n="repair_stock_cost">تكلفة قطع المخزون:</span><span id="repair-stock-cost">0</span></div>
+        <div class="inv-summary-row"><span data-i18n="repair_external_cost">تكلفة القطع الخارجية:</span><span id="repair-external-cost">0</span></div>
+        <div class="inv-summary-row total"><span data-i18n="repair_total_cost">التكلفة الإجمالية:</span><strong id="repair-total-cost">0</strong></div>
+        <div class="inv-summary-row"><span data-i18n="repair_profit">الربح:</span><strong id="repair-profit" style="color:var(--success)">0</strong></div>
       </div>
       
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-device')">إلغاء</button>
-        <button type="submit" class="btn btn-primary">حفظ</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-device')" data-i18n="btn_cancel">إلغاء</button>
+        <button type="submit" class="btn btn-primary" data-i18n="btn_save">حفظ</button>
       </div>
     </form>
   </div>
@@ -3205,22 +3216,22 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="client-form" onsubmit="return saveClient(event)">
       <input type="hidden" id="client-id">
       <div class="form-row">
-        <div class="form-group"><label>كود العميل</label><input type="text" id="client-code" readonly class="readonly-input"></div>
-        <div class="form-group"><label>الاسم *</label><input type="text" id="client-name" required></div>
+        <div class="form-group"><label data-i18n="label_client_code">كود العميل</label><input type="text" id="client-code" readonly class="readonly-input"></div>
+        <div class="form-group"><label data-i18n="label_name_req">الاسم *</label><input type="text" id="client-name" required></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>التليفون</label><input type="tel" id="client-phone" dir="ltr"></div>
-        <div class="form-group"><label>الإيميل</label><input type="email" id="client-email" dir="ltr"></div>
+        <div class="form-group"><label data-i18n="label_phone">التليفون</label><input type="tel" id="client-phone" dir="ltr"></div>
+        <div class="form-group"><label data-i18n="label_email">الإيميل</label><input type="email" id="client-email" dir="ltr"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>اسم المصنع</label><input type="text" id="client-factory-name"></div>
-        <div class="form-group"><label>مكان المصنع</label><input type="text" id="client-factory-location"></div>
+        <div class="form-group"><label data-i18n="label_factory_name">اسم المصنع</label><input type="text" id="client-factory-name"></div>
+        <div class="form-group"><label data-i18n="label_factory_location">مكان المصنع</label><input type="text" id="client-factory-location"></div>
       </div>
-      <div class="form-group"><label>نشاط المصنع</label><input type="text" id="client-factory-activity"></div>
-      <div class="form-group"><label>ملاحظات</label><textarea id="client-notes" rows="2"></textarea></div>
+      <div class="form-group"><label data-i18n="label_factory_activity">نشاط المصنع</label><input type="text" id="client-factory-activity"></div>
+      <div class="form-group"><label data-i18n="label_notes">ملاحظات</label><textarea id="client-notes" rows="2"></textarea></div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-client')">إلغاء</button>
-        <button type="submit" class="btn btn-primary">حفظ</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-client')" data-i18n="btn_cancel">إلغاء</button>
+        <button type="submit" class="btn btn-primary" data-i18n="btn_save">حفظ</button>
       </div>
     </form>
   </div>
@@ -3259,7 +3270,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <input type="datetime-local" id="history-entry-date" class="form-input">
           </div>
           <div class="form-group">
-            <label>نوع الإجراء</label>
+            <label data-i18n="label_repair_action">نوع الإجراء</label>
             <select id="history-entry-action" class="form-input">
               <option value="استلام">استلام</option>
               <option value="فحص">فحص</option>
@@ -3271,11 +3282,11 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
         </div>
         <div class="form-group">
-          <label>الوصف / الملاحظات</label>
+          <label data-i18n="label_repair_desc">الوصف / الملاحظات</label>
           <textarea id="history-entry-note" class="form-input" rows="3" placeholder="اكتب الوصف أو الملاحظات..."></textarea>
         </div>
         <div class="form-group">
-          <label>المهندس</label>
+          <label data-i18n="label_repair_engineer">المهندس</label>
           <select id="history-entry-engineer" class="form-input">
             <option value="">-- اختر المهندس --</option>
             <!-- Will be populated dynamically -->
@@ -3307,17 +3318,17 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="supplier-form" onsubmit="return saveSupplier(event)">
       <input type="hidden" id="supplier-id">
       <div class="form-row">
-        <div class="form-group"><label>كود المورد</label><input type="text" id="supplier-code" readonly class="readonly-input"></div>
-        <div class="form-group"><label>الاسم *</label><input type="text" id="supplier-name" required></div>
+        <div class="form-group"><label data-i18n="label_supplier_code">كود المورد</label><input type="text" id="supplier-code" readonly class="readonly-input"></div>
+        <div class="form-group"><label data-i18n="label_name_req">الاسم *</label><input type="text" id="supplier-name" required></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>التليفون</label><input type="tel" id="supplier-phone" dir="ltr"></div>
-        <div class="form-group"><label>الشركة</label><input type="text" id="supplier-company"></div>
+        <div class="form-group"><label data-i18n="label_phone">التليفون</label><input type="tel" id="supplier-phone" dir="ltr"></div>
+        <div class="form-group"><label data-i18n="label_company">الشركة</label><input type="text" id="supplier-company"></div>
       </div>
-      <div class="form-group"><label>ملاحظات</label><textarea id="supplier-notes" rows="2"></textarea></div>
+      <div class="form-group"><label data-i18n="label_notes">ملاحظات</label><textarea id="supplier-notes" rows="2"></textarea></div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-supplier')">إلغاء</button>
-        <button type="submit" class="btn btn-primary">حفظ</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-supplier')" data-i18n="btn_cancel">إلغاء</button>
+        <button type="submit" class="btn btn-primary" data-i18n="btn_save">حفظ</button>
       </div>
     </form>
   </div>
@@ -3334,11 +3345,11 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <input type="hidden" id="invoice-id">
       <input type="hidden" id="invoice-type">
       <div class="form-row">
-        <div class="form-group"><label>رقم الفاتورة</label><input type="text" id="invoice-number" readonly class="readonly-input"></div>
-        <div class="form-group"><label>التاريخ</label><input type="date" id="invoice-date" required></div>
+        <div class="form-group"><label data-i18n="label_invoice_number">رقم الفاتورة</label><input type="text" id="invoice-number" readonly class="readonly-input"></div>
+        <div class="form-group"><label data-i18n="label_date">التاريخ</label><input type="date" id="invoice-date" required></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label id="invoice-party-label">العميل</label>
+        <div class="form-group"><label id="invoice-party-label" data-i18n="label_client">العميل</label>
           <div style="display:flex;gap:4px;align-items:center">
             <select id="invoice-party" onchange="onClientSelect(this, 'invoice')" style="flex:1"></select>
             <button type="button" class="list-edit-btn" onclick="openClientManager()" title="إدارة العملاء"><i class='bx bx-edit-alt'></i></button>
@@ -3352,45 +3363,45 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
         </div>
         <div class="form-group">
-          <label>حالة الدفع</label>
+          <label data-i18n="label_payment_status">حالة الدفع</label>
           <select id="invoice-payment-status">
-            <option value="unpaid">غير مدفوعة</option>
-            <option value="partial">دفع جزئي</option>
-            <option value="paid">مدفوعة بالكامل</option>
+            <option value="unpaid" data-i18n="payment_unpaid">غير مدفوعة</option>
+            <option value="partial" data-i18n="payment_partial">دفع جزئي</option>
+            <option value="paid" data-i18n="payment_paid">مدفوعة بالكامل</option>
           </select>
         </div>
       </div>
       <div class="form-group">
-        <label>المبلغ المدفوع (ج.م)</label>
+        <label data-i18n="label_paid_amount">المبلغ المدفوع</label>
         <input type="number" id="invoice-paid-amount" step="0.01" min="0" value="0">
       </div>
       
       <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px">
-        <h4>الأصناف</h4>
+        <h4 data-i18n="label_invoice_items">الأصناف</h4>
         <div style="display:flex;gap:6px">
-          <button type="button" class="btn btn-sm btn-outline" onclick="openBarcodeScanner('invoice')"><i class='bx bx-barcode'></i> مسح</button>
-          <button type="button" class="btn btn-sm btn-primary" onclick="addInvoiceItem()"><i class='bx bx-plus'></i> إضافة صنف</button>
+          <button type="button" class="btn btn-sm btn-outline" onclick="openBarcodeScanner('invoice')"><i class='bx bx-barcode'></i data-i18n="btn_scan"> مسح</button>
+          <button type="button" class="btn btn-sm btn-primary" onclick="addInvoiceItem()"><i class='bx bx-plus'></i> <span data-i18n="btn_add_item">إضافة صنف</span></button>
         </div>
       </div>
       <div id="invoice-items-list" class="invoice-items-container"></div>
       
       <div class="invoice-summary">
-        <div class="inv-summary-row"><span>الإجمالي الفرعي:</span><span id="invoice-subtotal">0 ج.م</span></div>
-        <div class="inv-summary-row total"><span>الإجمالي:</span><strong id="invoice-total-display">0 ج.م</strong></div>
+        <div class="inv-summary-row"><span data-i18n="inv_subtotal">الإجمالي الفرعي:</span><span id="invoice-subtotal">0</span></div>
+        <div class="inv-summary-row total"><span data-i18n="inv_total">الإجمالي:</span><strong id="invoice-total-display">0</strong></div>
       </div>
       
-      <div class="form-group"><label>ملاحظات</label><textarea id="invoice-notes" rows="2"></textarea></div>
+      <div class="form-group"><label data-i18n="label_notes">ملاحظات</label><textarea id="invoice-notes" rows="2"></textarea></div>
       
       <!-- Photo attachments section -->
       <div class="form-group" id="invoice-photos-section">
-        <label><i class='bx bx-camera' style="color:var(--primary)"></i> مرفقات صور (للفواتير)</label>
+        <label data-i18n="label_invoice_photos"><i class='bx bx-camera' style="color:var(--primary)"></i> مرفقات صور (للفواتير)</label>
         <input type="file" id="invoice-photos" accept="image/*" multiple onchange="previewInvoicePhotos(this)">
         <div id="invoice-photos-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
       </div>
       
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-invoice')">إلغاء</button>
-        <button type="submit" class="btn btn-primary">حفظ الفاتورة</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-invoice')" data-i18n="btn_cancel">إلغاء</button>
+        <button type="submit" class="btn btn-primary" data-i18n="save_invoice">حفظ الفاتورة</button>
       </div>
     </form>
   </div>
@@ -3407,9 +3418,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="service-form" onsubmit="return saveService(event)">
       <input type="hidden" id="service-id">
       <div class="form-row">
-        <div class="form-group"><label>التاريخ</label><input type="date" id="service-date" required></div>
-        <div class="form-group"><label>العميل</label>
-          <select id="service-client" onchange="onClientSelect(this, 'service')"><option value="">اختر العميل</option></select>
+        <div class="form-group"><label data-i18n="label_date">التاريخ</label><input type="date" id="service-date" required></div>
+        <div class="form-group"><label data-i18n="label_client">العميل</label>
+          <select id="service-client" onchange="onClientSelect(this, 'service')"><option value="" data-i18n="select_client">اختر العميل</option></select>
           <div id="new-client-service-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
               <input type="text" id="new-client-service-name" placeholder="اسم العميل" style="flex:2;min-width:120px">
@@ -3419,23 +3430,23 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
         </div>
       </div>
-      <div class="form-group"><label>الوصف *</label><input type="text" id="service-description" required placeholder="وصف الخدمة أو الزيارة"></div>
-      <div class="form-group"><label>الموقع</label><input type="text" id="service-location" placeholder="عنوان أو موقع الزيارة"></div>
+      <div class="form-group"><label data-i18n="label_service_desc">الوصف *</label><input type="text" id="service-description" required placeholder="وصف الخدمة أو الزيارة"></div>
+      <div class="form-group"><label data-i18n="label_location">الموقع</label><input type="text" id="service-location" placeholder="عنوان أو موقع الزيارة"></div>
       <div class="form-row">
-        <div class="form-group"><label>السعر (ج.م)</label><input type="number" id="service-price" step="0.01" min="0" value="0"></div>
-        <div class="form-group"><label>الحالة</label>
+        <div class="form-group"><label data-i18n="label_price">السعر</label><input type="number" id="service-price" step="0.01" min="0" value="0"></div>
+        <div class="form-group"><label data-i18n="label_service_status">الحالة</label>
           <select id="service-status">
-            <option value="pending">قيد الانتظار</option>
-            <option value="in_progress">جاري التنفيذ</option>
-            <option value="completed">مكتملة</option>
-            <option value="cancelled">ملغاة</option>
+            <option value="pending" data-i18n="service_pending">قيد الانتظار</option>
+            <option value="in_progress" data-i18n="service_in_progress">جاري التنفيذ</option>
+            <option value="completed" data-i18n="service_completed">مكتملة</option>
+            <option value="cancelled" data-i18n="service_cancelled">ملغاة</option>
           </select>
         </div>
       </div>
-      <div class="form-group"><label>ملاحظات</label><textarea id="service-notes" rows="2"></textarea></div>
+      <div class="form-group"><label data-i18n="label_notes">ملاحظات</label><textarea id="service-notes" rows="2"></textarea></div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-service')">إلغاء</button>
-        <button type="submit" class="btn btn-primary">حفظ</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-service')" data-i18n="btn_cancel">إلغاء</button>
+        <button type="submit" class="btn btn-primary" data-i18n="btn_save">حفظ</button>
       </div>
     </form>
   </div>
@@ -3612,7 +3623,7 @@ const TRANSLATIONS = {
     // Form labels
     label_sku: 'كود الصنف (SKU)', label_product_name: 'اسم الصنف *',
     label_condition: 'الحالة *', label_type: 'النوع *', label_category: 'التصنيف',
-    label_buy_price: 'سعر الشراء (ج.م) *', label_sell_price: 'سعر البيع (ج.م) *',
+    label_buy_price: 'سعر الشراء *', label_sell_price: 'سعر البيع *',
     label_quantity: 'الكمية *', label_min_stock: 'الحد الأدنى للمخزون',
     label_barcode: 'باركود', label_description: 'الوصف', label_image: 'صورة',
     label_company_name: 'اسم الشركة', label_phone: 'التليفون',
@@ -3822,7 +3833,7 @@ const TRANSLATIONS = {
     // Form labels
     label_sku: 'SKU Code', label_product_name: 'Product Name *',
     label_condition: 'Condition *', label_type: 'Type *', label_category: 'Category',
-    label_buy_price: 'Buy Price (EGP) *', label_sell_price: 'Sell Price (EGP) *',
+    label_buy_price: 'Buy Price *', label_sell_price: 'Sell Price *',
     label_quantity: 'Quantity *', label_min_stock: 'Min Stock Level',
     label_barcode: 'Barcode', label_description: 'Description', label_image: 'Image',
     label_company_name: 'Company Name', label_phone: 'Phone',
@@ -4061,11 +4072,11 @@ async function saveStoreToServer(storeName) {
     });
     if (!resp.ok) {
       console.error(`Save failed for ${storeName}: ${resp.status} ${resp.statusText}`);
-      toast('خطأ في حفظ البيانات — حاول مرة أخرى', 'error');
+      toast(t('toast_save_error'), 'error');
     }
   } catch(e) {
     console.error(`Save error for ${storeName}:`, e);
-    toast('خطأ في الاتصال بالسيرفر', 'error');
+    toast(t('toast_connection_error'), 'error');
   }
 }
 
@@ -4224,7 +4235,7 @@ function enhanceSelect(selectId, listKey, options = {}) {
     if (!val) return;
     if (saveCb.checked) {
       await addToCustomList(listKey, val);
-      toast('تم إضافة "' + val + '" للقائمة ✅');
+      toast(t('toast_added_to_list'));
     }
     const opt = document.createElement('option');
     const { valueMap } = options;
@@ -4546,7 +4557,7 @@ function listEditorAdd() {
   const input = document.getElementById('list-editor-new');
   const val = input.value.trim();
   if (!val) return;
-  if (_listEditorState._items.includes(val)) { toast('العنصر موجود بالفعل', 'warning'); return; }
+  if (_listEditorState._items.includes(val)) { toast(t('toast_item_exists'), 'warning'); return; }
   _listEditorState._items.push(val);
   input.value = '';
   renderListEditorItemsFromState();
@@ -4588,7 +4599,7 @@ async function saveListEditor() {
   
   await dbPut('customLists', { key: _listEditorState.listKey, items });
   await populateSelect(_listEditorState.selectId, _listEditorState.listKey, _listEditorState.options);
-  toast('تم حفظ القائمة ✅');
+  toast(t('toast_list_saved'));
   closeListEditor();
 }
 
@@ -4995,7 +5006,7 @@ async function exportAllToFile() {
   a.download = `SMS-Backup-${new Date().toISOString().split('T')[0]}.json`;
   a.click();
   URL.revokeObjectURL(url);
-  toast('تم تصدير النسخة الاحتياطية');
+  toast(t('toast_backup_exported'));
 }
 
 function importFromFile() {
@@ -5010,9 +5021,9 @@ function importFromFile() {
       const text = await file.text();
       const data = JSON.parse(text);
       await importAllData(data);
-      toast('تم الاستيراد ✅');
+      toast(t('toast_imported'));
       reloadActivePage();
-    } catch(e) { toast('خطأ في الملف', 'error'); }
+    } catch(e) { toast(t('toast_file_error'), 'error'); }
   };
   input.click();
 }
@@ -5084,7 +5095,7 @@ function navigate(page, sub) {
   if (page === 'settings') { 
     // Always reset settings to overview first
     closeSettingsSection();
-    loadSettingsOverview(); loadUsersPage(); loadActivityLog(); loadCompanySettings(); loadNotificationSettings();
+    loadSettingsOverview(); loadUsersPage(); loadActivityLog(); loadCompanySettings(); loadNotificationSettings(); loadCurrencySymbol();
     if (sub) setTimeout(() => openSettingsSection(sub), 150);
   }
   
@@ -5161,11 +5172,35 @@ function toast(message, type = 'success') {
   setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
 }
 
+// Get currency symbol from settings
+function getCurrency() {
+  try {
+    const tx = db.transaction('settings', 'readonly');
+    const store = tx.objectStore('settings');
+    const req = store.get('company');
+    // Synchronous fallback - use cached value
+  } catch(e) {}
+  return window._cachedCurrency || 'ج.م';
+}
+
+// Load currency setting (called after DB init)
+async function loadCurrencySymbol() {
+  try {
+    const company = await dbGet('settings', 'company');
+    if (company?.value?.currency) {
+      window._cachedCurrency = company.value.currency;
+    }
+  } catch(e) {}
+}
+
 // Format currency
 function formatMoney(amount) {
+  const cur = window._cachedCurrency || 'ج.م';
   const n = parseFloat(amount);
-  if (isNaN(n) || amount === undefined || amount === null) return '٠ ج.م';
-  return new Intl.NumberFormat('ar-EG', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(n) + ' ج.م';
+  const lang = currentLang || 'ar';
+  if (isNaN(n) || amount === undefined || amount === null) return (lang === 'ar' ? '٠' : '0') + ' ' + cur;
+  const locale = lang === 'ar' ? 'ar-EG' : 'en-US';
+  return new Intl.NumberFormat(locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(n) + ' ' + cur;
 }
 
 // Format date
@@ -5262,11 +5297,11 @@ async function openBarcodeScanner(context) {
         }
       });
     } else {
-      toast('متصفحك لا يدعم مسح الباركود', 'error');
+      toast(t('toast_scanner_not_supported'), 'error');
       closeBarcodeScanner();
     }
   } catch(err) {
-    toast('فشل الوصول للكاميرا', 'error');
+    toast(t('toast_camera_error'), 'error');
     closeBarcodeScanner();
   }
 }
@@ -5312,7 +5347,7 @@ async function handleBarcodeResult(code) {
       updateInvoiceTotals();
       toast(`تمت إضافة: ${found.name}`, 'success');
     } else {
-      toast('لم يتم العثور على منتج بهذا الباركود', 'warning');
+      toast(t('toast_barcode_not_found'), 'warning');
     }
   }
 }
@@ -5851,7 +5886,7 @@ async function initApp() {
     enhanceAllSelects();
   } catch (err) {
     console.error('Init error:', err);
-    toast('خطأ في تحميل النظام — تأكد من الاتصال بالإنترنت', 'error');
+    toast(t('toast_system_load_error'), 'error');
   }
 }
 
@@ -6089,8 +6124,8 @@ tableObserver.observe(document.body, { childList: true, subtree: true });
 // Copy Apps Script code
 function copySyncScript() {
   const script = `const FOLDER_NAME = 'SMS-System-Data';\n\nfunction doPost(e) {\n  try {\n    const data = JSON.parse(e.postData.contents);\n    const action = data.action;\n    const folder = getOrCreateFolder();\n\n    if (action === 'pushAll') {\n      for (const [name, records] of Object.entries(data.stores)) {\n        const content = JSON.stringify(records);\n        const files = folder.getFilesByName(name + '.json');\n        if (files.hasNext()) files.next().setContent(content);\n        else folder.createFile(name + '.json', content, 'application/json');\n      }\n      const ts = new Date().toISOString();\n      const tsF = folder.getFilesByName('_lastModified.txt');\n      if (tsF.hasNext()) tsF.next().setContent(ts);\n      else folder.createFile('_lastModified.txt', ts, 'text/plain');\n      return ContentService.createTextOutput(JSON.stringify({ok:true})).setMimeType(ContentService.MimeType.JSON);\n    }\n\n    if (action === 'pullAll') {\n      const result = {};\n      const files = folder.getFiles();\n      while (files.hasNext()) {\n        const f = files.next();\n        if (f.getName().endsWith('.json')) result[f.getName().replace('.json','')] = JSON.parse(f.getBlob().getDataAsString());\n      }\n      return ContentService.createTextOutput(JSON.stringify({ok:true, data:result})).setMimeType(ContentService.MimeType.JSON);\n    }\n\n    if (action === 'lastModified') {\n      const f = folder.getFilesByName('_lastModified.txt');\n      const ts = f.hasNext() ? f.next().getBlob().getDataAsString() : null;\n      return ContentService.createTextOutput(JSON.stringify({ok:true, ts:ts})).setMimeType(ContentService.MimeType.JSON);\n    }\n\n    return ContentService.createTextOutput(JSON.stringify({ok:false})).setMimeType(ContentService.MimeType.JSON);\n  } catch(err) {\n    return ContentService.createTextOutput(JSON.stringify({ok:false, error:err.message})).setMimeType(ContentService.MimeType.JSON);\n  }\n}\n\nfunction doGet(e) {\n  return ContentService.createTextOutput(JSON.stringify({ok:true, msg:'SMS Sync Active'})).setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction getOrCreateFolder() {\n  const folders = DriveApp.getFoldersByName(FOLDER_NAME);\n  if (folders.hasNext()) return folders.next();\n  return DriveApp.createFolder(FOLDER_NAME);\n}`;
-  navigator.clipboard.writeText(script).then(() => toast('تم نسخ الكود ✅ — الصقه في Google Apps Script')).catch(() => {
-    const ta = document.createElement('textarea'); ta.value = script; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('تم نسخ الكود ✅');
+  navigator.clipboard.writeText(script).then(() => toast(t('toast_copied_paste'))).catch(() => {
+    const ta = document.createElement('textarea'); ta.value = script; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast(t('toast_code_copied'));
   });
 }
 
@@ -6354,13 +6389,13 @@ function renderCategoriesList() {
 
 async function addCategory() {
   const name = document.getElementById('new-category').value.trim();
-  if (!name) return toast('أدخل اسم التصنيف', 'warning');
+  if (!name) return toast(t('toast_enter_category_name'), 'warning');
   
   const parentId = document.getElementById('parent-category').value;
   
   // Check duplicate
   if (allCategories.find(c => c.name === name && c.parentId == (parentId || null))) {
-    return toast('التصنيف موجود بالفعل', 'warning');
+    return toast(t('toast_category_exists'), 'warning');
   }
   
   await dbAdd('categories', { 
@@ -6374,7 +6409,7 @@ async function addCategory() {
   populateCategoryFilters();
   renderCategoriesList();
   document.getElementById('new-category').value = '';
-  toast('تم إضافة التصنيف');
+  toast(t('toast_category_added'));
 }
 
 async function deleteCategory(id) {
@@ -6383,13 +6418,13 @@ async function deleteCategory(id) {
   // Check if has products
   const hasProducts = allProducts.some(p => p.category == id);
   if (hasProducts) {
-    return toast('لا يمكن حذف تصنيف به أصناف', 'error');
+    return toast(t('toast_cant_delete_category_items'), 'error');
   }
   
   // Check if has children
   const hasChildren = allCategories.some(c => c.parentId === id);
   if (hasChildren) {
-    return toast('لا يمكن حذف تصنيف له تصنيفات فرعية', 'error');
+    return toast(t('toast_cant_delete_category_children'), 'error');
   }
   
   await dbDelete('categories', id);
@@ -6398,7 +6433,7 @@ async function deleteCategory(id) {
   allCategories = await dbGetAll('categories');
   populateCategoryFilters();
   renderCategoriesList();
-  toast('تم حذف التصنيف');
+  toast(t('toast_category_deleted'));
 }
 
 // ============ ADD/EDIT PRODUCT ============
@@ -6452,7 +6487,7 @@ async function saveProduct(e) {
   if (condition === '__other__') condition = '';
   if (type === '__other__') type = '';
   
-  if (!name) { toast('اكتب اسم الصنف', 'error'); return; }
+  if (!name) { toast(t('toast_enter_product_name'), 'error'); return; }
   const category = document.getElementById('product-category').value;
   const buyPrice = parseFloat(document.getElementById('product-buy-price').value) || 0;
   const sellPrice = parseFloat(document.getElementById('product-sell-price').value) || 0;
@@ -6485,11 +6520,11 @@ async function saveProduct(e) {
     data.id = parseInt(id);
     await dbPut('products', data);
     await logActivity('update_product', `تعديل صنف: ${name}`);
-    toast('تم تعديل الصنف');
+    toast(t('toast_product_updated'));
   } else {
     await dbAdd('products', data);
     await logActivity('create_product', `صنف جديد: ${name}`);
-    toast('تم إضافة الصنف');
+    toast(t('toast_product_added'));
   }
   
   closeModal('modal-product');
@@ -6503,7 +6538,7 @@ async function deleteProduct(id) {
   // Instant hide
   allProducts = allProducts.filter(pr => pr.id !== id);
   renderProducts(allProducts);
-  toast('تم حذف الصنف');
+  toast(t('toast_product_deleted'));
   
   // Background delete + sync
   await dbDelete('products', id);
@@ -6627,10 +6662,10 @@ async function saveStockMovement(e) {
   const qty = parseInt(document.getElementById('stock-qty').value);
   const notes = document.getElementById('stock-notes').value.trim();
   
-  if (!qty || qty <= 0) return toast('أدخل كمية صحيحة', 'warning');
+  if (!qty || qty <= 0) return toast(t('toast_enter_quantity'), 'warning');
   
   const product = await dbGet('products', productId);
-  if (!product) return toast('الصنف غير موجود', 'error');
+  if (!product) return toast(t('toast_product_missing'), 'error');
   
   if (direction === 'out' && qty > product.quantity) {
     return toast(`الكمية المتاحة ${product.quantity} فقط`, 'error');
@@ -6847,7 +6882,7 @@ function openImportExport() {
 
 async function exportProducts() {
   const products = await dbGetAll('products');
-  if (products.length === 0) return toast('لا توجد أصناف للتصدير', 'warning');
+  if (products.length === 0) return toast(t('toast_no_products_export'), 'warning');
   
   const data = products.map(p => ({
     'الكود': p.sku,
@@ -6868,7 +6903,7 @@ async function exportProducts() {
   XLSX.utils.book_append_sheet(wb, ws, 'المخزون');
   XLSX.writeFile(wb, `SMS_Inventory_${new Date().toISOString().split('T')[0]}.xlsx`);
   
-  toast('تم تصدير المخزون');
+  toast(t('toast_inventory_exported'));
   closeModal('modal-import-export');
 }
 
@@ -6913,7 +6948,7 @@ async function importProducts(input) {
       await loadInventory();
     } catch (err) {
       console.error(err);
-      toast('خطأ في قراءة الملف', 'error');
+      toast(t('toast_file_read_error'), 'error');
     }
   };
   
@@ -7036,10 +7071,10 @@ function filterCategoriesPage() {
 function openAddCategoryPage() {
   const name = prompt('اسم التصنيف الرئيسي الجديد:');
   if (!name || !name.trim()) return;
-  if (allCategories.find(c => c.name === name.trim() && !c.parentId)) return toast('التصنيف موجود بالفعل', 'warning');
+  if (allCategories.find(c => c.name === name.trim() && !c.parentId)) return toast(t('toast_category_exists'), 'warning');
   dbAdd('categories', { name: name.trim(), parentId: null }).then(() => {
     logActivity('create_category', `تصنيف جديد: ${name.trim()}`);
-    toast('تم إضافة التصنيف');
+    toast(t('toast_category_added'));
     loadCategoriesPage();
   });
 }
@@ -7047,10 +7082,10 @@ function openAddCategoryPage() {
 function openAddSubCategory(parentId, parentName) {
   const name = prompt(`إضافة تصنيف فرعي لـ "${parentName}":`);
   if (!name || !name.trim()) return;
-  if (allCategories.find(c => c.name === name.trim() && c.parentId === parentId)) return toast('التصنيف الفرعي موجود بالفعل', 'warning');
+  if (allCategories.find(c => c.name === name.trim() && c.parentId === parentId)) return toast(t('toast_subcat_exists'), 'warning');
   dbAdd('categories', { name: name.trim(), parentId }).then(() => {
     logActivity('create_category', `تصنيف فرعي: ${name.trim()}`);
-    toast('تم إضافة التصنيف الفرعي');
+    toast(t('toast_subcat_added'));
     loadCategoriesPage();
     populateCategoryFilters();
   });
@@ -7064,7 +7099,7 @@ async function editCategoryPage(id) {
   cat.name = newName.trim();
   await dbPut('categories', cat);
   await logActivity('edit_category', `تعديل تصنيف: ${newName.trim()}`);
-  toast('تم تعديل التصنيف');
+  toast(t('toast_category_updated'));
   loadCategoriesPage();
   populateCategoryFilters();
 }
@@ -7073,7 +7108,7 @@ async function deleteCategoryPage(id) {
   const cat = await dbGet('categories', id);
   if (!cat) return;
   const hasProducts = allProducts.some(p => p.category == id);
-  if (hasProducts) return toast('لا يمكن حذف تصنيف به أصناف', 'error');
+  if (hasProducts) return toast(t('toast_cant_delete_category_items'), 'error');
   const hasChildren = allCategories.some(c => c.parentId === id);
   if (hasChildren) {
     if (!confirm(`التصنيف "${cat.name}" له تصنيفات فرعية. حذف الكل؟`)) return;
@@ -7088,7 +7123,7 @@ async function deleteCategoryPage(id) {
   }
   await dbDelete('categories', id);
   await logActivity('delete_category', `حذف تصنيف: ${cat.name}`);
-  toast('تم حذف التصنيف');
+  toast(t('toast_category_deleted'));
   loadCategoriesPage();
   populateCategoryFilters();
 }
@@ -7492,7 +7527,7 @@ function openNewSaleInvoice() {
   
   // Populate client dropdown
   const sel = document.getElementById('invoice-party');
-  sel.innerHTML = '<option value="">اختر العميل</option>' + 
+  sel.innerHTML = '<option value="" data-i18n="select_client">اختر العميل</option>' + 
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
     '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
   
@@ -7557,7 +7592,7 @@ async function editInvoice(id) {
   
   const sel = document.getElementById('invoice-party');
   if (inv.type === 'sale') {
-    sel.innerHTML = '<option value="">اختر العميل</option>' + allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('') + '<option value="__other__">+ أخرى</option>';
+    sel.innerHTML = '<option value="" data-i18n="select_client">اختر العميل</option>' + allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('') + '<option value="__other__">+ أخرى</option>';
     sel.value = inv.clientId || '';
     document.getElementById('invoice-party-label').textContent = 'العميل';
   } else {
@@ -8827,7 +8862,7 @@ function populateEngineerDropdown(selectedId) {
   const sel = document.getElementById('device-engineer');
   // Remove enhanced flag so it gets re-enhanced with new options
   delete sel.dataset.enhanced;
-  sel.innerHTML = '<option value="">اختر المهندس/الفني</option>' +
+  sel.innerHTML = '<option value="" data-i18n="select_engineer">اختر المهندس/الفني</option>' +
     allEngineers.map(e => `<option value="${e.id}">${e.name} (${e.specialty})</option>`).join('') +
     '<option value="__other__">+ أخرى (إضافة مهندس جديد)</option>';
   if (selectedId) {
@@ -8883,7 +8918,7 @@ function openNewDevice() {
   
   // Populate client dropdown
   const sel = document.getElementById('device-client');
-  sel.innerHTML = '<option value="">اختر العميل</option>' +
+  sel.innerHTML = '<option value="" data-i18n="select_client">اختر العميل</option>' +
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
     '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
   
@@ -8918,7 +8953,7 @@ async function editDevice(id) {
   document.getElementById('warranty-months-group').style.display = d.hasWarranty ? '' : 'none';
   
   const sel = document.getElementById('device-client');
-  sel.innerHTML = '<option value="">اختر العميل</option>' +
+  sel.innerHTML = '<option value="" data-i18n="select_client">اختر العميل</option>' +
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
     '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
   sel.value = d.clientId || '';
@@ -10136,7 +10171,7 @@ function openNewService() {
   document.getElementById('service-status').value = 'pending';
   
   const sel = document.getElementById('service-client');
-  sel.innerHTML = '<option value="">اختر العميل</option>' +
+  sel.innerHTML = '<option value="" data-i18n="select_client">اختر العميل</option>' +
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
     '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
   
@@ -10156,7 +10191,7 @@ async function editService(id) {
   document.getElementById('service-notes').value = s.notes || '';
   
   const sel = document.getElementById('service-client');
-  sel.innerHTML = '<option value="">اختر العميل</option>' +
+  sel.innerHTML = '<option value="" data-i18n="select_client">اختر العميل</option>' +
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
     '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
   sel.value = s.clientId || '';
@@ -11421,6 +11456,10 @@ async function loadCompanySettings() {
     document.getElementById('company-address').value = company.value.address || '';
     document.getElementById('company-tax-number').value = company.value.taxNumber || '';
     document.getElementById('company-vat').value = company.value.vatPercent || 0;
+    if (company.value.currency) {
+      document.getElementById('company-currency').value = company.value.currency;
+      window._cachedCurrency = company.value.currency;
+    }
   }
 }
 
@@ -11442,11 +11481,13 @@ async function saveCompanySettings() {
       address: document.getElementById('company-address').value.trim(),
       taxNumber: document.getElementById('company-tax-number').value.trim(),
       vatPercent: parseFloat(document.getElementById('company-vat').value) || 0,
+      currency: document.getElementById('company-currency').value || 'ج.م',
       logo: logo,
     }
   });
   
-  toast('تم حفظ بيانات الشركة ✅');
+  window._cachedCurrency = document.getElementById('company-currency').value || 'ج.م';
+  toast(t('toast_company_saved'));
 }
 </script>
 <script>
