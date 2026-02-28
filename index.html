@@ -4358,6 +4358,13 @@ let lastPullTime = 0;
 let lastPushTime = 0;
 const _recentlyDeleted = {}; // { 'storeName': Set of deleted IDs } — prevents pull from restoring
 let _pendingDeletes = {}; // { 'storeName': Set of IDs } — cleared only after successful push
+
+function filterDeleted(store, items) {
+  const s1 = _recentlyDeleted[store], s2 = _pendingDeletes[store];
+  if ((!s1 || !s1.size) && (!s2 || !s2.size)) return items;
+  const keyPath = STORES[store]?.keyPath || 'id';
+  return items.filter(r => { const id = r[keyPath]; return !(s1 && s1.has(id)) && !(s2 && s2.has(id)); });
+}
 let isPushing = false;
 let isPulling = false;
 let lastRemoteTs = null;
@@ -5002,7 +5009,7 @@ async function handleBarcodeResult(code) {
 async function loadDashboard() {
   const products = await dbGetAll('products');
   const movements = await dbGetAll('stockMovements');
-  let invoices = await dbGetAll('invoices');
+  let invoices = filterDeleted('invoices', await dbGetAll('invoices'));
   const devices = await dbGetAll('devices');
   const clients = await dbGetAll('clients');
   const suppliers = await dbGetAll('suppliers');
@@ -5795,7 +5802,7 @@ let allCategories = [];
 
 // ============ LOAD ============
 async function loadInventory() {
-  allProducts = await dbGetAll('products');
+  allProducts = filterDeleted('products', await dbGetAll('products'));
   allCategories = await dbGetAll('categories');
   
   renderProducts(allProducts);
@@ -6633,7 +6640,7 @@ function toggleCatGroup(parentId, el) {
 
 async function loadCategoriesPage() {
   allCategories = await dbGetAll('categories');
-  allProducts = await dbGetAll('products');
+  allProducts = filterDeleted('products', await dbGetAll('products'));
   renderCategoriesPage();
 }
 
@@ -6790,12 +6797,12 @@ let allSuppliers = [];
 
 // ============ CLIENTS ============
 async function loadClients() {
-  allClients = await dbGetAll('clients');
+  allClients = filterDeleted('clients', await dbGetAll('clients'));
   return allClients;
 }
 
 async function loadSuppliers() {
-  allSuppliers = await dbGetAll('suppliers');
+  allSuppliers = filterDeleted('suppliers', await dbGetAll('suppliers'));
   return allSuppliers;
 }
 
@@ -6927,7 +6934,7 @@ async function deleteClient(id) {
 async function viewClient(id) {
   const c = await dbGet('clients', id);
   if (!c) return;
-  const invoices = (await dbGetAll('invoices')).filter(inv => inv.clientId === id);
+  const invoices = (filterDeleted('invoices', await dbGetAll('invoices'))).filter(inv => inv.clientId === id);
   
   let html = `<div class="view-grid">
     <div class="view-item"><div class="view-label">الكود</div><div class="view-value">${c.code}</div></div>
@@ -7083,18 +7090,18 @@ function normalizeInvoiceItems(invoices) {
 
 // ============ LOAD ============
 async function loadSalesPage() {
-  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
+  allInvoices = filterDeleted('invoices', normalizeInvoiceItems(await dbGetAll('invoices')));
   await loadClients();
   await loadSuppliers();
-  allProducts = await dbGetAll('products');
+  allProducts = filterDeleted('products', await dbGetAll('products'));
   renderSalesInvoices();
 }
 
 async function loadPurchasesPage() {
-  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
+  allInvoices = filterDeleted('invoices', normalizeInvoiceItems(await dbGetAll('invoices')));
   await loadClients();
   await loadSuppliers();
-  allProducts = await dbGetAll('products');
+  allProducts = filterDeleted('products', await dbGetAll('products'));
   renderPurchaseInvoices();
 }
 
@@ -7542,7 +7549,7 @@ async function reverseStockChanges(invoice) {
 }
 
 async function updateBalances() {
-  const invoices = await dbGetAll('invoices');
+  const invoices = filterDeleted('invoices', await dbGetAll('invoices'));
   
   // Reset and recalc client balances
   for (const client of allClients) {
@@ -7740,7 +7747,7 @@ async function recordPayment(id) {
   await updateBalances();
   toast('تم تسجيل الدفع');
   
-  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
+  allInvoices = normalizeInvoiceItems(filterDeleted('invoices', await dbGetAll('invoices')));
   renderSalesInvoices();
 }
 
@@ -8198,10 +8205,10 @@ const DEVICE_STATUSES = {
 
 // ============ LOAD ============
 async function loadMaintenancePage() {
-  allDevices = await dbGetAll('devices');
+  allDevices = filterDeleted('devices', await dbGetAll('devices'));
   await loadClients();
-  allEngineers = await dbGetAll('engineers');
-  allProducts = await dbGetAll('products');
+  allEngineers = filterDeleted('engineers', await dbGetAll('engineers'));
+  allProducts = filterDeleted('products', await dbGetAll('products'));
   renderDevicesTable();
   updateMaintenanceStats();
   
@@ -9077,9 +9084,9 @@ let allServices = [];
 
 // ============ LOAD ============
 async function loadAccountingPage() {
-  allExpenses = await dbGetAll('expenses');
-  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
-  allDevices = await dbGetAll('devices');
+  allExpenses = filterDeleted('expenses', await dbGetAll('expenses'));
+  allInvoices = normalizeInvoiceItems(filterDeleted('invoices', await dbGetAll('invoices')));
+  allDevices = filterDeleted('devices', await dbGetAll('devices'));
   allServices = await dbGetAll('services');
   await loadClients();
   await loadSuppliers();
@@ -9602,7 +9609,7 @@ async function deleteExpense(id) {
 let _allServicesLoaded = [];
 
 async function loadServices() {
-  _allServicesLoaded = await dbGetAll('services');
+  _allServicesLoaded = filterDeleted('services', await dbGetAll('services'));
   return _allServicesLoaded;
 }
 
@@ -9679,7 +9686,7 @@ async function deleteService(id) {
 }
 
 async function renderServicesInAllPages() {
-  _allServicesLoaded = await dbGetAll('services');
+  _allServicesLoaded = filterDeleted('services', await dbGetAll('services'));
   const sorted = _allServicesLoaded.sort((a, b) => new Date(b.date) - new Date(a.date));
   
   renderServicesTableInto('services-tbody', 'services-table', 'services-empty', sorted);
@@ -9753,7 +9760,7 @@ async function generateDailyReport(dateStr) {
   const date = dateStr || new Date().toISOString().split('T')[0];
   document.getElementById('report-date-input').value = date;
   
-  const invoices = await dbGetAll('invoices');
+  const invoices = filterDeleted('invoices', await dbGetAll('invoices'));
   const expenses = await dbGetAll('expenses');
   const devices = await dbGetAll('devices');
   const movements = await dbGetAll('stockMovements');
@@ -9818,7 +9825,7 @@ async function generateMonthlyReport() {
   const month = document.getElementById('report-month-input').value || new Date().toISOString().slice(0, 7);
   document.getElementById('report-month-input').value = month;
   
-  const invoices = await dbGetAll('invoices');
+  const invoices = filterDeleted('invoices', await dbGetAll('invoices'));
   const expenses = await dbGetAll('expenses');
   const devices = await dbGetAll('devices');
   
@@ -9919,7 +9926,7 @@ async function generateInventoryReport() {
 
 // ============ OUTSTANDING PAYMENTS ============
 async function generateOutstandingReport() {
-  const invoices = await dbGetAll('invoices');
+  const invoices = filterDeleted('invoices', await dbGetAll('invoices'));
   await loadClients();
   
   const unpaid = invoices.filter(i => i.type === 'sale' && i.paymentStatus !== 'paid');
@@ -10114,7 +10121,7 @@ async function deleteUser(id) {
 let allEngineers = [];
 
 async function loadEngineersPage() {
-  allEngineers = await dbGetAll('engineers');
+  allEngineers = filterDeleted('engineers', await dbGetAll('engineers'));
   renderEngineersTable();
 }
 
@@ -10559,7 +10566,7 @@ async function checkAndNotify() {
   if (recipients.length === 0 && !telegram.value.chatId) return;
 
   const products = await dbGetAll('products');
-  const invoices = await dbGetAll('invoices');
+  const invoices = filterDeleted('invoices', await dbGetAll('invoices'));
   const devices = await dbGetAll('devices');
   const clients = await dbGetAll('clients');
 
@@ -10931,7 +10938,7 @@ async function saveCompanySettings() {
 // Seed test invoices (run once)
 async function seedTestInvoices() {
   if (!db) return;
-  const existing = await dbGetAll('invoices');
+  const existing = filterDeleted('invoices', await dbGetAll('invoices'));
   if (existing.length > 0) return; // already has data
   
   const products = await dbGetAll('products');
