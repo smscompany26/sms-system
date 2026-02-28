@@ -8,12 +8,12 @@
 <meta http-equiv="Expires" content="0">
 <title>SMS — نظام إدارة المخزون والصيانة</title>
 <script>
-// v7.0.3 — SMS System
+// v7.1.0 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.0.3');
+console.log('SMS v7.1.0');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -2556,7 +2556,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.0.3</span><span class="stat-label">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.1.0</span><span class="stat-label">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -2759,7 +2759,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.0.3 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.1.0 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -3083,6 +3083,29 @@ tr:hover { background: rgba(108,60,233,0.02); }
         </div>
         <div class="form-group"><label>المواصفات</label><input type="text" id="device-specs" placeholder="الموديل، الرقم التسلسلي..."></div>
       </div>
+      
+      <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)">
+      <h4 style="margin-bottom:12px;color:var(--primary)"><i class='bx bx-task'></i> تخصيص المهمة</h4>
+      
+      <div class="form-row">
+        <div class="form-group"><label>الموعد النهائي (Deadline)</label><input type="datetime-local" id="device-deadline"></div>
+        <div class="form-group"><label>المكافأة عند الإنجاز في الوقت (ج.م)</label><input type="number" id="device-reward" step="0.01" min="0" value="0" placeholder="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>العقوبة عند التأخير (ج.م)</label><input type="number" id="device-penalty" step="0.01" min="0" value="0" placeholder="0"></div>
+        <div class="form-group"><label>عدد الإنذارات قبل العقوبة</label>
+          <select id="device-warnings-limit">
+            <option value="0">بدون إنذارات — عقوبة مباشرة</option>
+            <option value="1">إنذار واحد</option>
+            <option value="2" selected>إنذاران</option>
+            <option value="3">3 إنذارات</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>ملاحظات المهمة</label><textarea id="device-task-notes" rows="2" placeholder="تعليمات خاصة للمهندس..."></textarea></div>
+      
+      <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)">
+      
       <div class="form-row">
         <div class="form-group"><label class="perm-checkbox"><input type="checkbox" id="device-warranty" onchange="toggleWarrantyField()"> الجهاز عليه ضمان</label></div>
         <div class="form-group" id="warranty-months-group" style="display:none"><label>مدة الضمان (شهور)</label><input type="number" id="device-warranty-months" min="1" max="120" value="12"></div>
@@ -5398,7 +5421,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.0.3';
+  if (backupEl) backupEl.textContent = 'v7.1.0';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -8002,7 +8025,7 @@ function renderDevicesTable(filter) {
       <td><strong>${d.orderNumber}</strong></td>
       <td>${d.deviceName}${d.hasWarranty ? ' <span class="badge" style="background:rgba(34,197,94,0.1);color:var(--success);font-size:10px">🛡️ ضمان '+d.warrantyMonths+' شهر</span>' : ''}</td>
       <td>${client?.name || d.clientName || '-'}</td>
-      <td>${engineer ? `<span class="badge" style="background:rgba(108,60,233,0.1);color:var(--primary);font-size:11px">👷 ${engineer.name}</span>` : '-'}</td>
+      <td>${engineer ? `<span class="badge" style="background:rgba(108,60,233,0.1);color:var(--primary);font-size:11px">👷 ${engineer.name}</span>${d.deadline ? (new Date(d.deadline) < new Date() && d.taskStatus !== 'completed' ? '<br><span style="color:var(--danger);font-size:10px">⏰ متأخر</span>' : d.taskStatus === 'completed' ? '<br><span style="color:var(--success);font-size:10px">✅ مكتمل</span>' : '') : ''}` : '-'}</td>
       <td>${d.problem ? d.problem.substring(0, 40) + (d.problem.length > 40 ? '...' : '') : '-'}</td>
       <td><span class="badge" style="background:${st.bg};color:${st.color}">${st.label}</span></td>
       <td>${formatDate(d.intakeDate)}</td>
@@ -8365,6 +8388,13 @@ async function editDevice(id) {
     preview.innerHTML = '';
   }
   
+  // Task assignment fields
+  document.getElementById('device-deadline').value = d.deadline || '';
+  document.getElementById('device-reward').value = d.reward || 0;
+  document.getElementById('device-penalty').value = d.penalty || 0;
+  document.getElementById('device-warnings-limit').value = d.warningsLimit ?? 2;
+  document.getElementById('device-task-notes').value = d.taskNotes || '';
+  
   currentDeviceParts = d.parts || [];
   renderDeviceParts();
   updateRepairCost();
@@ -8399,6 +8429,13 @@ async function saveDevice(e) {
     notes: document.getElementById('device-notes').value.trim(),
     status: document.getElementById('device-status-select').value,
     engineerId: parseInt(document.getElementById('device-engineer').value) || null,
+    deadline: document.getElementById('device-deadline').value || null,
+    reward: parseFloat(document.getElementById('device-reward').value) || 0,
+    penalty: parseFloat(document.getElementById('device-penalty').value) || 0,
+    warningsLimit: parseInt(document.getElementById('device-warnings-limit').value) || 0,
+    warningsCount: 0,
+    taskNotes: document.getElementById('device-task-notes').value.trim(),
+    taskStatus: 'pending',
     parts: currentDeviceParts,
     extraExpenses: parseFloat(document.getElementById('device-extra-expenses').value) || 0,
     sellingPrice: parseFloat(document.getElementById('device-selling-price').value) || 0,
@@ -8424,10 +8461,26 @@ async function saveDevice(e) {
   
   if (id) {
     data.id = parseInt(id);
+    const existing = await dbGet('devices', parseInt(id));
+    // Preserve task tracking data
+    data.warningsCount = existing?.warningsCount || 0;
+    if (existing?.taskStatus === 'completed') data.taskStatus = 'completed';
+    else data.taskStatus = data.engineerId ? 'assigned' : 'pending';
+    // Check if engineer changed
+    if (data.engineerId && data.engineerId !== existing?.engineerId) {
+      data.taskStatus = 'assigned';
+      data.warningsCount = 0;
+      notifyEngineerAssignment(data);
+    }
     await dbPut('devices', data);
     toast('تم تعديل أمر الصيانة');
   } else {
-    await dbAdd('devices', data);
+    data.taskStatus = data.engineerId ? 'assigned' : 'pending';
+    const newId = await dbAdd('devices', data);
+    if (data.engineerId) {
+      data.id = newId;
+      notifyEngineerAssignment(data);
+    }
     toast('تم إنشاء إذن الاستلام');
   }
   
@@ -8450,6 +8503,136 @@ async function saveDevice(e) {
   
   closeModal('modal-device');
   await loadMaintenancePage();
+}
+
+// ============ TASK ASSIGNMENT & NOTIFICATIONS ============
+
+async function notifyEngineerAssignment(device) {
+  const engineer = device.engineerId ? await dbGet('engineers', device.engineerId) : null;
+  if (!engineer) return;
+  
+  const deadlineStr = device.deadline ? new Date(device.deadline).toLocaleString('ar-EG') : 'غير محدد';
+  
+  // In-app notification (toast)
+  toast(`تم تخصيص الجهاز "${device.deviceName}" للمهندس ${engineer.name}`, 'success');
+  
+  // Add to activity log
+  await dbAdd('activityLog', {
+    type: 'task_assigned',
+    date: new Date().toISOString(),
+    user: currentUser?.username || 'system',
+    details: `تخصيص جهاز "${device.deviceName}" (أمر ${device.orderNumber}) للمهندس ${engineer.name}`,
+    deviceId: device.id,
+    engineerId: engineer.id,
+  });
+  
+  // Show assignment notification popup
+  const rewardText = device.reward ? `المكافأة: ${formatMoney(device.reward)}` : '';
+  const penaltyText = device.penalty ? `العقوبة: ${formatMoney(device.penalty)}` : '';
+  const notifHtml = `
+    <div style="padding:20px;text-align:center">
+      <div style="font-size:48px;margin-bottom:12px">📋</div>
+      <h3 style="margin-bottom:8px">تم تخصيص المهمة</h3>
+      <p style="color:var(--text-muted);margin-bottom:16px">تم تخصيص الجهاز للمهندس</p>
+      <div style="background:var(--bg);border-radius:12px;padding:16px;text-align:right;margin-bottom:16px">
+        <div style="margin-bottom:8px"><strong>المهندس:</strong> ${engineer.name}</div>
+        <div style="margin-bottom:8px"><strong>الجهاز:</strong> ${device.deviceName}</div>
+        <div style="margin-bottom:8px"><strong>المشكلة:</strong> ${device.problem || '-'}</div>
+        <div style="margin-bottom:8px"><strong>الموعد النهائي:</strong> ${deadlineStr}</div>
+        ${rewardText ? `<div style="margin-bottom:8px;color:var(--success)"><strong>${rewardText}</strong></div>` : ''}
+        ${penaltyText ? `<div style="color:var(--danger)"><strong>${penaltyText}</strong></div>` : ''}
+        ${device.taskNotes ? `<div style="margin-top:8px;padding:8px;background:rgba(108,60,233,0.1);border-radius:8px"><strong>تعليمات:</strong> ${device.taskNotes}</div>` : ''}
+      </div>
+      <button class="btn btn-primary" onclick="this.closest('.modal').style.display='none'" style="width:100%">تم</button>
+    </div>`;
+  
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.style.display = 'flex';
+  modal.innerHTML = `<div class="modal-content" style="max-width:420px">${notifHtml}</div>`;
+  modal.onclick = e => { if (e.target === modal) modal.remove(); };
+  document.body.appendChild(modal);
+}
+
+async function completeDeviceTask(deviceId) {
+  const d = await dbGet('devices', deviceId);
+  if (!d) return;
+  
+  const engineer = d.engineerId ? await dbGet('engineers', d.engineerId) : null;
+  const wasOnTime = !d.deadline || new Date(d.deadline) >= new Date();
+  
+  d.taskStatus = 'completed';
+  d.completedAt = new Date().toISOString();
+  await dbPut('devices', d);
+  
+  // Log
+  await dbAdd('activityLog', {
+    type: 'task_completed',
+    date: new Date().toISOString(),
+    user: currentUser?.username || 'system',
+    details: `${engineer?.name || 'مهندس'} أتم مهمة الجهاز "${d.deviceName}" (أمر ${d.orderNumber})${wasOnTime ? ' — في الوقت' : ' — متأخر'}`,
+    deviceId: d.id,
+    engineerId: d.engineerId,
+    reward: wasOnTime ? d.reward : 0,
+  });
+  
+  if (wasOnTime && d.reward) {
+    toast(`تم إتمام المهمة في الوقت — مكافأة ${formatMoney(d.reward)} للمهندس ${engineer?.name}`, 'success');
+  } else if (!wasOnTime) {
+    toast(`تم إتمام المهمة (متأخر) — المهندس ${engineer?.name}`, 'warning');
+  } else {
+    toast('تم إتمام المهمة بنجاح', 'success');
+  }
+  
+  // Refresh view
+  await loadMaintenancePage();
+  viewDevice(deviceId);
+}
+
+async function warnEngineer(deviceId) {
+  const d = await dbGet('devices', deviceId);
+  if (!d) return;
+  
+  const engineer = d.engineerId ? await dbGet('engineers', d.engineerId) : null;
+  d.warningsCount = (d.warningsCount || 0) + 1;
+  await dbPut('devices', d);
+  
+  await dbAdd('activityLog', {
+    type: 'task_warning',
+    date: new Date().toISOString(),
+    user: currentUser?.username || 'system',
+    details: `إنذار ${d.warningsCount}/${d.warningsLimit} للمهندس ${engineer?.name} — جهاز "${d.deviceName}" (أمر ${d.orderNumber})`,
+    deviceId: d.id,
+    engineerId: d.engineerId,
+  });
+  
+  toast(`تم إرسال إنذار ${d.warningsCount}/${d.warningsLimit} للمهندس ${engineer?.name}`, 'warning');
+  viewDevice(deviceId);
+}
+
+async function penalizeEngineer(deviceId) {
+  const d = await dbGet('devices', deviceId);
+  if (!d) return;
+  
+  const engineer = d.engineerId ? await dbGet('engineers', d.engineerId) : null;
+  if (!confirm(`تطبيق عقوبة ${formatMoney(d.penalty)} على المهندس ${engineer?.name}؟`)) return;
+  
+  d.penaltyApplied = true;
+  d.penaltyDate = new Date().toISOString();
+  await dbPut('devices', d);
+  
+  await dbAdd('activityLog', {
+    type: 'task_penalty',
+    date: new Date().toISOString(),
+    user: currentUser?.username || 'system',
+    details: `عقوبة ${formatMoney(d.penalty)} على المهندس ${engineer?.name} — تأخر في جهاز "${d.deviceName}" (أمر ${d.orderNumber})`,
+    deviceId: d.id,
+    engineerId: d.engineerId,
+    penalty: d.penalty,
+  });
+  
+  toast(`تم تطبيق العقوبة ${formatMoney(d.penalty)} على المهندس ${engineer?.name}`, 'error');
+  viewDevice(deviceId);
 }
 
 async function deleteDevice(id) {
@@ -8624,6 +8807,35 @@ async function viewDevice(id) {
     <div class="view-item"><div class="view-label">المهندس المسؤول</div><div class="view-value">${engineer ? `<span class="badge" style="background:rgba(108,60,233,0.1);color:var(--primary)">👷 ${engineer.name} (${engineer.specialty})</span>` : '-'}</div></div>
     <div class="view-item"><div class="view-label">الضمان</div><div class="view-value">${d.hasWarranty ? '<span class="badge badge-new">🛡️ ضمان ' + d.warrantyMonths + ' شهر</span>' : 'لا يوجد ضمان'}</div></div>
   </div>`;
+  
+  // Task assignment info
+  if (d.deadline || d.reward || d.penalty || d.taskNotes) {
+    const isOverdue = d.deadline && new Date(d.deadline) < new Date() && d.taskStatus !== 'completed';
+    const taskStatusMap = {
+      'pending': { label: 'في الانتظار', color: '#888', bg: 'rgba(136,136,136,0.1)' },
+      'assigned': { label: 'تم التخصيص', color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
+      'completed': { label: 'مكتمل', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
+      'overdue': { label: 'متأخر', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
+    };
+    const ts = isOverdue ? taskStatusMap.overdue : (taskStatusMap[d.taskStatus] || taskStatusMap.pending);
+    
+    html += `<div style="margin-top:16px;padding:16px;background:var(--bg);border-radius:12px;border:1px solid var(--border)">
+      <h4 style="margin-bottom:12px;color:var(--primary)"><i class='bx bx-task'></i> تفاصيل المهمة</h4>
+      <div class="view-grid">
+        <div class="view-item"><div class="view-label">حالة المهمة</div><div class="view-value"><span class="badge" style="background:${ts.bg};color:${ts.color}">${ts.label}</span></div></div>
+        ${d.deadline ? `<div class="view-item"><div class="view-label">الموعد النهائي</div><div class="view-value" style="${isOverdue ? 'color:var(--danger);font-weight:700' : ''}">${new Date(d.deadline).toLocaleString('ar-EG')}</div></div>` : ''}
+        ${d.reward ? `<div class="view-item"><div class="view-label">المكافأة</div><div class="view-value" style="color:var(--success);font-weight:700">${formatMoney(d.reward)}</div></div>` : ''}
+        ${d.penalty ? `<div class="view-item"><div class="view-label">العقوبة</div><div class="view-value" style="color:var(--danger);font-weight:700">${formatMoney(d.penalty)}</div></div>` : ''}
+        <div class="view-item"><div class="view-label">الإنذارات</div><div class="view-value">${d.warningsCount || 0} / ${d.warningsLimit || 0}</div></div>
+        ${d.taskNotes ? `<div class="view-item" style="grid-column:1/-1"><div class="view-label">تعليمات المهمة</div><div class="view-value">${d.taskNotes}</div></div>` : ''}
+      </div>
+      ${d.taskStatus !== 'completed' && d.engineerId ? `<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="completeDeviceTask(${d.id})"><i class='bx bx-check-circle'></i> إتمام المهمة</button>
+        ${isOverdue && (d.warningsCount || 0) < (d.warningsLimit || 0) ? `<button class="btn btn-sm" style="background:var(--warning);color:#000" onclick="warnEngineer(${d.id})"><i class='bx bx-error'></i> إنذار</button>` : ''}
+        ${isOverdue && (d.warningsCount || 0) >= (d.warningsLimit || 0) ? `<button class="btn btn-sm" style="background:var(--danger);color:#fff" onclick="penalizeEngineer(${d.id})"><i class='bx bx-x-circle'></i> تطبيق العقوبة</button>` : ''}
+      </div>` : ''}
+    </div>`; 
+  }
   
   if (d.notes) html += `<div class="view-item" style="margin-top:12px"><div class="view-label">ملاحظات</div><div class="view-value">${d.notes}</div></div>`;
   
