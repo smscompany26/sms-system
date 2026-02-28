@@ -2166,7 +2166,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <table id="sales-table">
                 <thead><tr>
                   <th style="width:36px"><input type="checkbox" id="sales-select-all" onchange="toggleSelectAll('sales')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th>
-                  <th>رقم الفاتورة</th><th>التاريخ</th><th>العميل</th><th>الأصناف</th><th>الإجمالي</th><th>الحالة</th><th>إجراءات</th>
+                  <th>رقم الفاتورة</th><th>التاريخ</th><th>العميل</th><th>الأصناف</th><th>الإجمالي</th><th>الحالة</th><th>بواسطة</th><th>إجراءات</th>
                 </tr></thead>
                 <tbody id="sales-tbody"></tbody>
               </table>
@@ -2277,7 +2277,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <table id="purchases-table">
                 <thead><tr>
                   <th style="width:36px"><input type="checkbox" id="purchases-select-all" onchange="toggleSelectAll('purchases')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th>
-                  <th>رقم الفاتورة</th><th>التاريخ</th><th>المورد</th><th>الأصناف</th><th>الإجمالي</th><th>الحالة</th><th>إجراءات</th>
+                  <th>رقم الفاتورة</th><th>التاريخ</th><th>المورد</th><th>الأصناف</th><th>الإجمالي</th><th>الحالة</th><th>بواسطة</th><th>إجراءات</th>
                 </tr></thead>
                 <tbody id="purchases-tbody"></tbody>
               </table>
@@ -7089,6 +7089,7 @@ function renderSalesInvoices() {
     <td>${inv.items?.length || 0} صنف</td>
     <td>${formatMoney(inv.total)}</td>
     <td>${getPaymentBadge(inv.paymentStatus)}</td>
+    <td style="font-size:11px;color:var(--text-muted)">${inv.createdBy || '-'}</td>
     <td class="actions-cell">
       <button class="btn-icon" title="عرض/طباعة" onclick="viewInvoice(${inv.id})"><i class='bx bx-printer'></i></button>
       <button class="btn-icon" title="تعديل" onclick="editInvoice(${inv.id})"><i class='bx bx-edit'></i></button>
@@ -7119,6 +7120,7 @@ function renderPurchaseInvoices() {
     <td>${inv.items?.length || 0} صنف</td>
     <td>${formatMoney(inv.total)}</td>
     <td>${getPaymentBadge(inv.paymentStatus)}</td>
+    <td style="font-size:11px;color:var(--text-muted)">${inv.createdBy || '-'}</td>
     <td class="actions-cell">
       <button class="btn-icon" title="عرض" onclick="viewInvoice(${inv.id})"><i class='bx bx-printer'></i></button>
       <button class="btn-icon" title="تعديل" onclick="editInvoice(${inv.id})"><i class='bx bx-edit'></i></button>
@@ -7453,8 +7455,11 @@ async function saveInvoice(e) {
     // Reverse old stock changes
     const oldInv = await dbGet('invoices', data.id);
     if (oldInv?.items) await reverseStockChanges(oldInv);
+    data.createdBy = oldInv?.createdBy || currentUser?.username || '';
+    data.updatedBy = currentUser?.username || '';
     await dbPut('invoices', data);
   } else {
+    data.createdBy = currentUser?.username || '';
     await dbAdd('invoices', data);
   }
   
@@ -7764,6 +7769,7 @@ async function viewInvoice(id) {
       <div><span>المدفوع:</span><strong>${formatMoney(inv.paidAmount || 0)}</strong></div>
       <div><span>المتبقي:</span><strong style="color:${inv.total - (inv.paidAmount||0) > 0 ? 'var(--danger)' : 'var(--success)'}">${formatMoney(inv.total - (inv.paidAmount || 0))}</strong></div>
     </div>
+    ${inv.createdBy ? `<p style="margin-top:8px;font-size:12px;color:var(--text-muted)"><i class='bx bx-user'></i> بواسطة: <strong>${inv.createdBy}</strong>${inv.updatedBy && inv.updatedBy !== inv.createdBy ? ` (تعديل: ${inv.updatedBy})` : ''}</p>` : ''}
     ${inv.notes ? `<p style="margin-top:12px"><strong>ملاحظات:</strong> ${inv.notes}</p>` : ''}
     
     ${inv.photos && inv.photos.length > 0 ? `
@@ -8067,6 +8073,7 @@ async function printReceipt(invoiceId) {
       <div class="info-row"><span class="label">رقم الفاتورة:</span><span class="val">${inv.number}</span></div>
       <div class="info-row"><span class="label">التاريخ:</span><span class="val">${formatDate(inv.date)}</span></div>
       <div class="info-row"><span class="label">${isSale ? 'العميل' : 'المورد'}:</span><span class="val">${partyName || 'غير محدد'}</span></div>
+      ${inv.createdBy ? `<div class="info-row"><span class="label">بواسطة:</span><span class="val">${inv.createdBy}</span></div>` : ''}
     </div>
     
     <hr class="sep">
