@@ -4465,7 +4465,7 @@ async function pullFromCloud() {
     
     if (Array.isArray(rows)) {
       for (const row of rows) {
-        if (!STORES[row.store_name] || !Array.isArray(row.data) || row.data.length === 0) continue;
+        if (!STORES[row.store_name] || !Array.isArray(row.data)) continue;
         await dbClear(row.store_name);
         for (const record of row.data) {
           try { await _origDbPut(row.store_name, record); } catch(e) { console.warn('Pull error:', row.store_name, e); }
@@ -4511,8 +4511,7 @@ async function silentPull() {
       const local = await dbGetAll(row.store_name);
       // Skip if data identical
       if (JSON.stringify(row.data) === JSON.stringify(local)) continue;
-      // Don't overwrite with empty if local has data (safety)
-      if (row.data.length === 0 && local.length > 0) continue;
+      // Allow empty data to clear local store (deletions sync)
       // Filter out recently deleted items
       const deletedSet = _recentlyDeleted[row.store_name];
       let pullData = row.data;
