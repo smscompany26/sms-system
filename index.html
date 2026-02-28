@@ -3434,145 +3434,104 @@ tr:hover { background: rgba(108,60,233,0.02); }
  * SMS System — IndexedDB Database Layer
  */
 
-const DB_NAME = 'sms_system';
 const DB_VERSION = 6;
-let db = null;
 
 const STORES = {
-  products: { keyPath: 'id', autoIncrement: true, indexes: ['sku', 'name', 'category', 'condition', 'type', 'barcode'] },
-  categories: { keyPath: 'id', autoIncrement: true, indexes: ['name', 'parentId'] },
-  stockMovements: { keyPath: 'id', autoIncrement: true, indexes: ['productId', 'date', 'type'] },
-  clients: { keyPath: 'id', autoIncrement: true, indexes: ['code', 'name', 'phone'] },
-  suppliers: { keyPath: 'id', autoIncrement: true, indexes: ['code', 'name', 'phone'] },
-  invoices: { keyPath: 'id', autoIncrement: true, indexes: ['number', 'type', 'date', 'clientId', 'supplierId', 'paymentStatus'] },
-  devices: { keyPath: 'id', autoIncrement: true, indexes: ['orderNumber', 'clientId', 'status', 'intakeDate'] },
-  expenses: { keyPath: 'id', autoIncrement: true, indexes: ['date', 'category', 'expenseType'] },
-  services: { keyPath: 'id', autoIncrement: true, indexes: ['date', 'clientId', 'status'] },
-  users: { keyPath: 'id', autoIncrement: true, indexes: ['username'] },
-  engineers: { keyPath: 'id', autoIncrement: true, indexes: ['name', 'phone', 'specialty'] },
+  products: { keyPath: 'id', autoIncrement: true },
+  categories: { keyPath: 'id', autoIncrement: true },
+  stockMovements: { keyPath: 'id', autoIncrement: true },
+  clients: { keyPath: 'id', autoIncrement: true },
+  suppliers: { keyPath: 'id', autoIncrement: true },
+  invoices: { keyPath: 'id', autoIncrement: true },
+  devices: { keyPath: 'id', autoIncrement: true },
+  expenses: { keyPath: 'id', autoIncrement: true },
+  services: { keyPath: 'id', autoIncrement: true },
+  users: { keyPath: 'id', autoIncrement: true },
+  engineers: { keyPath: 'id', autoIncrement: true },
   settings: { keyPath: 'key' },
-  activityLog: { keyPath: 'id', autoIncrement: true, indexes: ['userId', 'date', 'action'] },
+  activityLog: { keyPath: 'id', autoIncrement: true },
   customLists: { keyPath: 'key' },
 };
 
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    
-    req.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      for (const [name, config] of Object.entries(STORES)) {
-        if (!db.objectStoreNames.contains(name)) {
-          const store = db.createObjectStore(name, { keyPath: config.keyPath, autoIncrement: config.autoIncrement });
-          if (config.indexes) {
-            config.indexes.forEach(idx => {
-              store.createIndex(idx, idx, { unique: idx === 'sku' || idx === 'username' || idx === 'barcode' });
-            });
-          }
-        } else {
-          // Add missing indexes to existing stores
-          try {
-            const tx = e.target.transaction;
-            const store = tx.objectStore(name);
-            if (config.indexes) {
-              config.indexes.forEach(idx => {
-                if (!store.indexNames.contains(idx)) {
-                  store.createIndex(idx, idx, { unique: false });
-                }
-              });
-            }
-          } catch(err) { /* ignore */ }
-        }
-      }
-    };
-    
-    req.onsuccess = (e) => {
-      db = e.target.result;
-      resolve(db);
-    };
-    
-    req.onerror = (e) => reject(e.target.error);
+// In-memory data cache (loaded from Supabase on init)
+const _cache = {};
+let _cacheReady = false;
+
+async function loadFromServer() {
+  const resp = await sbAPI('/sync_data?select=store_name,data');
+  const rows = await resp.json();
+  if (Array.isArray(rows)) {
+    for (const row of rows) {
+      if (Array.isArray(row.data)) _cache[row.store_name] = row.data;
+    }
+  }
+  for (const s of Object.keys(STORES)) {
+    if (!_cache[s]) _cache[s] = [];
+  }
+  _cacheReady = true;
+}
+
+async function saveStoreToServer(storeName) {
+  const now = new Date().toISOString();
+  await sbAPI('/sync_data', {
+    method: 'POST',
+    headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify([{ store_name: storeName, data: _cache[storeName] || [], updated_at: now }]),
   });
 }
 
-// Generic CRUD
-function dbAdd(storeName, data) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(storeName, 'readwrite');
-    const store = tx.objectStore(storeName);
-    data.createdAt = data.createdAt || new Date().toISOString();
-    data.updatedAt = new Date().toISOString();
-    const req = store.add(data);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
+async function dbGetAll(store) {
+  return [...(_cache[store] || [])];
 }
 
-function dbPut(storeName, data) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(storeName, 'readwrite');
-    const store = tx.objectStore(storeName);
-    data.updatedAt = new Date().toISOString();
-    const req = store.put(data);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
+async function dbGet(store, id) {
+  const keyPath = STORES[store]?.keyPath || 'id';
+  return (_cache[store] || []).find(item => item[keyPath] == id) || null;
 }
 
-function dbGet(storeName, id) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(storeName, 'readonly');
-    const req = tx.objectStore(storeName).get(id);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
+async function dbAdd(store, data) {
+  if (!_cache[store]) _cache[store] = [];
+  const keyPath = STORES[store]?.keyPath || 'id';
+  if (STORES[store]?.autoIncrement && !data[keyPath]) {
+    const maxId = _cache[store].reduce((max, item) => Math.max(max, item[keyPath] || 0), 0);
+    data[keyPath] = maxId + 1;
+  }
+  data.createdAt = data.createdAt || new Date().toISOString();
+  data.updatedAt = new Date().toISOString();
+  _cache[store].push(data);
+  saveStoreToServer(store);
+  return data[keyPath];
 }
 
-function dbGetAll(storeName) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(storeName, 'readonly');
-    const req = tx.objectStore(storeName).getAll();
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
+async function dbPut(store, data) {
+  if (!_cache[store]) _cache[store] = [];
+  const keyPath = STORES[store]?.keyPath || 'id';
+  data.updatedAt = new Date().toISOString();
+  const idx = _cache[store].findIndex(item => item[keyPath] == data[keyPath]);
+  if (idx >= 0) _cache[store][idx] = data;
+  else _cache[store].push(data);
+  saveStoreToServer(store);
+  return data[keyPath];
 }
 
-function dbDelete(storeName, id) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(storeName, 'readwrite');
-    const req = tx.objectStore(storeName).delete(id);
-    req.onsuccess = () => resolve();
-    req.onerror = () => reject(req.error);
-  });
+async function dbDelete(store, id) {
+  if (!_cache[store]) return;
+  const keyPath = STORES[store]?.keyPath || 'id';
+  _cache[store] = _cache[store].filter(item => item[keyPath] != id);
+  await saveStoreToServer(store);
 }
 
-function dbGetByIndex(storeName, indexName, value) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(storeName, 'readonly');
-    const store = tx.objectStore(storeName);
-    const index = store.index(indexName);
-    const req = index.getAll(value);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
+async function dbGetByIndex(storeName, indexName, value) {
+  return (_cache[storeName] || []).filter(item => item[indexName] == value);
 }
 
-function dbCount(storeName) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(storeName, 'readonly');
-    const req = tx.objectStore(storeName).count();
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
+async function dbCount(storeName) {
+  return (_cache[storeName] || []).length;
 }
 
-function dbClear(storeName) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(storeName, 'readwrite');
-    const req = tx.objectStore(storeName).clear();
-    req.onsuccess = () => resolve();
-    req.onerror = () => reject(req.error);
-  });
+async function dbClear(store) {
+  _cache[store] = [];
+  await saveStoreToServer(store);
 }
 
 // ============ DYNAMIC LISTS (Custom Options) ============
@@ -4166,7 +4125,7 @@ function logActivity(action, details) {
 async function exportAllData() {
   const data = {};
   for (const name of Object.keys(STORES)) {
-    data[name] = await dbGetAll(name);
+    data[name] = [...(_cache[name] || [])];
   }
   data._exportDate = new Date().toISOString();
   data._version = DB_VERSION;
@@ -4177,10 +4136,8 @@ async function exportAllData() {
 async function importAllData(data) {
   for (const [name, records] of Object.entries(data)) {
     if (name.startsWith('_') || !STORES[name]) continue;
-    await dbClear(name);
-    for (const record of records) {
-      await dbAdd(name, record);
-    }
+    _cache[name] = Array.isArray(records) ? [...records] : [];
+    await saveStoreToServer(name);
   }
 }
 </script>
@@ -4352,23 +4309,7 @@ function showApp() {
 const SUPABASE_URL = 'https://orwphfgrvjspvggzynml.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yd3BoZmdydmpzcHZnZ3p5bm1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNDg4NDAsImV4cCI6MjA4NzYyNDg0MH0.Q2_0WOwx0NNMJC8u4GnBuIh1EgN_kte60A2iLL2EA5I';
 
-let syncReady = false;
-let autoPullInterval = null;
-let lastPullTime = 0;
-let lastPushTime = 0;
-const _recentlyDeleted = {}; // { 'storeName': Set of deleted IDs } — prevents pull from restoring
-let _pendingDeletes = {}; // { 'storeName': Set of IDs } — cleared only after successful push
-
-function filterDeleted(store, items) {
-  const s1 = _recentlyDeleted[store], s2 = _pendingDeletes[store];
-  if ((!s1 || !s1.size) && (!s2 || !s2.size)) return items;
-  const keyPath = STORES[store]?.keyPath || 'id';
-  return items.filter(r => { const id = r[keyPath]; return !(s1 && s1.has(id)) && !(s2 && s2.has(id)); });
-}
-let isPushing = false;
-let isPulling = false;
-let lastRemoteTs = null;
-let pushQueue = false;
+// (sync state removed — Supabase is the only data source)
 
 // ============ SUPABASE API ============
 async function sbAPI(path, options = {}) {
@@ -4384,21 +4325,7 @@ async function sbAPI(path, options = {}) {
 }
 
 // ============ INIT ============
-function initDriveAuth() {
-  // Now handled in initApp() — server pulls before app loads
-  // This is kept for manual reconnect from settings
-  testSync().then(async (ok) => {
-    if (ok) {
-      syncReady = true;
-      updateSyncStatus('connected');
-      await pullFromCloud();
-      startAutoPull();
-      reloadActivePage();
-    } else {
-      updateSyncStatus('error');
-    }
-  });
-}
+function initDriveAuth() { /* no-op */ }
 
 async function testSync() {
   try {
@@ -4415,161 +4342,16 @@ async function sbHasData() {
   } catch(e) { return false; }
 }
 
-// ============ PUSH ============
-async function pushToCloud() {
-  if (!syncReady || isPushing) return;
-  isPushing = true;
-  lastPushTime = Date.now(); // Block pulls immediately
-  updateSyncStatus('syncing');
-  
-  try {
-    const now = new Date().toISOString();
-    const batch = [];
-    for (const storeName of Object.keys(STORES)) {
-      const data = await dbGetAll(storeName);
-      batch.push({ store_name: storeName, data: data, updated_at: now });
-    }
-    
-    // Single API call for all stores
-    await sbAPI('/sync_data', {
-      method: 'POST',
-      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify(batch),
-    });
-    
-    lastPullTime = Date.now();
-    lastPushTime = Date.now();
-    lastRemoteTs = now;
-    // Clear pending deletes — they've been pushed successfully
-    _pendingDeletes = {};
-    updateSyncStatus('connected');
-  } catch(e) {
-    console.error('Push error:', e);
-    updateSyncStatus('error');
-  }
-  isPushing = false;
-}
-
-// ============ PULL ============
-async function pullFromCloud() {
-  if (!syncReady || isPulling) return;
-  isPulling = true;
-  updateSyncStatus('syncing');
-  
-  try {
-    const resp = await sbAPI('/sync_data?select=store_name,data');
-    const rows = await resp.json();
-    
-    if (Array.isArray(rows)) {
-      for (const row of rows) {
-        if (!STORES[row.store_name] || !Array.isArray(row.data)) continue;
-        // Filter out pending deletes
-        const deletedSet = _recentlyDeleted[row.store_name];
-        const pendingSet = _pendingDeletes[row.store_name];
-        let pullData = row.data;
-        if ((deletedSet && deletedSet.size > 0) || (pendingSet && pendingSet.size > 0)) {
-          const keyPath = STORES[row.store_name]?.keyPath || 'id';
-          pullData = row.data.filter(r => {
-            const rid = r[keyPath];
-            return !(deletedSet && deletedSet.has(rid)) && !(pendingSet && pendingSet.has(rid));
-          });
-        }
-        await dbClear(row.store_name);
-        for (const record of pullData) {
-          try { await _origDbPut(row.store_name, record); } catch(e) { console.warn('Pull error:', row.store_name, e); }
-        }
-      }
-      lastPullTime = Date.now();
-      lastPushTime = Date.now(); // Prevent immediate re-push
-      reloadActivePage();
-    }
-    updateSyncStatus('connected');
-  } catch(e) {
-    console.error('Pull error:', e);
-    updateSyncStatus('error');
-  }
-  isPulling = false;
-}
-
-// ============ SILENT PULL ============
-async function silentPull() {
-  if (!syncReady || isPulling || isPushing || pushQueue) return;
-  // Don't pull within 15 seconds of last push to avoid race conditions
-  if (Date.now() - lastPushTime < 15000) return;
-  try {
-    // Check latest timestamp
-    const resp = await sbAPI('/sync_data?select=updated_at&order=updated_at.desc&limit=1');
-    const rows = await resp.json();
-    if (!Array.isArray(rows) || rows.length === 0) return;
-    
-    const remoteTs = rows[0].updated_at;
-    if (lastRemoteTs && remoteTs === lastRemoteTs) return;
-    lastRemoteTs = remoteTs;
-    
-    // Something changed — pull all
-    isPulling = true;
-    const allResp = await sbAPI('/sync_data?select=store_name,data');
-    const allRows = await allResp.json();
-    
-    if (!Array.isArray(allRows)) { isPulling = false; return; }
-    
-    let changed = false;
-    for (const row of allRows) {
-      if (!STORES[row.store_name] || !Array.isArray(row.data)) continue;
-      const local = await dbGetAll(row.store_name);
-      // Skip if data identical
-      if (JSON.stringify(row.data) === JSON.stringify(local)) continue;
-      // Allow empty data to clear local store (deletions sync)
-      // Filter out recently deleted items
-      // Merge both recently deleted and pending deletes
-      const deletedSet = _recentlyDeleted[row.store_name];
-      const pendingSet = _pendingDeletes[row.store_name];
-      let pullData = row.data;
-      if ((deletedSet && deletedSet.size > 0) || (pendingSet && pendingSet.size > 0)) {
-        const keyPath = STORES[row.store_name]?.keyPath || 'id';
-        pullData = row.data.filter(r => {
-          const rid = r[keyPath];
-          return !(deletedSet && deletedSet.has(rid)) && !(pendingSet && pendingSet.has(rid));
-        });
-      }
-      await dbClear(row.store_name);
-      for (const r of pullData) { try { await _origDbPut(row.store_name, r); } catch(e) {} }
-      changed = true;
-    }
-    
-    if (changed) { lastPullTime = Date.now(); reloadActivePage(); }
-    isPulling = false;
-  } catch(e) { isPulling = false; }
-}
-
-// ============ AUTO SYNC ============
-function startAutoPull() {
-  if (autoPullInterval) return;
-  autoPullInterval = setInterval(async () => {
-    if (document.hidden) return;
-    if (Date.now() - lastPullTime < 10000) return;
-    await silentPull();
-  }, 10000); // Every 10 seconds
-}
-
-function stopAutoPull() {
-  if (autoPullInterval) { clearInterval(autoPullInterval); autoPullInterval = null; }
-}
-
-function scheduleDriveSync() {
-  if (!syncReady) return;
-  lastPushTime = Date.now(); // Block pulls immediately when sync is scheduled
-  if (isPushing) { pushQueue = true; return; }
-  pushToCloud().then(() => {
-    if (pushQueue) { pushQueue = false; pushToCloud(); }
-  });
-}
+// ============ PUSH (no-op — each db function saves directly) ============
+async function pushToCloud() {}
+async function pullFromCloud() { await loadFromServer(); }
+function scheduleDriveSync() {}
+function startAutoPull() {}
+function stopAutoPull() {}
 
 function reloadActivePage() {
-  // Don't reload while user has a modal/form open — it would reset their inputs
   const openModal = document.querySelector('.modal.active');
   if (openModal) return;
-  
   const hash = localStorage.getItem('sms_last_page') || 'dashboard';
   const page = hash.split('/')[0];
   try {
@@ -4584,101 +4366,35 @@ function reloadActivePage() {
 }
 
 // ============ BACKWARD COMPAT ============
-async function pushToDrive() { return pushToCloud(); }
-async function pullFromDrive() { return pullFromCloud(); }
-function connectDrive() { initDriveAuth(); }
-function disconnectDrive() { syncReady = false; stopAutoPull(); updateSyncStatus('disconnected'); }
+async function pushToDrive() {}
+async function pullFromDrive() {}
+function connectDrive() {}
+function disconnectDrive() {}
 function changeDriveAccount() {}
-function disconnectSync() { disconnectDrive(); }
-function connectSyncUrl() { initDriveAuth(); }
+function disconnectSync() {}
+function connectSyncUrl() {}
 
 // ============ STATUS UI ============
 function updateSyncStatus(status) {
   const el = document.getElementById('sync-status');
   if (el) {
-    switch (status) {
-      case 'connected':
-        el.className = 'sync-badge connected';
-        el.innerHTML = "<i class='bx bx-cloud-upload'></i>";
-        el.title = 'متصل — المزامنة تعمل';
-        break;
-      case 'syncing':
-        el.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i>";
-        el.title = 'جاري المزامنة...';
-        break;
-      case 'error':
-        el.innerHTML = "<i class='bx bx-cloud-off' style='color:var(--danger)'></i>";
-        el.title = 'خطأ في الاتصال';
-        break;
-      default:
-        el.innerHTML = "<i class='bx bx-cloud-upload'></i>";
-        el.title = 'غير متصل';
-    }
+    el.className = 'sync-badge connected';
+    el.innerHTML = "<i class='bx bx-cloud-upload'></i>";
+    el.title = 'متصل — Supabase';
   }
   const indicator = document.getElementById('drive-status-indicator');
   const text = document.getElementById('drive-status-text');
   const overviewStatus = document.getElementById('settings-drive-status');
-  if (indicator) indicator.style.background = status === 'connected' ? 'var(--success)' : status === 'syncing' ? 'var(--warning)' : status === 'error' ? 'var(--danger)' : 'var(--text-muted)';
-  if (text) text.textContent = status === 'connected' ? 'متصل ✅' : status === 'syncing' ? 'مزامنة...' : status === 'error' ? 'خطأ' : 'غير متصل';
-  if (overviewStatus) overviewStatus.textContent = status === 'connected' ? 'متصل ✅' : status === 'syncing' ? 'مزامنة...' : status === 'error' ? 'خطأ' : 'غير متصل';
+  if (indicator) indicator.style.background = 'var(--success)';
+  if (text) text.textContent = 'متصل ✅';
+  if (overviewStatus) overviewStatus.textContent = 'متصل ✅';
 }
 
-// Override db functions to trigger sync
-const _origDbAdd = dbAdd;
-const _origDbPut = dbPut;
-const _origDbDelete = dbDelete;
-
-dbAdd = async function(store, data) {
-  const result = await _origDbAdd(store, data);
-  // Immediate push to server
-  if (syncReady && !isPushing) { lastPushTime = Date.now(); pushToCloud(); }
-  else scheduleDriveSync();
-  return result;
-};
-
-dbPut = async function(store, data) {
-  const result = await _origDbPut(store, data);
-  // Immediate push to server
-  if (syncReady && !isPushing) { lastPushTime = Date.now(); pushToCloud(); }
-  else scheduleDriveSync();
-  return result;
-};
-
-dbDelete = async function(store, id) {
-  // Track deletion to prevent pull from restoring
-  if (!_recentlyDeleted[store]) _recentlyDeleted[store] = new Set();
-  _recentlyDeleted[store].add(id);
-  if (!_pendingDeletes[store]) _pendingDeletes[store] = new Set();
-  _pendingDeletes[store].add(id);
-  
-  // Delete from local IndexedDB
-  const result = await _origDbDelete(store, id);
-  
-  // Immediately push this store to server (awaited — guaranteed sync)
-  if (syncReady) {
-    try {
-      lastPushTime = Date.now();
-      const data = await dbGetAll(store);
-      const now = new Date().toISOString();
-      await sbAPI('/sync_data', {
-        method: 'POST',
-        headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify([{ store_name: store, data: data, updated_at: now }]),
-      });
-      lastRemoteTs = now;
-      lastPushTime = Date.now();
-      lastPullTime = Date.now();
-      // Clear pending for this store
-      if (_pendingDeletes[store]) _pendingDeletes[store].delete(id);
-      if (_recentlyDeleted[store]) _recentlyDeleted[store].delete(id);
-    } catch(e) {
-      console.error('Delete sync error:', e);
-      // Falls back to scheduled sync
-      scheduleDriveSync();
-    }
-  }
-  return result;
-};
+// Background refresh from server every 30s
+setInterval(async () => {
+  if (document.hidden || !_cacheReady) return;
+  try { await loadFromServer(); } catch(e) {}
+}, 30000);
 
 // ============ EXPORT/IMPORT ============
 async function exportAllToFile() {
@@ -4706,7 +4422,6 @@ function importFromFile() {
       const data = JSON.parse(text);
       await importAllData(data);
       toast('تم الاستيراد ✅');
-      if (syncReady) await pushToCloud();
       reloadActivePage();
     } catch(e) { toast('خطأ في الملف', 'error'); }
   };
@@ -5017,14 +4732,10 @@ async function handleBarcodeResult(code) {
 async function loadDashboard() {
   const products = await dbGetAll('products');
   const movements = await dbGetAll('stockMovements');
-  let invoices = filterDeleted('invoices', await dbGetAll('invoices'));
+  let invoices = await dbGetAll('invoices');
   const devices = await dbGetAll('devices');
   const clients = await dbGetAll('clients');
   const suppliers = await dbGetAll('suppliers');
-  
-  // Filter out recently deleted items
-  const deletedInvs = _recentlyDeleted['invoices'];
-  if (deletedInvs?.size > 0) invoices = invoices.filter(i => !deletedInvs.has(i.id));
   
   // Helper: normalize date to YYYY-MM-DD
   function invDay(inv) {
@@ -5532,29 +5243,10 @@ function renderRecentInvoices(invoices) {
 // App init
 async function initApp() {
   try {
-    await openDB();
+    try { indexedDB.deleteDatabase('sms_db'); indexedDB.deleteDatabase('sms_system'); } catch(e) {}
     
-    // Try to connect and pull from server FIRST (server = source of truth)
-    const syncOk = await testSync();
-    if (syncOk) {
-      syncReady = true;
-      updateSyncStatus('connected');
-      const hasRemote = await sbHasData();
-      if (hasRemote) {
-        // Pull server data into local DB before anything else
-        await pullFromCloud();
-        // Clear local IndexedDB stores that don't exist on server (orphan data)
-      } else {
-        // Server empty — push local data up
-        let hasLocal = false;
-        for (const s of Object.keys(STORES)) {
-          const d = await dbGetAll(s);
-          if (d.length > 0) { hasLocal = true; break; }
-        }
-        if (hasLocal) await pushToCloud();
-      }
-      startAutoPull();
-    }
+    await loadFromServer();
+    updateSyncStatus('connected');
     
     await ensureDefaultAdmin();
     
@@ -5565,16 +5257,12 @@ async function initApp() {
       document.getElementById('login-screen').style.display = 'flex';
     }
     
-    // Load default categories (first run only)
     await loadDefaultCategories();
-    
-    // Init dynamic lists (customizable dropdowns)
     await initDynamicLists();
-    // Enhance all remaining native selects with glassmorphic popup
     enhanceAllSelects();
   } catch (err) {
     console.error('Init error:', err);
-    toast('خطأ في تحميل النظام', 'error');
+    toast('خطأ في تحميل النظام — تأكد من الاتصال بالإنترنت', 'error');
   }
 }
 
@@ -5675,7 +5363,7 @@ async function loadSettingsOverview() {
   if (companyEl) companyEl.textContent = company?.value?.name || '—';
   
   // Drive status
-  const isConnected = syncReady;
+  const isConnected = true;
   const driveEl = document.getElementById('settings-drive-status');
   if (driveEl) driveEl.textContent = isConnected ? 'متصل ✅' : 'غير متصل';
   const driveIndicator = document.getElementById('drive-status-indicator');
@@ -5830,7 +5518,7 @@ let allCategories = [];
 
 // ============ LOAD ============
 async function loadInventory() {
-  allProducts = filterDeleted('products', await dbGetAll('products'));
+  allProducts = await dbGetAll('products');
   allCategories = await dbGetAll('categories');
   
   renderProducts(allProducts);
@@ -6668,7 +6356,7 @@ function toggleCatGroup(parentId, el) {
 
 async function loadCategoriesPage() {
   allCategories = await dbGetAll('categories');
-  allProducts = filterDeleted('products', await dbGetAll('products'));
+  allProducts = await dbGetAll('products');
   renderCategoriesPage();
 }
 
@@ -6825,12 +6513,12 @@ let allSuppliers = [];
 
 // ============ CLIENTS ============
 async function loadClients() {
-  allClients = filterDeleted('clients', await dbGetAll('clients'));
+  allClients = await dbGetAll('clients');
   return allClients;
 }
 
 async function loadSuppliers() {
-  allSuppliers = filterDeleted('suppliers', await dbGetAll('suppliers'));
+  allSuppliers = await dbGetAll('suppliers');
   return allSuppliers;
 }
 
@@ -6962,7 +6650,7 @@ async function deleteClient(id) {
 async function viewClient(id) {
   const c = await dbGet('clients', id);
   if (!c) return;
-  const invoices = (filterDeleted('invoices', await dbGetAll('invoices'))).filter(inv => inv.clientId === id);
+  const invoices = (await dbGetAll('invoices')).filter(inv => inv.clientId === id);
   
   let html = `<div class="view-grid">
     <div class="view-item"><div class="view-label">الكود</div><div class="view-value">${c.code}</div></div>
@@ -7118,18 +6806,18 @@ function normalizeInvoiceItems(invoices) {
 
 // ============ LOAD ============
 async function loadSalesPage() {
-  allInvoices = filterDeleted('invoices', normalizeInvoiceItems(await dbGetAll('invoices')));
+  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
   await loadClients();
   await loadSuppliers();
-  allProducts = filterDeleted('products', await dbGetAll('products'));
+  allProducts = await dbGetAll('products');
   renderSalesInvoices();
 }
 
 async function loadPurchasesPage() {
-  allInvoices = filterDeleted('invoices', normalizeInvoiceItems(await dbGetAll('invoices')));
+  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
   await loadClients();
   await loadSuppliers();
-  allProducts = filterDeleted('products', await dbGetAll('products'));
+  allProducts = await dbGetAll('products');
   renderPurchaseInvoices();
 }
 
@@ -7577,7 +7265,7 @@ async function reverseStockChanges(invoice) {
 }
 
 async function updateBalances() {
-  const invoices = filterDeleted('invoices', await dbGetAll('invoices'));
+  const invoices = await dbGetAll('invoices');
   
   // Reset and recalc client balances
   for (const client of allClients) {
@@ -7775,7 +7463,7 @@ async function recordPayment(id) {
   await updateBalances();
   toast('تم تسجيل الدفع');
   
-  allInvoices = normalizeInvoiceItems(filterDeleted('invoices', await dbGetAll('invoices')));
+  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
   renderSalesInvoices();
 }
 
@@ -8233,10 +7921,10 @@ const DEVICE_STATUSES = {
 
 // ============ LOAD ============
 async function loadMaintenancePage() {
-  allDevices = filterDeleted('devices', await dbGetAll('devices'));
+  allDevices = await dbGetAll('devices');
   await loadClients();
-  allEngineers = filterDeleted('engineers', await dbGetAll('engineers'));
-  allProducts = filterDeleted('products', await dbGetAll('products'));
+  allEngineers = await dbGetAll('engineers');
+  allProducts = await dbGetAll('products');
   renderDevicesTable();
   updateMaintenanceStats();
   
@@ -9112,9 +8800,9 @@ let allServices = [];
 
 // ============ LOAD ============
 async function loadAccountingPage() {
-  allExpenses = filterDeleted('expenses', await dbGetAll('expenses'));
-  allInvoices = normalizeInvoiceItems(filterDeleted('invoices', await dbGetAll('invoices')));
-  allDevices = filterDeleted('devices', await dbGetAll('devices'));
+  allExpenses = await dbGetAll('expenses');
+  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
+  allDevices = await dbGetAll('devices');
   allServices = await dbGetAll('services');
   await loadClients();
   await loadSuppliers();
@@ -9637,7 +9325,7 @@ async function deleteExpense(id) {
 let _allServicesLoaded = [];
 
 async function loadServices() {
-  _allServicesLoaded = filterDeleted('services', await dbGetAll('services'));
+  _allServicesLoaded = await dbGetAll('services');
   return _allServicesLoaded;
 }
 
@@ -9714,7 +9402,7 @@ async function deleteService(id) {
 }
 
 async function renderServicesInAllPages() {
-  _allServicesLoaded = filterDeleted('services', await dbGetAll('services'));
+  _allServicesLoaded = await dbGetAll('services');
   const sorted = _allServicesLoaded.sort((a, b) => new Date(b.date) - new Date(a.date));
   
   renderServicesTableInto('services-tbody', 'services-table', 'services-empty', sorted);
@@ -9788,7 +9476,7 @@ async function generateDailyReport(dateStr) {
   const date = dateStr || new Date().toISOString().split('T')[0];
   document.getElementById('report-date-input').value = date;
   
-  const invoices = filterDeleted('invoices', await dbGetAll('invoices'));
+  const invoices = await dbGetAll('invoices');
   const expenses = await dbGetAll('expenses');
   const devices = await dbGetAll('devices');
   const movements = await dbGetAll('stockMovements');
@@ -9853,7 +9541,7 @@ async function generateMonthlyReport() {
   const month = document.getElementById('report-month-input').value || new Date().toISOString().slice(0, 7);
   document.getElementById('report-month-input').value = month;
   
-  const invoices = filterDeleted('invoices', await dbGetAll('invoices'));
+  const invoices = await dbGetAll('invoices');
   const expenses = await dbGetAll('expenses');
   const devices = await dbGetAll('devices');
   
@@ -9954,7 +9642,7 @@ async function generateInventoryReport() {
 
 // ============ OUTSTANDING PAYMENTS ============
 async function generateOutstandingReport() {
-  const invoices = filterDeleted('invoices', await dbGetAll('invoices'));
+  const invoices = await dbGetAll('invoices');
   await loadClients();
   
   const unpaid = invoices.filter(i => i.type === 'sale' && i.paymentStatus !== 'paid');
@@ -10149,7 +9837,7 @@ async function deleteUser(id) {
 let allEngineers = [];
 
 async function loadEngineersPage() {
-  allEngineers = filterDeleted('engineers', await dbGetAll('engineers'));
+  allEngineers = await dbGetAll('engineers');
   renderEngineersTable();
 }
 
@@ -10594,7 +10282,7 @@ async function checkAndNotify() {
   if (recipients.length === 0 && !telegram.value.chatId) return;
 
   const products = await dbGetAll('products');
-  const invoices = filterDeleted('invoices', await dbGetAll('invoices'));
+  const invoices = await dbGetAll('invoices');
   const devices = await dbGetAll('devices');
   const clients = await dbGetAll('clients');
 
@@ -10966,7 +10654,7 @@ async function saveCompanySettings() {
 // Seed test invoices (run once)
 async function seedTestInvoices() {
   if (!db) return;
-  const existing = filterDeleted('invoices', await dbGetAll('invoices'));
+  const existing = await dbGetAll('invoices');
   if (existing.length > 0) return; // already has data
   
   const products = await dbGetAll('products');
