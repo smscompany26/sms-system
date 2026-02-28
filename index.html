@@ -1813,7 +1813,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <div class="login-logo">
       <i class='bx bx-cube-alt'></i>
       <h1>SMS</h1>
-      <p>نظام إدارة المخزون والصيانة</p>
+      <p data-i18n="app_title">نظام إدارة المخزون والصيانة</p>
     </div>
     <form id="login-form" onsubmit="return handleLogin(event)">
       <div class="form-group">
@@ -1824,8 +1824,8 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <label data-i18n="label_login_password">كلمة المرور</label>
         <input type="password" id="login-password" required autocomplete="current-password">
       </div>
-      <label class="remember-me"><input type="checkbox" id="login-remember" checked> تذكرني</label>
-      <button type="submit" class="btn btn-primary btn-block">تسجيل الدخول</button>
+      <label class="remember-me"><input type="checkbox" id="login-remember" checked> <span data-i18n="remember_me">تذكرني</span></label>
+      <button type="submit" class="btn btn-primary btn-block" data-i18n="btn_login">تسجيل الدخول</button>
       <p id="login-error" class="login-error"></p>
     </form>
   </div>
@@ -2104,6 +2104,8 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <button class="qa-btn" onclick="navigate('sales')"><i class='bx bx-receipt'></i> <span data-i18n="sale_invoice">فاتورة بيع</span></button>
               <button class="qa-btn" onclick="navigate('purchases')"><i class='bx bx-cart-download'></i> <span data-i18n="purchase_invoice">فاتورة شراء</span></button>
               <button class="qa-btn" onclick="navigate('maintenance')"><i class='bx bx-wrench'></i> <span data-i18n="maint_order">إذن صيانة</span></button>
+              <button class="qa-btn" onclick="navigate('accounting');setTimeout(()=>{switchExpenseTab('treasury');openAddExpenseWithType('treasury')},200)"><i class='bx bx-wallet'></i> <span data-i18n="qa_direct_expense">مصروف مباشر</span></button>
+              <button class="qa-btn" onclick="navigate('accounting');setTimeout(()=>{switchExpenseTab('indirect');openAddExpenseWithType('indirect')},200)"><i class='bx bx-money'></i> <span data-i18n="qa_indirect_expense">مصروف غير مباشر</span></button>
             </div>
           </div>
         </div>
@@ -2179,7 +2181,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div id="products-empty" class="empty-state">
             <i class='bx bx-package' style="font-size:48px;color:#ccc"></i>
             <p data-i18n="no_products">لا توجد أصناف بعد</p>
-            <button class="btn btn-primary" onclick="openAddProduct()">إضافة أول صنف</button>
+            <button class="btn btn-primary" onclick="openAddProduct()" data-i18n="add_first_product">إضافة أول صنف</button>
           </div>
         </div>
         <!-- Grid View -->
@@ -2201,7 +2203,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div id="categories-page-empty" class="empty-state" style="display:none">
             <i class='bx bx-category' style="font-size:48px;color:#ccc"></i>
             <p data-i18n="no_categories">لا توجد تصنيفات بعد</p>
-            <button class="btn btn-primary" onclick="openAddCategoryPage()">إضافة أول تصنيف</button>
+            <button class="btn btn-primary" onclick="openAddCategoryPage()" data-i18n="add_first_category">إضافة أول تصنيف</button>
           </div>
         </div>
       </section>
@@ -2234,7 +2236,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <table id="sales-table">
                 <thead><tr>
                   <th style="width:36px"><input type="checkbox" id="sales-select-all" onchange="toggleSelectAll('sales')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th>
-                  <th>رقم الفاتورة</th><th>التاريخ</th><th>العميل</th><th>الأصناف</th><th>الإجمالي</th><th>الحالة</th><th>بواسطة</th><th>إجراءات</th>
+                  <th data-i18n="th_invoice_num">رقم الفاتورة</th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_client">العميل</th><th data-i18n="th_items">الأصناف</th><th data-i18n="th_total">الإجمالي</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_by">بواسطة</th><th data-i18n="th_actions">إجراءات</th>
                 </tr></thead>
                 <tbody id="sales-tbody"></tbody>
               </table>
@@ -2246,7 +2248,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div id="sales-empty" class="empty-state">
               <i class='bx bx-receipt' style="font-size:48px;color:#ccc"></i>
               <p data-i18n="no_sale_invoices">لا توجد فواتير بيع</p>
-              <button class="btn btn-primary" onclick="openNewSaleInvoice()">إنشاء أول فاتورة</button>
+              <button class="btn btn-primary" onclick="openNewSaleInvoice()" data-i18n="create_first_invoice">إنشاء أول فاتورة</button>
             </div>
           </div>
         </div>
@@ -2276,7 +2278,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div id="clients-empty" class="empty-state">
               <i class='bx bx-group' style="font-size:48px;color:#ccc"></i>
               <p data-i18n="no_clients">لا يوجد عملاء</p>
-              <button class="btn btn-primary" onclick="openAddClient()">إضافة أول عميل</button>
+              <button class="btn btn-primary" onclick="openAddClient()" data-i18n="add_first_client">إضافة أول عميل</button>
             </div>
           <div id="clients-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
             <span style="color:#fff;font-size:13px;font-weight:600" id="clients-selected-count">0 محدد</span>
@@ -2310,7 +2312,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div id="services-empty" class="empty-state">
               <i class='bx bx-map-pin' style="font-size:48px;color:#ccc"></i>
               <p data-i18n="no_services">لا توجد زيارات أو خدمات</p>
-              <button class="btn btn-primary" onclick="openNewService()">إضافة أول زيارة</button>
+              <button class="btn btn-primary" onclick="openNewService()" data-i18n="add_first_visit">إضافة أول زيارة</button>
             </div>
           <div id="services-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
             <span style="color:#fff;font-size:13px;font-weight:600" id="services-selected-count">0 محدد</span>
@@ -2345,7 +2347,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <table id="purchases-table">
                 <thead><tr>
                   <th style="width:36px"><input type="checkbox" id="purchases-select-all" onchange="toggleSelectAll('purchases')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th>
-                  <th>رقم الفاتورة</th><th>التاريخ</th><th>المورد</th><th>الأصناف</th><th>الإجمالي</th><th>الحالة</th><th>بواسطة</th><th>إجراءات</th>
+                  <th data-i18n="th_invoice_num">رقم الفاتورة</th><th data-i18n="th_date">التاريخ</th><th>المورد</th><th data-i18n="th_items">الأصناف</th><th data-i18n="th_total">الإجمالي</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_by">بواسطة</th><th data-i18n="th_actions">إجراءات</th>
                 </tr></thead>
                 <tbody id="purchases-tbody"></tbody>
               </table>
@@ -2357,7 +2359,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div id="purchases-empty" class="empty-state">
               <i class='bx bx-cart-download' style="font-size:48px;color:#ccc"></i>
               <p data-i18n="no_purchase_invoices">لا توجد فواتير شراء</p>
-              <button class="btn btn-primary" onclick="openNewPurchaseInvoice()">إنشاء أول فاتورة</button>
+              <button class="btn btn-primary" onclick="openNewPurchaseInvoice()" data-i18n="create_first_invoice">إنشاء أول فاتورة</button>
             </div>
           </div>
         </div>
@@ -2386,7 +2388,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div id="suppliers-empty" class="empty-state">
               <i class='bx bx-store' style="font-size:48px;color:#ccc"></i>
               <p data-i18n="no_suppliers">لا يوجد موردين</p>
-              <button class="btn btn-primary" onclick="openAddSupplier()">إضافة أول مورد</button>
+              <button class="btn btn-primary" onclick="openAddSupplier()" data-i18n="add_first_supplier">إضافة أول مورد</button>
             </div>
           <div id="suppliers-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
             <span style="color:#fff;font-size:13px;font-weight:600" id="suppliers-selected-count">0 محدد</span>
@@ -2458,7 +2460,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div id="devices-empty" class="empty-state">
             <i class='bx bx-wrench' style="font-size:48px;color:#ccc"></i>
             <p data-i18n="no_devices">لا توجد أجهزة في الصيانة</p>
-            <button class="btn btn-primary" onclick="openNewDevice()">إذن استلام أول جهاز</button>
+            <button class="btn btn-primary" onclick="openNewDevice()" data-i18n="intake_first_device">إذن استلام أول جهاز</button>
           </div>
           <div id="devices-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
             <span style="color:#fff;font-size:13px;font-weight:600" id="devices-selected-count">0 محدد</span>
@@ -2473,8 +2475,8 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
           <div id="devices-cards-empty" class="empty-state" style="display:none;">
             <i class='bx bx-wrench' style="font-size:48px;color:#ccc"></i>
-            <p>لا توجد أجهزة في الصيانة</p>
-            <button class="btn btn-primary" onclick="openNewDevice()">إذن استلام أول جهاز</button>
+            <p data-i18n="no_devices_maint">لا توجد أجهزة في الصيانة</p>
+            <button class="btn btn-primary" onclick="openNewDevice()" data-i18n="intake_first_device">إذن استلام أول جهاز</button>
           </div>
         </div>
       </div><!-- end maint-tab-devices -->
@@ -2502,7 +2504,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div id="maint-services-empty" class="empty-state">
               <i class='bx bx-map-pin' style="font-size:48px;color:#ccc"></i>
               <p data-i18n="no_visits">لا توجد زيارات</p>
-              <button class="btn btn-primary" onclick="openNewService()">إضافة أول زيارة</button>
+              <button class="btn btn-primary" onclick="openNewService()" data-i18n="add_first_visit">إضافة أول زيارة</button>
             </div>
           <div id="maint-services-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
             <span style="color:#fff;font-size:13px;font-weight:600" id="maint-services-selected-count">0 محدد</span>
@@ -2550,7 +2552,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="table-responsive">
               <table id="treasury-expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="treasury-expenses-select-all" onchange="toggleSelectAll('treasury-expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="treasury-expenses-tbody"></tbody></table>
             </div>
-            <div id="treasury-expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات خزينة</p></div>
+            <div id="treasury-expenses-empty" class="empty-state" style="display:none"><p data-i18n="no_treasury_expenses">لا توجد مصروفات خزينة</p></div>
           <div id="treasury-expenses-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
             <span style="color:#fff;font-size:13px;font-weight:600" id="treasury-expenses-selected-count">0 محدد</span>
             <button class="btn" onclick="bulkDeleteExpenses('treasury-expenses')" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
@@ -2561,7 +2563,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="table-responsive">
               <table id="indirect-expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="indirect-expenses-select-all" onchange="toggleSelectAll('indirect-expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="indirect-expenses-tbody"></tbody></table>
             </div>
-            <div id="indirect-expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات غير مباشرة</p></div>
+            <div id="indirect-expenses-empty" class="empty-state" style="display:none"><p data-i18n="no_indirect_expenses">لا توجد مصروفات غير مباشرة</p></div>
           <div id="indirect-expenses-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
             <span style="color:#fff;font-size:13px;font-weight:600" id="indirect-expenses-selected-count">0 محدد</span>
             <button class="btn" onclick="bulkDeleteExpenses('indirect-expenses')" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
@@ -2571,7 +2573,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="table-responsive">
               <table id="expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="expenses-select-all" onchange="toggleSelectAll('expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>النوع</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="expenses-tbody"></tbody></table>
             </div>
-            <div id="expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات</p></div>
+            <div id="expenses-empty" class="empty-state" style="display:none"><p data-i18n="no_expenses_page">لا توجد مصروفات</p></div>
           <div id="expenses-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
             <span style="color:#fff;font-size:13px;font-weight:600" id="expenses-selected-count">0 محدد</span>
             <button class="btn" onclick="bulkDeleteExpenses('expenses')" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
@@ -2679,7 +2681,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div id="fetched-chat-ids" style="display:none;margin-top:12px"></div>
           <div class="alert-warning" style="margin-top:12px;padding:10px;border-radius:8px;font-size:12px">
             <i class='bx bx-info-circle'></i> <strong data-i18n="telegram_howto_title">كيف يحصل المستلم على Chat ID؟</strong><br>
-            يبعت أي رسالة للبوت على Telegram (مثلاً /start) → ثم دوس "جلب Chat IDs" هنا → هيظهر الـ Chat ID تلقائي
+            <span data-i18n="telegram_instructions">يبعت أي رسالة للبوت على Telegram (مثلاً /start) → ثم دوس "جلب Chat IDs" هنا → هيظهر الـ Chat ID تلقائي</span>
           </div>
         </div>
 
@@ -2690,7 +2692,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
           <div class="table-responsive">
             <table>
-              <thead><tr><th>الاسم</th><th>Chat ID</th><th>الإشعارات</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+              <thead><tr><th data-i18n="th_name">الاسم</th><th>Chat ID</th><th data-i18n="th_notifications">الإشعارات</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_actions">إجراءات</th></tr></thead>
               <tbody id="recipients-tbody"></tbody>
             </table>
           </div>
@@ -2709,21 +2711,21 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="form-group"><label data-i18n="label_recipient_name">الاسم *</label><input type="text" id="recipient-name" required placeholder="مثلاً: أحمد"></div>
         <div class="form-group"><label data-i18n="label_recipient_title">المسمى الوظيفي</label><input type="text" id="recipient-title" placeholder="مثلاً: مدير المخازن"></div>
       </div>
-      <div class="form-group"><label>Chat ID *</label><input type="text" id="recipient-chat-id" required dir="ltr" placeholder="مثلاً: 123456789"></div>
+      <div class="form-group"><label>Chat ID *</label><input type="text" id="recipient-chat-id" required dir="ltr" placeholder="مثلاً: 123456789" data-i18n-placeholder="chat_id_placeholder"></div>
       <div class="form-group">
         <label data-i18n="label_enabled_notifications">الإشعارات المفعلة</label>
         <div class="notif-toggles">
-          <label class="perm-checkbox"><input type="checkbox" id="rcpt-low-stock" checked> تنبيه مخزون منخفض</label>
-          <label class="perm-checkbox"><input type="checkbox" id="rcpt-unpaid" checked> فواتير غير مدفوعة</label>
-          <label class="perm-checkbox"><input type="checkbox" id="rcpt-devices-ready" checked> أجهزة جاهزة للتسليم</label>
-          <label class="perm-checkbox"><input type="checkbox" id="rcpt-warranty-expiry" checked> تنبيهات انتهاء الضمان</label>
-          <label class="perm-checkbox"><input type="checkbox" id="rcpt-daily-summary"> ملخص يومي</label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-low-stock" checked> <span data-i18n="notif_low_stock">تنبيه مخزون منخفض</span></label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-unpaid" checked> <span data-i18n="notif_unpaid">فواتير غير مدفوعة</span></label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-devices-ready" checked> <span data-i18n="notif_devices_ready">أجهزة جاهزة للتسليم</span></label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-warranty-expiry" checked> <span data-i18n="notif_warranty_expiry">تنبيهات انتهاء الضمان</span></label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-daily-summary"> <span data-i18n="notif_daily_summary">ملخص يومي</span></label>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-recipient')">إلغاء</button>
-        <button type="button" class="btn btn-outline" onclick="testRecipient()"><i class='bx bx-send'></i> اختبار</button>
-        <button type="submit" class="btn btn-primary">حفظ</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-recipient')" data-i18n="btn_cancel">إلغاء</button>
+        <button type="button" class="btn btn-outline" onclick="testRecipient()" data-i18n="btn_test_notif"><i class='bx bx-send'></i> اختبار</button>
+        <button type="submit" class="btn btn-primary" data-i18n="btn_save">حفظ</button>
       </div>
     </form>
   </div>
@@ -2736,9 +2738,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <h3><i class='bx bx-cloud'></i> <span data-i18n="settings_cloud_sync">المزامنة السحابية</span></h3>
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
             <div id="drive-status-indicator" style="width:12px;height:12px;border-radius:50%;background:var(--text-muted)"></div>
-            <span id="drive-status-text">غير متصل</span>
+            <span id="drive-status-text" data-i18n="sync_not_connected">غير متصل</span>
           </div>
-          <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px">المزامنة تعمل تلقائياً — كل التعديلات تتزامن بين جميع الأجهزة</p>
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px" data-i18n="sync_auto_desc">المزامنة تعمل تلقائياً — كل التعديلات تتزامن بين جميع الأجهزة</p>
           <div style="display:flex;gap:12px;flex-wrap:wrap">
             <button class="btn btn-success" onclick="pushToDrive()"><i class='bx bx-cloud-upload'></i> <span data-i18n="btn_push_data">رفع البيانات</span></button>
             <button class="btn btn-warning" onclick="pullFromDrive()"><i class='bx bx-cloud-download'></i> <span data-i18n="btn_pull_data">سحب البيانات</span></button>
@@ -2759,10 +2761,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="settings-section" id="section-backup">
         <div class="card">
           <h3><i class='bx bx-data'></i> <span data-i18n="settings_backup">النسخ الاحتياطي</span></h3>
-          <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px">تصدير/استيراد كل بيانات النظام كملف JSON على جهازك</p>
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px" data-i18n="backup_desc">تصدير/استيراد كل بيانات النظام كملف JSON على جهازك</p>
           <div style="display:flex;gap:12px;flex-wrap:wrap">
-            <button class="btn btn-primary" onclick="exportAllToFile()"><i class='bx bx-export'></i> تصدير نسخة احتياطية</button>
-            <button class="btn btn-outline" onclick="importFromFile()"><i class='bx bx-import'></i> استيراد نسخة احتياطية</button>
+            <button class="btn btn-primary" onclick="exportAllToFile()" data-i18n="btn_export_backup"><i class='bx bx-export'></i> تصدير نسخة احتياطية</button>
+            <button class="btn btn-outline" onclick="importFromFile()" data-i18n="btn_import_backup"><i class='bx bx-import'></i> استيراد نسخة احتياطية</button>
           </div>
         </div>
 
@@ -2776,14 +2778,14 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <button class="btn btn-primary" onclick="openAddUser()"><i class='bx bx-plus'></i> <span data-i18n="add_user">إضافة مستخدم</span></button>
           </div>
           <div class="table-responsive">
-            <table><thead><tr><th>الاسم</th><th>اسم المستخدم</th><th>الدور</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+            <table><thead><tr><th data-i18n="th_name">الاسم</th><th data-i18n="th_username">اسم المستخدم</th><th data-i18n="th_role">الدور</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_actions">إجراءات</th></tr></thead>
             <tbody id="users-tbody"></tbody></table>
           </div>
           <div style="margin-top:12px;padding:12px;background:var(--bg);border-radius:8px;font-size:13px">
-            <strong>الصلاحيات:</strong><br>
-            🔴 <strong>مدير:</strong> كل شيء — تحكم كامل<br>
-            🔵 <strong>مشرف:</strong> المخزون + الفواتير + الصيانة + التقارير + الأسعار<br>
-            🟡 <strong>موظف:</strong> إنشاء فواتير + إضافة/صرف مخزون + استلام أجهزة — بدون أسعار أو أرباح
+            <strong data-i18n="permissions_title">الصلاحيات:</strong><br>
+            🔴 <strong data-i18n="role_admin">مدير</strong>: <span data-i18n="role_admin_full">كل شيء — تحكم كامل</span><br>
+            🔵 <strong data-i18n="role_manager">مشرف</strong>: <span data-i18n="role_manager_full">المخزون + الفواتير + الصيانة + التقارير + الأسعار</span><br>
+            🟡 <strong data-i18n="role_staff">موظف</strong>: <span data-i18n="role_staff_full">إنشاء فواتير + إضافة/صرف مخزون + استلام أجهزة — بدون أسعار أو أرباح</span>
           </div>
         </div>
 
@@ -2805,7 +2807,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div id="engineers-empty" class="empty-state">
             <i class='bx bx-hard-hat' style="font-size:48px;color:#ccc"></i>
             <p data-i18n="no_engineers">لا يوجد مهندسين أو فنيين</p>
-            <button class="btn btn-primary" onclick="openAddEngineer()">إضافة أول مهندس/فني</button>
+            <button class="btn btn-primary" onclick="openAddEngineer()" data-i18n="add_first_engineer">إضافة أول مهندس/فني</button>
           </div>
           <div id="engineers-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
             <span style="color:#fff;font-size:13px;font-weight:600" id="engineers-selected-count">0 محدد</span>
@@ -2845,7 +2847,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="form-group">
           <label data-i18n="label_sku">كود الصنف (SKU)</label>
           <div class="input-with-btn">
-            <input type="text" id="product-sku" placeholder="اتركه فارغ للتوليد التلقائي">
+            <input type="text" id="product-sku" placeholder="اتركه فارغ للتوليد التلقائي" data-i18n-placeholder="sku_auto_placeholder">
             <button type="button" class="btn btn-sm" onclick="generateSKU()"><i class='bx bx-refresh'></i></button>
           </div>
         </div>
@@ -2891,7 +2893,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
         </div>
         <div class="form-group">
           <label data-i18n="label_barcode">باركود</label>
-          <input type="text" id="product-barcode" placeholder="اتركه فارغ للتوليد التلقائي">
+          <input type="text" id="product-barcode" placeholder="اتركه فارغ للتوليد التلقائي" data-i18n-placeholder="sku_auto_placeholder">
         </div>
       </div>
       <div class="form-group">
@@ -2904,8 +2906,8 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div id="product-image-preview" class="image-preview"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-product')">إلغاء</button>
-        <button type="submit" class="btn btn-primary">حفظ</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-product')" data-i18n="btn_cancel">إلغاء</button>
+        <button type="submit" class="btn btn-primary" data-i18n="btn_save">حفظ</button>
       </div>
     </form>
   </div>
@@ -2921,11 +2923,11 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <div class="category-form">
       <div class="form-row">
         <div class="form-group" style="flex:1">
-          <input type="text" id="new-category" placeholder="اسم التصنيف الجديد">
+          <input type="text" id="new-category" placeholder="اسم التصنيف الجديد" data-i18n-placeholder="new_cat_placeholder">
         </div>
         <div class="form-group">
           <select id="parent-category">
-            <option value="">تصنيف رئيسي</option>
+            <option value="" data-i18n="root_category">تصنيف رئيسي</option>
           </select>
         </div>
         <button class="btn btn-primary" onclick="addCategory()"><i class='bx bx-plus'></i></button>
@@ -2958,8 +2960,8 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <textarea id="stock-notes" rows="2"></textarea>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-stock')">إلغاء</button>
-        <button type="submit" class="btn btn-primary">تأكيد</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-stock')" data-i18n="btn_cancel">إلغاء</button>
+        <button type="submit" class="btn btn-primary" data-i18n="btn_confirm">تأكيد</button>
       </div>
     </form>
   </div>
@@ -2973,14 +2975,14 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <button class="modal-close" onclick="closeModal('modal-import-export')">&times;</button>
     </div>
     <div class="ie-section">
-      <h4><i class='bx bx-export'></i> تصدير</h4>
-      <p>تصدير كل الأصناف إلى ملف Excel</p>
+      <h4><i class='bx bx-export'></i> <span data-i18n="export_section">تصدير</span></h4>
+      <p data-i18n="export_products_desc">تصدير كل الأصناف إلى ملف Excel</p>
       <button class="btn btn-primary" onclick="exportProducts()"><i class='bx bx-download'></i> تصدير Excel</button>
     </div>
     <hr>
     <div class="ie-section">
-      <h4><i class='bx bx-import'></i> استيراد</h4>
-      <p>استيراد أصناف من ملف Excel (يجب أن يتبع نفس التنسيق)</p>
+      <h4><i class='bx bx-import'></i> <span data-i18n="import_section">استيراد</span></h4>
+      <p data-i18n="import_products_desc">استيراد أصناف من ملف Excel (يجب أن يتبع نفس التنسيق)</p>
       <input type="file" id="import-file" accept=".xlsx,.xls,.csv" onchange="importProducts(this)">
     </div>
   </div>
@@ -3081,19 +3083,19 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div class="form-group"><label data-i18n="label_phone_number">رقم التليفون</label><input type="tel" id="engineer-phone" dir="ltr"></div>
       <div class="form-group"><label data-i18n="label_specialty">التخصص</label>
         <select id="engineer-specialty">
-          <option value="عام">عام</option>
-          <option value="موبايلات">موبايلات</option>
-          <option value="لابتوب">لابتوب</option>
-          <option value="كمبيوتر">كمبيوتر</option>
-          <option value="طابعات">طابعات</option>
-          <option value="شبكات">شبكات</option>
-          <option value="كاميرات">كاميرات</option>
-          <option value="أخرى">أخرى</option>
+          <option value="عام" data-i18n="specialty_general">عام</option>
+          <option value="موبايلات" data-i18n="specialty_mobiles">موبايلات</option>
+          <option value="لابتوب" data-i18n="specialty_laptop">لابتوب</option>
+          <option value="كمبيوتر" data-i18n="specialty_computer">كمبيوتر</option>
+          <option value="طابعات" data-i18n="specialty_printers">طابعات</option>
+          <option value="شبكات" data-i18n="specialty_networks">شبكات</option>
+          <option value="كاميرات" data-i18n="specialty_cameras">كاميرات</option>
+          <option value="أخرى" data-i18n="specialty_other">أخرى</option>
         </select>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-engineer')">إلغاء</button>
-        <button type="submit" class="btn btn-primary">حفظ</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-engineer')" data-i18n="btn_cancel">إلغاء</button>
+        <button type="submit" class="btn btn-primary" data-i18n="btn_save">حفظ</button>
       </div>
     </form>
   </div>
@@ -3125,9 +3127,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <select id="device-client" onchange="onClientSelect(this, 'device')"></select>
           <div id="new-client-device-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
-              <input type="text" id="new-client-device-name" placeholder="اسم العميل" style="flex:2;min-width:120px">
-              <input type="text" id="new-client-device-phone" placeholder="الهاتف" style="flex:1;min-width:100px">
-              <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineClient('device')" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
+              <input type="text" id="new-client-device-name" placeholder="اسم العميل" data-i18n-placeholder="client_name_ph" style="flex:2;min-width:120px">
+              <input type="text" id="new-client-device-phone" placeholder="الهاتف" data-i18n-placeholder="phone_ph" style="flex:1;min-width:100px">
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineClient('device')" style="white-space:nowrap" data-i18n="btn_save"><i class='bx bx-check'></i> حفظ</button>
             </div>
           </div>
         </div>
@@ -3138,14 +3140,14 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <select id="device-engineer" onchange="onEngineerSelect(this)"><option value="" data-i18n="select_engineer">اختر المهندس/الفني</option></select>
           <div id="new-engineer-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
-              <input type="text" id="new-engineer-name" placeholder="اسم المهندس" style="flex:2;min-width:120px">
-              <input type="text" id="new-engineer-phone" placeholder="الهاتف (اختياري)" style="flex:1;min-width:100px">
+              <input type="text" id="new-engineer-name" placeholder="اسم المهندس" data-i18n-placeholder="eng_name_ph" style="flex:2;min-width:120px">
+              <input type="text" id="new-engineer-phone" placeholder="الهاتف (اختياري)" data-i18n-placeholder="phone_opt_ph" style="flex:1;min-width:100px">
               <select id="new-engineer-specialty" style="flex:1;min-width:100px">
                 <option value="عام" data-i18n="specialty_general">عام</option><option value="موبايلات" data-i18n="specialty_mobiles">موبايلات</option><option value="لابتوب" data-i18n="specialty_laptop">لابتوب</option>
                 <option value="كمبيوتر" data-i18n="specialty_computer">كمبيوتر</option><option value="طابعات" data-i18n="specialty_printers">طابعات</option><option value="شبكات" data-i18n="specialty_networks">شبكات</option>
                 <option value="كاميرات" data-i18n="specialty_cameras">كاميرات</option><option value="أخرى" data-i18n="specialty_other">أخرى</option>
               </select>
-              <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineEngineer()" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineEngineer()" style="white-space:nowrap" data-i18n="btn_save"><i class='bx bx-check'></i> حفظ</button>
             </div>
           </div>
         </div>
@@ -3257,17 +3259,17 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <div id="repair-history-content" style="padding:0">
       <div class="device-header-info">
         <div class="device-info-row">
-          <span><strong>الأمر:</strong> <span id="history-device-order"></span></span>
-          <span><strong>الجهاز:</strong> <span id="history-device-name"></span></span>
-          <span><strong>العميل:</strong> <span id="history-client-name"></span></span>
-          <span><strong>الدخول:</strong> <span id="history-intake-date"></span></span>
+          <span><strong data-i18n="order_colon">الأمر:</strong> <span id="history-device-order"></span></span>
+          <span><strong data-i18n="device_colon">الجهاز:</strong> <span id="history-device-name"></span></span>
+          <span><strong data-i18n="client_colon">العميل:</strong> <span id="history-client-name"></span></span>
+          <span><strong data-i18n="intake_colon">الدخول:</strong> <span id="history-intake-date"></span></span>
         </div>
       </div>
 
       <!-- Add Entry Button (Admin only) -->
       <div class="add-history-entry" id="add-history-btn-wrapper" style="padding:16px;display:none">
         <button class="btn btn-primary" onclick="showAddHistoryForm()">
-          <i class='bx bx-plus'></i> إضافة سجل
+          <i class='bx bx-plus'></i> <span data-i18n="add_record_btn">إضافة سجل</span>
         </button>
       </div>
 
@@ -3276,43 +3278,43 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <input type="hidden" id="history-entry-index">
         <div class="history-form-grid">
           <div class="form-group">
-            <label>التاريخ</label>
+            <label data-i18n="date_label">التاريخ</label>
             <input type="datetime-local" id="history-entry-date" class="form-input">
           </div>
           <div class="form-group">
             <label data-i18n="label_repair_action">نوع الإجراء</label>
             <select id="history-entry-action" class="form-input">
-              <option value="استلام">استلام</option>
-              <option value="فحص">فحص</option>
-              <option value="إصلاح">إصلاح</option>
-              <option value="اختبار">اختبار</option>
-              <option value="تسليم">تسليم</option>
-              <option value="أخرى">أخرى</option>
+              <option value="استلام" data-i18n="action_intake">استلام</option>
+              <option value="فحص" data-i18n="action_diagnosis">فحص</option>
+              <option value="إصلاح" data-i18n="action_repair">إصلاح</option>
+              <option value="اختبار" data-i18n="action_testing">اختبار</option>
+              <option value="تسليم" data-i18n="action_delivery">تسليم</option>
+              <option value="أخرى" data-i18n="specialty_other">أخرى</option>
             </select>
           </div>
         </div>
         <div class="form-group">
           <label data-i18n="label_repair_desc">الوصف / الملاحظات</label>
-          <textarea id="history-entry-note" class="form-input" rows="3" placeholder="اكتب الوصف أو الملاحظات..."></textarea>
+          <textarea id="history-entry-note" class="form-input" rows="3" placeholder="اكتب الوصف أو الملاحظات..." data-i18n-placeholder="write_notes_ph"></textarea>
         </div>
         <div class="form-group">
           <label data-i18n="label_repair_engineer">المهندس</label>
           <select id="history-entry-engineer" class="form-input">
-            <option value="">-- اختر المهندس --</option>
+            <option value="" data-i18n="select_engineer">-- اختر المهندس --</option>
             <!-- Will be populated dynamically -->
-            <option value="__other__">مهندس آخر...</option>
+            <option value="__other__" data-i18n="other_engineer">مهندس آخر...</option>
           </select>
         </div>
         <div class="form-actions" style="display:flex;gap:8px;margin-top:12px;">
-          <button class="btn btn-primary" onclick="saveHistoryEntry()">حفظ</button>
-          <button class="btn btn-outline" onclick="cancelHistoryEntry()">إلغاء</button>
+          <button class="btn btn-primary" onclick="saveHistoryEntry()" data-i18n="btn_save">حفظ</button>
+          <button class="btn btn-outline" onclick="cancelHistoryEntry()" data-i18n="btn_cancel">إلغاء</button>
         </div>
       </div>
       
       <div class="repair-timeline" id="repair-timeline"></div>
       
       <div style="padding:12px 16px">
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-repair-history')" style="width:100%">إغلاق</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-repair-history')" style="width:100%" data-i18n="btn_close">إغلاق</button>
       </div>
     </div>
   </div>
@@ -3366,9 +3368,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
           <div id="new-client-invoice-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
-              <input type="text" id="new-client-invoice-name" placeholder="الاسم" style="flex:2;min-width:120px">
-              <input type="text" id="new-client-invoice-phone" placeholder="الهاتف" style="flex:1;min-width:100px">
-              <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineClient('invoice')" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
+              <input type="text" id="new-client-invoice-name" placeholder="الاسم" data-i18n-placeholder="name_ph" style="flex:2;min-width:120px">
+              <input type="text" id="new-client-invoice-phone" placeholder="الهاتف" data-i18n-placeholder="phone_ph" style="flex:1;min-width:100px">
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineClient('invoice')" style="white-space:nowrap" data-i18n="btn_save"><i class='bx bx-check'></i> حفظ</button>
             </div>
           </div>
         </div>
@@ -3433,9 +3435,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <select id="service-client" onchange="onClientSelect(this, 'service')"><option value="" data-i18n="select_client">اختر العميل</option></select>
           <div id="new-client-service-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
-              <input type="text" id="new-client-service-name" placeholder="اسم العميل" style="flex:2;min-width:120px">
-              <input type="text" id="new-client-service-phone" placeholder="الهاتف" style="flex:1;min-width:100px">
-              <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineClient('service')" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
+              <input type="text" id="new-client-service-name" placeholder="اسم العميل" data-i18n-placeholder="client_name_ph" style="flex:2;min-width:120px">
+              <input type="text" id="new-client-service-phone" placeholder="الهاتف" data-i18n-placeholder="phone_ph" style="flex:1;min-width:100px">
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineClient('service')" style="white-space:nowrap" data-i18n="btn_save"><i class='bx bx-check'></i> حفظ</button>
             </div>
           </div>
         </div>
@@ -3496,9 +3498,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div class="form-group" style="margin-bottom:10px">
         <label style="font-size:12px;margin-bottom:4px;display:block">نوع الحركة</label>
         <select id="adj-pay-type" style="width:100%">
-          <option value="payment_in">دفعة واردة (سداد من العميل)</option>
-          <option value="payment_out">دفعة صادرة (دفع للمورد)</option>
-          <option value="add_debt">إضافة دين جديد</option>
+          <option value="payment_in" data-i18n="payment_in_opt">دفعة واردة (سداد من العميل)</option>
+          <option value="payment_out" data-i18n="payment_out_opt">دفعة صادرة (دفع للمورد)</option>
+          <option value="add_debt" data-i18n="add_debt_opt">إضافة دين جديد</option>
           <option value="adjust">تعيين رصيد يدوي</option>
         </select>
       </div>
@@ -3537,10 +3539,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
 const TRANSLATIONS = {
   ar: {
     // Navigation
-    nav_dashboard: 'لوحة التحكم', nav_inventory: 'المخزون', nav_sales: 'البيع',
-    nav_purchases: 'المشتريات', nav_maintenance: 'ورشة الصيانة', nav_accounting: 'المحاسبة',
-    nav_reports: 'التقارير', nav_settings: 'الإعدادات', nav_products: 'المنتجات',
-    nav_categories: 'التصنيفات', nav_import_export: 'استيراد / تصدير',
+    nav_dashboard: t('page_dashboard'), nav_inventory: t('page_inventory'), nav_sales: t('page_sales'),
+    nav_purchases: t('page_purchases'), nav_maintenance: t('page_maintenance'), nav_accounting: t('page_accounting'),
+    nav_reports: t('page_reports'), nav_settings: t('page_settings'), nav_products: 'المنتجات',
+    nav_categories: t('page_categories'), nav_import_export: 'استيراد / تصدير',
     nav_invoices: 'الفواتير', nav_clients: 'العملاء', nav_suppliers: 'الموردين',
     nav_summary: 'الملخص', nav_expenses: 'المصروفات',
     nav_daily: 'يومي', nav_monthly: 'شهري', nav_inventory_report: 'المخزون', nav_outstanding: 'المستحقات',
@@ -3563,7 +3565,7 @@ const TRANSLATIONS = {
     
     // Dashboard
     sales_overview: 'نظرة عامة على المبيعات',
-    label_sales: 'المبيعات', label_purchases: 'المشتريات',
+    label_sales: 'المبيعات', label_purchases: t('page_purchases'),
     period_week: 'أسبوع', period_month: 'شهر', period_year: 'سنة',
     maint_status: 'حالة الصيانة', top_5_products: 'أكثر 5 منتجات مبيعاً',
     revenue_6_months: 'إيرادات آخر 6 شهور',
@@ -3583,7 +3585,7 @@ const TRANSLATIONS = {
     add_supplier: 'إضافة مورد', new_visit: 'زيارة جديدة',
     add_category: 'إضافة تصنيف', add_user: 'إضافة مستخدم',
     add_engineer: 'إضافة مهندس/فني', add_recipient: 'إضافة مستلم',
-    add_expense: 'إضافة مصروف', new_device_intake: 'إذن استلام جهاز',
+    add_expense: 'إضافة مصروف', qa_direct_expense: 'مصروف مباشر', qa_indirect_expense: 'مصروف غير مباشر', new_device_intake: 'إذن استلام جهاز',
     btn_save: 'حفظ', btn_cancel: 'إلغاء', btn_delete: 'حذف',
     btn_confirm: 'تأكيد', btn_close: 'إغلاق', btn_back: 'رجوع',
     btn_show: 'عرض', btn_refresh: 'تحديث', btn_test: 'اختبار',
@@ -3612,7 +3614,7 @@ const TRANSLATIONS = {
     tab_invoices: 'الفواتير', tab_clients: 'العملاء', tab_services: 'خدمات وزيارات',
     tab_suppliers: 'الموردين', tab_devices: 'أجهزة', tab_visits: 'زيارات وخدمات',
     tab_treasury: 'مصروفات خزينة', tab_indirect: 'مصروفات غير مباشرة', tab_all: 'الكل',
-    tab_daily: 'يومي', tab_monthly: 'شهري', tab_inventory: 'المخزون', tab_outstanding: 'المستحقات',
+    tab_daily: 'يومي', tab_monthly: 'شهري', tab_inventory: t('page_inventory'), tab_outstanding: 'المستحقات',
     
     // Filters
     filter_all: 'الكل', all_categories: 'كل التصنيفات',
@@ -3697,9 +3699,9 @@ const TRANSLATIONS = {
     badge_device: 'جهاز', badge_part: 'قطعة غيار',
     
     // Page titles
-    page_dashboard: 'لوحة التحكم', page_inventory: 'المخزون', page_categories: 'التصنيفات',
-    page_sales: 'البيع', page_purchases: 'المشتريات', page_maintenance: 'ورشة الصيانة',
-    page_accounting: 'المحاسبة', page_reports: 'التقارير', page_settings: 'الإعدادات',
+    page_dashboard: t('page_dashboard'), page_inventory: t('page_inventory'), page_categories: t('page_categories'),
+    page_sales: t('page_sales'), page_purchases: t('page_purchases'), page_maintenance: t('page_maintenance'),
+    page_accounting: t('page_accounting'), page_reports: t('page_reports'), page_settings: t('page_settings'),
     
     // Toast messages
     toast_save_error: 'خطأ في حفظ البيانات — حاول مرة أخرى',
@@ -3793,7 +3795,7 @@ const TRANSLATIONS = {
     add_supplier: 'Add Supplier', new_visit: 'New Visit',
     add_category: 'Add Category', add_user: 'Add User',
     add_engineer: 'Add Engineer/Tech', add_recipient: 'Add Recipient',
-    add_expense: 'Add Expense', new_device_intake: 'New Device Intake',
+    add_expense: 'Add Expense', qa_direct_expense: 'Direct Expense', qa_indirect_expense: 'Indirect Expense', new_device_intake: 'New Device Intake',
     btn_save: 'Save', btn_cancel: 'Cancel', btn_delete: 'Delete',
     btn_confirm: 'Confirm', btn_close: 'Close', btn_back: 'Back',
     btn_show: 'Show', btn_refresh: 'Refresh', btn_test: 'Test',
@@ -3954,6 +3956,365 @@ const TRANSLATIONS = {
     // Repair cost
     repair_stock_cost: 'Stock Parts Cost:', repair_external_cost: 'External Parts Cost:',
     repair_total_cost: 'Total Cost:', repair_profit: 'Profit:',
+
+    // v7.2 — Complete translations
+    app_title: 'SMS — Inventory & Maintenance System',
+    remember_me: 'Remember Me',
+    btn_login: 'Login',
+    dark_mode: 'Dark Mode',
+    cloud_sync_title: 'Cloud Sync',
+    chart_line: 'Line Chart',
+    chart_bar: 'Bar Chart',
+    zero_selected: '0 selected',
+    delete_bulk: 'Delete Selected',
+    add_first_product: 'Add First Product',
+    add_first_category: 'Add First Category',
+    create_first_invoice: 'Create First Invoice',
+    add_first_client: 'Add First Client',
+    add_first_visit: 'Add First Visit',
+    add_first_supplier: 'Add First Supplier',
+    intake_first_device: 'First Device Intake',
+    add_first_engineer: 'Add First Engineer/Tech',
+    no_treasury_expenses: 'No treasury expenses',
+    no_indirect_expenses: 'No indirect expenses',
+    no_expenses_page: 'No expenses',
+    no_devices_maint: 'No devices in maintenance',
+    list_view: 'List View',
+    card_view: 'Card View',
+    telegram_instructions: 'Send any message to the bot on Telegram (e.g. /start) → then click "Fetch Chat IDs" here → Chat ID will appear automatically',
+    chat_id_placeholder: 'e.g.: 123456789',
+    notif_low_stock: 'Low Stock Alert',
+    notif_unpaid: 'Unpaid Invoices',
+    notif_devices_ready: 'Devices Ready for Delivery',
+    notif_warranty_expiry: 'Warranty Expiry Alerts',
+    notif_daily_summary: 'Daily Summary',
+    sync_not_connected: 'Not Connected',
+    sync_auto_desc: 'Sync works automatically — all changes sync across all devices',
+    backup_desc: 'Export/import all system data as a JSON file on your device',
+    permissions_title: 'Permissions:',
+    role_admin_full: 'Admin: Everything — full control',
+    role_manager_full: 'Manager: Inventory + Invoices + Maintenance + Reports + Prices',
+    role_staff_full: 'Staff: Create invoices + Add/dispatch stock + Device intake — no prices or profits',
+    sku_auto_placeholder: 'Leave empty for auto-generation',
+    root_category: 'Root Category',
+    new_cat_placeholder: 'New category name',
+    export_section: 'Export',
+    export_products_desc: 'Export all products to Excel file',
+    export_excel_btn: 'Export Excel',
+    import_section: 'Import',
+    import_products_desc: 'Import products from Excel file (must follow same format)',
+    specialty_general: 'General',
+    specialty_mobiles: 'Mobiles',
+    specialty_laptop: 'Laptop',
+    specialty_computer: 'Computer',
+    specialty_printers: 'Printers',
+    specialty_networks: 'Networks',
+    specialty_cameras: 'Cameras',
+    specialty_other: 'Other',
+    client_name_ph: 'Client Name',
+    phone_ph: 'Phone',
+    eng_name_ph: 'Engineer Name',
+    phone_opt_ph: 'Phone (optional)',
+    order_colon: 'Order:',
+    device_colon: 'Device:',
+    client_colon: 'Client:',
+    intake_colon: 'Intake:',
+    add_record_btn: 'Add Record',
+    date_label: 'Date',
+    action_intake: 'Intake',
+    action_diagnosis: 'Diagnosis',
+    action_repair: 'Repair',
+    action_testing: 'Testing',
+    action_delivery: 'Delivery',
+    action_other: 'Other',
+    write_notes_ph: 'Write description or notes...',
+    select_engineer: '-- Select Engineer --',
+    other_engineer: 'Other engineer...',
+    name_ph: 'Name',
+    current_balance_label: 'Current Balance',
+    record_payment_btn: 'Record Payment',
+    set_balance_btn: 'Set Balance',
+    new_payment_title: 'Record New Payment',
+    movement_type_label: 'Movement Type',
+    payment_in_opt: 'Payment In (from client)',
+    payment_out_opt: 'Payment Out (to supplier)',
+    add_debt_opt: 'Add New Debt',
+    toast_username_not_found: 'Username not found',
+    toast_wrong_password: 'Wrong password',
+    toast_account_disabled: 'Account disabled',
+    sync_connected_sb: 'Connected — Supabase',
+    confirm_replace_all: 'All current data will be replaced. Continue?',
+    scanner_aim: 'Aim camera at barcode',
+    no_alerts_check: 'No alerts ✅',
+    no_login_history: 'No login records',
+    no_movements_hist: 'No movements',
+    chart_lbl_sales: 'Sales',
+    chart_lbl_purchases: 'Purchases',
+    chart_no_devices: 'No devices',
+    chart_under_repair: 'Under Repair',
+    chart_done: 'Done',
+    chart_delivered: 'Delivered',
+    chart_completed: 'Completed',
+    chart_no_data: 'No data',
+    chart_unknown: 'Unknown',
+    chart_this_month: 'This month',
+    chart_no_invoices: 'No invoices',
+    unspecified: 'Unspecified',
+    connected_status: 'Connected ✅',
+    disconnected_status: 'Not Connected',
+    inv_sale_title: 'Sale Invoice',
+    inv_purchase_title: 'Purchase Invoice',
+    inv_number_label: 'Invoice Number',
+    inv_date_label: 'Date',
+    inv_client_label: 'Client',
+    inv_supplier_label: 'Supplier',
+    inv_items_header: 'Items:',
+    inv_qty_header: 'Qty',
+    inv_price_header: 'Price',
+    inv_total_header: 'Total',
+    inv_paid_label: 'Paid',
+    inv_remaining_label: 'Remaining',
+    inv_fully_paid: 'Fully Paid',
+    inv_contact: 'Contact',
+    inv_by: 'By',
+    inv_notes: 'Notes',
+    inv_photos: 'Attached Photos',
+    inv_barcode: 'Invoice Barcode',
+    inv_qr: 'QR Verification',
+    inv_sms_footer: 'Created by SMS System',
+    inv_thank_you: 'Thank you for your business',
+    vw_code: 'Code',
+    vw_name: 'Name',
+    vw_condition: 'Condition',
+    vw_type: 'Type',
+    vw_category: 'Category',
+    vw_barcode: 'Barcode',
+    vw_buy_price: 'Buy Price',
+    vw_sell_price: 'Sell Price',
+    vw_profit_unit: 'Profit/Unit',
+    vw_quantity: 'Quantity',
+    vw_min_stock: 'Min Stock',
+    vw_description: 'Description',
+    vw_print_barcode: 'Print Barcode',
+    vw_movement_history: 'Movement History',
+    vw_add: 'Stock In',
+    vw_dispatch: 'Stock Out',
+    vw_new: 'New',
+    vw_used: 'Used',
+    vw_device: 'Device',
+    vw_spare_part: 'Spare Part',
+    vw_low_stock: 'Low Stock',
+    vw_available: 'Available',
+    vw_existing: 'Exists',
+    stock_in_title: 'Stock In',
+    stock_out_title: 'Stock Out',
+    cat_all_filter: 'All Categories',
+    cat_none: 'No Category',
+    cat_root: 'Root Category',
+    cat_no_categories: 'No categories yet',
+    cat_items: 'items',
+    cat_subcats: 'subcategories',
+    cat_no_parent: 'No parent category',
+    cat_no_results: 'No results',
+    cat_sub_btn: 'Sub',
+    vw_email: 'Email',
+    vw_factory_name: 'Factory Name',
+    vw_factory_location: 'Factory Location',
+    vw_factory_activity: 'Factory Activity',
+    vw_balance: 'Balance',
+    vw_notes: 'Notes',
+    vw_invoices: 'Invoices',
+    inv_items_count: 'items',
+    badge_paid: 'Paid',
+    badge_partial: 'Partial',
+    badge_unpaid: 'Unpaid',
+    inv_select_client: 'Select Client',
+    inv_other_client: '+ Other (Add New Client)',
+    inv_select_supplier: 'Select Supplier',
+    inv_other_supplier: '+ Other (Add New Supplier)',
+    inv_select_product: 'Select Product',
+    inv_other_product: '+ Other (Add New Product)',
+    inv_qty_ph: 'Qty',
+    inv_price_ph: 'Price',
+    inv_add_product: 'Add New Product',
+    inv_prod_name: 'Product Name *',
+    inv_cost_ph: 'Cost',
+    inv_code_ph: 'Code (optional)',
+    inv_save_add: 'Save & Add',
+    inv_other_short: '+ Other',
+    dev_warranty: 'Warranty',
+    dev_months: 'months',
+    dev_overdue: 'Overdue!',
+    dev_order_num: 'Order #',
+    dev_problem: 'Problem',
+    dev_from_stock: 'From Stock',
+    dev_external: 'External Purchase',
+    dev_select_part: 'Select Part',
+    dev_part_name: 'Part Name',
+    dev_supplier: 'Supplier',
+    dv_order: 'Order #',
+    dv_status: 'Status',
+    dv_device: 'Device',
+    dv_specs: 'Specs',
+    dv_problem: 'Problem',
+    dv_intake_date: 'Intake Date',
+    dv_client: 'Client',
+    dv_client_factory: 'Client Factory',
+    dv_engineer: 'Responsible Engineer',
+    dv_warranty: 'Warranty',
+    dv_no_warranty: 'No Warranty',
+    task_pending: 'Pending',
+    task_assigned: 'Assigned',
+    task_completed: 'Completed',
+    task_overdue: 'Overdue',
+    task_details: 'Task Details',
+    task_status: 'Task Status',
+    task_deadline: 'Deadline',
+    task_reward: 'Reward',
+    task_penalty: 'Penalty',
+    task_warnings: 'Warnings',
+    task_instructions: 'Task Instructions',
+    task_complete_btn: 'Complete Task',
+    task_warn_btn: 'Warn',
+    task_penalize_btn: 'Penalize',
+    parts_used_title: 'Parts Used',
+    parts_part: 'Part',
+    parts_source: 'Source',
+    parts_stock: 'Stock',
+    parts_external: 'External',
+    parts_stock_cost: 'Stock Parts Cost:',
+    parts_ext_cost: 'External Parts Cost:',
+    parts_extra: 'Extra Expenses:',
+    parts_total_cost: 'Total Cost:',
+    parts_sell_price: 'Selling Price:',
+    parts_profit: 'Profit:',
+    parts_cost: 'Parts Cost:',
+    dev_photos: 'Device Photos',
+    dev_qr: 'QR Code — Maintenance Order',
+    dev_print_label: 'Print Label',
+    dev_print_receipt: 'Print Receipt',
+    dev_details_title: 'Maintenance Order Details',
+    dev_maint_order: 'Maintenance Order',
+    dev_receipt_title: 'Maintenance Receipt',
+    acc_no_clients: 'No clients',
+    acc_no_suppliers: 'No suppliers',
+    acc_record_payment: 'Record Payment',
+    acc_revenue_details: 'Revenue Details',
+    acc_expenses_details: 'Expenses Details',
+    acc_profit_details: 'Net Profit Details',
+    acc_sales: 'Sales',
+    acc_maintenance: 'Maintenance',
+    acc_services: 'Services & Visits',
+    acc_purchases: 'Purchases',
+    acc_general_exp: 'General Expenses',
+    acc_maint_costs: 'Maintenance Costs',
+    acc_sales_rev: 'Sales Revenue',
+    acc_maint_profit: 'Maintenance Profit',
+    acc_services_rev: 'Services Revenue',
+    acc_total: 'Total',
+    ledger_no_movements: 'No movements recorded',
+    ledger_payment: 'Payment',
+    ledger_debt: 'Debt',
+    ledger_pay_out: 'Payment',
+    ledger_adjustment: 'Adjustment',
+    ledger_invoice: 'Invoice',
+    ledger_set_balance: 'Set Balance Manually',
+    ledger_manual_adj: 'Manual adjustment',
+    ledger_edit: 'Edit Movement',
+    rpt_daily: 'Daily Report',
+    rpt_sale_invoices: 'Sale Invoices',
+    rpt_purchase_invoices: 'Purchase Invoices',
+    rpt_no_sales: 'No sales',
+    rpt_no_purchases: 'No purchases',
+    rpt_expenses: 'Expenses',
+    rpt_no_expenses: 'No expenses',
+    rpt_maintenance: 'Maintenance',
+    rpt_devices_in: 'Devices In',
+    rpt_devices_done: 'Devices Done',
+    rpt_monthly: 'Monthly Report',
+    rpt_daily_breakdown: 'Daily Breakdown',
+    rpt_day: 'Day',
+    rpt_maint_summary: 'Maintenance Summary',
+    rpt_devices_completed: 'Devices Completed',
+    rpt_inventory: 'Inventory Report',
+    rpt_by_category: 'By Category',
+    rpt_item_count: 'Item Count',
+    rpt_value: 'Value',
+    rpt_low_stock: 'Low Stock Items',
+    rpt_outstanding: 'Outstanding Amounts',
+    rpt_total_owed: 'Total Outstanding',
+    usr_active: 'Active',
+    usr_disabled: 'Disabled',
+    usr_password_ph: 'Password',
+    usr_password_keep: 'Leave empty to keep unchanged',
+    perm_dashboard: 'Dashboard',
+    perm_inv_view: 'Inventory — View',
+    perm_inv_edit: 'Inventory — Add/Edit/Delete',
+    perm_stock: 'Add/Dispatch Stock',
+    perm_prices: 'View Prices & Profits',
+    perm_sales_view: 'Sales — View',
+    perm_sales_create: 'Sales — Create Invoices',
+    perm_purch_view: 'Purchases — View',
+    perm_purch_create: 'Purchases — Create Invoices',
+    perm_clients: 'Clients',
+    perm_suppliers: 'Suppliers',
+    perm_maint: 'Maintenance Workshop',
+    perm_intake: 'Device Intake',
+    perm_accounting: 'Accounting',
+    perm_reports: 'Reports',
+    perm_settings: 'Settings',
+    perm_users: 'User Management',
+    svc_pending: 'Pending',
+    svc_in_progress: 'In Progress',
+    svc_completed: 'Completed',
+    svc_cancelled: 'Cancelled',
+    cl_edit_title: 'Edit List',
+    cl_add_ph: 'Add new item...',
+    cl_add_btn: 'Add',
+    cl_save: '💾 Save Changes',
+    cl_empty: 'List is empty',
+    cl_choose: 'Choose',
+    cl_other: 'Other...',
+    cl_type_here: 'Type here...',
+    cl_search: 'Search...',
+    cl_save_label: 'Save',
+    exp_rent: 'Rent',
+    exp_salaries: 'Salaries',
+    exp_utilities: 'Electricity & Water',
+    exp_transport: 'Transport',
+    exp_maintenance: 'Maintenance',
+    exp_treasury: 'Treasury Expenses',
+    exp_indirect: 'Indirect Expenses',
+    notif_stock_badge: 'Stock',
+    notif_inv_badge: 'Invoices',
+    notif_delivery_badge: 'Delivery',
+    notif_warranty_badge: 'Warranty',
+    notif_summary_badge: 'Summary',
+    tl_intake: 'Device Intake',
+    tl_diagnosis: 'Diagnosis',
+    tl_repair: 'Repair',
+    tl_testing: 'Testing',
+    tl_completion: 'Completion',
+    tl_delivery: 'Delivery',
+    tl_update: 'Update',
+    tl_maint_done: 'Maintenance Complete',
+    tl_device_delivered: 'Device Delivered to Client',
+    tl_process_done: 'Process Complete',
+    tl_status_update: 'Status Update',
+    tl_new_status: 'New Status:',
+    role_admin_label: 'Admin',
+    role_manager_label: 'Manager',
+    role_staff_label: 'Staff',
+    admin_default_name: 'Admin',
+    no_activity_log: 'No activity log',
+    elec_power: 'Electrical Power',
+    elec_control: 'Control Components',
+    elec_automation: 'Automation',
+    elec_cables: 'Cables & Connections',
+    elec_panels: 'Electrical Panels',
+    elec_motors: 'Motors',
+    elec_spare: 'Maintenance Parts',
+    elec_instruments: 'Measuring Instruments',
   }
 };
 
@@ -4147,13 +4508,13 @@ async function dbClear(store) {
 // ============ DYNAMIC LISTS (Custom Options) ============
 // Default lists for each customizable dropdown
 const DEFAULT_LISTS = {
-  'expense-categories': ['إيجار', 'مرتبات', 'كهرباء ومياه', 'نقل ومواصلات', 'صيانة'],
-  'expense-types': ['مصروفات خزينة', 'مصروفات غير مباشرة'],
-  'product-conditions': ['جديد', 'مستعمل'],
-  'product-types': ['جهاز', 'قطعة غيار', 'اكسسوار', 'كابل', 'شاحن'],
-  'payment-statuses': ['مدفوع', 'غير مدفوع', 'جزئي'],
-  'device-statuses': ['تحت الصيانة', 'تم الإصلاح', 'تم التسليم', 'مكتملة'],
-  'service-statuses': ['مجدول', 'جاري', 'مكتمل', 'ملغي'],
+  'expense-categories': [t('exp_rent'), t('exp_salaries'), t('exp_utilities'), t('exp_transport'), t('exp_maintenance')],
+  'expense-types': [t('exp_treasury'), t('exp_indirect')],
+  'product-conditions': [t('cond_new'), t('cond_used')],
+  'product-types': [t('type_device'), t('type_part'), 'Accessory', 'Cable', 'Charger'],
+  'payment-statuses': [t('invoice_paid'), t('invoice_unpaid'), t('invoice_partial')],
+  'device-statuses': [t('chart_under_repair'), 'Repaired', 'Delivered', t('chart_completed')],
+  'service-statuses': ['Scheduled', 'Ongoing', 'Done', 'Cancelled'],
 };
 
 async function getCustomList(listKey) {
@@ -4208,7 +4569,7 @@ function enhanceSelect(selectId, listKey, options = {}) {
   editBtn.type = 'button';
   editBtn.className = 'list-edit-btn';
   editBtn.innerHTML = '<i class="bx bx-edit-alt"></i>';
-  editBtn.title = 'تعديل القائمة';
+  editBtn.title = t('cl_edit_title');
   editBtn.onclick = (e) => { e.stopPropagation(); openListEditor(selectId, listKey, options); };
   selectRow.appendChild(editBtn);
   
@@ -4223,10 +4584,10 @@ function enhanceSelect(selectId, listKey, options = {}) {
   otherDiv.style.cssText = 'display:none;margin-top:8px;';
   otherDiv.innerHTML = `
     <div style="display:flex;gap:6px;align-items:center;">
-      <input type="text" class="other-text-input" placeholder="اكتب هنا..." style="flex:1;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;">
+      <input type="text" class="other-text-input" placeholder="${t('cl_type_here')}" style="flex:1;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;">
       <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted);white-space:nowrap;cursor:pointer;">
         <input type="checkbox" class="other-save-cb" checked style="accent-color:var(--primary);">
-        <span>احفظ</span>
+        <span>${t('cl_save_label')}</span>
       </label>
       <button type="button" class="other-add-btn" style="padding:6px 12px;background:var(--primary);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;">✓</button>
     </div>`;
@@ -4265,14 +4626,14 @@ function enhanceSelect(selectId, listKey, options = {}) {
 
 // Shared: build bottom sheet with search
 function _buildSelectSheet(overlay, title, optionsData, onSelect, showSearch) {
-  const searchHtml = showSearch ? `<div style="padding:8px 16px 4px"><input type="text" class="cs-search" placeholder="بحث..." style="width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;outline:none" autofocus></div>` : '';
+  const searchHtml = showSearch ? `<div style="padding:8px 16px 4px"><input type="text" class="cs-search" placeholder="${t('cl_search')}" style="width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;outline:none" autofocus></div>` : '';
   
   const optionsHtml = optionsData.map(o => o.html).join('');
   
   overlay.innerHTML = `
     <div class="custom-select-sheet">
       <div class="cs-handle"></div>
-      <div class="cs-title">${title || 'اختر'}</div>
+      <div class="cs-title">${title || t('cl_choose')}</div>
       ${searchHtml}
       <div class="cs-options">${optionsHtml}</div>
     </div>`;
@@ -4316,7 +4677,7 @@ function openCustomSelect(select, listKey, options, title) {
   
   const optionsData = Array.from(select.options).map((opt, i) => {
     if (opt.value === '__other__') {
-      return { html: `<div class="cs-divider"></div><div class="cs-option cs-other" data-value="__other__">أخرى...</div>` };
+      return { html: `<div class="cs-divider"></div><div class="cs-option cs-other" data-value="__other__">${t('cl_other')}</div>` };
     }
     const selected = opt.value === select.value ? ' selected' : '';
     const divider = i > 0 && select.options[i-1].value !== '' ? '<div class="cs-divider"></div>' : '';
@@ -4396,7 +4757,7 @@ async function populateSelect(selectId, listKey, options = {}) {
   if (includeEmpty !== false) {
     const empty = document.createElement('option');
     empty.value = '';
-    empty.textContent = emptyLabel || 'اختر...';
+    empty.textContent = emptyLabel || t('cl_choose');
     select.appendChild(empty);
   }
   
@@ -4409,7 +4770,7 @@ async function populateSelect(selectId, listKey, options = {}) {
   
   const otherOpt = document.createElement('option');
   otherOpt.value = '__other__';
-  otherOpt.textContent = '➕ أخرى...';
+  otherOpt.textContent = t('cl_other');
   select.appendChild(otherOpt);
   
   if (currentVal) select.value = currentVal;
@@ -4575,7 +4936,7 @@ function listEditorAdd() {
 
 function listEditorRemove(idx) {
   const item = _listEditorState._items[idx];
-  if (!confirm(`حذف "${item}"؟`)) return;
+  if (!confirm(t('confirm_delete_item').replace('{item}', item))) return;
   _listEditorState._items.splice(idx, 1);
   renderListEditorItemsFromState();
 }
@@ -4673,7 +5034,7 @@ function enhanceAllSelects() {
     if (select.dataset.enhanced) return;
     select.dataset.enhanced = '1';
     const label = select.closest('.form-group')?.querySelector('label');
-    const labelText = label ? label.textContent.replace('*','').trim() : 'اختر';
+    const labelText = label ? label.textContent.replace('*','').trim() : t('cl_choose');
     select.addEventListener('click', (e) => { e.preventDefault(); openStaticSelect(select, labelText); });
     select.addEventListener('mousedown', (e) => { e.preventDefault(); });
     select.addEventListener('focus', (e) => { e.preventDefault(); select.blur(); });
@@ -4686,7 +5047,7 @@ document.addEventListener('click', (e) => {
   if (select && !select.dataset.enhanced) {
     e.preventDefault();
     const label = select.closest('.form-group')?.querySelector('label');
-    const labelText = label ? label.textContent.replace('*','').trim() : 'اختر';
+    const labelText = label ? label.textContent.replace('*','').trim() : t('cl_choose');
     select.dataset.enhanced = '1';
     select.addEventListener('click', (ev) => { ev.preventDefault(); openStaticSelect(select, labelText); });
     select.addEventListener('mousedown', (ev) => { ev.preventDefault(); });
@@ -4757,9 +5118,9 @@ async function importAllData(data) {
  */
 
 const ROLES = {
-  admin: { label: 'مدير', level: 3 },
-  manager: { label: 'مشرف', level: 2 },
-  staff: { label: 'موظف', level: 1 },
+  admin: { label: t('role_admin'), level: 3 },
+  manager: { label: t('role_manager'), level: 2 },
+  staff: { label: t('role_staff'), level: 1 },
 };
 
 // Permissions per role
@@ -4798,7 +5159,7 @@ async function ensureDefaultAdmin() {
     await dbAdd('users', {
       username: 'admin',
       password: hashPassword('admin'), // Simple hash for demo
-      name: 'المدير',
+      name: t('admin_default_name'),
       role: 'admin',
       active: true,
     });
@@ -4826,17 +5187,17 @@ async function handleLogin(e) {
   const user = users.find(u => u.username === username);
   
   if (!user) {
-    errorEl.textContent = 'اسم المستخدم غير موجود';
+    errorEl.textContent = t('toast_username_not_found');
     return false;
   }
   
   if (user.password !== hashPassword(password)) {
-    errorEl.textContent = 'كلمة المرور غير صحيحة';
+    errorEl.textContent = t('toast_wrong_password');
     return false;
   }
   
   if (!user.active) {
-    errorEl.textContent = 'الحساب معطل';
+    errorEl.textContent = t('toast_account_disabled');
     return false;
   }
   
@@ -4990,14 +5351,14 @@ function updateSyncStatus(status) {
   if (el) {
     el.className = 'sync-badge connected';
     el.innerHTML = "<i class='bx bx-cloud-upload'></i>";
-    el.title = 'متصل — Supabase';
+    el.title = t('sync_connected_sb');
   }
   const indicator = document.getElementById('drive-status-indicator');
   const text = document.getElementById('drive-status-text');
   const overviewStatus = document.getElementById('settings-drive-status');
   if (indicator) indicator.style.background = 'var(--success)';
-  if (text) text.textContent = 'متصل ✅';
-  if (overviewStatus) overviewStatus.textContent = 'متصل ✅';
+  if (text) text.textContent = t('connected_status');
+  if (overviewStatus) overviewStatus.textContent = t('connected_status');
 }
 
 // Background refresh from server every 30s
@@ -5026,7 +5387,7 @@ function importFromFile() {
   input.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (!confirm('سيتم استبدال كل البيانات الحالية. متابعة؟')) return;
+    if (!confirm(t('confirm_replace_all'))) return;
     try {
       const text = await file.text();
       const data = JSON.parse(text);
@@ -5046,15 +5407,15 @@ function saveDriveClientId() {}
  */
 
 const PAGE_TITLES = {
-  dashboard: 'لوحة التحكم',
-  inventory: 'المخزون',
-  categories: 'التصنيفات',
-  sales: 'البيع',
-  purchases: 'المشتريات',
-  maintenance: 'ورشة الصيانة',
-  accounting: 'المحاسبة',
-  reports: 'التقارير',
-  settings: 'الإعدادات',
+  dashboard: t('page_dashboard'),
+  inventory: t('page_inventory'),
+  categories: t('page_categories'),
+  sales: t('page_sales'),
+  purchases: t('page_purchases'),
+  maintenance: t('page_maintenance'),
+  accounting: t('page_accounting'),
+  reports: t('page_reports'),
+  settings: t('page_settings'),
 };
 
 // Navigation with hash routing
@@ -5190,7 +5551,7 @@ function getCurrency() {
     const req = store.get('company');
     // Synchronous fallback - use cached value
   } catch(e) {}
-  return window._cachedCurrency || 'ج.م';
+  return window._cachedCurrency || t('currency');
 }
 
 // Load currency setting (called after DB init)
@@ -5205,7 +5566,7 @@ async function loadCurrencySymbol() {
 
 // Format currency
 function formatMoney(amount) {
-  const cur = window._cachedCurrency || 'ج.م';
+  const cur = window._cachedCurrency || t('currency');
   const n = parseFloat(amount);
   const lang = currentLang || 'ar';
   if (isNaN(n) || amount === undefined || amount === null) return (lang === 'ar' ? '٠' : '0') + ' ' + cur;
@@ -5262,7 +5623,7 @@ async function openBarcodeScanner(context) {
   overlay.className = 'scanner-overlay';
   overlay.id = 'barcode-scanner-overlay';
   overlay.innerHTML = `
-    <p style="color:#fff;font-size:16px;margin-bottom:12px">وجّه الكاميرا نحو الباركود</p>
+    <p style="color:#fff;font-size:16px;margin-bottom:12px">${t('scanner_aim')}</p>
     <video id="scanner-video" autoplay playsinline></video>
     <div class="scanner-line"></div>
     <button class="scanner-close" onclick="closeBarcodeScanner()">إغلاق</button>
@@ -5328,7 +5689,7 @@ function closeBarcodeScanner() {
 
 async function handleBarcodeResult(code) {
   closeBarcodeScanner();
-  toast('تم المسح: ' + code, 'info');
+  toast(t('toast_scanned') + ': ' + code, 'info');
   
   const products = await dbGetAll('products');
   const found = products.find(p => p.barcode === code || p.sku === code);
@@ -5337,7 +5698,7 @@ async function handleBarcodeResult(code) {
     if (found) {
       viewProduct(found.id);
     } else {
-      if (confirm(`لم يتم العثور على منتج بباركود: ${code}\nهل تريد إضافة منتج جديد؟`)) {
+      if (confirm(t('confirm_product_not_found_add').replace('{code}', code))) {
         openAddProduct();
         document.getElementById('product-barcode').value = code;
       }
@@ -5355,7 +5716,7 @@ async function handleBarcodeResult(code) {
       }
       renderInvoiceItems();
       updateInvoiceTotals();
-      toast(`تمت إضافة: ${found.name}`, 'success');
+      toast(t('toast_added_item') + ': ' + found.name, 'success');
     } else {
       toast(t('toast_barcode_not_found'), 'warning');
     }
@@ -5475,8 +5836,8 @@ function renderActivityTab(tab) {
     : logs.filter(l => !loginActions.includes(l.action)).slice(0, 15);
   
   if (filtered.length > 0) {
-    const iconMap = { 'stock_in': 'bx-plus-circle', 'stock_out': 'bx-minus-circle', 'login': 'bx-log-in', 'logout': 'bx-log-out', 'invoice_sale': 'bx-receipt', 'invoice_purchase': 'bx-cart-download', 'device_add': 'bx-wrench', 'device_edit': 'bx-edit', 'device_delete': 'bx-trash', 'product_add': 'bx-package', 'product_edit': 'bx-edit' };
-    const colorMap = { 'stock_in': 'color:var(--success)', 'stock_out': 'color:var(--danger)', 'login': 'color:var(--primary)', 'logout': 'color:var(--text-muted)', 'invoice_sale': 'color:var(--success)', 'invoice_purchase': 'color:var(--warning)', 'device_add': 'color:var(--accent)', 'device_delete': 'color:var(--danger)' };
+    const iconMap = { 'stock_in': 'bx-plus-circle', 'stock_out': 'bx-minus-circle', 'login': 'bx-log-in', 'logout': 'bx-log-out', 'invoice_sale': 'bx-receipt', 'invoice_purchase': 'bx-cart-download', 'device_add': 'bx-wrench', 'device_edit': 'bx-edit', 'device_delete': 'bx-trash', 'product_add': 'bx-package', 'product_edit': 'bx-edit', 'expense_add': 'bx-wallet', 'expense_edit': 'bx-edit', 'expense_delete': 'bx-trash', 'invoice_edit': 'bx-edit' };
+    const colorMap = { 'stock_in': 'color:var(--success)', 'stock_out': 'color:var(--danger)', 'login': 'color:var(--primary)', 'logout': 'color:var(--text-muted)', 'invoice_sale': 'color:var(--success)', 'invoice_purchase': 'color:var(--warning)', 'device_add': 'color:var(--accent)', 'device_delete': 'color:var(--danger)', 'expense_add': 'color:var(--warning)', 'expense_edit': 'color:var(--warning)', 'expense_delete': 'color:var(--danger)', 'invoice_edit': 'color:var(--accent)' };
     
     recentList.innerHTML = filtered.map(log => {
       const icon = iconMap[log.action] || 'bx-history';
@@ -5813,12 +6174,12 @@ function renderMaintenanceDonut(devices) {
   const total = Object.values(counts).reduce((s, v) => s + v, 0);
   
   if (total === 0) {
-    container.innerHTML = '<p class="empty-state" style="padding:20px">لا توجد أجهزة</p>';
+    container.innerHTML = '<p class="empty-state" style="padding:20px">' + t('chart_no_devices') + '</p>';
     return;
   }
   
   const colors = { under_repair: '#f59e0b', done_not_delivered: '#6c3ce9', delivered_not_paid: '#ef4444', completed: '#22c55e' };
-  const labels = { under_repair: 'تحت الصيانة', done_not_delivered: 'خلصت', delivered_not_paid: 'اتسلمت', completed: 'مكتملة' };
+  const labels = { under_repair: t('chart_under_repair'), done_not_delivered: t('chart_done'), delivered_not_paid: t('chart_delivered'), completed: t('chart_completed') };
   
   // Build conic-gradient
   let gradParts = [], angle = 0;
@@ -5850,7 +6211,7 @@ function renderTopProducts(invoices, products) {
   });
   
   const sorted = Object.entries(productSales).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  if (sorted.length === 0) { container.innerHTML = '<p class="empty-state" style="padding:12px">لا توجد بيانات</p>'; return; }
+  if (sorted.length === 0) { container.innerHTML = '<p class="empty-state" style="padding:12px">' + t('chart_no_data') + '</p>'; return; }
   
   const maxQty = sorted[0][1] || 1;
   container.innerHTML = sorted.map(([pid, qty]) => {
@@ -5891,7 +6252,7 @@ function renderRecentInvoices(invoices) {
   const container = document.getElementById('dash-recent-invoices');
   const recent = invoices.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
   
-  if (recent.length === 0) { container.innerHTML = '<p class="empty-state" style="padding:12px">لا توجد فواتير</p>'; return; }
+  if (recent.length === 0) { container.innerHTML = '<p class="empty-state" style="padding:12px">' + t('chart_no_invoices') + '</p>'; return; }
   
   container.innerHTML = recent.map(inv => {
     const isSale = inv.type === 'sale';
@@ -6039,11 +6400,11 @@ async function loadSettingsOverview() {
   // Drive status
   const isConnected = true;
   const driveEl = document.getElementById('settings-drive-status');
-  if (driveEl) driveEl.textContent = isConnected ? 'متصل ✅' : 'غير متصل';
+  if (driveEl) driveEl.textContent = isConnected ? t('connected_status') : t('disconnected_status');
   const driveIndicator = document.getElementById('drive-status-indicator');
   const driveText = document.getElementById('drive-status-text');
   if (driveIndicator) driveIndicator.style.background = isConnected ? 'var(--success)' : 'var(--text-muted)';
-  if (driveText) driveText.textContent = isConnected ? 'متصل ✅' : 'غير متصل';
+  if (driveText) driveText.textContent = isConnected ? t('connected_status') : t('disconnected_status');
   
   // Team count
   const users = await dbGetAll('users');
@@ -6388,7 +6749,7 @@ function populateCategoryFilters() {
   // Parent category dropdown in categories modal
   const parentEl = document.getElementById('parent-category');
   const mainCats = allCategories.filter(c => !c.parentId);
-  parentEl.innerHTML = '<option value="">تصنيف رئيسي</option>' + 
+  parentEl.innerHTML = '<option value="" data-i18n="root_category">تصنيف رئيسي</option>' + 
     mainCats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
 }
 
@@ -6463,7 +6824,7 @@ async function addCategory() {
 }
 
 async function deleteCategory(id) {
-  if (!confirm('حذف هذا التصنيف؟')) return;
+  if (!confirm(t('confirm_delete_category'))) return;
   
   // Check if has products
   const hasProducts = allProducts.some(p => p.category == id);
@@ -6488,7 +6849,7 @@ async function deleteCategory(id) {
 
 // ============ ADD/EDIT PRODUCT ============
 function openAddProduct() {
-  document.getElementById('modal-product-title').textContent = 'إضافة صنف جديد';
+  document.getElementById('modal-product-title').textContent = t('modal_add_product');
   document.getElementById('product-form').reset();
   document.getElementById('product-id').value = '';
   document.getElementById('product-image-preview').innerHTML = '';
@@ -6500,7 +6861,7 @@ async function editProduct(id) {
   const p = await dbGet('products', id);
   if (!p) return;
   
-  document.getElementById('modal-product-title').textContent = 'تعديل الصنف';
+  document.getElementById('modal-product-title').textContent = t('modal_edit_product');
   document.getElementById('product-id').value = p.id;
   document.getElementById('product-sku').value = p.sku || '';
   document.getElementById('product-name').value = p.name;
@@ -6583,7 +6944,7 @@ async function saveProduct(e) {
 
 async function deleteProduct(id) {
   const p = await dbGet('products', id);
-  if (!confirm(`حذف الصنف "${p?.name}"؟`)) return;
+  if (!confirm(t('confirm_delete_product').replace('{name}', p?.name))) return;
   
   // Instant hide
   allProducts = allProducts.filter(pr => pr.id !== id);
@@ -6683,7 +7044,7 @@ async function viewProduct(id) {
 function openStockIn(id) {
   const p = allProducts.find(pr => pr.id === id);
   if (!p) return;
-  document.getElementById('modal-stock-title').textContent = 'إضافة للمخزون';
+  document.getElementById('modal-stock-title').textContent = t('modal_stock_in');
   document.getElementById('stock-product-id').value = id;
   document.getElementById('stock-direction').value = 'in';
   document.getElementById('stock-product-name').value = p.name;
@@ -6695,7 +7056,7 @@ function openStockIn(id) {
 function openStockOut(id) {
   const p = allProducts.find(pr => pr.id === id);
   if (!p) return;
-  document.getElementById('modal-stock-title').textContent = 'صرف من المخزون';
+  document.getElementById('modal-stock-title').textContent = t('modal_stock_out');
   document.getElementById('stock-product-id').value = id;
   document.getElementById('stock-direction').value = 'out';
   document.getElementById('stock-product-name').value = `${p.name} (متاح: ${p.quantity})`;
@@ -6718,7 +7079,7 @@ async function saveStockMovement(e) {
   if (!product) return toast(t('toast_product_missing'), 'error');
   
   if (direction === 'out' && qty > product.quantity) {
-    return toast(`الكمية المتاحة ${product.quantity} فقط`, 'error');
+    return toast(t('available_qty_only').replace('{qty}', product.quantity), 'error');
   }
   
   // Update product quantity
@@ -6740,7 +7101,7 @@ async function saveStockMovement(e) {
   await logActivity('stock_' + direction, `${actionLabel} ${qty} × ${product.name}`);
   
   closeModal('modal-stock');
-  toast(`تم ${actionLabel} ${qty} وحدة`);
+  toast(t('toast_stock_done').replace('{action}', actionLabel).replace('{qty}', qty));
   await loadInventory();
 }
 
@@ -6959,7 +7320,7 @@ async function exportProducts() {
 
 async function importProducts(input) {
   if (!input.files || !input.files[0]) return;
-  if (!confirm('سيتم إضافة الأصناف من الملف. متابعة؟')) { input.value = ''; return; }
+  if (!confirm(t('confirm_import_products'))) { input.value = ''; return; }
   
   const file = input.files[0];
   const reader = new FileReader();
@@ -6993,7 +7354,7 @@ async function importProducts(input) {
       }
       
       await logActivity('import_products', `استيراد ${count} صنف`);
-      toast(`تم استيراد ${count} صنف`);
+      toast(t('toast_imported_count').replace('{count}', count));
       closeModal('modal-import-export');
       await loadInventory();
     } catch (err) {
@@ -7161,15 +7522,15 @@ async function deleteCategoryPage(id) {
   if (hasProducts) return toast(t('toast_cant_delete_category_items'), 'error');
   const hasChildren = allCategories.some(c => c.parentId === id);
   if (hasChildren) {
-    if (!confirm(`التصنيف "${cat.name}" له تصنيفات فرعية. حذف الكل؟`)) return;
+    if (!confirm(t('confirm_delete_cat_children').replace('{name}', cat.name))) return;
     // Delete children first
     const children = allCategories.filter(c => c.parentId === id);
     for (const child of children) {
-      if (allProducts.some(p => p.category == child.id)) return toast(`لا يمكن حذف "${child.name}" لأنه يحتوي على أصناف`, 'error');
+      if (allProducts.some(p => p.category == child.id)) return toast(t('cant_delete_has_products').replace('{name}', child.name), 'error');
       await dbDelete('categories', child.id);
     }
   } else {
-    if (!confirm(`حذف التصنيف "${cat.name}"؟`)) return;
+    if (!confirm(t('confirm_delete_cat').replace('{name}', cat.name))) return;
   }
   await dbDelete('categories', id);
   await logActivity('delete_category', `حذف تصنيف: ${cat.name}`);
@@ -7258,7 +7619,7 @@ function renderSuppliersTable() {
 
 // ============ CLIENT CRUD ============
 function openAddClient() {
-  document.getElementById('modal-client-title').textContent = 'إضافة عميل جديد';
+  document.getElementById('modal-client-title').textContent = t('modal_add_client');
   document.getElementById('client-form').reset();
   document.getElementById('client-id').value = '';
   document.getElementById('client-code').value = generateClientCode();
@@ -7268,7 +7629,7 @@ function openAddClient() {
 async function editClient(id) {
   const c = await dbGet('clients', id);
   if (!c) return;
-  document.getElementById('modal-client-title').textContent = 'تعديل بيانات العميل';
+  document.getElementById('modal-client-title').textContent = t('modal_edit_client');
   document.getElementById('client-id').value = c.id;
   document.getElementById('client-code').value = c.code;
   document.getElementById('client-name').value = c.name;
@@ -7301,10 +7662,10 @@ async function saveClient(e) {
     data.id = parseInt(id);
     data.balance = existing?.balance || 0;
     await dbPut('clients', data);
-    toast('تم تعديل بيانات العميل');
+    toast(t('toast_client_updated'));
   } else {
     await dbAdd('clients', data);
-    toast('تم إضافة العميل');
+    toast(t('toast_client_added'));
   }
   
   closeModal('modal-client');
@@ -7314,10 +7675,10 @@ async function saveClient(e) {
 
 async function deleteClient(id) {
   const c = allClients.find(x => x.id === id);
-  if (!confirm(`حذف العميل "${c?.name}"؟`)) return;
+  if (!confirm(t('confirm_delete_client').replace('{name}', c?.name))) return;
   allClients = allClients.filter(x => x.id !== id);
   renderClientsTable();
-  toast('تم حذف العميل');
+  toast(t('toast_client_deleted'));
   try { await dbDelete('clients', id); } catch(e) {}
 }
 
@@ -7363,7 +7724,7 @@ function generateClientCode() {
 
 // ============ SUPPLIER CRUD ============
 function openAddSupplier() {
-  document.getElementById('modal-supplier-title').textContent = 'إضافة مورد جديد';
+  document.getElementById('modal-supplier-title').textContent = t('modal_add_supplier');
   document.getElementById('supplier-form').reset();
   document.getElementById('supplier-id').value = '';
   document.getElementById('supplier-code').value = 'SP-' + String(Math.floor(Math.random() * 9999)).padStart(4, '0');
@@ -7373,7 +7734,7 @@ function openAddSupplier() {
 async function editSupplier(id) {
   const s = await dbGet('suppliers', id);
   if (!s) return;
-  document.getElementById('modal-supplier-title').textContent = 'تعديل بيانات المورد';
+  document.getElementById('modal-supplier-title').textContent = t('modal_edit_supplier');
   document.getElementById('supplier-id').value = s.id;
   document.getElementById('supplier-code').value = s.code;
   document.getElementById('supplier-name').value = s.name;
@@ -7400,10 +7761,10 @@ async function saveSupplier(e) {
     data.id = parseInt(id);
     data.balance = existing?.balance || 0;
     await dbPut('suppliers', data);
-    toast('تم تعديل بيانات المورد');
+    toast(t('toast_supplier_updated'));
   } else {
     await dbAdd('suppliers', data);
-    toast('تم إضافة المورد');
+    toast(t('toast_supplier_added'));
   }
   
   closeModal('modal-supplier');
@@ -7413,10 +7774,10 @@ async function saveSupplier(e) {
 
 async function deleteSupplier(id) {
   const s = allSuppliers.find(x => x.id === id);
-  if (!confirm(`حذف المورد "${s?.name}"؟`)) return;
+  if (!confirm(t('confirm_delete_supplier').replace('{name}', s?.name))) return;
   allSuppliers = allSuppliers.filter(x => x.id !== id);
   renderSuppliersTable();
-  toast('تم حذف المورد');
+  toast(t('toast_supplier_deleted'));
   try { await dbDelete('suppliers', id); } catch(e) {}
 }
 
@@ -7557,9 +7918,9 @@ function renderPurchaseInvoices() {
 
 function getPaymentBadge(status) {
   switch(status) {
-    case 'paid': return '<span class="badge badge-new">مدفوعة</span>';
-    case 'partial': return '<span class="badge badge-used">جزئي</span>';
-    case 'unpaid': return '<span class="badge badge-low">غير مدفوعة</span>';
+    case 'paid': return '<span class="badge badge-new">' + t('badge_paid') + '</span>';
+    case 'partial': return '<span class="badge badge-used">' + t('badge_partial') + '</span>';
+    case 'unpaid': return '<span class="badge badge-low">' + t('badge_unpaid') + '</span>';
     default: return '<span class="badge">' + (status||'-') + '</span>';
   }
 }
@@ -7568,7 +7929,7 @@ function getPaymentBadge(status) {
 function openNewSaleInvoice() {
   editingInvoiceType = 'sale';
   currentInvoiceItems = [];
-  document.getElementById('modal-invoice-title').textContent = 'فاتورة بيع جديدة';
+  document.getElementById('modal-invoice-title').textContent = t('new_sale_invoice');
   document.getElementById('invoice-form').reset();
   document.getElementById('invoice-id').value = '';
   document.getElementById('invoice-type').value = 'sale';
@@ -7581,7 +7942,7 @@ function openNewSaleInvoice() {
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
     '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
   
-  document.getElementById('invoice-party-label').textContent = 'العميل';
+  document.getElementById('invoice-party-label').textContent = t('inv_client_label');
   
   // Clear photos
   document.getElementById('invoice-photos').value = '';
@@ -7596,7 +7957,7 @@ function openNewSaleInvoice() {
 function openNewPurchaseInvoice() {
   editingInvoiceType = 'purchase';
   currentInvoiceItems = [];
-  document.getElementById('modal-invoice-title').textContent = 'فاتورة شراء جديدة';
+  document.getElementById('modal-invoice-title').textContent = t('new_purchase_invoice');
   document.getElementById('invoice-form').reset();
   document.getElementById('invoice-id').value = '';
   document.getElementById('invoice-type').value = 'purchase';
@@ -7608,7 +7969,7 @@ function openNewPurchaseInvoice() {
     allSuppliers.map(s => `<option value="${s.id}">${s.name} (${s.code})</option>`).join('') +
     '<option value="__other__">+ أخرى (إضافة مورد جديد)</option>';
   
-  document.getElementById('invoice-party-label').textContent = 'المورد';
+  document.getElementById('invoice-party-label').textContent = t('inv_supplier_label');
   
   // Clear photos
   document.getElementById('invoice-photos').value = '';
@@ -7644,11 +8005,11 @@ async function editInvoice(id) {
   if (inv.type === 'sale') {
     sel.innerHTML = '<option value="" data-i18n="select_client">اختر العميل</option>' + allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('') + '<option value="__other__">+ أخرى</option>';
     sel.value = inv.clientId || '';
-    document.getElementById('invoice-party-label').textContent = 'العميل';
+    document.getElementById('invoice-party-label').textContent = t('inv_client_label');
   } else {
     sel.innerHTML = '<option value="">اختر المورد</option>' + allSuppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('') + '<option value="__other__">+ أخرى</option>';
     sel.value = inv.supplierId || '';
-    document.getElementById('invoice-party-label').textContent = 'المورد';
+    document.getElementById('invoice-party-label').textContent = t('inv_supplier_label');
   }
   
   renderInvoiceItems();
@@ -7756,7 +8117,7 @@ function showInlineProductAdd(idx) {
 
 async function saveInlineProduct(idx) {
   const name = document.getElementById(`inline-prod-name-${idx}`).value.trim();
-  if (!name) { toast('أدخل اسم الصنف', 'error'); return; }
+  if (!name) { toast(t('toast_enter_product_name'), 'error'); return; }
   
   const sellPrice = parseFloat(document.getElementById(`inline-prod-price-${idx}`).value) || 0;
   const buyPrice = parseFloat(document.getElementById(`inline-prod-cost-${idx}`).value) || 0;
@@ -7780,7 +8141,7 @@ async function saveInlineProduct(idx) {
   currentInvoiceItems[idx].unitPrice = editingInvoiceType === 'sale' ? sellPrice : buyPrice;
   currentInvoiceItems[idx].total = currentInvoiceItems[idx].quantity * currentInvoiceItems[idx].unitPrice;
   
-  toast(`تم إضافة "${name}" ✅`);
+  toast(t('toast_added_item') + ': ' + name + ' ✅');
   renderInvoiceItems();
   updateInvoiceTotals();
 }
@@ -7820,8 +8181,8 @@ async function saveInvoice(e) {
   const paidAmount = parseFloat(document.getElementById('invoice-paid-amount').value) || 0;
   const notes = document.getElementById('invoice-notes').value.trim();
   
-  if (currentInvoiceItems.length === 0) return toast('أضف صنف واحد على الأقل', 'warning');
-  if (currentInvoiceItems.some(i => !i.productId)) return toast('اختر المنتج لكل الأصناف', 'warning');
+  if (currentInvoiceItems.length === 0) return toast(t('toast_add_one_item'), 'warning');
+  if (currentInvoiceItems.some(i => !i.productId)) return toast(t('toast_select_all_products'), 'warning');
   
   const total = currentInvoiceItems.reduce((sum, i) => sum + i.total, 0);
   
@@ -7881,9 +8242,11 @@ async function saveInvoice(e) {
     data.createdBy = oldInv?.createdBy || currentUser?.username || '';
     data.updatedBy = currentUser?.username || '';
     await dbPut('invoices', data);
+    await logActivity('invoice_edit', `تعديل فاتورة ${data.type === 'sale' ? 'بيع' : 'شراء'} #${data.id} | ${formatMoney(data.total)}`);
   } else {
     data.createdBy = currentUser?.username || '';
     await dbAdd('invoices', data);
+    await logActivity(data.type === 'sale' ? 'invoice_sale' : 'invoice_purchase', `فاتورة ${data.type === 'sale' ? 'بيع' : 'شراء'} جديدة | ${formatMoney(data.total)}`);
   }
   
   // Update stock
@@ -7893,7 +8256,7 @@ async function saveInvoice(e) {
   await updateBalances();
   
   closeModal('modal-invoice');
-  toast(type === 'sale' ? 'تم حفظ فاتورة البيع' : 'تم حفظ فاتورة الشراء');
+  toast(type === 'sale' ? t('toast_sale_saved') : t('toast_purchase_saved'));
   
   if (type === 'sale') { await loadSalesPage(); renderSalesInvoices(); }
   else { await loadPurchasesPage(); renderPurchaseInvoices(); }
@@ -7980,11 +8343,11 @@ function updateBulkBar(section) {
 }
 
 async function bulkDeleteInvoices(type) {
-  if (!isAdmin()) { toast('مسح الفواتير متاح للمدير فقط', 'error'); return; }
+  if (!isAdmin()) { toast(t('admin_only_delete_invoices'), 'error'); return; }
   const section = type === 'sale' ? 'sales' : 'purchases';
   const checked = document.querySelectorAll(`#${section}-tbody .row-select:checked`);
   if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} فاتورة؟ سيتم إرجاع المخزون. لا يمكن التراجع!`)) return;
+  if (!confirm(t('confirm_delete_invoices').replace('{count}', checked.length))) return;
   
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   
@@ -7992,7 +8355,7 @@ async function bulkDeleteInvoices(type) {
   allInvoices = allInvoices.filter(inv => !ids.includes(inv.id));
   if (type === 'sale') renderSalesInvoices();
   else renderPurchaseInvoices();
-  toast(`تم حذف ${ids.length} فاتورة`);
+  toast(t('toast_deleted_invoices').replace('{count}', ids.length));
   
   // Background: reverse stock + delete + sync
   for (const id of ids) {
@@ -8010,105 +8373,105 @@ async function bulkDeleteInvoices(type) {
 async function bulkDeleteClients() {
   const checked = document.querySelectorAll('#clients-tbody .row-select:checked');
   if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} عميل؟`)) return;
+  if (!confirm(t('confirm_delete_clients').replace('{count}', checked.length))) return;
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   allClients = allClients.filter(c => !ids.includes(c.id));
   renderClientsTable();
-  toast(`تم حذف ${checked.length} عميل`);
+  toast(t('toast_deleted_clients').replace('{count}', checked.length));
   for (const id of ids) { try { await dbDelete('clients', id); } catch(e) {} }
 }
 
 async function bulkDeleteSuppliers() {
   const checked = document.querySelectorAll('#suppliers-tbody .row-select:checked');
   if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} مورد؟`)) return;
+  if (!confirm(t('confirm_delete_suppliers').replace('{count}', checked.length))) return;
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   allSuppliers = allSuppliers.filter(s => !ids.includes(s.id));
   renderSuppliersTable();
-  toast(`تم حذف ${checked.length} مورد`);
+  toast(t('toast_deleted_suppliers').replace('{count}', checked.length));
   for (const id of ids) { try { await dbDelete('suppliers', id); } catch(e) {} }
 }
 
 async function bulkDeleteMaintServices() {
   const checked = document.querySelectorAll('#maint-services-tbody .row-select:checked');
   if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} خدمة؟`)) return;
+  if (!confirm(t('confirm_delete_services').replace('{count}', checked.length))) return;
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   _allServicesLoaded = _allServicesLoaded.filter(s => !ids.includes(s.id));
   renderServicesInAllPages();
-  toast(`تم حذف ${checked.length} خدمة`);
+  toast(t('toast_deleted_services').replace('{count}', checked.length));
   for (const id of ids) { try { await dbDelete('services', id); } catch(e) {} }
 }
 
 async function bulkDeleteServices() {
   const checked = document.querySelectorAll('#services-tbody .row-select:checked');
   if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} خدمة؟`)) return;
+  if (!confirm(t('confirm_delete_services').replace('{count}', checked.length))) return;
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   _allServicesLoaded = _allServicesLoaded.filter(s => !ids.includes(s.id));
   renderServicesInAllPages();
-  toast(`تم حذف ${checked.length} خدمة`);
+  toast(t('toast_deleted_services').replace('{count}', checked.length));
   for (const id of ids) { try { await dbDelete('services', id); } catch(e) {} }
 }
 
 async function bulkDeleteDevices() {
   const checked = document.querySelectorAll('#devices-tbody .row-select:checked');
   if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} جهاز؟`)) return;
+  if (!confirm(t('confirm_delete_devices').replace('{count}', checked.length))) return;
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   allDevices = allDevices.filter(d => !ids.includes(d.id));
   renderDevicesTable();
   updateMaintenanceStats();
-  toast(`تم حذف ${checked.length} جهاز`);
+  toast(t('toast_deleted_devices').replace('{count}', checked.length));
   for (const id of ids) { try { await dbDelete('devices', id); } catch(e) {} }
 }
 
 async function bulkDeleteExpenses(section) {
   const checked = document.querySelectorAll(`#${section}-tbody .row-select:checked`);
   if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} مصروف؟`)) return;
+  if (!confirm(t('confirm_delete_expenses').replace('{count}', checked.length))) return;
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   allExpenses = allExpenses.filter(e => !ids.includes(e.id));
   renderExpensesTable();
-  toast(`تم حذف ${checked.length} مصروف`);
+  toast(t('toast_deleted_expenses').replace('{count}', checked.length));
   for (const id of ids) { try { await dbDelete('expenses', id); } catch(e) {} }
 }
 
 async function bulkDeleteEngineers() {
   const checked = document.querySelectorAll('#engineers-tbody .row-select:checked');
   if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} مهندس؟`)) return;
+  if (!confirm(t('confirm_delete_engineers').replace('{count}', checked.length))) return;
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   allEngineers = allEngineers.filter(e => !ids.includes(e.id));
   renderEngineersTable();
-  toast(`تم حذف ${checked.length} مهندس`);
+  toast(t('toast_deleted_engineers').replace('{count}', checked.length));
   for (const id of ids) { try { await dbDelete('engineers', id); } catch(e) {} }
 }
 
 async function bulkDeleteProducts() {
-  if (!isAdmin()) { toast('مسح الأصناف متاح للمدير فقط', 'error'); return; }
+  if (!isAdmin()) { toast(t('admin_only_delete_products'), 'error'); return; }
   const checked = document.querySelectorAll('#products-tbody .row-select:checked');
   if (checked.length === 0) return;
-  if (!confirm(`حذف ${checked.length} صنف؟ لا يمكن التراجع!`)) return;
+  if (!confirm(t('confirm_delete_products').replace('{count}', checked.length))) return;
   
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   for (const id of ids) {
     try { await dbDelete('products', id); } catch(e) {}
   }
-  toast(`تم حذف ${ids.length} صنف`);
+  toast(t('toast_deleted_products').replace('{count}', ids.length));
   await loadInventory();
 }
 
 async function deleteInvoice(id) {
-  if (!isAdmin()) { toast('مسح الفواتير متاح للمدير فقط', 'error'); return; }
+  if (!isAdmin()) { toast(t('admin_only_delete_invoices'), 'error'); return; }
   const inv = await dbGet('invoices', id);
-  if (!confirm(`حذف الفاتورة ${inv?.number}؟`)) return;
+  if (!confirm(t('confirm_delete_invoice').replace('{num}', inv?.number))) return;
   
   // Instant hide from UI
   allInvoices = allInvoices.filter(i => i.id !== id);
   renderSalesInvoices();
   renderPurchaseInvoices();
-  toast('تم حذف الفاتورة');
+  toast(t('toast_invoice_deleted'));
   
   // Delete + reverse stock — dbDelete now pushes immediately
   if (inv?.items) await reverseStockChanges(inv);
@@ -8135,7 +8498,7 @@ async function recordPayment(id) {
   
   await dbPut('invoices', inv);
   await updateBalances();
-  toast('تم تسجيل الدفع');
+  toast(t('toast_payment_recorded'));
   
   allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
   renderSalesInvoices();
@@ -8364,7 +8727,7 @@ async function printBarcodeSticker(productId) {
   const p = await dbGet('products', productId);
   if (!p) return;
   const barcodeVal = p.barcode || p.sku || '';
-  if (!barcodeVal) { toast('لا يوجد باركود', 'error'); return; }
+  if (!barcodeVal) { toast(t('no_barcode'), 'error'); return; }
   
   const printWin = window.open('', '_blank');
   printWin.document.write(`<!DOCTYPE html><html><head>
@@ -8589,7 +8952,7 @@ async function createReturn(invoiceId) {
   await dbAdd('invoices', returnInv);
   // Return stock
   await reverseStockChanges(inv);
-  toast('تم إنشاء المرتجع');
+  toast(t('toast_return_created'));
 }
 
 // ============ HELPERS ============
@@ -8608,10 +8971,10 @@ function generateInvoiceNumber(prefix) {
 
 let allDevices = [];
 const DEVICE_STATUSES = {
-  'under_repair': { label: '🔧 تحت الصيانة', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-  'done_not_delivered': { label: '✅ خلصت ومتسلمتش', color: '#6c3ce9', bg: 'rgba(108,60,233,0.1)' },
-  'delivered_not_paid': { label: '📦 اتسلمت ومدفعتش', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
-  'completed': { label: '💰 خلصت واتدفعت', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
+  'under_repair': { label: t('device_under_repair'), color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+  'done_not_delivered': { label: t('device_done_not_delivered'), color: '#6c3ce9', bg: 'rgba(108,60,233,0.1)' },
+  'delivered_not_paid': { label: t('device_delivered_not_paid'), color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
+  'completed': { label: t('device_completed'), color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
 };
 
 // ============ LOAD ============
@@ -8813,7 +9176,7 @@ function onClientSelect(sel, context) {
 
 async function saveInlineClient(context) {
   const name = document.getElementById(`new-client-${context}-name`).value.trim();
-  if (!name) { toast('أدخل الاسم', 'error'); return; }
+  if (!name) { toast(t('enter_name'), 'error'); return; }
   const phone = document.getElementById(`new-client-${context}-phone`).value.trim();
   
   // Determine if this is a supplier (purchase invoice) or client
@@ -8845,7 +9208,7 @@ async function saveInlineClient(context) {
   sel.insertBefore(newOpt, otherOpt);
   sel.value = id;
   
-  toast(`تم إضافة ${isSupplier ? 'المورد' : 'العميل'} بنجاح`);
+  toast(t('toast_client_supplier_added').replace('{type}', isSupplier ? t('inv_supplier_label') : t('inv_client_label')));
 }
 
 function openClientManager() {
@@ -8891,7 +9254,7 @@ function openClientManager() {
 async function deleteClientFromManager(id, store) {
   const entity = await dbGet(store, id);
   if (!entity) return;
-  if (!confirm(`حذف "${entity.name}"؟`)) return;
+  if (!confirm(t('confirm_delete_entity').replace('{name}', entity.name))) return;
   await dbDelete(store, id);
   if (store === 'clients') {
     allClients = allClients.filter(c => c.id !== id);
@@ -8899,7 +9262,7 @@ async function deleteClientFromManager(id, store) {
     allSuppliers = allSuppliers.filter(s => s.id !== id);
   }
   autoPush();
-  toast(`تم حذف ${entity.name}`);
+  toast(t('toast_entity_deleted').replace('{name}', entity.name));
   // Refresh the manager list
   const listEl = document.getElementById('client-manager-list');
   if (listEl) {
@@ -8938,7 +9301,7 @@ function onEngineerSelect(sel) {
 
 async function saveInlineEngineer() {
   const name = document.getElementById('new-engineer-name').value.trim();
-  if (!name) { toast('أدخل اسم المهندس', 'error'); return; }
+  if (!name) { toast(t('toast_enter_engineer_name'), 'error'); return; }
   const phone = document.getElementById('new-engineer-phone').value.trim();
   const specialty = document.getElementById('new-engineer-specialty').value;
   
@@ -8954,11 +9317,11 @@ async function saveInlineEngineer() {
   
   // Repopulate and select new engineer
   populateEngineerDropdown(id);
-  toast('تم إضافة المهندس بنجاح');
+  toast(t('toast_engineer_added'));
 }
 
 function openNewDevice() {
-  document.getElementById('modal-device-title').textContent = 'إذن استلام جهاز جديد';
+  document.getElementById('modal-device-title').textContent = t('modal_new_device');
   document.getElementById('device-form').reset();
   document.getElementById('device-id').value = '';
   document.getElementById('device-order-number').value = generateOrderNumber();
@@ -8987,7 +9350,7 @@ async function editDevice(id) {
   const d = await dbGet('devices', id);
   if (!d) return;
   
-  document.getElementById('modal-device-title').textContent = 'تعديل أمر الصيانة';
+  document.getElementById('modal-device-title').textContent = t('modal_edit_device');
   document.getElementById('device-id').value = d.id;
   document.getElementById('device-order-number').value = d.orderNumber;
   document.getElementById('device-intake-date').value = d.intakeDate?.split('T')[0] || '';
@@ -9104,15 +9467,18 @@ async function saveDevice(e) {
       notifyEngineerAssignment(data);
     }
     await dbPut('devices', data);
-    toast('تم تعديل أمر الصيانة');
+    await logActivity('device_edit', `تعديل جهاز: ${data.deviceType || ''} - ${data.problem || ''}`);
+    toast(t('toast_device_updated'));
   } else {
     data.taskStatus = data.engineerId ? 'assigned' : 'pending';
     const newId = await dbAdd('devices', data);
+    await logActivity('device_add', `جهاز جديد: ${data.deviceType || ''} - ${data.problem || ''}`);
+
     if (data.engineerId) {
       data.id = newId;
       notifyEngineerAssignment(data);
     }
-    toast('تم إنشاء إذن الاستلام');
+    toast(t('toast_device_created'));
   }
   
   // Deduct stock parts
@@ -9145,7 +9511,7 @@ async function notifyEngineerAssignment(device) {
   const deadlineStr = device.deadline ? new Date(device.deadline).toLocaleString('ar-EG') : 'غير محدد';
   
   // In-app notification (toast)
-  toast(`تم تخصيص الجهاز "${device.deviceName}" للمهندس ${engineer.name}`, 'success');
+  toast(t('toast_device_assigned').replace('{device}', device.deviceName).replace('{engineer}', engineer.name), 'success');
   
   // Add to activity log
   await dbAdd('activityLog', {
@@ -9167,7 +9533,7 @@ async function notifyEngineerAssignment(device) {
       <p style="color:var(--text-muted);margin-bottom:16px">تم تخصيص الجهاز للمهندس</p>
       <div style="background:var(--bg);border-radius:12px;padding:16px;text-align:right;margin-bottom:16px">
         <div style="margin-bottom:8px"><strong>المهندس:</strong> ${engineer.name}</div>
-        <div style="margin-bottom:8px"><strong>الجهاز:</strong> ${device.deviceName}</div>
+        <div style="margin-bottom:8px"><strong data-i18n="device_colon">الجهاز:</strong> ${device.deviceName}</div>
         <div style="margin-bottom:8px"><strong>المشكلة:</strong> ${device.problem || '-'}</div>
         <div style="margin-bottom:8px"><strong>الموعد النهائي:</strong> ${deadlineStr}</div>
         ${rewardText ? `<div style="margin-bottom:8px;color:var(--success)"><strong>${rewardText}</strong></div>` : ''}
@@ -9208,11 +9574,11 @@ async function completeDeviceTask(deviceId) {
   });
   
   if (wasOnTime && d.reward) {
-    toast(`تم إتمام المهمة في الوقت — مكافأة ${formatMoney(d.reward)} للمهندس ${engineer?.name}`, 'success');
+    toast(t('toast_task_complete_ontime').replace('{amount}', formatMoney(d.reward)).replace('{engineer}', engineer?.name), 'success');
   } else if (!wasOnTime) {
-    toast(`تم إتمام المهمة (متأخر) — المهندس ${engineer?.name}`, 'warning');
+    toast(t('toast_task_complete_late').replace('{engineer}', engineer?.name), 'warning');
   } else {
-    toast('تم إتمام المهمة بنجاح', 'success');
+    toast(t('toast_task_complete'), 'success');
   }
   
   // Refresh view
@@ -9237,7 +9603,7 @@ async function warnEngineer(deviceId) {
     engineerId: d.engineerId,
   });
   
-  toast(`تم إرسال إنذار ${d.warningsCount}/${d.warningsLimit} للمهندس ${engineer?.name}`, 'warning');
+  toast(t('toast_warning_sent').replace('{count}', d.warningsCount).replace('{limit}', d.warningsLimit).replace('{engineer}', engineer?.name), 'warning');
   viewDevice(deviceId);
 }
 
@@ -9246,7 +9612,7 @@ async function penalizeEngineer(deviceId) {
   if (!d) return;
   
   const engineer = d.engineerId ? await dbGet('engineers', d.engineerId) : null;
-  if (!confirm(`تطبيق عقوبة ${formatMoney(d.penalty)} على المهندس ${engineer?.name}؟`)) return;
+  if (!confirm(t('confirm_penalty').replace('{amount}', formatMoney(d.penalty)).replace('{engineer}', engineer?.name))) return;
   
   d.penaltyApplied = true;
   d.penaltyDate = new Date().toISOString();
@@ -9262,17 +9628,17 @@ async function penalizeEngineer(deviceId) {
     penalty: d.penalty,
   });
   
-  toast(`تم تطبيق العقوبة ${formatMoney(d.penalty)} على المهندس ${engineer?.name}`, 'error');
+  toast(t('toast_penalty_applied').replace('{amount}', formatMoney(d.penalty)).replace('{engineer}', engineer?.name), 'error');
   viewDevice(deviceId);
 }
 
 async function deleteDevice(id) {
   const d = allDevices.find(x => x.id === id);
-  if (!confirm(`حذف أمر الصيانة ${d?.orderNumber}؟`)) return;
+  if (!confirm(t('confirm_delete_maint_order').replace('{num}', d?.orderNumber))) return;
   allDevices = allDevices.filter(x => x.id !== id);
   renderDevicesTable();
   updateMaintenanceStats();
-  toast('تم حذف أمر الصيانة');
+  toast(t('toast_maint_deleted'));
   try { await dbDelete('devices', id); } catch(e) {}
 }
 
@@ -9413,17 +9779,17 @@ async function changeDeviceStatus(id) {
   const currentIdx = statusOrder.indexOf(d.status);
   const nextStatus = statusOrder[currentIdx + 1];
   
-  if (!nextStatus) return toast('الجهاز مكتمل بالفعل', 'info');
+  if (!nextStatus) return toast(t('device_already_complete'), 'info');
   
   const nextLabel = DEVICE_STATUSES[nextStatus].label;
-  if (!confirm(`تغيير الحالة إلى: ${nextLabel}؟`)) return;
+  if (!confirm(t('confirm_status_change').replace('{status}', nextLabel))) return;
   
   d.status = nextStatus;
   if (nextStatus === 'completed') d.completedDate = new Date().toISOString();
   if (nextStatus === 'delivered_not_paid') d.deliveryDate = new Date().toISOString();
   
   await dbPut('devices', d);
-  toast(`تم تغيير الحالة إلى ${nextLabel}`);
+  toast(t('toast_status_changed').replace('{status}', nextLabel));
   await loadMaintenancePage();
 }
 
@@ -9531,7 +9897,7 @@ async function viewDevice(id) {
   </div>`;
   
   document.getElementById('view-product-content').innerHTML = html;
-  document.querySelector('#modal-view-product .modal-header h3').textContent = 'تفاصيل أمر الصيانة';
+  document.querySelector('#modal-view-product .modal-header h3').textContent = t('dev_details_title');
   openModal('modal-view-product');
   
   // Generate QR
@@ -9665,9 +10031,9 @@ async function printMaintenanceReceipt(id) {
     </div>
     <h2>إيصال صيانة</h2>
     <div class="info-grid">
-      <div class="info-item"><strong>العميل:</strong> ${clientName}</div>
+      <div class="info-item"><strong data-i18n="client_colon">العميل:</strong> ${clientName}</div>
       <div class="info-item"><strong>الهاتف:</strong> ${clientPhone || '-'}</div>
-      <div class="info-item"><strong>الجهاز:</strong> ${d.deviceName}</div>
+      <div class="info-item"><strong data-i18n="device_colon">الجهاز:</strong> ${d.deviceName}</div>
       <div class="info-item"><strong>المواصفات:</strong> ${d.specs || '-'}</div>
       <div class="info-item" style="grid-column:1/-1"><strong>المشكلة:</strong> ${d.problem || '-'}</div>
       ${d.hasWarranty ? `<div class="info-item" style="grid-column:1/-1"><span class="warranty-badge">🛡️ ضمان ${d.warrantyMonths} شهر</span></div>` : ''}
@@ -9828,7 +10194,7 @@ function showAccBreakdown(type) {
       { label: 'إيراد المبيعات', total: salesTotal, color: 'var(--success)', isPositive: true },
       { label: 'ربح الصيانة', total: maintProfit, color: 'var(--primary)', isPositive: true },
       { label: 'إيراد الخدمات', total: servTotal, color: 'var(--accent)', isPositive: true },
-      { label: 'المشتريات', total: -purchasesTotal, color: 'var(--danger)' },
+      { label: t('chart_lbl_purchases'), total: -purchasesTotal, color: 'var(--danger)' },
       { label: 'المصروفات', total: -customTotal, color: 'var(--warning)' },
     ];
   }
@@ -9874,7 +10240,7 @@ function showAccBreakdown(type) {
 // ============ PAYMENT LEDGER ============
 function openAdjustBalance(type, preselectedId) {
   const isClient = type === 'client';
-  document.getElementById('modal-adjust-balance-title').textContent = isClient ? 'سجل مدفوعات عميل' : 'سجل مدفوعات مورد';
+  document.getElementById('modal-adjust-balance-title').textContent = isClient ? t('modal_payment_ledger') + ' - ' + t('inv_client_label') : t('modal_payment_ledger') + ' - ' + t('inv_supplier_label');
   document.getElementById('adj-type').value = type;
   document.getElementById('adj-edit-idx').value = '-1';
   
@@ -10008,7 +10374,7 @@ function editLedgerEntry(idx) {
 }
 
 async function deleteLedgerEntry(idx) {
-  if (!confirm('حذف هذه الحركة؟')) return;
+  if (!confirm(t('confirm_delete_movement'))) return;
   const type = document.getElementById('adj-type').value;
   const id = parseInt(document.getElementById('adj-entity-id').value);
   const store = type === 'client' ? 'clients' : 'suppliers';
@@ -10029,7 +10395,7 @@ async function deleteLedgerEntry(idx) {
   const localEntity = list.find(e => e.id === id);
   if (localEntity) { localEntity.payments = entity.payments; localEntity.balance = entity.balance; }
   
-  toast('تم حذف الحركة');
+  toast(t('toast_movement_deleted'));
   onLedgerEntityChange();
   renderAccountingDashboard();
 }
@@ -10043,8 +10409,8 @@ async function saveLedgerEntry() {
   const notes = document.getElementById('adj-pay-notes').value.trim();
   const editIdx = parseInt(document.getElementById('adj-edit-idx').value);
   
-  if (!id) { toast('اختر عميل أو مورد', 'error'); return; }
-  if (amount <= 0) { toast('أدخل مبلغ صحيح', 'error'); return; }
+  if (!id) { toast(t('toast_select_entity'), 'error'); return; }
+  if (amount <= 0) { toast(t('toast_enter_valid_amount'), 'error'); return; }
   
   const store = type === 'client' ? 'clients' : 'suppliers';
   const entity = await dbGet(store, id);
@@ -10087,7 +10453,7 @@ async function saveLedgerEntry() {
   const localEntity = list.find(e => e.id === id);
   if (localEntity) { localEntity.payments = entity.payments; localEntity.balance = entity.balance; }
   
-  toast('تم حفظ الحركة');
+  toast(t('toast_movement_saved'));
   document.getElementById('adj-add-form').style.display = 'none';
   document.getElementById('adj-edit-idx').value = '-1';
   onLedgerEntityChange();
@@ -10179,6 +10545,14 @@ function openAddExpense() {
   openModal('modal-expense');
 }
 
+function openAddExpenseWithType(type) {
+  document.getElementById('expense-form').reset();
+  document.getElementById('expense-id').value = '';
+  document.getElementById('expense-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('expense-type').value = type;
+  openModal('modal-expense');
+}
+
 async function editExpense(id) {
   const e = await dbGet('expenses', id);
   if (!e) return;
@@ -10205,10 +10579,12 @@ async function saveExpense(e) {
   if (id) {
     data.id = parseInt(id);
     await dbPut('expenses', data);
-    toast('تم تعديل المصروف');
+    await logActivity('expense_edit', `تعديل مصروف: ${data.description || data.category} | ${formatMoney(data.amount)}`);
+    toast(t('toast_expense_updated'));
   } else {
     await dbAdd('expenses', data);
-    toast('تم إضافة المصروف');
+    await logActivity('expense_add', `مصروف جديد: ${data.description || data.category} | ${formatMoney(data.amount)}`);
+    toast(t('toast_expense_added'));
   }
   
   closeModal('modal-expense');
@@ -10216,11 +10592,14 @@ async function saveExpense(e) {
 }
 
 async function deleteExpense(id) {
-  if (!confirm('حذف هذا المصروف؟')) return;
+  if (!confirm(t('confirm_delete_expense'))) return;
   allExpenses = allExpenses.filter(x => x.id !== id);
   renderExpensesTable();
-  toast('تم حذف المصروف');
-  try { await dbDelete('expenses', id); } catch(e) {}
+  toast(t('toast_expense_deleted'));
+  try { 
+    await dbDelete('expenses', id);
+    await logActivity('expense_delete', `حذف مصروف ID: ${id}`);
+  } catch(e) {}
 }
 
 // ============ SERVICES CRUD ============
@@ -10232,7 +10611,7 @@ async function loadServices() {
 }
 
 function openNewService() {
-  document.getElementById('modal-service-title').textContent = 'زيارة/خدمة جديدة';
+  document.getElementById('modal-service-title').textContent = t('modal_new_service');
   document.getElementById('service-form').reset();
   document.getElementById('service-id').value = '';
   document.getElementById('service-date').value = new Date().toISOString().split('T')[0];
@@ -10249,7 +10628,7 @@ function openNewService() {
 async function editService(id) {
   const s = await dbGet('services', id);
   if (!s) return;
-  document.getElementById('modal-service-title').textContent = 'تعديل الزيارة/الخدمة';
+  document.getElementById('modal-service-title').textContent = t('modal_edit_service_title');
   document.getElementById('service-id').value = s.id;
   document.getElementById('service-date').value = s.date?.split('T')[0] || '';
   document.getElementById('service-description').value = s.description || '';
@@ -10285,10 +10664,10 @@ async function saveService(e) {
   if (id) {
     data.id = parseInt(id);
     await dbPut('services', data);
-    toast('تم تعديل الخدمة');
+    toast(t('toast_service_updated'));
   } else {
     await dbAdd('services', data);
-    toast('تم إضافة الخدمة');
+    toast(t('toast_service_added'));
   }
   
   closeModal('modal-service');
@@ -10296,10 +10675,10 @@ async function saveService(e) {
 }
 
 async function deleteService(id) {
-  if (!confirm('حذف هذه الخدمة؟')) return;
+  if (!confirm(t('confirm_delete_service'))) return;
   _allServicesLoaded = _allServicesLoaded.filter(x => x.id !== id);
   renderServicesInAllPages();
-  toast('تم حذف الخدمة');
+  toast(t('toast_service_deleted'));
   try { await dbDelete('services', id); } catch(e) {}
 }
 
@@ -10322,10 +10701,10 @@ function renderServicesTableInto(tbodyId, tableId, emptyId, services) {
   table.style.display = ''; if (empty) empty.style.display = 'none';
   
   const statusLabels = {
-    'pending': '<span class="badge" style="background:rgba(245,158,11,0.1);color:var(--warning)">قيد الانتظار</span>',
-    'in_progress': '<span class="badge" style="background:rgba(0,200,255,0.1);color:#0891b2">جاري التنفيذ</span>',
-    'completed': '<span class="badge badge-new">مكتملة</span>',
-    'cancelled': '<span class="badge badge-low">ملغاة</span>',
+    'pending': '<span class="badge" style="background:rgba(245,158,11,0.1);color:var(--warning)">' + t('svc_pending') + '</span>',
+    'in_progress': '<span class="badge" style="background:rgba(0,200,255,0.1);color:#0891b2">' + t('svc_in_progress') + '</span>',
+    'completed': '<span class="badge badge-new">' + t('svc_completed') + '</span>',
+    'cancelled': '<span class="badge badge-low">' + t('svc_cancelled') + '</span>',
   };
   
   tbody.innerHTML = services.map(s => `<tr>
@@ -10608,7 +10987,7 @@ function renderUsersTable() {
       <td>${u.name || u.username}</td>
       <td>${u.username}</td>
       <td><span class="badge" style="background:${u.role==='admin'?'rgba(108,60,233,0.1)':u.role==='manager'?'rgba(0,200,255,0.1)':'rgba(245,158,11,0.1)'};color:${u.role==='admin'?'var(--primary)':u.role==='manager'?'#0891b2':'var(--warning)'}">${role.label}</span></td>
-      <td><span class="badge ${u.active?'badge-new':'badge-low'}">${u.active?'مفعل':'معطل'}</span></td>
+      <td><span class="badge ${u.active?'badge-new':'badge-low'}">${u.active?t('usr_active'):t('usr_disabled')}</span></td>
       <td class="actions-cell">
         <button class="btn-icon" onclick="editUser(${u.id})"><i class='bx bx-edit'></i></button>
         ${u.username !== 'admin' ? `<button class="btn-icon" onclick="toggleUser(${u.id})"><i class='bx bx-power-off'></i></button>
@@ -10621,9 +11000,9 @@ function renderUsersTable() {
 function openAddUser() {
   document.getElementById('user-form').reset();
   document.getElementById('user-id').value = '';
-  document.getElementById('modal-user-title').textContent = 'إضافة مستخدم جديد';
+  document.getElementById('modal-user-title').textContent = t('modal_add_user');
   document.getElementById('user-password').required = true;
-  document.getElementById('user-password').placeholder = 'كلمة المرور';
+  document.getElementById('user-password').placeholder = t('usr_password_ph');
   document.getElementById('user-role').value = 'staff';
   document.getElementById('user-permissions-list').innerHTML = renderPermissionsCheckboxes(DEFAULT_PERMS.staff);
   openModal('modal-user');
@@ -10632,14 +11011,14 @@ function openAddUser() {
 async function editUser(id) {
   const u = await dbGet('users', id);
   if (!u) return;
-  document.getElementById('modal-user-title').textContent = 'تعديل المستخدم';
+  document.getElementById('modal-user-title').textContent = t('modal_edit_user');
   document.getElementById('user-id').value = u.id;
   document.getElementById('user-fullname').value = u.name || '';
   document.getElementById('user-username').value = u.username;
   document.getElementById('user-role').value = u.role;
   document.getElementById('user-password').value = '';
   document.getElementById('user-password').required = false;
-  document.getElementById('user-password').placeholder = 'اتركه فارغ لعدم التغيير';
+  document.getElementById('user-password').placeholder = t('usr_password_keep');
   const perms = u.permissions || DEFAULT_PERMS[u.role] || [];
   document.getElementById('user-permissions-list').innerHTML = renderPermissionsCheckboxes(perms);
   openModal('modal-user');
@@ -10647,23 +11026,23 @@ async function editUser(id) {
 
 // All available permissions
 const ALL_PERMISSIONS = [
-  { key: 'dashboard', label: 'لوحة التحكم' },
-  { key: 'inventory', label: 'المخزون — عرض' },
-  { key: 'inventory_edit', label: 'المخزون — إضافة/تعديل/حذف' },
-  { key: 'stock_movement', label: 'إضافة/صرف مخزون' },
-  { key: 'view_prices', label: 'عرض الأسعار والأرباح' },
-  { key: 'sales', label: 'البيع — عرض' },
-  { key: 'sales_create', label: 'البيع — إنشاء فواتير' },
-  { key: 'purchases', label: 'المشتريات — عرض' },
-  { key: 'purchases_create', label: 'المشتريات — إنشاء فواتير' },
-  { key: 'clients', label: 'العملاء' },
-  { key: 'suppliers', label: 'الموردين' },
-  { key: 'maintenance', label: 'ورشة الصيانة' },
-  { key: 'maintenance_intake', label: 'استلام أجهزة' },
-  { key: 'accounting', label: 'المحاسبة' },
-  { key: 'reports', label: 'التقارير' },
-  { key: 'settings', label: 'الإعدادات' },
-  { key: 'users', label: 'إدارة المستخدمين' },
+  { key: 'dashboard', label: t('perm_dashboard') },
+  { key: 'inventory', label: t('perm_inv_view') },
+  { key: 'inventory_edit', label: t('perm_inv_edit') },
+  { key: 'stock_movement', label: t('perm_stock') },
+  { key: 'view_prices', label: t('perm_prices') },
+  { key: 'sales', label: t('perm_sales_view') },
+  { key: 'sales_create', label: t('perm_sales_create') },
+  { key: 'purchases', label: t('perm_purch_view') },
+  { key: 'purchases_create', label: t('perm_purch_create') },
+  { key: 'clients', label: t('perm_clients') },
+  { key: 'suppliers', label: t('perm_suppliers') },
+  { key: 'maintenance', label: t('perm_maint') },
+  { key: 'maintenance_intake', label: t('perm_intake') },
+  { key: 'accounting', label: t('perm_accounting') },
+  { key: 'reports', label: t('perm_reports') },
+  { key: 'settings', label: t('perm_settings') },
+  { key: 'users', label: t('perm_users') },
 ];
 
 const DEFAULT_PERMS = {
@@ -10705,15 +11084,15 @@ async function saveUser(e) {
     user.permissions = permissions;
     if (password) user.password = hashPassword(password);
     await dbPut('users', user);
-    toast('تم تعديل المستخدم');
+    toast(t('toast_user_updated'));
   } else {
-    if (!password) return toast('أدخل كلمة المرور', 'warning');
+    if (!password) return toast(t('toast_enter_password'), 'warning');
     await dbAdd('users', {
       name, username, role, permissions,
       password: hashPassword(password),
       active: true,
     });
-    toast('تم إضافة المستخدم');
+    toast(t('toast_user_added'));
   }
   
   closeModal('modal-user');
@@ -10724,14 +11103,14 @@ async function toggleUser(id) {
   const u = await dbGet('users', id);
   u.active = !u.active;
   await dbPut('users', u);
-  toast(u.active ? 'تم تفعيل المستخدم' : 'تم تعطيل المستخدم');
+  toast(u.active ? t('toast_user_activated') : t('toast_user_deactivated'));
   await loadUsersPage();
 }
 
 async function deleteUser(id) {
-  if (!confirm('حذف هذا المستخدم؟')) return;
+  if (!confirm(t('confirm_delete_user'))) return;
   await dbDelete('users', id);
-  toast('تم حذف المستخدم');
+  toast(t('toast_user_deleted'));
   await loadUsersPage();
 }
 
@@ -10772,7 +11151,7 @@ function renderEngineersTable() {
 }
 
 function openAddEngineer() {
-  document.getElementById('modal-engineer-title').textContent = 'إضافة مهندس/فني جديد';
+  document.getElementById('modal-engineer-title').textContent = t('modal_add_engineer');
   document.getElementById('engineer-form').reset();
   document.getElementById('engineer-id').value = '';
   openModal('modal-engineer');
@@ -10782,11 +11161,11 @@ async function editEngineer(id) {
   const engineer = await dbGet('engineers', id);
   if (!engineer) return;
   
-  document.getElementById('modal-engineer-title').textContent = 'تعديل المهندس/الفني';
+  document.getElementById('modal-engineer-title').textContent = t('modal_edit_engineer');
   document.getElementById('engineer-id').value = engineer.id;
   document.getElementById('engineer-name').value = engineer.name;
   document.getElementById('engineer-phone').value = engineer.phone || '';
-  document.getElementById('engineer-specialty').value = engineer.specialty || 'عام';
+  document.getElementById('engineer-specialty').value = engineer.specialty || t('specialty_general');
   
   openModal('modal-engineer');
 }
@@ -10806,10 +11185,10 @@ async function saveEngineer(e) {
     engineer.id = parseInt(id);
     engineer.updatedAt = new Date().toISOString();
     await dbPut('engineers', engineer);
-    toast('تم تحديث المهندس/الفني');
+    toast(t('toast_engineer_updated'));
   } else {
     await dbAdd('engineers', engineer);
-    toast('تم إضافة المهندس/الفني');
+    toast(t('toast_engineer_saved'));
   }
   
   await autoPush();
@@ -10818,16 +11197,16 @@ async function saveEngineer(e) {
 }
 
 async function deleteEngineer(id) {
-  if (!confirm('حذف هذا المهندس/الفني؟')) return;
+  if (!confirm(t('confirm_delete_engineer'))) return;
   
   const assignedDevices = allDevices.filter(d => d.engineerId === id);
   if (assignedDevices.length > 0) {
-    if (!confirm(`هذا المهندس/الفني مسؤول عن ${assignedDevices.length} جهاز. هل تريد المتابعة؟`)) return;
+    if (!confirm(t('confirm_engineer_has_devices').replace('{count}', assignedDevices.length))) return;
   }
   
   allEngineers = allEngineers.filter(x => x.id !== id);
   renderEngineersTable();
-  toast('تم حذف المهندس/الفني');
+  toast(t('toast_engineer_deleted'));
   try { await dbDelete('engineers', id); await autoPush(); } catch(e) {}
 }
 
@@ -10867,7 +11246,7 @@ function generateRepairTimeline(device) {
     date: device.intakeDate,
     title: 'استلام الجهاز',
     content: `
-      <div><strong>الجهاز:</strong> ${device.deviceName}</div>
+      <div><strong data-i18n="device_colon">الجهاز:</strong> ${device.deviceName}</div>
       <div><strong>المشكلة:</strong> ${device.problem || 'غير محددة'}</div>
       ${device.notes ? `<div><strong>ملاحظات:</strong> ${device.notes}</div>` : ''}
     `,
@@ -10956,7 +11335,7 @@ function showAddHistoryForm() {
   
   // Reset form
   document.getElementById('history-entry-date').value = new Date().toISOString().slice(0, 16);
-  document.getElementById('history-entry-action').value = 'إصلاح';
+  document.getElementById('history-entry-action').value = t('action_repair');
   document.getElementById('history-entry-note').value = '';
   document.getElementById('history-entry-engineer').value = '';
   indexField.value = '';
@@ -10973,8 +11352,8 @@ function populateEngineersDropdown() {
   const currentOptions = select.innerHTML;
   
   // Clear current options except for default and "other"
-  const defaultOption = '<option value="">-- اختر المهندس --</option>';
-  const otherOption = '<option value="__other__">مهندس آخر...</option>';
+  const defaultOption = '<option value="" data-i18n="select_engineer">-- اختر المهندس --</option>';
+  const otherOption = '<option value="__other__" data-i18n="other_engineer">مهندس آخر...</option>';
   
   const engineerOptions = allEngineers.map(eng => 
     `<option value="${eng.id}">${eng.name}</option>`
@@ -10998,7 +11377,7 @@ async function saveHistoryEntry() {
   const index = document.getElementById('history-entry-index').value;
   
   if (!date || !action) {
-    toast('يرجى ملء التاريخ ونوع الإجراء', 'error');
+    toast(t('toast_fill_date_action'), 'error');
     return;
   }
   
@@ -11023,11 +11402,11 @@ async function saveHistoryEntry() {
   if (index === '') {
     // Add new entry
     device.repairHistory.push(entry);
-    toast('تم إضافة السجل');
+    toast(t('toast_record_added'));
   } else {
     // Edit existing entry
     device.repairHistory[parseInt(index)] = entry;
-    toast('تم تحديث السجل');
+    toast(t('toast_record_updated'));
   }
   
   // Save to database
@@ -11076,7 +11455,7 @@ async function deleteHistoryEntry(index) {
   const device = currentDeviceForHistory;
   if (!device || !device.repairHistory || !device.repairHistory[index]) return;
   
-  if (!confirm('هل أنت متأكد من حذف هذا السجل؟')) return;
+  if (!confirm(t('confirm_delete_record'))) return;
   
   // Remove entry
   device.repairHistory.splice(index, 1);
@@ -11089,7 +11468,7 @@ async function deleteHistoryEntry(index) {
   const timeline = generateRepairTimeline(device);
   document.getElementById('repair-timeline').innerHTML = timeline;
   
-  toast('تم حذف السجل');
+  toast(t('toast_record_deleted'));
 }
 
 // ============ DEFAULT CATEGORIES ============
@@ -11122,7 +11501,7 @@ async function loadActivityLog() {
   const container = document.getElementById('activity-log-list');
   
   if (logs.length === 0) {
-    container.innerHTML = '<p class="empty-state">لا يوجد سجل نشاط</p>';
+    container.innerHTML = '<p class="empty-state">' + t('no_activity_log') + '</p>';
     return;
   }
   
@@ -11202,7 +11581,7 @@ async function checkAndNotify() {
   if (unpaid.length > 0) {
     const total = unpaid.reduce((s, i) => s + (i.total || 0), 0);
     await sendTelegramNotification(
-      `💰 <b>فواتير غير مدفوعة: ${unpaid.length}</b>\nالإجمالي: ${total} ج.م`,
+      `💰 <b>فواتير غير مدفوعة: ${unpaid.length}</b>\nالإجمالي: ${total} ${t('currency')}`,
       'unpaid'
     );
   }
@@ -11261,7 +11640,7 @@ async function loadNotificationSettings() {
     notifRecipients = telegram.value.recipients || [];
     // Migrate old single chatId
     if (notifRecipients.length === 0 && telegram.value.chatId) {
-      notifRecipients = [{ name: 'المدير', chatId: telegram.value.chatId, enabled: true, notifications: { lowStock:true, unpaid:true, devicesReady:true, warrantyExpiry:true, dailySummary:true } }];
+      notifRecipients = [{ name: t('admin_default_name'), chatId: telegram.value.chatId, enabled: true, notifications: { lowStock:true, unpaid:true, devicesReady:true, warrantyExpiry:true, dailySummary:true } }];
     }
   }
   renderRecipients();
@@ -11301,7 +11680,7 @@ function renderRecipients() {
 function openAddRecipient() {
   document.getElementById('recipient-form').reset();
   document.getElementById('recipient-idx').value = '';
-  document.getElementById('modal-recipient-title').textContent = 'إضافة مستلم';
+  document.getElementById('modal-recipient-title').textContent = t('modal_add_recipient');
   // Default all checked
   document.getElementById('rcpt-low-stock').checked = true;
   document.getElementById('rcpt-unpaid').checked = true;
@@ -11314,7 +11693,7 @@ function openAddRecipient() {
 function editRecipient(idx) {
   const r = notifRecipients[idx];
   if (!r) return;
-  document.getElementById('modal-recipient-title').textContent = 'تعديل مستلم';
+  document.getElementById('modal-recipient-title').textContent = t('modal_edit_recipient');
   document.getElementById('recipient-idx').value = idx;
   document.getElementById('recipient-name').value = r.name || '';
   document.getElementById('recipient-title').value = r.title || '';
@@ -11353,7 +11732,7 @@ async function saveRecipient(e) {
   await saveRecipientsToDb();
   renderRecipients();
   closeModal('modal-recipient');
-  toast('تم حفظ المستلم ✅');
+  toast(t('toast_recipient_saved'));
   return false;
 }
 
@@ -11361,15 +11740,15 @@ async function toggleRecipient(idx) {
   notifRecipients[idx].enabled = !notifRecipients[idx].enabled;
   await saveRecipientsToDb();
   renderRecipients();
-  toast(notifRecipients[idx].enabled ? 'تم التفعيل' : 'تم التعطيل');
+  toast(notifRecipients[idx].enabled ? t('toast_enabled') : t('toast_disabled'));
 }
 
 async function deleteRecipient(idx) {
-  if (!confirm('حذف هذا المستلم؟')) return;
+  if (!confirm(t('confirm_delete_recipient'))) return;
   notifRecipients.splice(idx, 1);
   await saveRecipientsToDb();
   renderRecipients();
-  toast('تم الحذف');
+  toast(t('toast_deleted_msg'));
 }
 
 async function saveRecipientsToDb() {
@@ -11383,7 +11762,7 @@ async function saveBotToken() {
   const telegram = await dbGet('settings', 'telegram') || { key: 'telegram', value: {} };
   telegram.value.botToken = token;
   await dbPut('settings', telegram);
-  toast('تم حفظ التوكن ✅');
+  toast(t('toast_token_saved'));
 }
 
 async function autoReplyWithChatId() {
@@ -11426,13 +11805,13 @@ setTimeout(autoReplyWithChatId, 3000);
 
 async function fetchChatIds() {
   const token = document.getElementById('telegram-bot-token').value.trim();
-  if (!token) return toast('أدخل التوكن أولاً', 'warning');
+  if (!token) return toast(t('toast_enter_token'), 'warning');
   
   try {
     const resp = await fetch(`https://api.telegram.org/bot${token}/getUpdates`);
     const data = await resp.json();
     
-    if (!data.ok) return toast('فشل — تأكد من التوكن', 'error');
+    if (!data.ok) return toast(t('toast_token_failed'), 'error');
     
     const chats = {};
     (data.result || []).forEach(update => {
@@ -11469,9 +11848,9 @@ async function fetchChatIds() {
       `).join('')}
     `;
     
-    toast(`تم العثور على ${chatList.length} محادثة`);
+    toast(t('toast_found_chats').replace('{count}', chatList.length));
   } catch(e) {
-    toast('خطأ في الاتصال', 'error');
+    toast(t('toast_connection_err'), 'error');
   }
 }
 
@@ -11483,33 +11862,33 @@ function useChatId(chatId, name) {
     document.getElementById('recipient-chat-id').value = chatId;
     document.getElementById('recipient-name').value = name;
   }, 100);
-  toast(`تم نسخ Chat ID: ${chatId}`);
+  toast(t('toast_chat_id_copied') + ': ' + chatId);
 }
 
 async function testRecipient() {
   const chatId = document.getElementById('recipient-chat-id').value.trim();
   const telegram = await dbGet('settings', 'telegram');
-  if (!telegram?.value?.botToken || !chatId) return toast('أدخل التوكن و Chat ID', 'warning');
+  if (!telegram?.value?.botToken || !chatId) return toast(t('toast_enter_token_chatid'), 'warning');
   const ok = await sendTelegram(telegram.value.botToken, chatId, '✅ تجربة إشعار من نظام SMS — الاتصال يعمل بنجاح!');
-  toast(ok ? 'تم الإرسال ✅' : 'فشل — تحقق من Chat ID', ok ? 'success' : 'error');
+  toast(ok ? t('toast_sent_success') : t('toast_check_chatid'), ok ? 'success' : 'error');
 }
 
 async function testRecipientByIndex(idx) {
   const r = notifRecipients[idx];
   const telegram = await dbGet('settings', 'telegram');
-  if (!telegram?.value?.botToken || !r?.chatId) return toast('تحقق من التوكن و Chat ID', 'warning');
+  if (!telegram?.value?.botToken || !r?.chatId) return toast(t('toast_check_token_chatid'), 'warning');
   const ok = await sendTelegram(telegram.value.botToken, r.chatId, `✅ تجربة إشعار — مرحباً ${r.name}! الاتصال يعمل بنجاح.`);
-  toast(ok ? `تم الإرسال لـ ${r.name} ✅` : 'فشل — تحقق من Chat ID', ok ? 'success' : 'error');
+  toast(ok ? t('toast_sent_success') + ' ' + r.name : t('toast_check_chatid'), ok ? 'success' : 'error');
 }
 
 // Keep old function name for backward compat
 async function testTelegramNotification() {
   const telegram = await dbGet('settings', 'telegram');
-  if (!telegram?.value?.botToken) return toast('أدخل التوكن أولاً', 'warning');
+  if (!telegram?.value?.botToken) return toast(t('toast_enter_token'), 'warning');
   for (const r of (notifRecipients || [])) {
     if (r.enabled) await sendTelegram(telegram.value.botToken, r.chatId, '✅ تجربة إشعار من نظام SMS');
   }
-  toast('تم إرسال اختبار لكل المستلمين ✅');
+  toast(t('toast_test_all_sent'));
 }
 
 // Keep old save function working
@@ -11625,7 +12004,7 @@ async function seedTestInvoices() {
     await dbAdd('invoices', inv);
   }
   console.log('[SEED] Added', testData.length, 'test invoices');
-  toast('تم إضافة ' + testData.length + ' فاتورة اختبارية ✅');
+  toast(t('toast_test_data_added').replace('{count}', testData.length));
   
   // Refresh dashboard
   if (typeof loadDashboard === 'function') loadDashboard();
