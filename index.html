@@ -2446,9 +2446,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <!-- Accounting Page -->
       <section id="page-accounting" class="page">
         <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
-          <div class="stat-card stat-sales"><div class="stat-icon"><i class='bx bx-trending-up'></i></div><div class="stat-info"><span class="stat-value" id="acc-income-total">0</span><span class="stat-label">إجمالي الإيرادات</span><small id="acc-income-month" style="color:var(--text-muted)">0</small></div></div>
-          <div class="stat-card stat-purchases"><div class="stat-icon"><i class='bx bx-trending-down'></i></div><div class="stat-info"><span class="stat-value" id="acc-expenses-total">0</span><span class="stat-label">إجمالي المصروفات</span><small id="acc-expenses-month" style="color:var(--text-muted)">0</small></div></div>
-          <div class="stat-card stat-profit"><div class="stat-icon"><i class='bx bx-wallet'></i></div><div class="stat-info"><span class="stat-value" id="acc-profit-total">0</span><span class="stat-label">صافي الربح</span><small id="acc-profit-month" style="color:var(--text-muted)">0</small></div></div>
+          <div class="stat-card stat-sales" style="cursor:pointer;position:relative" onclick="showAccBreakdown('income')"><div class="stat-icon"><i class='bx bx-trending-up'></i></div><div class="stat-info"><span class="stat-value" id="acc-income-total">0</span><span class="stat-label">إجمالي الإيرادات</span><small id="acc-income-month" style="color:var(--text-muted)">0</small></div><i class='bx bx-info-circle' style="position:absolute;top:8px;left:8px;color:var(--text-muted);font-size:16px"></i></div>
+          <div class="stat-card stat-purchases" style="cursor:pointer;position:relative" onclick="showAccBreakdown('expenses')"><div class="stat-icon"><i class='bx bx-trending-down'></i></div><div class="stat-info"><span class="stat-value" id="acc-expenses-total">0</span><span class="stat-label">إجمالي المصروفات</span><small id="acc-expenses-month" style="color:var(--text-muted)">0</small></div><i class='bx bx-info-circle' style="position:absolute;top:8px;left:8px;color:var(--text-muted);font-size:16px"></i></div>
+          <div class="stat-card stat-profit" style="cursor:pointer;position:relative" onclick="showAccBreakdown('profit')"><div class="stat-icon"><i class='bx bx-wallet'></i></div><div class="stat-info"><span class="stat-value" id="acc-profit-total">0</span><span class="stat-label">صافي الربح</span><small id="acc-profit-month" style="color:var(--text-muted)">0</small></div><i class='bx bx-info-circle' style="position:absolute;top:8px;left:8px;color:var(--text-muted);font-size:16px"></i></div>
         </div>
         
         <div class="stat-card" style="margin-bottom:20px;border-right-color:var(--danger)">
@@ -4966,10 +4966,14 @@ async function handleBarcodeResult(code) {
 async function loadDashboard() {
   const products = await dbGetAll('products');
   const movements = await dbGetAll('stockMovements');
-  const invoices = await dbGetAll('invoices');
+  let invoices = await dbGetAll('invoices');
   const devices = await dbGetAll('devices');
   const clients = await dbGetAll('clients');
   const suppliers = await dbGetAll('suppliers');
+  
+  // Filter out recently deleted items
+  const deletedInvs = _recentlyDeleted['invoices'];
+  if (deletedInvs?.size > 0) invoices = invoices.filter(i => !deletedInvs.has(i.id));
   
   // Helper: normalize date to YYYY-MM-DD
   function invDay(inv) {
@@ -9091,6 +9095,93 @@ function renderAccountingDashboard() {
     + `<div style="text-align:center;margin-top:8px"><button class="btn btn-outline" onclick="openAdjustBalance('supplier')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تسجيل دفعة</button></div>`
     : `<p class="empty-state" style="padding:12px">لا يوجد موردين</p>
        <div style="text-align:center"><button class="btn btn-outline" onclick="openAdjustBalance('supplier')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تسجيل دفعة</button></div>`;
+}
+
+// ============ ACCOUNTING BREAKDOWN ============
+function showAccBreakdown(type) {
+  const now = new Date();
+  const monthStart = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+  
+  let title, items;
+  
+  if (type === 'income') {
+    const salesTotal = allInvoices.filter(i => i.type === 'sale').reduce((s, i) => s + (i.total || 0), 0);
+    const salesMonth = allInvoices.filter(i => i.type === 'sale' && i.date >= monthStart).reduce((s, i) => s + (i.total || 0), 0);
+    const maintTotal = allDevices.filter(d => d.status === 'completed').reduce((s, d) => s + (d.sellingPrice || 0), 0);
+    const maintMonth = allDevices.filter(d => d.status === 'completed' && d.completedDate >= monthStart).reduce((s, d) => s + (d.sellingPrice || 0), 0);
+    const servTotal = allServices.filter(s => s.status === 'completed').reduce((s, sv) => s + (sv.price || 0), 0);
+    const servMonth = allServices.filter(s => s.status === 'completed' && s.date >= monthStart).reduce((s, sv) => s + (sv.price || 0), 0);
+    title = 'تفاصيل الإيرادات';
+    items = [
+      { label: 'مبيعات', total: salesTotal, month: salesMonth, icon: 'bx-cart', color: 'var(--success)' },
+      { label: 'صيانة', total: maintTotal, month: maintMonth, icon: 'bx-wrench', color: 'var(--primary)' },
+      { label: 'خدمات وزيارات', total: servTotal, month: servMonth, icon: 'bx-briefcase', color: 'var(--accent)' },
+    ];
+  } else if (type === 'expenses') {
+    const purchasesTotal = allInvoices.filter(i => i.type === 'purchase').reduce((s, i) => s + (i.total || 0), 0);
+    const purchasesMonth = allInvoices.filter(i => i.type === 'purchase' && i.date >= monthStart).reduce((s, i) => s + (i.total || 0), 0);
+    const customTotal = allExpenses.reduce((s, e) => s + (e.amount || 0), 0);
+    const customMonth = allExpenses.filter(e => e.date >= monthStart).reduce((s, e) => s + (e.amount || 0), 0);
+    const maintCosts = allDevices.filter(d => d.status === 'completed').reduce((s, d) => s + (d.totalCost || 0), 0);
+    title = 'تفاصيل المصروفات';
+    items = [
+      { label: 'مشتريات', total: purchasesTotal, month: purchasesMonth, icon: 'bx-store', color: 'var(--danger)' },
+      { label: 'مصروفات عامة', total: customTotal, month: customMonth, icon: 'bx-money', color: 'var(--warning)' },
+      { label: 'تكاليف صيانة', total: maintCosts, month: 0, icon: 'bx-wrench', color: 'var(--primary)' },
+    ];
+  } else {
+    // Profit breakdown
+    const salesTotal = allInvoices.filter(i => i.type === 'sale').reduce((s, i) => s + (i.total || 0), 0);
+    const maintProfit = allDevices.filter(d => d.status === 'completed').reduce((s, d) => s + ((d.sellingPrice || 0) - (d.totalCost || 0)), 0);
+    const servTotal = allServices.filter(s => s.status === 'completed').reduce((s, sv) => s + (sv.price || 0), 0);
+    const purchasesTotal = allInvoices.filter(i => i.type === 'purchase').reduce((s, i) => s + (i.total || 0), 0);
+    const customTotal = allExpenses.reduce((s, e) => s + (e.amount || 0), 0);
+    title = 'تفاصيل صافي الربح';
+    items = [
+      { label: 'إيراد المبيعات', total: salesTotal, color: 'var(--success)', isPositive: true },
+      { label: 'ربح الصيانة', total: maintProfit, color: 'var(--primary)', isPositive: true },
+      { label: 'إيراد الخدمات', total: servTotal, color: 'var(--accent)', isPositive: true },
+      { label: 'المشتريات', total: -purchasesTotal, color: 'var(--danger)' },
+      { label: 'المصروفات', total: -customTotal, color: 'var(--warning)' },
+    ];
+  }
+  
+  const totalAll = items.reduce((s, i) => s + (i.total || 0), 0);
+  
+  closeCustomSelect();
+  const overlay = document.createElement('div');
+  overlay.className = 'custom-select-overlay';
+  overlay.id = 'custom-select-overlay';
+  overlay.innerHTML = `
+    <div class="custom-select-sheet" style="max-height:60vh">
+      <div class="cs-handle"></div>
+      <div class="cs-title">${title}</div>
+      <div style="padding:0 16px 16px">
+        ${items.map(i => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+            <div style="display:flex;align-items:center;gap:8px">
+              ${i.icon ? `<i class='bx ${i.icon}' style="color:${i.color};font-size:18px"></i>` : `<span style="width:18px;height:18px;border-radius:50%;background:${i.color}20;display:inline-block"></span>`}
+              <span style="font-size:13px">${i.label}</span>
+            </div>
+            <div style="text-align:left">
+              <div style="font-weight:700;font-size:13px;color:${i.total < 0 ? 'var(--danger)' : 'var(--text)'}">${formatMoney(Math.abs(i.total))}</div>
+              ${i.month !== undefined ? `<div style="font-size:10px;color:var(--text-muted)">هذا الشهر: ${formatMoney(i.month)}</div>` : ''}
+            </div>
+          </div>
+        `).join('')}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;font-weight:800;font-size:15px">
+          <span>الإجمالي</span>
+          <span style="color:${totalAll >= 0 ? 'var(--success)' : 'var(--danger)'}">${formatMoney(Math.abs(totalAll))}</span>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add('show'));
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeCustomSelect(); });
+  const sheet = overlay.querySelector('.custom-select-sheet');
+  let startY = 0;
+  sheet.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
+  sheet.addEventListener('touchmove', (e) => { if (e.touches[0].clientY - startY > 80) closeCustomSelect(); }, { passive: true });
 }
 
 // ============ PAYMENT LEDGER ============
