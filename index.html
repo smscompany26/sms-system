@@ -4385,28 +4385,15 @@ async function sbAPI(path, options = {}) {
 
 // ============ INIT ============
 function initDriveAuth() {
+  // Now handled in initApp() — server pulls before app loads
+  // This is kept for manual reconnect from settings
   testSync().then(async (ok) => {
     if (ok) {
       syncReady = true;
       updateSyncStatus('connected');
-      
-      // Check if cloud has data
-      const hasRemote = await sbHasData();
-      
-      if (hasRemote) {
-        await pullFromCloud();
-      } else {
-        // Cloud empty — push local data
-        let hasLocal = false;
-        for (const s of Object.keys(STORES)) {
-          const d = await dbGetAll(s);
-          if (d.length > 0) { hasLocal = true; break; }
-        }
-        if (hasLocal) await pushToCloud();
-      }
-      
-      updateSyncStatus('connected');
+      await pullFromCloud();
       startAutoPull();
+      reloadActivePage();
     } else {
       updateSyncStatus('error');
     }
@@ -4643,13 +4630,17 @@ const _origDbDelete = dbDelete;
 
 dbAdd = async function(store, data) {
   const result = await _origDbAdd(store, data);
-  scheduleDriveSync();
+  // Immediate push to server
+  if (syncReady && !isPushing) { lastPushTime = Date.now(); pushToCloud(); }
+  else scheduleDriveSync();
   return result;
 };
 
 dbPut = async function(store, data) {
   const result = await _origDbPut(store, data);
-  scheduleDriveSync();
+  // Immediate push to server
+  if (syncReady && !isPushing) { lastPushTime = Date.now(); pushToCloud(); }
+  else scheduleDriveSync();
   return result;
 };
 
@@ -5542,6 +5533,29 @@ function renderRecentInvoices(invoices) {
 async function initApp() {
   try {
     await openDB();
+    
+    // Try to connect and pull from server FIRST (server = source of truth)
+    const syncOk = await testSync();
+    if (syncOk) {
+      syncReady = true;
+      updateSyncStatus('connected');
+      const hasRemote = await sbHasData();
+      if (hasRemote) {
+        // Pull server data into local DB before anything else
+        await pullFromCloud();
+        // Clear local IndexedDB stores that don't exist on server (orphan data)
+      } else {
+        // Server empty — push local data up
+        let hasLocal = false;
+        for (const s of Object.keys(STORES)) {
+          const d = await dbGetAll(s);
+          if (d.length > 0) { hasLocal = true; break; }
+        }
+        if (hasLocal) await pushToCloud();
+      }
+      startAutoPull();
+    }
+    
     await ensureDefaultAdmin();
     
     const loggedIn = await autoLogin();
@@ -5558,9 +5572,6 @@ async function initApp() {
     await initDynamicLists();
     // Enhance all remaining native selects with glassmorphic popup
     enhanceAllSelects();
-    
-    // Init Google Drive connection
-    initDriveAuth();
   } catch (err) {
     console.error('Init error:', err);
     toast('خطأ في تحميل النظام', 'error');
