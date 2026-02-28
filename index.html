@@ -8,12 +8,12 @@
 <meta http-equiv="Expires" content="0">
 <title>SMS — نظام إدارة المخزون والصيانة</title>
 <script>
-// v7.2.0 — SMS System
+// v7.2.1 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.2.0');
+console.log('SMS v7.2.1');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -2604,7 +2604,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.0</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.1</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i data-i18n="settings_system_setup"> إعداد النظام</h4>
@@ -2818,7 +2818,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.2.0 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.2.1 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -6003,7 +6003,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.2.0';
+  if (backupEl) backupEl.textContent = 'v7.2.1';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -9266,6 +9266,11 @@ function renderDeviceParts() {
       ` : `
         <input type="text" placeholder="اسم القطعة" value="${part.name}" onchange="currentDeviceParts[${idx}].name=this.value">
         <input type="text" placeholder="المورد" value="${part.supplier||''}" onchange="currentDeviceParts[${idx}].supplier=this.value">
+        <div style="margin-top:6px">
+          <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px"><i class='bx bx-receipt'></i> فاتورة الشراء</label>
+          <input type="file" accept="image/*" onchange="onPartInvoicePhoto(${idx}, this)" style="font-size:12px">
+          ${part.invoicePhoto ? `<div style="margin-top:6px"><img src="${part.invoicePhoto}" style="max-width:120px;max-height:80px;border-radius:6px;border:1px solid var(--border);cursor:pointer" onclick="window.open(this.src)"><button type="button" class="btn-icon danger btn-sm" style="vertical-align:top" onclick="removePartInvoice(${idx})"><i class='bx bx-x'></i></button></div>` : ''}
+        </div>
       `}
       <div class="part-row-nums">
         <input type="number" placeholder="الكمية" value="${part.quantity}" min="1" onchange="onPartQtyChange(${idx}, this.value)">
@@ -9285,6 +9290,19 @@ function renderDeviceParts() {
     }
   });
   enhanceAllSelects();
+}
+
+async function onPartInvoicePhoto(idx, input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const base64 = await fileToBase64(file);
+  currentDeviceParts[idx].invoicePhoto = base64;
+  renderDeviceParts();
+}
+
+function removePartInvoice(idx) {
+  currentDeviceParts[idx].invoicePhoto = null;
+  renderDeviceParts();
 }
 
 function togglePartSource(idx, fromStock) {
@@ -9434,8 +9452,8 @@ async function viewDevice(id) {
     <div class="table-responsive"><table>
       <thead><tr><th>القطعة</th><th>المصدر</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
       <tbody>${d.parts.map(p => `<tr>
-        <td>${p.name}</td>
-        <td>${p.fromStock ? '<span class="badge badge-new">مخزون</span>' : '<span class="badge badge-used">خارجي</span>'}</td>
+        <td>${p.name}${p.supplier ? `<br><small style="color:var(--text-muted)">المورد: ${p.supplier}</small>` : ''}</td>
+        <td>${p.fromStock ? '<span class="badge badge-new">مخزون</span>' : '<span class="badge badge-used">خارجي</span>'}${!p.fromStock && p.invoicePhoto ? `<br><a href="${p.invoicePhoto}" target="_blank" style="font-size:11px;color:var(--primary)"><i class='bx bx-receipt'></i> فاتورة</a>` : ''}</td>
         <td>${p.quantity}</td>
         <td>${showPrices ? formatMoney(p.unitPrice) : '—'}</td>
         <td>${showPrices ? formatMoney(p.total) : '—'}</td>
