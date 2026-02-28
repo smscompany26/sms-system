@@ -4657,17 +4657,34 @@ dbDelete = async function(store, id) {
   // Track deletion to prevent pull from restoring
   if (!_recentlyDeleted[store]) _recentlyDeleted[store] = new Set();
   _recentlyDeleted[store].add(id);
-  // Also track in pending deletes — only cleared after successful push
   if (!_pendingDeletes[store]) _pendingDeletes[store] = new Set();
   _pendingDeletes[store].add(id);
   
+  // Delete from local IndexedDB
   const result = await _origDbDelete(store, id);
-  // Force immediate push for deletes — don't wait
-  if (syncReady && !isPushing) {
-    lastPushTime = Date.now();
-    pushToCloud();
-  } else {
-    scheduleDriveSync();
+  
+  // Immediately push this store to server (awaited — guaranteed sync)
+  if (syncReady) {
+    try {
+      lastPushTime = Date.now();
+      const data = await dbGetAll(store);
+      const now = new Date().toISOString();
+      await sbAPI('/sync_data', {
+        method: 'POST',
+        headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify([{ store_name: store, data: data, updated_at: now }]),
+      });
+      lastRemoteTs = now;
+      lastPushTime = Date.now();
+      lastPullTime = Date.now();
+      // Clear pending for this store
+      if (_pendingDeletes[store]) _pendingDeletes[store].delete(id);
+      if (_recentlyDeleted[store]) _recentlyDeleted[store].delete(id);
+    } catch(e) {
+      console.error('Delete sync error:', e);
+      // Falls back to scheduled sync
+      scheduleDriveSync();
+    }
   }
   return result;
 };
