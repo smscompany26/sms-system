@@ -3362,55 +3362,66 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
 <!-- Payment Ledger Modal -->
 <div id="modal-adjust-balance" class="modal">
-  <div class="modal-content" style="max-width:550px">
+  <div class="modal-content" style="max-width:500px">
     <div class="modal-header"><h3 id="modal-adjust-balance-title">سجل المدفوعات</h3><button class="modal-close" onclick="closeModal('modal-adjust-balance')">&times;</button></div>
     <input type="hidden" id="adj-type">
     <input type="hidden" id="adj-entity-id">
     
-    <!-- Entity selector (when no preselected) -->
-    <div id="adj-selector" class="form-group" style="margin:12px 0">
+    <!-- Entity selector -->
+    <div id="adj-selector" class="form-group" style="margin:0 0 16px">
       <select id="adj-entity" onchange="onLedgerEntityChange()"></select>
     </div>
     
-    <!-- Balance summary -->
-    <div id="adj-summary" style="display:none;padding:12px 16px;background:var(--bg);border-radius:12px;margin-bottom:16px">
+    <!-- Balance summary card -->
+    <div id="adj-summary" style="display:none;padding:16px 20px;background:linear-gradient(135deg,var(--primary),#8b5cf6);border-radius:16px;margin-bottom:16px;color:#fff">
+      <div style="font-size:12px;opacity:0.8;margin-bottom:4px">الرصيد الحالي</div>
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span id="adj-entity-name" style="font-weight:700;font-size:15px"></span>
-        <span id="adj-balance-display" style="font-size:18px;font-weight:800"></span>
-      </div>
-    </div>
-    
-    <!-- Add payment form -->
-    <div id="adj-add-form" style="display:none;padding:12px;background:var(--bg);border-radius:12px;margin-bottom:16px;border:1px solid var(--border)">
-      <div style="font-weight:600;font-size:13px;margin-bottom:8px" id="adj-form-title">تسجيل دفعة جديدة</div>
-      <input type="hidden" id="adj-edit-idx" value="-1">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-        <select id="adj-pay-type" style="flex:1;min-width:120px">
-          <option value="payment_in">دفعة واردة (سداد)</option>
-          <option value="payment_out">دفعة صادرة (دفع)</option>
-          <option value="add_debt">إضافة دين</option>
-          <option value="adjust">تعديل يدوي</option>
-        </select>
-        <input type="number" id="adj-pay-amount" placeholder="المبلغ" step="0.01" min="0" style="flex:1;min-width:100px">
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input type="date" id="adj-pay-date" style="flex:1">
-        <input type="text" id="adj-pay-notes" placeholder="ملاحظات..." style="flex:2">
-      </div>
-      <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end">
-        <button type="button" class="btn btn-outline" onclick="cancelLedgerEdit()" style="font-size:12px;padding:4px 12px">إلغاء</button>
-        <button type="button" class="btn btn-primary" onclick="saveLedgerEntry()" style="font-size:12px;padding:4px 12px">حفظ</button>
+        <span id="adj-entity-name" style="font-weight:600;font-size:15px"></span>
+        <span id="adj-balance-display" style="font-size:22px;font-weight:800"></span>
       </div>
     </div>
     
     <!-- Action buttons -->
-    <div id="adj-actions" style="display:none;margin-bottom:12px;display:flex;gap:8px">
-      <button type="button" class="btn btn-primary" onclick="showAddPayment()" style="font-size:12px;padding:6px 14px"><i class='bx bx-plus'></i> تسجيل دفعة</button>
-      <button type="button" class="btn btn-outline" onclick="showSetBalance()" style="font-size:12px;padding:6px 14px"><i class='bx bx-edit'></i> تعيين رصيد</button>
+    <div id="adj-actions" style="display:none;margin-bottom:16px;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn btn-primary" onclick="showAddPayment()" style="font-size:13px;padding:8px 16px;flex:1"><i class='bx bx-plus'></i> تسجيل دفعة</button>
+      <button type="button" class="btn btn-outline" onclick="showSetBalance()" style="font-size:13px;padding:8px 16px;flex:1"><i class='bx bx-edit'></i> تعيين رصيد</button>
+    </div>
+    
+    <!-- Add payment form -->
+    <div id="adj-add-form" style="display:none;padding:16px;background:var(--card);border-radius:12px;margin-bottom:16px;border:1px solid var(--border)">
+      <div style="font-weight:700;font-size:14px;margin-bottom:12px" id="adj-form-title">تسجيل دفعة جديدة</div>
+      <input type="hidden" id="adj-edit-idx" value="-1">
+      <div class="form-group" style="margin-bottom:10px">
+        <label style="font-size:12px;margin-bottom:4px;display:block">نوع الحركة</label>
+        <select id="adj-pay-type" style="width:100%">
+          <option value="payment_in">دفعة واردة (سداد من العميل)</option>
+          <option value="payment_out">دفعة صادرة (دفع للمورد)</option>
+          <option value="add_debt">إضافة دين جديد</option>
+          <option value="adjust">تعيين رصيد يدوي</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:10px">
+        <div class="form-group" style="flex:1;margin:0">
+          <label style="font-size:12px;margin-bottom:4px;display:block">المبلغ</label>
+          <input type="number" id="adj-pay-amount" placeholder="0.00" step="0.01" min="0" style="width:100%">
+        </div>
+        <div class="form-group" style="flex:1;margin:0">
+          <label style="font-size:12px;margin-bottom:4px;display:block">التاريخ</label>
+          <input type="date" id="adj-pay-date" style="width:100%">
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label style="font-size:12px;margin-bottom:4px;display:block">ملاحظات</label>
+        <input type="text" id="adj-pay-notes" placeholder="وصف الحركة..." style="width:100%">
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button type="button" class="btn btn-outline" onclick="cancelLedgerEdit()" style="font-size:13px;padding:6px 16px">إلغاء</button>
+        <button type="button" class="btn btn-primary" onclick="saveLedgerEntry()" style="font-size:13px;padding:6px 16px">حفظ الحركة</button>
+      </div>
     </div>
     
     <!-- Payment history -->
-    <div id="adj-ledger" style="display:none;max-height:300px;overflow-y:auto"></div>
+    <div id="adj-ledger" style="display:none;max-height:300px;overflow-y:auto;border-radius:12px;border:1px solid var(--border)"></div>
   </div>
 </div>
 
@@ -9229,7 +9240,7 @@ function onLedgerEntityChange() {
   document.getElementById('adj-entity-name').textContent = entity.name;
   const balDisplay = document.getElementById('adj-balance-display');
   balDisplay.textContent = formatMoney(balance);
-  balDisplay.style.color = balance > 0 ? 'var(--danger)' : 'var(--success)';
+  balDisplay.style.color = balance > 0 ? '#fca5a5' : '#86efac'; // Light red/green on purple bg
   
   document.getElementById('adj-summary').style.display = '';
   document.getElementById('adj-actions').style.display = 'flex';
