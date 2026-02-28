@@ -8091,16 +8091,18 @@ async function printReceipt(invoiceId) {
     <hr class="sep">
     
     <!-- QR -->
-    <div style="text-align:center;margin:8px 0">
-      <svg id="receipt-barcode"></svg>
-    </div>
     <div class="qr-area">
       <img src="${qrUrl}" style="width:70px;height:70px">
       <div style="font-size:8px;color:#777;margin-top:3px">QR للتحقق</div>
     </div>
     
     <!-- Footer -->
-    <div class="footer">شكراً لتعاملكم معنا ❤️</div>
+    <div class="footer">شكراً لتعاملكم معنا</div>
+    
+    <!-- Barcode at bottom -->
+    <div style="text-align:center;margin:8px 0 4px">
+      <svg id="receipt-barcode"></svg>
+    </div>
     
     <!-- Buttons -->
     <div class="no-print" style="position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:10px;padding:12px;background:rgba(255,255,255,0.95);box-shadow:0 -2px 10px rgba(0,0,0,0.1)">
