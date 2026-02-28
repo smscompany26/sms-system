@@ -7818,12 +7818,14 @@ async function printReceipt(invoiceId) {
       .total-row { display: flex; justify-content: space-between; font-size: 11px; padding: 2px 0; }
       .total-row.final { font-weight: 700; font-size: 12px; border-top: 1px solid #000; padding-top: 4px; margin-top: 2px; }
       .qr-area { text-align: center; margin: 10px 0 6px; }
-      .footer { text-align: center; font-size: 9px; color: #555; margin-top: 8px; padding-bottom: 60px; }
+      .footer { text-align: center; font-size: 9px; color: #555; margin-top: 6px; padding-bottom: 50px; }
       @media print {
-        @page { size: 80mm auto; margin: 0; }
-        html, body { width: 80mm !important; max-width: 80mm !important; margin: 0 !important; padding: 8px !important; }
+        @page { size: 80mm auto; margin: 0mm !important; padding: 0 !important; }
+        html { margin: 0 !important; padding: 0 !important; height: auto !important; }
+        body { width: 80mm !important; max-width: 80mm !important; margin: 0 !important; padding: 4px 6px !important; min-height: auto !important; height: auto !important; }
         .no-print { display: none !important; }
-        .footer { padding-bottom: 0; }
+        .footer { padding-bottom: 0 !important; margin-bottom: 0 !important; }
+        .qr-area { margin: 6px 0 2px !important; }
       }
     </style>
   </head>
