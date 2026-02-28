@@ -4655,7 +4655,13 @@ dbDelete = async function(store, id) {
   _pendingDeletes[store].add(id);
   
   const result = await _origDbDelete(store, id);
-  scheduleDriveSync();
+  // Force immediate push for deletes — don't wait
+  if (syncReady && !isPushing) {
+    lastPushTime = Date.now();
+    pushToCloud();
+  } else {
+    scheduleDriveSync();
+  }
   return result;
 };
 
@@ -7707,7 +7713,7 @@ async function deleteInvoice(id) {
   renderPurchaseInvoices();
   toast('تم حذف الفاتورة');
   
-  // Background: reverse stock + delete + sync
+  // Delete + reverse stock — dbDelete now pushes immediately
   if (inv?.items) await reverseStockChanges(inv);
   await dbDelete('invoices', id);
   await updateBalances();
