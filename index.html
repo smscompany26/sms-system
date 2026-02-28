@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>SMS — نظام إدارة المخزون والصيانة</title>
+<script>
+// v2.0 — Server-only mode. Delete ALL old local databases immediately.
+try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
+try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
+try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
+try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
+console.log('SMS v2.0 — Server-only mode (no local storage)');
+</script>
 <style>/* ========== CSS Variables ========== */
 :root {
   --primary: #6c3ce9;
@@ -3472,12 +3483,21 @@ async function loadFromServer() {
 }
 
 async function saveStoreToServer(storeName) {
-  const now = new Date().toISOString();
-  await sbAPI('/sync_data', {
-    method: 'POST',
-    headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-    body: JSON.stringify([{ store_name: storeName, data: _cache[storeName] || [], updated_at: now }]),
-  });
+  try {
+    const now = new Date().toISOString();
+    const resp = await sbAPI('/sync_data', {
+      method: 'POST',
+      headers: { 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify([{ store_name: storeName, data: _cache[storeName] || [], updated_at: now }]),
+    });
+    if (!resp.ok) {
+      console.error(`Save failed for ${storeName}: ${resp.status} ${resp.statusText}`);
+      toast('خطأ في حفظ البيانات — حاول مرة أخرى', 'error');
+    }
+  } catch(e) {
+    console.error(`Save error for ${storeName}:`, e);
+    toast('خطأ في الاتصال بالسيرفر', 'error');
+  }
 }
 
 async function dbGetAll(store) {
