@@ -3360,41 +3360,57 @@ tr:hover { background: rgba(108,60,233,0.02); }
   </div>
 </div>
 
-<!-- Adjust Balance Modal -->
+<!-- Payment Ledger Modal -->
 <div id="modal-adjust-balance" class="modal">
-  <div class="modal-content" style="max-width:400px">
-    <div class="modal-header"><h3 id="modal-adjust-balance-title">تعديل رصيد</h3><button class="modal-close" onclick="closeModal('modal-adjust-balance')">&times;</button></div>
-    <form id="adjust-balance-form" onsubmit="return saveAdjustedBalance(event)">
-      <input type="hidden" id="adj-type">
-      <div class="form-group">
-        <label>اختر</label>
-        <select id="adj-entity" required></select>
+  <div class="modal-content" style="max-width:550px">
+    <div class="modal-header"><h3 id="modal-adjust-balance-title">سجل المدفوعات</h3><button class="modal-close" onclick="closeModal('modal-adjust-balance')">&times;</button></div>
+    <input type="hidden" id="adj-type">
+    <input type="hidden" id="adj-entity-id">
+    
+    <!-- Entity selector (when no preselected) -->
+    <div id="adj-selector" class="form-group" style="margin:12px 0">
+      <select id="adj-entity" onchange="onLedgerEntityChange()"></select>
+    </div>
+    
+    <!-- Balance summary -->
+    <div id="adj-summary" style="display:none;padding:12px 16px;background:var(--bg);border-radius:12px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span id="adj-entity-name" style="font-weight:700;font-size:15px"></span>
+        <span id="adj-balance-display" style="font-size:18px;font-weight:800"></span>
       </div>
-      <div class="form-group">
-        <label>الرصيد الحالي</label>
-        <input type="text" id="adj-current" readonly style="background:var(--bg);opacity:0.7">
-      </div>
-      <div class="form-group">
-        <label>العملية</label>
-        <select id="adj-operation">
-          <option value="set">تعيين رصيد جديد</option>
-          <option value="add">إضافة مبلغ (زيادة دين)</option>
-          <option value="subtract">خصم مبلغ (سداد)</option>
+    </div>
+    
+    <!-- Add payment form -->
+    <div id="adj-add-form" style="display:none;padding:12px;background:var(--bg);border-radius:12px;margin-bottom:16px;border:1px solid var(--border)">
+      <div style="font-weight:600;font-size:13px;margin-bottom:8px" id="adj-form-title">تسجيل دفعة جديدة</div>
+      <input type="hidden" id="adj-edit-idx" value="-1">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <select id="adj-pay-type" style="flex:1;min-width:120px">
+          <option value="payment_in">دفعة واردة (سداد)</option>
+          <option value="payment_out">دفعة صادرة (دفع)</option>
+          <option value="add_debt">إضافة دين</option>
+          <option value="adjust">تعديل يدوي</option>
         </select>
+        <input type="number" id="adj-pay-amount" placeholder="المبلغ" step="0.01" min="0" style="flex:1;min-width:100px">
       </div>
-      <div class="form-group">
-        <label>المبلغ</label>
-        <input type="number" id="adj-amount" step="0.01" min="0" required>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="date" id="adj-pay-date" style="flex:1">
+        <input type="text" id="adj-pay-notes" placeholder="ملاحظات..." style="flex:2">
       </div>
-      <div class="form-group">
-        <label>ملاحظات</label>
-        <input type="text" id="adj-notes" placeholder="سبب التعديل...">
+      <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end">
+        <button type="button" class="btn btn-outline" onclick="cancelLedgerEdit()" style="font-size:12px;padding:4px 12px">إلغاء</button>
+        <button type="button" class="btn btn-primary" onclick="saveLedgerEntry()" style="font-size:12px;padding:4px 12px">حفظ</button>
       </div>
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">حفظ</button>
-        <button type="button" class="btn btn-outline" onclick="closeModal('modal-adjust-balance')">إلغاء</button>
-      </div>
-    </form>
+    </div>
+    
+    <!-- Action buttons -->
+    <div id="adj-actions" style="display:none;margin-bottom:12px;display:flex;gap:8px">
+      <button type="button" class="btn btn-primary" onclick="showAddPayment()" style="font-size:12px;padding:6px 14px"><i class='bx bx-plus'></i> تسجيل دفعة</button>
+      <button type="button" class="btn btn-outline" onclick="showSetBalance()" style="font-size:12px;padding:6px 14px"><i class='bx bx-edit'></i> تعيين رصيد</button>
+    </div>
+    
+    <!-- Payment history -->
+    <div id="adj-ledger" style="display:none;max-height:300px;overflow-y:auto"></div>
   </div>
 </div>
 
@@ -9052,97 +9068,251 @@ function renderAccountingDashboard() {
   document.getElementById('acc-profit-month').style.color = monthProfit >= 0 ? 'var(--success)' : 'var(--danger)';
   document.getElementById('acc-owed').textContent = formatMoney(totalOwed);
   
-  // Client balances
+  // Client balances — show all clients sorted by balance
   const clientBalances = document.getElementById('acc-client-balances');
-  const clientsWithBalance = allClients.filter(c => (c.balance || 0) !== 0).sort((a, b) => (b.balance || 0) - (a.balance || 0));
-  clientBalances.innerHTML = clientsWithBalance.length > 0 
-    ? clientsWithBalance.map(c => `<div class="balance-row" style="cursor:pointer" onclick="openAdjustBalance('client', ${c.id})">
+  const sortedClients = [...allClients].sort((a, b) => (b.balance || 0) - (a.balance || 0));
+  clientBalances.innerHTML = sortedClients.length > 0 
+    ? sortedClients.map(c => `<div class="balance-row" style="cursor:pointer" onclick="openAdjustBalance('client', ${c.id})">
         <span>${c.name}</span>
-        <span style="color:${c.balance > 0 ? 'var(--danger)' : 'var(--success)'}">${formatMoney(c.balance || 0)}</span>
+        <span style="color:${(c.balance||0) > 0 ? 'var(--danger)' : 'var(--text-muted)'}">${formatMoney(c.balance || 0)}</span>
       </div>`).join('')
-    + `<div style="text-align:center;margin-top:8px"><button class="btn btn-outline" onclick="openAdjustBalance('client')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تعديل رصيد</button></div>`
-    : `<p class="empty-state" style="padding:12px">لا يوجد عملاء مدينين</p>
-       <div style="text-align:center"><button class="btn btn-outline" onclick="openAdjustBalance('client')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تعديل رصيد</button></div>`;
+    + `<div style="text-align:center;margin-top:8px"><button class="btn btn-outline" onclick="openAdjustBalance('client')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تسجيل دفعة</button></div>`
+    : `<p class="empty-state" style="padding:12px">لا يوجد عملاء</p>
+       <div style="text-align:center"><button class="btn btn-outline" onclick="openAdjustBalance('client')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تسجيل دفعة</button></div>`;
   
-  // Supplier balances
+  // Supplier balances — show all suppliers
   const supplierBalances = document.getElementById('acc-supplier-balances');
-  const suppliersWithBalance = allSuppliers.filter(s => (s.balance || 0) !== 0).sort((a, b) => (b.balance || 0) - (a.balance || 0));
-  supplierBalances.innerHTML = suppliersWithBalance.length > 0
-    ? suppliersWithBalance.map(s => `<div class="balance-row" style="cursor:pointer" onclick="openAdjustBalance('supplier', ${s.id})">
+  const sortedSuppliers = [...allSuppliers].sort((a, b) => (b.balance || 0) - (a.balance || 0));
+  supplierBalances.innerHTML = sortedSuppliers.length > 0
+    ? sortedSuppliers.map(s => `<div class="balance-row" style="cursor:pointer" onclick="openAdjustBalance('supplier', ${s.id})">
         <span>${s.name}</span>
-        <span style="color:${s.balance > 0 ? 'var(--warning)' : 'var(--success)'}">${formatMoney(s.balance || 0)}</span>
+        <span style="color:${(s.balance||0) > 0 ? 'var(--warning)' : 'var(--text-muted)'}">${formatMoney(s.balance || 0)}</span>
       </div>`).join('')
-    + `<div style="text-align:center;margin-top:8px"><button class="btn btn-outline" onclick="openAdjustBalance('supplier')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تعديل رصيد</button></div>`
-    : `<p class="empty-state" style="padding:12px">لا يوجد موردين دائنين</p>
-       <div style="text-align:center"><button class="btn btn-outline" onclick="openAdjustBalance('supplier')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تعديل رصيد</button></div>`;
+    + `<div style="text-align:center;margin-top:8px"><button class="btn btn-outline" onclick="openAdjustBalance('supplier')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تسجيل دفعة</button></div>`
+    : `<p class="empty-state" style="padding:12px">لا يوجد موردين</p>
+       <div style="text-align:center"><button class="btn btn-outline" onclick="openAdjustBalance('supplier')" style="font-size:12px;padding:4px 12px"><i class='bx bx-plus'></i> تسجيل دفعة</button></div>`;
 }
 
-// ============ BALANCE ADJUSTMENT ============
+// ============ PAYMENT LEDGER ============
 function openAdjustBalance(type, preselectedId) {
   const isClient = type === 'client';
-  document.getElementById('modal-adjust-balance-title').textContent = isClient ? 'تعديل رصيد عميل' : 'تعديل رصيد مورد';
+  document.getElementById('modal-adjust-balance-title').textContent = isClient ? 'سجل مدفوعات عميل' : 'سجل مدفوعات مورد';
   document.getElementById('adj-type').value = type;
+  document.getElementById('adj-edit-idx').value = '-1';
   
   const sel = document.getElementById('adj-entity');
   const list = isClient ? allClients : allSuppliers;
-  sel.innerHTML = '<option value="">اختر...</option>' + list.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
+  sel.innerHTML = '<option value="">اختر...</option>' + list.map(e => `<option value="${e.id}">${e.name} (${formatMoney(e.balance || 0)})</option>`).join('');
+  
+  document.getElementById('adj-add-form').style.display = 'none';
   
   if (preselectedId) {
     sel.value = preselectedId;
-    updateAdjCurrentBalance();
+    document.getElementById('adj-selector').style.display = 'none';
+    onLedgerEntityChange();
+  } else {
+    document.getElementById('adj-selector').style.display = '';
+    document.getElementById('adj-summary').style.display = 'none';
+    document.getElementById('adj-actions').style.display = 'none';
+    document.getElementById('adj-ledger').style.display = 'none';
   }
   
-  document.getElementById('adj-operation').value = 'set';
-  document.getElementById('adj-amount').value = '';
-  document.getElementById('adj-notes').value = '';
-  document.getElementById('adj-current').value = '';
-  
-  if (preselectedId) updateAdjCurrentBalance();
-  
-  sel.onchange = updateAdjCurrentBalance;
   openModal('modal-adjust-balance');
 }
 
-function updateAdjCurrentBalance() {
+function onLedgerEntityChange() {
   const type = document.getElementById('adj-type').value;
   const id = parseInt(document.getElementById('adj-entity').value);
-  if (!id) { document.getElementById('adj-current').value = ''; return; }
+  if (!id) {
+    document.getElementById('adj-summary').style.display = 'none';
+    document.getElementById('adj-actions').style.display = 'none';
+    document.getElementById('adj-ledger').style.display = 'none';
+    return;
+  }
+  document.getElementById('adj-entity-id').value = id;
   const list = type === 'client' ? allClients : allSuppliers;
   const entity = list.find(e => e.id === id);
-  document.getElementById('adj-current').value = entity ? formatMoney(entity.balance || 0) : '';
+  if (!entity) return;
+  
+  const balance = entity.balance || 0;
+  document.getElementById('adj-entity-name').textContent = entity.name;
+  const balDisplay = document.getElementById('adj-balance-display');
+  balDisplay.textContent = formatMoney(balance);
+  balDisplay.style.color = balance > 0 ? 'var(--danger)' : 'var(--success)';
+  
+  document.getElementById('adj-summary').style.display = '';
+  document.getElementById('adj-actions').style.display = 'flex';
+  document.getElementById('adj-add-form').style.display = 'none';
+  
+  renderLedger(entity);
 }
 
-async function saveAdjustedBalance(e) {
-  e.preventDefault();
+function renderLedger(entity) {
+  const ledger = document.getElementById('adj-ledger');
+  const payments = entity.payments || [];
+  
+  if (payments.length === 0) {
+    ledger.style.display = 'block';
+    ledger.innerHTML = '<p class="empty-state" style="padding:16px;font-size:13px">لا توجد حركات مسجلة</p>';
+    return;
+  }
+  
+  const sorted = [...payments].sort((a, b) => new Date(b.date) - new Date(a.date));
+  ledger.style.display = 'block';
+  ledger.innerHTML = sorted.map((p, i) => {
+    const origIdx = payments.indexOf(p);
+    const isIn = p.type === 'payment_in';
+    const isDebt = p.type === 'add_debt';
+    const isAdjust = p.type === 'adjust';
+    const color = isIn ? 'var(--success)' : isDebt ? 'var(--danger)' : 'var(--warning)';
+    const icon = isIn ? 'bx-down-arrow-alt' : isDebt ? 'bx-up-arrow-alt' : 'bx-transfer';
+    const label = isIn ? 'سداد' : isDebt ? 'دين' : p.type === 'payment_out' ? 'دفع' : 'تعديل';
+    const sign = isIn ? '-' : isDebt ? '+' : '';
+    
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+        <i class='bx ${icon}' style="color:${color};font-size:18px;flex-shrink:0"></i>
+        <div style="min-width:0">
+          <div style="font-size:13px;font-weight:600">${sign}${formatMoney(p.amount)}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${formatDate(p.date)}${p.notes ? ' — ' + p.notes : ''}${p.invoiceNum ? ' (فاتورة ' + p.invoiceNum + ')' : ''}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:4px;flex-shrink:0">
+        <span style="font-size:10px;padding:2px 6px;border-radius:4px;background:${color}20;color:${color}">${label}</span>
+        ${isAdmin() ? `<button onclick="editLedgerEntry(${origIdx})" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;padding:2px"><i class='bx bx-edit'></i></button>
+        <button onclick="deleteLedgerEntry(${origIdx})" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;padding:2px"><i class='bx bx-trash'></i></button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showAddPayment() {
+  document.getElementById('adj-form-title').textContent = 'تسجيل دفعة جديدة';
+  document.getElementById('adj-edit-idx').value = '-1';
+  document.getElementById('adj-pay-type').value = 'payment_in';
+  document.getElementById('adj-pay-amount').value = '';
+  document.getElementById('adj-pay-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('adj-pay-notes').value = '';
+  document.getElementById('adj-add-form').style.display = 'block';
+  document.getElementById('adj-pay-amount').focus();
+}
+
+function showSetBalance() {
+  document.getElementById('adj-form-title').textContent = 'تعيين الرصيد يدوياً';
+  document.getElementById('adj-edit-idx').value = '-1';
+  document.getElementById('adj-pay-type').value = 'adjust';
+  document.getElementById('adj-pay-amount').value = '';
+  document.getElementById('adj-pay-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('adj-pay-notes').value = 'تعديل يدوي';
+  document.getElementById('adj-add-form').style.display = 'block';
+}
+
+function cancelLedgerEdit() {
+  document.getElementById('adj-add-form').style.display = 'none';
+  document.getElementById('adj-edit-idx').value = '-1';
+}
+
+function editLedgerEntry(idx) {
   const type = document.getElementById('adj-type').value;
-  const id = parseInt(document.getElementById('adj-entity').value);
-  const operation = document.getElementById('adj-operation').value;
-  const amount = parseFloat(document.getElementById('adj-amount').value) || 0;
-  const notes = document.getElementById('adj-notes').value.trim();
+  const id = parseInt(document.getElementById('adj-entity-id').value);
+  const list = type === 'client' ? allClients : allSuppliers;
+  const entity = list.find(e => e.id === id);
+  if (!entity?.payments?.[idx]) return;
+  
+  const p = entity.payments[idx];
+  document.getElementById('adj-form-title').textContent = 'تعديل الحركة';
+  document.getElementById('adj-edit-idx').value = idx;
+  document.getElementById('adj-pay-type').value = p.type;
+  document.getElementById('adj-pay-amount').value = p.amount;
+  document.getElementById('adj-pay-date').value = p.date?.split('T')[0] || '';
+  document.getElementById('adj-pay-notes').value = p.notes || '';
+  document.getElementById('adj-add-form').style.display = 'block';
+}
+
+async function deleteLedgerEntry(idx) {
+  if (!confirm('حذف هذه الحركة؟')) return;
+  const type = document.getElementById('adj-type').value;
+  const id = parseInt(document.getElementById('adj-entity-id').value);
+  const store = type === 'client' ? 'clients' : 'suppliers';
+  const entity = await dbGet(store, id);
+  if (!entity?.payments?.[idx]) return;
+  
+  const entry = entity.payments[idx];
+  // Reverse the balance effect
+  if (entry.type === 'payment_in' || entry.type === 'payment_out') entity.balance = (entity.balance || 0) + entry.amount;
+  else if (entry.type === 'add_debt') entity.balance = (entity.balance || 0) - entry.amount;
+  
+  entity.payments.splice(idx, 1);
+  entity.balance = Math.round((entity.balance || 0) * 100) / 100;
+  await dbPut(store, entity);
+  
+  // Update local array
+  const list = type === 'client' ? allClients : allSuppliers;
+  const localEntity = list.find(e => e.id === id);
+  if (localEntity) { localEntity.payments = entity.payments; localEntity.balance = entity.balance; }
+  
+  toast('تم حذف الحركة');
+  onLedgerEntityChange();
+  renderAccountingDashboard();
+}
+
+async function saveLedgerEntry() {
+  const type = document.getElementById('adj-type').value;
+  const id = parseInt(document.getElementById('adj-entity-id').value);
+  const payType = document.getElementById('adj-pay-type').value;
+  const amount = parseFloat(document.getElementById('adj-pay-amount').value) || 0;
+  const date = document.getElementById('adj-pay-date').value;
+  const notes = document.getElementById('adj-pay-notes').value.trim();
+  const editIdx = parseInt(document.getElementById('adj-edit-idx').value);
   
   if (!id) { toast('اختر عميل أو مورد', 'error'); return; }
-  if (amount < 0) { toast('المبلغ لازم يكون موجب', 'error'); return; }
+  if (amount <= 0) { toast('أدخل مبلغ صحيح', 'error'); return; }
   
   const store = type === 'client' ? 'clients' : 'suppliers';
   const entity = await dbGet(store, id);
-  if (!entity) { toast('غير موجود', 'error'); return; }
+  if (!entity) return;
   
-  const oldBalance = entity.balance || 0;
-  let newBalance;
-  if (operation === 'set') newBalance = amount;
-  else if (operation === 'add') newBalance = oldBalance + amount;
-  else newBalance = oldBalance - amount;
+  if (!entity.payments) entity.payments = [];
   
-  entity.balance = Math.max(0, Math.round(newBalance * 100) / 100);
+  // If editing, reverse old entry first
+  if (editIdx >= 0 && entity.payments[editIdx]) {
+    const old = entity.payments[editIdx];
+    if (old.type === 'payment_in' || old.type === 'payment_out') entity.balance = (entity.balance || 0) + old.amount;
+    else if (old.type === 'add_debt') entity.balance = (entity.balance || 0) - old.amount;
+  }
+  
+  const entry = { type: payType, amount, date: new Date(date).toISOString(), notes, createdAt: new Date().toISOString() };
+  
+  // Apply balance effect
+  if (payType === 'payment_in' || payType === 'payment_out') {
+    entity.balance = (entity.balance || 0) - amount;
+  } else if (payType === 'add_debt') {
+    entity.balance = (entity.balance || 0) + amount;
+  } else if (payType === 'adjust') {
+    entry.oldBalance = entity.balance || 0;
+    entity.balance = amount; // For adjust, amount IS the new balance
+  }
+  
+  entity.balance = Math.round(Math.max(0, entity.balance) * 100) / 100;
+  
+  if (editIdx >= 0) {
+    entity.payments[editIdx] = entry;
+  } else {
+    entity.payments.push(entry);
+  }
+  
   await dbPut(store, entity);
+  await logActivity('payment', `${type === 'client' ? 'عميل' : 'مورد'}: ${entity.name} | ${payType} | ${formatMoney(amount)}${notes ? ' | ' + notes : ''}`);
   
-  await logActivity('adjust_balance', `${type === 'client' ? 'عميل' : 'مورد'}: ${entity.name} | ${formatMoney(oldBalance)} → ${formatMoney(entity.balance)}${notes ? ' | ' + notes : ''}`);
+  // Update local array
+  const list = type === 'client' ? allClients : allSuppliers;
+  const localEntity = list.find(e => e.id === id);
+  if (localEntity) { localEntity.payments = entity.payments; localEntity.balance = entity.balance; }
   
-  toast(`تم تعديل رصيد ${entity.name}`);
-  closeModal('modal-adjust-balance');
-  
-  if (type === 'client') await loadClients();
-  else await loadSuppliers();
+  toast('تم حفظ الحركة');
+  document.getElementById('adj-add-form').style.display = 'none';
+  document.getElementById('adj-edit-idx').value = '-1';
+  onLedgerEntityChange();
   renderAccountingDashboard();
 }
 
