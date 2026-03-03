@@ -2625,17 +2625,17 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
           <div class="settings-nav" id="settings-nav-setup">
-            <div class="settings-nav-item" onclick="openSettingsSection('company')"><i class='bx bx-building'></i><div><strong>بيانات الشركة</strong><small>الاسم، اللوجو، العنوان، الضريبة</small></div><i class='bx bx-chevron-left'></i></div>
-            <div class="settings-nav-item" onclick="openSettingsSection('drive')"><i class='bx bx-cloud'></i><div><strong>المزامنة السحابية</strong><small>مزامنة تلقائية، نسخ احتياطي</small></div><i class='bx bx-chevron-left'></i></div>
-            <div class="settings-nav-item" onclick="openSettingsSection('notifications')"><i class='bx bx-bell'></i><div><strong>الإشعارات</strong><small>Telegram، تنبيهات المخزون والفواتير</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('company')"><i class='bx bx-building'></i><div><strong data-i18n="settings_nav_company">بيانات الشركة</strong><small data-i18n="settings_nav_company_sub">الاسم، اللوجو، العنوان، الضريبة</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('drive')"><i class='bx bx-cloud'></i><div><strong data-i18n="settings_nav_sync">المزامنة السحابية</strong><small data-i18n="settings_nav_sync_sub">مزامنة تلقائية، نسخ احتياطي</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('notifications')"><i class='bx bx-bell'></i><div><strong data-i18n="settings_nav_notif">الإشعارات</strong><small data-i18n="settings_nav_notif_sub">Telegram، تنبيهات المخزون والفواتير</small></div><i class='bx bx-chevron-left'></i></div>
           </div>
 
           <h4 style="margin:20px 0 12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-calendar'></i> إدارة يومية</h4>
           <div class="settings-nav" id="settings-nav-daily">
-            <div class="settings-nav-item" onclick="openSettingsSection('users')"><i class='bx bx-group'></i><div><strong>فريق العمل</strong><small>المستخدمين والصلاحيات</small></div><i class='bx bx-chevron-left'></i></div>
-            <div class="settings-nav-item" onclick="openSettingsSection('engineers')"><i class='bx bx-hard-hat'></i><div><strong>المهندسين والفنيين</strong><small>إدارة فريق الصيانة</small></div><i class='bx bx-chevron-left'></i></div>
-            <div class="settings-nav-item" onclick="openSettingsSection('backup')"><i class='bx bx-data'></i><div><strong>النسخ الاحتياطي</strong><small>تصدير/استيراد البيانات</small></div><i class='bx bx-chevron-left'></i></div>
-            <div class="settings-nav-item" onclick="openSettingsSection('activity')"><i class='bx bx-history'></i><div><strong>سجل النشاط</strong><small>من عمل ايه وامتى</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('users')"><i class='bx bx-group'></i><div><strong data-i18n="settings_nav_team">فريق العمل</strong><small data-i18n="settings_nav_team_sub">المستخدمين والصلاحيات</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('engineers')"><i class='bx bx-hard-hat'></i><div><strong data-i18n="settings_nav_engineers">المهندسين والفنيين</strong><small data-i18n="settings_nav_engineers_sub">إدارة فريق الصيانة</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('backup')"><i class='bx bx-data'></i><div><strong data-i18n="settings_nav_backup">النسخ الاحتياطي</strong><small data-i18n="settings_nav_backup_sub">تصدير/استيراد البيانات</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('activity')"><i class='bx bx-history'></i><div><strong data-i18n="settings_nav_activity">سجل النشاط</strong><small data-i18n="settings_nav_activity_sub">من عمل ايه وامتى</small></div><i class='bx bx-chevron-left'></i></div>
           </div>
         </div>
 
@@ -2674,7 +2674,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
           <div id="fetched-chat-ids" style="display:none;margin-top:12px"></div>
           <div class="alert-warning" style="margin-top:12px;padding:10px;border-radius:8px;font-size:12px">
-            <i class='bx bx-info-circle'></i> <strong>كيف يحصل المستلم على Chat ID؟</strong><br>
+            <i class='bx bx-info-circle'></i> <strong data-i18n="chatid_howto">كيف يحصل المستلم على Chat ID؟</strong><br>
             يبعت أي رسالة للبوت على Telegram (مثلاً /start) → ثم دوس "جلب Chat IDs" هنا → هيظهر الـ Chat ID تلقائي
           </div>
         </div>
@@ -2776,10 +2776,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <tbody id="users-tbody"></tbody></table>
           </div>
           <div style="margin-top:12px;padding:12px;background:var(--bg);border-radius:8px;font-size:13px">
-            <strong>الصلاحيات:</strong><br>
-            🔴 <strong>مدير:</strong> كل شيء — تحكم كامل<br>
-            🔵 <strong>مشرف:</strong> المخزون + الفواتير + الصيانة + التقارير + الأسعار<br>
-            🟡 <strong>موظف:</strong> إنشاء فواتير + إضافة/صرف مخزون + استلام أجهزة — بدون أسعار أو أرباح
+            <strong data-i18n="perm_title">الصلاحيات:</strong><br>
+            🔴 <strong data-i18n="perm_admin">مدير: كل شيء — تحكم كامل</strong><br>
+            🔵 <strong data-i18n="perm_manager">مشرف: المخزون + الفواتير + الصيانة + التقارير + الأسعار</strong><br>
+            🟡 <strong data-i18n="perm_staff">موظف: إنشاء فواتير + إضافة/صرف مخزون + استلام أجهزة — بدون أسعار أو أرباح</strong>
           </div>
         </div>
 
@@ -3206,7 +3206,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </div>
       <div class="form-row">
         <div class="form-group"><label>المهندس/الفني المسؤول</label>
-          <select id="device-engineer" onchange="onEngineerSelect(this)"><option value="">اختر المهندس/الفني</option></select>
+          <select id="device-engineer" onchange="onEngineerSelect(this)"><option value="" data-i18n="choose_engineer">اختر المهندس/الفني</option></select>
           <div id="new-engineer-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
               <input type="text" id="new-engineer-name" placeholder="اسم المهندس" style="flex:2;min-width:120px">
@@ -3328,10 +3328,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <div id="repair-history-content" style="padding:0">
       <div class="device-header-info">
         <div class="device-info-row">
-          <span><strong>الأمر:</strong> <span id="history-device-order"></span></span>
-          <span><strong>الجهاز:</strong> <span id="history-device-name"></span></span>
-          <span><strong>العميل:</strong> <span id="history-client-name"></span></span>
-          <span><strong>الدخول:</strong> <span id="history-intake-date"></span></span>
+          <span><strong data-i18n="hist_order">الأمر:</strong> <span id="history-device-order"></span></span>
+          <span><strong data-i18n="hist_device">الجهاز:</strong> <span id="history-device-name"></span></span>
+          <span><strong data-i18n="hist_client">العميل:</strong> <span id="history-client-name"></span></span>
+          <span><strong data-i18n="hist_intake">الدخول:</strong> <span id="history-intake-date"></span></span>
         </div>
       </div>
 
@@ -3369,7 +3369,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="form-group">
           <label>المهندس</label>
           <select id="history-entry-engineer" class="form-input">
-            <option value="">-- اختر المهندس --</option>
+            <option value="" data-i18n="choose_engineer">-- اختر المهندس --</option>
             <!-- Will be populated dynamically -->
             <option value="__other__">مهندس آخر...</option>
           </select>
@@ -3558,7 +3558,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div class="form-row">
         <div class="form-group"><label>التاريخ</label><input type="date" id="service-date" required></div>
         <div class="form-group"><label>العميل</label>
-          <select id="service-client" onchange="onClientSelect(this, 'service')"><option value="">اختر العميل</option></select>
+          <select id="service-client" onchange="onClientSelect(this, 'service')"><option value="" data-i18n="choose_client">اختر العميل</option></select>
           <div id="new-client-service-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
               <input type="text" id="new-client-service-name" placeholder="اسم العميل" style="flex:2;min-width:120px">
@@ -3696,8 +3696,8 @@ const TRANSLATIONS = {
     maint_status: 'حالة الصيانة', top_5_products: 'أكثر 5 منتجات مبيعاً',
     revenue_6_months: 'إيرادات آخر 6 شهور',
     alerts: 'تنبيهات', no_alerts: 'لا توجد تنبيهات',
-    recent_invoices: 'آخر الفواتير', no_invoices: 'لا توجد فواتير',
-    recent_activity: 'آخر الحركات', no_activity: 'لا توجد حركات',
+    recent_invoices: 'آخر الفواتير', no_invoices: t('no_invoices'),
+    recent_activity: 'آخر الحركات', no_activity: t('no_movements'),
     tab_operations: 'العمليات', tab_logins: 'تسجيل الدخول',
     show_all_activity: 'عرض كل الحركات',
     quick_actions: 'إجراءات سريعة', period_details: 'تفاصيل الفترة',
@@ -3775,7 +3775,7 @@ const TRANSLATIONS = {
     no_services: 'لا توجد زيارات أو خدمات', no_purchase_invoices: 'لا توجد فواتير شراء',
     no_suppliers: 'لا يوجد موردين', no_devices: 'لا توجد أجهزة في الصيانة',
     no_visits: 'لا توجد زيارات', no_sale_invoices: 'لا توجد فواتير بيع',
-    no_categories: 'لا توجد تصنيفات بعد', no_engineers: 'لا يوجد مهندسين أو فنيين',
+    no_categories: t('no_categories'), no_engineers: 'لا يوجد مهندسين أو فنيين',
     no_recipients: 'لا يوجد مستلمين — أضف Chat ID لبدء الإشعارات',
     low_stock_alert: 'أصناف وصلت للحد الأدنى!',
     
@@ -3872,6 +3872,202 @@ const TRANSLATIONS = {
     // Repair cost
     repair_stock_cost: 'تكلفة قطع المخزون:', repair_external_cost: 'تكلفة القطع الخارجية:',
     repair_total_cost: 'التكلفة الإجمالية:', repair_profit: 'الربح:',
+    
+    // Additional toast/UI strings
+    toast_added_item_to_list: 'تم إضافة "{val}" للقائمة ✅',
+    toast_list_item_exists: 'العنصر موجود بالفعل',
+    toast_list_saved: 'تم حفظ القائمة ✅',
+    toast_backup_exported: 'تم تصدير النسخة الاحتياطية',
+    toast_imported_ok: 'تم الاستيراد ✅',
+    toast_file_error: 'خطأ في الملف',
+    toast_no_permission: 'ليس لديك صلاحية لهذه الصفحة',
+    toast_scanner_not_supported: 'متصفحك لا يدعم مسح الباركود',
+    toast_camera_error: 'فشل الوصول للكاميرا',
+    toast_scanned: 'تم المسح: {code}',
+    toast_product_added_to_invoice: 'تمت إضافة: {name}',
+    toast_product_not_found_barcode: 'لم يتم العثور على منتج بهذا الباركود',
+    toast_system_load_error: 'خطأ في تحميل النظام — تأكد من الاتصال بالإنترنت',
+    toast_code_copied_apps: 'تم نسخ الكود ✅ — الصقه في Google Apps Script',
+    toast_enter_category: 'أدخل اسم التصنيف',
+    toast_category_exists: 'التصنيف موجود بالفعل',
+    toast_category_added: 'تم إضافة التصنيف',
+    toast_cant_delete_has_items: 'لا يمكن حذف تصنيف به أصناف',
+    toast_cant_delete_has_children: 'لا يمكن حذف تصنيف له تصنيفات فرعية',
+    toast_category_deleted: 'تم حذف التصنيف',
+    toast_enter_product: 'اكتب اسم الصنف',
+    toast_product_updated: 'تم تعديل الصنف',
+    toast_product_added: 'تم إضافة الصنف',
+    toast_product_deleted: 'تم حذف الصنف',
+    toast_enter_valid_qty: 'أدخل كمية صحيحة',
+    toast_product_missing: 'الصنف غير موجود',
+    toast_qty_only: 'الكمية المتاحة {qty} فقط',
+    toast_stock_done: 'تم {action} {qty} وحدة',
+    toast_no_products_export: 'لا توجد أصناف للتصدير',
+    toast_inventory_exported: 'تم تصدير المخزون',
+    toast_imported_count: 'تم استيراد {count} صنف',
+    toast_file_read_error: 'خطأ في قراءة الملف',
+    toast_subcategory_exists: 'التصنيف الفرعي موجود بالفعل',
+    toast_subcategory_added: 'تم إضافة التصنيف الفرعي',
+    toast_category_updated: 'تم تعديل التصنيف',
+    toast_cant_delete_name_has_items: 'لا يمكن حذف "{name}" لأنه يحتوي على أصناف',
+    toast_client_updated: 'تم تعديل بيانات العميل',
+    toast_client_added: 'تم إضافة العميل',
+    toast_client_deleted: 'تم حذف العميل',
+    toast_supplier_updated: 'تم تعديل بيانات المورد',
+    toast_supplier_added: 'تم إضافة المورد',
+    toast_supplier_deleted: 'تم حذف المورد',
+    toast_enter_item_name: 'أدخل اسم الصنف',
+    toast_inline_product_added: 'تم إضافة "{name}" ✅',
+    toast_add_one_item: 'أضف صنف واحد على الأقل',
+    toast_choose_product_all: 'اختر المنتج لكل الأصناف',
+    toast_sale_saved: 'تم حفظ فاتورة البيع',
+    toast_purchase_saved: 'تم حفظ فاتورة الشراء',
+    toast_delete_invoices_admin: 'مسح الفواتير متاح للمدير فقط',
+    toast_deleted_invoices: 'تم حذف {count} فاتورة',
+    toast_deleted_clients: 'تم حذف {count} عميل',
+    toast_deleted_suppliers: 'تم حذف {count} مورد',
+    toast_deleted_services: 'تم حذف {count} خدمة',
+    toast_deleted_devices: 'تم حذف {count} جهاز',
+    toast_deleted_expenses: 'تم حذف {count} مصروف',
+    toast_deleted_engineers: 'تم حذف {count} مهندس',
+    toast_delete_products_admin: 'مسح الأصناف متاح للمدير فقط',
+    toast_deleted_products: 'تم حذف {count} صنف',
+    toast_invoice_deleted: 'تم حذف الفاتورة',
+    toast_payment_recorded: 'تم تسجيل الدفع',
+    toast_no_barcode: 'لا يوجد باركود',
+    toast_return_created: 'تم إنشاء المرتجع',
+    toast_enter_name: 'أدخل الاسم',
+    toast_entity_added: 'تم إضافة {type} بنجاح',
+    toast_entity_deleted: 'تم حذف {name}',
+    toast_engineer_name_required: 'أدخل اسم المهندس',
+    toast_engineer_added: 'تم إضافة المهندس بنجاح',
+    toast_maintenance_updated: 'تم تعديل أمر الصيانة',
+    toast_intake_created: 'تم إنشاء إذن الاستلام',
+    toast_device_assigned: 'تم تخصيص الجهاز "{device}" للمهندس {engineer}',
+    toast_task_done_reward: 'تم إتمام المهمة في الوقت — مكافأة {amount} للمهندس {name}',
+    toast_task_done_late: 'تم إتمام المهمة (متأخر) — المهندس {name}',
+    toast_task_done_ok: 'تم إتمام المهمة بنجاح',
+    toast_warning_sent: 'تم إرسال إنذار {count}/{limit} للمهندس {name}',
+    toast_penalty_applied: 'تم تطبيق العقوبة {amount} على المهندس {name}',
+    toast_status_changed: 'تم تغيير الحالة إلى {status}',
+    toast_user_activated: 'تم تفعيل المستخدم',
+    toast_user_deactivated: 'تم تعطيل المستخدم',
+    toast_user_added: 'تم إضافة المستخدم',
+    toast_user_updated: 'تم تعديل المستخدم',
+    toast_enter_password: 'أدخل كلمة المرور',
+    toast_user_deleted: 'تم حذف المستخدم',
+    toast_notif_enabled: 'تم التفعيل',
+    toast_notif_disabled: 'تم التعطيل',
+    toast_chats_found: 'تم العثور على {count} محادثة',
+    toast_chatid_copied: 'تم نسخ Chat ID: {id}',
+    toast_test_sent: 'تم الإرسال ✅',
+    toast_test_failed: 'فشل — تحقق من Chat ID',
+    toast_test_sent_to: 'تم الإرسال لـ {name} ✅',
+    toast_delete_invoices_admin2: 'مسح الفواتير متاح للمدير فقط',
+    
+    // Confirm dialogs
+    confirm_delete_user: 'حذف هذا المستخدم؟',
+    confirm_delete_invoice: 'حذف هذه الفاتورة؟',
+    confirm_delete_product: 'حذف هذا الصنف؟',
+    confirm_delete_client: 'حذف هذا العميل؟',
+    confirm_delete_supplier: 'حذف هذا المورد؟',
+    confirm_delete_category: 'حذف هذا التصنيف؟',
+    confirm_delete_expense: 'حذف هذا المصروف؟',
+    confirm_delete_service: 'حذف هذه الخدمة؟',
+    confirm_delete_movement: 'حذف هذه الحركة؟',
+    confirm_delete_engineer: 'حذف هذا المهندس/الفني؟',
+    confirm_delete_record: 'هل أنت متأكد من حذف هذا السجل؟',
+    confirm_delete_recipient: 'حذف هذا المستلم؟',
+    confirm_replace_data: 'سيتم استبدال كل البيانات الحالية. متابعة؟',
+    confirm_import_products: 'سيتم إضافة الأصناف من الملف. متابعة؟',
+    
+    // Misc UI
+    label_client: 'العميل',
+    label_supplier: 'المورد',
+    choose_client: 'اختر العميل',
+    choose_supplier: 'اختر المورد',
+    choose_item: 'اختر صنف',
+    other_add_new: '+ أخرى (إضافة صنف جديد)',
+    other_add_client: '+ أخرى (إضافة عميل جديد)',
+    other_add_supplier: '+ أخرى (إضافة مورد جديد)',
+    stock_in: 'إضافة',
+    stock_out: 'صرف',
+    units: 'وحدة',
+    
+    // Settings nav
+    settings_nav_company: 'بيانات الشركة',
+    settings_nav_company_sub: 'الاسم، اللوجو، العنوان، الضريبة',
+    settings_nav_sync: 'المزامنة السحابية',
+    settings_nav_sync_sub: 'مزامنة تلقائية، نسخ احتياطي',
+    settings_nav_notif: 'الإشعارات',
+    settings_nav_notif_sub: 'Telegram، تنبيهات المخزون والفواتير',
+    settings_nav_team: 'فريق العمل',
+    settings_nav_team_sub: 'المستخدمين والصلاحيات',
+    settings_nav_engineers: 'المهندسين والفنيين',
+    settings_nav_engineers_sub: 'إدارة فريق الصيانة',
+    settings_nav_backup: 'النسخ الاحتياطي',
+    settings_nav_backup_sub: 'تصدير/استيراد البيانات',
+    settings_nav_activity: 'سجل النشاط',
+    settings_nav_activity_sub: 'من عمل ايه وامتى',
+    
+    // Permissions info
+    perm_title: 'الصلاحيات:',
+    perm_admin: 'مدير: كل شيء — تحكم كامل',
+    perm_manager: 'مشرف: المخزون + الفواتير + الصيانة + التقارير + الأسعار',
+    perm_staff: 'موظف: إنشاء فواتير + إضافة/صرف مخزون + استلام أجهزة — بدون أسعار أو أرباح',
+    
+    // Chat ID info
+    chatid_howto: 'كيف يحصل المستلم على Chat ID؟',
+    
+    // Repair history labels
+    hist_order: 'الأمر:',
+    hist_device: 'الجهاز:',
+    hist_client: 'العميل:',
+    hist_intake: 'الدخول:',
+    
+    // Invoice view
+    inv_by: 'بواسطة:',
+    inv_edit_by: 'تعديل:',
+    inv_party_unknown: 'غير محدد',
+    inv_remaining: 'المتبقي:',
+    inv_paid_amount: 'المدفوع:',
+    inv_number: 'رقم:',
+    
+    // Dashboard alerts
+    alert_low_stock: 'الكمية: {qty} (الحد الأدنى: {min})',
+    alert_ready_delivery: 'جاهز للتسليم',
+    alert_unpaid_invoices: 'فاتورة غير مدفوعة — الإجمالي:',
+    this_month: 'هذا الشهر:',
+    available_qty: 'المتاح:',
+    choose_engineer: 'اختر المهندس/الفني',
+    other_add_engineer: '+ أخرى (إضافة مهندس جديد)',
+    login_user_not_found: 'اسم المستخدم غير موجود',
+    login_wrong_password: 'كلمة المرور غير صحيحة',
+    login_account_disabled: 'الحساب معطل',
+    maint_order_details: 'تفاصيل أمر الصيانة',
+    choose_placeholder: 'اختر...',
+    other_option: 'أخرى...',
+    edit_sale_invoice: 'تعديل فاتورة بيع',
+    edit_purchase_invoice: 'تعديل فاتورة شراء',
+    payment_ledger_client: 'سجل مدفوعات عميل',
+    payment_ledger_supplier: 'سجل مدفوعات مورد',
+    new_payment: 'تسجيل دفعة جديدة',
+    set_balance_manual: 'تعيين الرصيد يدوياً',
+    edit_movement: 'تعديل الحركة',
+    edit_service: 'تعديل الزيارة/الخدمة',
+    add_new_engineer: 'إضافة مهندس/فني جديد',
+    edit_engineer: 'تعديل المهندس/الفني',
+    empty_list: 'القائمة فارغة',
+    no_logins: 'لا توجد عمليات تسجيل دخول',
+    no_movements: 'لا توجد حركات',
+    no_devices_short: 'لا توجد أجهزة',
+    no_data: 'لا توجد بيانات',
+    root_category: 'تصنيف رئيسي',
+    no_results: 'لا توجد نتائج',
+    loading: 'جاري التحميل...',
+    no_payments_period: 'لا توجد مدفوعات في هذه الفترة',
+    no_movements_recorded: 'لا توجد حركات مسجلة',
+    no_new_messages: 'لا توجد رسائل جديدة. اطلب من المستلم يبعت /start للبوت وجرب تاني',
   },
   en: {
     // Navigation
@@ -4082,6 +4278,202 @@ const TRANSLATIONS = {
     // Repair cost
     repair_stock_cost: 'Stock Parts Cost:', repair_external_cost: 'External Parts Cost:',
     repair_total_cost: 'Total Cost:', repair_profit: 'Profit:',
+    
+    // Additional toast/UI strings
+    toast_added_item_to_list: 'Added "{val}" to list ✅',
+    toast_list_item_exists: 'Item already exists',
+    toast_list_saved: 'List saved ✅',
+    toast_backup_exported: 'Backup exported',
+    toast_imported_ok: 'Imported ✅',
+    toast_file_error: 'File error',
+    toast_no_permission: 'You don\'t have permission for this page',
+    toast_scanner_not_supported: 'Your browser doesn\'t support barcode scanning',
+    toast_camera_error: 'Camera access failed',
+    toast_scanned: 'Scanned: {code}',
+    toast_product_added_to_invoice: 'Added: {name}',
+    toast_product_not_found_barcode: 'No product found with this barcode',
+    toast_system_load_error: 'System loading error — check your internet connection',
+    toast_code_copied_apps: 'Code copied ✅ — paste it in Google Apps Script',
+    toast_enter_category: 'Enter category name',
+    toast_category_exists: 'Category already exists',
+    toast_category_added: 'Category added',
+    toast_cant_delete_has_items: 'Cannot delete category with products',
+    toast_cant_delete_has_children: 'Cannot delete category with subcategories',
+    toast_category_deleted: 'Category deleted',
+    toast_enter_product: 'Enter product name',
+    toast_product_updated: 'Product updated',
+    toast_product_added: 'Product added',
+    toast_product_deleted: 'Product deleted',
+    toast_enter_valid_qty: 'Enter a valid quantity',
+    toast_product_missing: 'Product not found',
+    toast_qty_only: 'Only {qty} available',
+    toast_stock_done: '{action} {qty} units done',
+    toast_no_products_export: 'No products to export',
+    toast_inventory_exported: 'Inventory exported',
+    toast_imported_count: 'Imported {count} products',
+    toast_file_read_error: 'File read error',
+    toast_subcategory_exists: 'Subcategory already exists',
+    toast_subcategory_added: 'Subcategory added',
+    toast_category_updated: 'Category updated',
+    toast_cant_delete_name_has_items: 'Cannot delete "{name}" — it has products',
+    toast_client_updated: 'Client updated',
+    toast_client_added: 'Client added',
+    toast_client_deleted: 'Client deleted',
+    toast_supplier_updated: 'Supplier updated',
+    toast_supplier_added: 'Supplier added',
+    toast_supplier_deleted: 'Supplier deleted',
+    toast_enter_item_name: 'Enter product name',
+    toast_inline_product_added: 'Added "{name}" ✅',
+    toast_add_one_item: 'Add at least one item',
+    toast_choose_product_all: 'Choose a product for all items',
+    toast_sale_saved: 'Sale invoice saved',
+    toast_purchase_saved: 'Purchase invoice saved',
+    toast_delete_invoices_admin: 'Only admin can delete invoices',
+    toast_deleted_invoices: 'Deleted {count} invoices',
+    toast_deleted_clients: 'Deleted {count} clients',
+    toast_deleted_suppliers: 'Deleted {count} suppliers',
+    toast_deleted_services: 'Deleted {count} services',
+    toast_deleted_devices: 'Deleted {count} devices',
+    toast_deleted_expenses: 'Deleted {count} expenses',
+    toast_deleted_engineers: 'Deleted {count} engineers',
+    toast_delete_products_admin: 'Only admin can delete products',
+    toast_deleted_products: 'Deleted {count} products',
+    toast_invoice_deleted: 'Invoice deleted',
+    toast_payment_recorded: 'Payment recorded',
+    toast_no_barcode: 'No barcode',
+    toast_return_created: 'Return created',
+    toast_enter_name: 'Enter name',
+    toast_entity_added: '{type} added successfully',
+    toast_entity_deleted: '{name} deleted',
+    toast_engineer_name_required: 'Enter engineer name',
+    toast_engineer_added: 'Engineer added successfully',
+    toast_maintenance_updated: 'Maintenance order updated',
+    toast_intake_created: 'Intake order created',
+    toast_device_assigned: 'Device "{device}" assigned to engineer {engineer}',
+    toast_task_done_reward: 'Task completed on time — reward {amount} for {name}',
+    toast_task_done_late: 'Task completed (late) — Engineer {name}',
+    toast_task_done_ok: 'Task completed successfully',
+    toast_warning_sent: 'Warning {count}/{limit} sent to engineer {name}',
+    toast_penalty_applied: 'Penalty {amount} applied to engineer {name}',
+    toast_status_changed: 'Status changed to {status}',
+    toast_user_activated: 'User activated',
+    toast_user_deactivated: 'User deactivated',
+    toast_user_added: 'User added',
+    toast_user_updated: 'User updated',
+    toast_enter_password: 'Enter password',
+    toast_user_deleted: 'User deleted',
+    toast_notif_enabled: 'Enabled',
+    toast_notif_disabled: 'Disabled',
+    toast_chats_found: 'Found {count} chats',
+    toast_chatid_copied: 'Copied Chat ID: {id}',
+    toast_test_sent: 'Sent ✅',
+    toast_test_failed: 'Failed — check Chat ID',
+    toast_test_sent_to: 'Sent to {name} ✅',
+    toast_delete_invoices_admin2: 'Only admin can delete invoices',
+    
+    // Confirm dialogs
+    confirm_delete_user: 'Delete this user?',
+    confirm_delete_invoice: 'Delete this invoice?',
+    confirm_delete_product: 'Delete this product?',
+    confirm_delete_client: 'Delete this client?',
+    confirm_delete_supplier: 'Delete this supplier?',
+    confirm_delete_category: 'Delete this category?',
+    confirm_delete_expense: 'Delete this expense?',
+    confirm_delete_service: 'Delete this service?',
+    confirm_delete_movement: 'Delete this movement?',
+    confirm_delete_engineer: 'Delete this engineer/technician?',
+    confirm_delete_record: 'Are you sure you want to delete this record?',
+    confirm_delete_recipient: 'Delete this recipient?',
+    confirm_replace_data: 'All current data will be replaced. Continue?',
+    confirm_import_products: 'Products from file will be added. Continue?',
+    
+    // Misc UI
+    label_client: 'Client',
+    label_supplier: 'Supplier',
+    choose_client: 'Choose Client',
+    choose_supplier: 'Choose Supplier',
+    choose_item: 'Choose Product',
+    other_add_new: '+ Other (Add New Product)',
+    other_add_client: '+ Other (Add New Client)',
+    other_add_supplier: '+ Other (Add New Supplier)',
+    stock_in: 'In',
+    stock_out: 'Out',
+    units: 'units',
+    
+    // Settings nav
+    settings_nav_company: 'Company Info',
+    settings_nav_company_sub: 'Name, logo, address, tax',
+    settings_nav_sync: 'Cloud Sync',
+    settings_nav_sync_sub: 'Auto sync, backup',
+    settings_nav_notif: 'Notifications',
+    settings_nav_notif_sub: 'Telegram, stock & invoice alerts',
+    settings_nav_team: 'Team',
+    settings_nav_team_sub: 'Users & permissions',
+    settings_nav_engineers: 'Engineers & Technicians',
+    settings_nav_engineers_sub: 'Manage maintenance team',
+    settings_nav_backup: 'Backup',
+    settings_nav_backup_sub: 'Export/import data',
+    settings_nav_activity: 'Activity Log',
+    settings_nav_activity_sub: 'Who did what and when',
+    
+    // Permissions info
+    perm_title: 'Permissions:',
+    perm_admin: 'Admin: Full control — everything',
+    perm_manager: 'Manager: Inventory + Invoices + Maintenance + Reports + Prices',
+    perm_staff: 'Staff: Create invoices + Stock in/out + Device intake — no prices or profits',
+    
+    // Chat ID info
+    chatid_howto: 'How does the recipient get their Chat ID?',
+    
+    // Repair history labels
+    hist_order: 'Order:',
+    hist_device: 'Device:',
+    hist_client: 'Client:',
+    hist_intake: 'Intake:',
+    
+    // Invoice view
+    inv_by: 'By:',
+    inv_edit_by: 'Edited by:',
+    inv_party_unknown: 'Unknown',
+    inv_remaining: 'Remaining:',
+    inv_paid_amount: 'Paid:',
+    inv_number: 'Number:',
+    
+    // Dashboard alerts
+    alert_low_stock: 'Qty: {qty} (Min: {min})',
+    alert_ready_delivery: 'Ready for delivery',
+    alert_unpaid_invoices: 'unpaid invoices — Total:',
+    this_month: 'This month:',
+    available_qty: 'Available:',
+    choose_engineer: 'Choose Engineer/Tech',
+    other_add_engineer: '+ Other (Add New Engineer)',
+    login_user_not_found: 'Username not found',
+    login_wrong_password: 'Incorrect password',
+    login_account_disabled: 'Account is disabled',
+    maint_order_details: 'Maintenance Order Details',
+    choose_placeholder: 'Choose...',
+    other_option: 'Other...',
+    edit_sale_invoice: 'Edit Sale Invoice',
+    edit_purchase_invoice: 'Edit Purchase Invoice',
+    payment_ledger_client: 'Client Payment Ledger',
+    payment_ledger_supplier: 'Supplier Payment Ledger',
+    new_payment: 'Record New Payment',
+    set_balance_manual: 'Set Balance Manually',
+    edit_movement: 'Edit Movement',
+    edit_service: 'Edit Service/Visit',
+    add_new_engineer: 'Add New Engineer/Tech',
+    edit_engineer: 'Edit Engineer/Tech',
+    empty_list: 'List is empty',
+    no_logins: 'No login records',
+    no_movements: 'No movements',
+    no_devices_short: 'No devices',
+    no_data: 'No data',
+    root_category: 'Root Category',
+    no_results: 'No results',
+    loading: 'Loading...',
+    no_payments_period: 'No payments in this period',
+    no_movements_recorded: 'No recorded movements',
+    no_new_messages: 'No new messages. Ask the recipient to send /start to the bot and try again',
   }
 };
 
@@ -4210,11 +4602,11 @@ async function saveStoreToServer(storeName) {
     });
     if (!resp.ok) {
       console.error(`Save failed for ${storeName}: ${resp.status} ${resp.statusText}`);
-      toast('خطأ في حفظ البيانات — حاول مرة أخرى', 'error');
+      toast(t('toast_save_error'), 'error');
     }
   } catch(e) {
     console.error(`Save error for ${storeName}:`, e);
-    toast('خطأ في الاتصال بالسيرفر', 'error');
+    toast(t('toast_connection_error'), 'error');
   }
 }
 
@@ -4373,7 +4765,7 @@ function enhanceSelect(selectId, listKey, options = {}) {
     if (!val) return;
     if (saveCb.checked) {
       await addToCustomList(listKey, val);
-      toast('تم إضافة "' + val + '" للقائمة ✅');
+      toast(t('toast_added_item_to_list').replace('{val}', val));
     }
     const opt = document.createElement('option');
     const { valueMap } = options;
@@ -4537,7 +4929,7 @@ async function populateSelect(selectId, listKey, options = {}) {
   
   const otherOpt = document.createElement('option');
   otherOpt.value = '__other__';
-  otherOpt.textContent = '➕ أخرى...';
+  otherOpt.textContent = '➕ ' + t('other_option');
   select.appendChild(otherOpt);
   
   if (currentVal) select.value = currentVal;
@@ -4695,7 +5087,7 @@ function listEditorAdd() {
   const input = document.getElementById('list-editor-new');
   const val = input.value.trim();
   if (!val) return;
-  if (_listEditorState._items.includes(val)) { toast('العنصر موجود بالفعل', 'warning'); return; }
+  if (_listEditorState._items.includes(val)) { toast(t('toast_list_item_exists'), 'warning'); return; }
   _listEditorState._items.push(val);
   input.value = '';
   renderListEditorItemsFromState();
@@ -4737,7 +5129,7 @@ async function saveListEditor() {
   
   await dbPut('customLists', { key: _listEditorState.listKey, items });
   await populateSelect(_listEditorState.selectId, _listEditorState.listKey, _listEditorState.options);
-  toast('تم حفظ القائمة ✅');
+  toast(t('toast_list_saved'));
   closeListEditor();
 }
 
@@ -4954,17 +5346,17 @@ async function handleLogin(e) {
   const user = users.find(u => u.username === username);
   
   if (!user) {
-    errorEl.textContent = 'اسم المستخدم غير موجود';
+    errorEl.textContent = t('login_user_not_found');
     return false;
   }
   
   if (user.password !== hashPassword(password)) {
-    errorEl.textContent = 'كلمة المرور غير صحيحة';
+    errorEl.textContent = t('login_wrong_password');
     return false;
   }
   
   if (!user.active) {
-    errorEl.textContent = 'الحساب معطل';
+    errorEl.textContent = t('login_account_disabled');
     return false;
   }
   
@@ -5164,8 +5556,8 @@ function updateSyncStatus(status) {
   const text = document.getElementById('drive-status-text');
   const overviewStatus = document.getElementById('settings-drive-status');
   if (indicator) indicator.style.background = 'var(--success)';
-  if (text) text.textContent = 'متصل ✅';
-  if (overviewStatus) overviewStatus.textContent = 'متصل ✅';
+  if (text) text.textContent = t('connected') + ' ✅';
+  if (overviewStatus) overviewStatus.textContent = t('connected') + ' ✅';
 }
 
 // Background refresh from server every 30s
@@ -5184,7 +5576,7 @@ async function exportAllToFile() {
   a.download = `SMS-Backup-${new Date().toISOString().split('T')[0]}.json`;
   a.click();
   URL.revokeObjectURL(url);
-  toast('تم تصدير النسخة الاحتياطية');
+  toast(t('toast_backup_exported'));
 }
 
 function importFromFile() {
@@ -5194,14 +5586,14 @@ function importFromFile() {
   input.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (!confirm('سيتم استبدال كل البيانات الحالية. متابعة؟')) return;
+    if (!confirm(t('confirm_replace_data'))) return;
     try {
       const text = await file.text();
       const data = JSON.parse(text);
       await importAllData(data);
-      toast('تم الاستيراد ✅');
+      toast(t('toast_imported_ok'));
       reloadActivePage();
-    } catch(e) { toast('خطأ في الملف', 'error'); }
+    } catch(e) { toast(t('toast_file_error'), 'error'); }
   };
   input.click();
 }
@@ -5229,7 +5621,7 @@ const PAGE_TITLES = {
 function navigate(page, sub) {
   // Permission check — block access to restricted pages
   if (!userHasPageAccess(page)) {
-    toast('ليس لديك صلاحية لهذه الصفحة', 'warning');
+    toast(t('toast_no_permission'), 'warning');
     return false;
   }
   // Save for persistence (hash + localStorage)
@@ -5456,11 +5848,11 @@ async function openBarcodeScanner(context) {
         }
       });
     } else {
-      toast('متصفحك لا يدعم مسح الباركود', 'error');
+      toast(t('toast_scanner_not_supported'), 'error');
       closeBarcodeScanner();
     }
   } catch(err) {
-    toast('فشل الوصول للكاميرا', 'error');
+    toast(t('toast_camera_error'), 'error');
     closeBarcodeScanner();
   }
 }
@@ -5477,7 +5869,7 @@ function closeBarcodeScanner() {
 
 async function handleBarcodeResult(code) {
   closeBarcodeScanner();
-  toast('تم المسح: ' + code, 'info');
+  toast(t('toast_scanned').replace('{code}', code), 'info');
   
   const products = await dbGetAll('products');
   const found = products.find(p => p.barcode === code || p.sku === code);
@@ -5504,9 +5896,9 @@ async function handleBarcodeResult(code) {
       }
       renderInvoiceItems();
       updateInvoiceTotals();
-      toast(`تمت إضافة: ${found.name}`, 'success');
+      toast(t("toast_product_added_to_invoice").replace("{name}", found.name), "success");
     } else {
-      toast('لم يتم العثور على منتج بهذا الباركود', 'warning');
+      toast(t('toast_product_not_found_barcode'), 'warning');
     }
   }
 }
@@ -5640,7 +6032,7 @@ function renderActivityTab(tab) {
       </div>`;
     }).join('');
   } else {
-    recentList.innerHTML = `<p class="empty-state" style="padding:20px">${tab === 'logins' ? 'لا توجد عمليات تسجيل دخول' : 'لا توجد حركات'}</p>`;
+    recentList.innerHTML = `<p class="empty-state" style="padding:20px">${tab === 'logins' ? t('no_logins') : t('no_movements')}</p>`;
   }
 }
 
@@ -6045,7 +6437,7 @@ async function initApp() {
     enhanceAllSelects();
   } catch (err) {
     console.error('Init error:', err);
-    toast('خطأ في تحميل النظام — تأكد من الاتصال بالإنترنت', 'error');
+    toast(t('toast_system_load_error'), 'error');
   }
 }
 
@@ -6148,11 +6540,11 @@ async function loadSettingsOverview() {
   // Drive status
   const isConnected = true;
   const driveEl = document.getElementById('settings-drive-status');
-  if (driveEl) driveEl.textContent = isConnected ? 'متصل ✅' : 'غير متصل';
+  if (driveEl) driveEl.textContent = isConnected ? t('connected') + ' ✅' : t('not_connected');
   const driveIndicator = document.getElementById('drive-status-indicator');
   const driveText = document.getElementById('drive-status-text');
   if (driveIndicator) driveIndicator.style.background = isConnected ? 'var(--success)' : 'var(--text-muted)';
-  if (driveText) driveText.textContent = isConnected ? 'متصل ✅' : 'غير متصل';
+  if (driveText) driveText.textContent = isConnected ? t('connected') + ' ✅' : t('not_connected');
   
   // Team count
   const users = await dbGetAll('users');
@@ -6283,8 +6675,8 @@ tableObserver.observe(document.body, { childList: true, subtree: true });
 // Copy Apps Script code
 function copySyncScript() {
   const script = `const FOLDER_NAME = 'SMS-System-Data';\n\nfunction doPost(e) {\n  try {\n    const data = JSON.parse(e.postData.contents);\n    const action = data.action;\n    const folder = getOrCreateFolder();\n\n    if (action === 'pushAll') {\n      for (const [name, records] of Object.entries(data.stores)) {\n        const content = JSON.stringify(records);\n        const files = folder.getFilesByName(name + '.json');\n        if (files.hasNext()) files.next().setContent(content);\n        else folder.createFile(name + '.json', content, 'application/json');\n      }\n      const ts = new Date().toISOString();\n      const tsF = folder.getFilesByName('_lastModified.txt');\n      if (tsF.hasNext()) tsF.next().setContent(ts);\n      else folder.createFile('_lastModified.txt', ts, 'text/plain');\n      return ContentService.createTextOutput(JSON.stringify({ok:true})).setMimeType(ContentService.MimeType.JSON);\n    }\n\n    if (action === 'pullAll') {\n      const result = {};\n      const files = folder.getFiles();\n      while (files.hasNext()) {\n        const f = files.next();\n        if (f.getName().endsWith('.json')) result[f.getName().replace('.json','')] = JSON.parse(f.getBlob().getDataAsString());\n      }\n      return ContentService.createTextOutput(JSON.stringify({ok:true, data:result})).setMimeType(ContentService.MimeType.JSON);\n    }\n\n    if (action === 'lastModified') {\n      const f = folder.getFilesByName('_lastModified.txt');\n      const ts = f.hasNext() ? f.next().getBlob().getDataAsString() : null;\n      return ContentService.createTextOutput(JSON.stringify({ok:true, ts:ts})).setMimeType(ContentService.MimeType.JSON);\n    }\n\n    return ContentService.createTextOutput(JSON.stringify({ok:false})).setMimeType(ContentService.MimeType.JSON);\n  } catch(err) {\n    return ContentService.createTextOutput(JSON.stringify({ok:false, error:err.message})).setMimeType(ContentService.MimeType.JSON);\n  }\n}\n\nfunction doGet(e) {\n  return ContentService.createTextOutput(JSON.stringify({ok:true, msg:'SMS Sync Active'})).setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction getOrCreateFolder() {\n  const folders = DriveApp.getFoldersByName(FOLDER_NAME);\n  if (folders.hasNext()) return folders.next();\n  return DriveApp.createFolder(FOLDER_NAME);\n}`;
-  navigator.clipboard.writeText(script).then(() => toast('تم نسخ الكود ✅ — الصقه في Google Apps Script')).catch(() => {
-    const ta = document.createElement('textarea'); ta.value = script; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('تم نسخ الكود ✅');
+  navigator.clipboard.writeText(script).then(() => toast(t('toast_code_copied_apps'))).catch(() => {
+    const ta = document.createElement('textarea'); ta.value = script; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast(t('toast_code_copied'));
   });
 }
 
@@ -6488,16 +6880,16 @@ function populateCategoryFilters() {
   
   // Filter dropdown
   const filterEl = document.getElementById('inv-filter-category');
-  filterEl.innerHTML = '<option value="">كل التصنيفات</option>' + options;
+  filterEl.innerHTML = '<option value="">' + t('all_categories') + '</option>' + options;
   
   // Product form dropdown
   const formEl = document.getElementById('product-category');
-  formEl.innerHTML = '<option value="">بدون تصنيف</option>' + options;
+  formEl.innerHTML = '<option value="">' + t('no_category') + '</option>' + options;
   
   // Parent category dropdown in categories modal
   const parentEl = document.getElementById('parent-category');
   const mainCats = allCategories.filter(c => !c.parentId);
-  parentEl.innerHTML = '<option value="">تصنيف رئيسي</option>' + 
+  parentEl.innerHTML = '<option value="">' + t('root_category') + '</option>' + 
     mainCats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
 }
 
@@ -6548,13 +6940,13 @@ function renderCategoriesList() {
 
 async function addCategory() {
   const name = document.getElementById('new-category').value.trim();
-  if (!name) return toast('أدخل اسم التصنيف', 'warning');
+  if (!name) return toast(t('toast_enter_category'), 'warning');
   
   const parentId = document.getElementById('parent-category').value;
   
   // Check duplicate
   if (allCategories.find(c => c.name === name && c.parentId == (parentId || null))) {
-    return toast('التصنيف موجود بالفعل', 'warning');
+    return toast(t('toast_category_exists'), 'warning');
   }
   
   await dbAdd('categories', { 
@@ -6568,22 +6960,22 @@ async function addCategory() {
   populateCategoryFilters();
   renderCategoriesList();
   document.getElementById('new-category').value = '';
-  toast('تم إضافة التصنيف');
+  toast(t('toast_category_added'));
 }
 
 async function deleteCategory(id) {
-  if (!confirm('حذف هذا التصنيف؟')) return;
+  if (!confirm(t('confirm_delete_category'))) return;
   
   // Check if has products
   const hasProducts = allProducts.some(p => p.category == id);
   if (hasProducts) {
-    return toast('لا يمكن حذف تصنيف به أصناف', 'error');
+    return toast(t('toast_cant_delete_has_items'), 'error');
   }
   
   // Check if has children
   const hasChildren = allCategories.some(c => c.parentId === id);
   if (hasChildren) {
-    return toast('لا يمكن حذف تصنيف له تصنيفات فرعية', 'error');
+    return toast(t('toast_cant_delete_has_children'), 'error');
   }
   
   await dbDelete('categories', id);
@@ -6592,12 +6984,12 @@ async function deleteCategory(id) {
   allCategories = await dbGetAll('categories');
   populateCategoryFilters();
   renderCategoriesList();
-  toast('تم حذف التصنيف');
+  toast(t('toast_category_deleted'));
 }
 
 // ============ ADD/EDIT PRODUCT ============
 function openAddProduct() {
-  document.getElementById('modal-product-title').textContent = 'إضافة صنف جديد';
+  document.getElementById('modal-product-title').textContent = t('modal_add_product');
   document.getElementById('product-form').reset();
   document.getElementById('product-id').value = '';
   document.getElementById('product-image-preview').innerHTML = '';
@@ -6609,7 +7001,7 @@ async function editProduct(id) {
   const p = await dbGet('products', id);
   if (!p) return;
   
-  document.getElementById('modal-product-title').textContent = 'تعديل الصنف';
+  document.getElementById('modal-product-title').textContent = t('modal_edit_product');
   document.getElementById('product-id').value = p.id;
   document.getElementById('product-sku').value = p.sku || '';
   document.getElementById('product-name').value = p.name;
@@ -6646,7 +7038,7 @@ async function saveProduct(e) {
   if (condition === '__other__') condition = '';
   if (type === '__other__') type = '';
   
-  if (!name) { toast('اكتب اسم الصنف', 'error'); return; }
+  if (!name) { toast(t('toast_enter_product'), 'error'); return; }
   const category = document.getElementById('product-category').value;
   const buyPrice = parseFloat(document.getElementById('product-buy-price').value) || 0;
   const sellPrice = parseFloat(document.getElementById('product-sell-price').value) || 0;
@@ -6679,11 +7071,11 @@ async function saveProduct(e) {
     data.id = parseInt(id);
     await dbPut('products', data);
     await logActivity('update_product', `تعديل صنف: ${name}`);
-    toast('تم تعديل الصنف');
+    toast(t('toast_product_updated'));
   } else {
     await dbAdd('products', data);
     await logActivity('create_product', `صنف جديد: ${name}`);
-    toast('تم إضافة الصنف');
+    toast(t('toast_product_added'));
   }
   
   closeModal('modal-product');
@@ -6697,7 +7089,7 @@ async function deleteProduct(id) {
   // Instant hide
   allProducts = allProducts.filter(pr => pr.id !== id);
   renderProducts(allProducts);
-  toast('تم حذف الصنف');
+  toast(t('toast_product_deleted'));
   
   // Background delete + sync
   await dbDelete('products', id);
@@ -6792,7 +7184,7 @@ async function viewProduct(id) {
 function openStockIn(id) {
   const p = allProducts.find(pr => pr.id === id);
   if (!p) return;
-  document.getElementById('modal-stock-title').textContent = 'إضافة للمخزون';
+  document.getElementById('modal-stock-title').textContent = t('modal_stock_in');
   document.getElementById('stock-product-id').value = id;
   document.getElementById('stock-direction').value = 'in';
   document.getElementById('stock-product-name').value = p.name;
@@ -6804,7 +7196,7 @@ function openStockIn(id) {
 function openStockOut(id) {
   const p = allProducts.find(pr => pr.id === id);
   if (!p) return;
-  document.getElementById('modal-stock-title').textContent = 'صرف من المخزون';
+  document.getElementById('modal-stock-title').textContent = t('modal_stock_out');
   document.getElementById('stock-product-id').value = id;
   document.getElementById('stock-direction').value = 'out';
   document.getElementById('stock-product-name').value = `${p.name} (متاح: ${p.quantity})`;
@@ -6821,13 +7213,13 @@ async function saveStockMovement(e) {
   const qty = parseInt(document.getElementById('stock-qty').value);
   const notes = document.getElementById('stock-notes').value.trim();
   
-  if (!qty || qty <= 0) return toast('أدخل كمية صحيحة', 'warning');
+  if (!qty || qty <= 0) return toast(t('toast_enter_valid_qty'), 'warning');
   
   const product = await dbGet('products', productId);
-  if (!product) return toast('الصنف غير موجود', 'error');
+  if (!product) return toast(t('toast_product_missing'), 'error');
   
   if (direction === 'out' && qty > product.quantity) {
-    return toast(`الكمية المتاحة ${product.quantity} فقط`, 'error');
+    return toast(t("toast_qty_only").replace("{qty}", product.quantity), "error");
   }
   
   // Update product quantity
@@ -6849,7 +7241,7 @@ async function saveStockMovement(e) {
   await logActivity('stock_' + direction, `${actionLabel} ${qty} × ${product.name}`);
   
   closeModal('modal-stock');
-  toast(`تم ${actionLabel} ${qty} وحدة`);
+  toast(t("toast_stock_done").replace("{action}", actionLabel).replace("{qty}", qty));
   await loadInventory();
 }
 
@@ -7041,7 +7433,7 @@ function openImportExport() {
 
 async function exportProducts() {
   const products = await dbGetAll('products');
-  if (products.length === 0) return toast('لا توجد أصناف للتصدير', 'warning');
+  if (products.length === 0) return toast(t('toast_no_products_export'), 'warning');
   
   const data = products.map(p => ({
     'الكود': p.sku,
@@ -7062,13 +7454,13 @@ async function exportProducts() {
   XLSX.utils.book_append_sheet(wb, ws, 'المخزون');
   XLSX.writeFile(wb, `SMS_Inventory_${new Date().toISOString().split('T')[0]}.xlsx`);
   
-  toast('تم تصدير المخزون');
+  toast(t('toast_inventory_exported'));
   closeModal('modal-import-export');
 }
 
 async function importProducts(input) {
   if (!input.files || !input.files[0]) return;
-  if (!confirm('سيتم إضافة الأصناف من الملف. متابعة؟')) { input.value = ''; return; }
+  if (!confirm(t('confirm_import_products'))) { input.value = ''; return; }
   
   const file = input.files[0];
   const reader = new FileReader();
@@ -7102,12 +7494,12 @@ async function importProducts(input) {
       }
       
       await logActivity('import_products', `استيراد ${count} صنف`);
-      toast(`تم استيراد ${count} صنف`);
+      toast(t("toast_imported_count").replace("{count}", count));
       closeModal('modal-import-export');
       await loadInventory();
     } catch (err) {
       console.error(err);
-      toast('خطأ في قراءة الملف', 'error');
+      toast(t('toast_file_read_error'), 'error');
     }
   };
   
@@ -7230,10 +7622,10 @@ function filterCategoriesPage() {
 function openAddCategoryPage() {
   const name = prompt('اسم التصنيف الرئيسي الجديد:');
   if (!name || !name.trim()) return;
-  if (allCategories.find(c => c.name === name.trim() && !c.parentId)) return toast('التصنيف موجود بالفعل', 'warning');
+  if (allCategories.find(c => c.name === name.trim() && !c.parentId)) return toast(t('toast_category_exists'), 'warning');
   dbAdd('categories', { name: name.trim(), parentId: null }).then(() => {
     logActivity('create_category', `تصنيف جديد: ${name.trim()}`);
-    toast('تم إضافة التصنيف');
+    toast(t('toast_category_added'));
     loadCategoriesPage();
   });
 }
@@ -7241,10 +7633,10 @@ function openAddCategoryPage() {
 function openAddSubCategory(parentId, parentName) {
   const name = prompt(`إضافة تصنيف فرعي لـ "${parentName}":`);
   if (!name || !name.trim()) return;
-  if (allCategories.find(c => c.name === name.trim() && c.parentId === parentId)) return toast('التصنيف الفرعي موجود بالفعل', 'warning');
+  if (allCategories.find(c => c.name === name.trim() && c.parentId === parentId)) return toast(t('toast_subcategory_exists'), 'warning');
   dbAdd('categories', { name: name.trim(), parentId }).then(() => {
     logActivity('create_category', `تصنيف فرعي: ${name.trim()}`);
-    toast('تم إضافة التصنيف الفرعي');
+    toast(t('toast_subcategory_added'));
     loadCategoriesPage();
     populateCategoryFilters();
   });
@@ -7258,7 +7650,7 @@ async function editCategoryPage(id) {
   cat.name = newName.trim();
   await dbPut('categories', cat);
   await logActivity('edit_category', `تعديل تصنيف: ${newName.trim()}`);
-  toast('تم تعديل التصنيف');
+  toast(t('toast_category_updated'));
   loadCategoriesPage();
   populateCategoryFilters();
 }
@@ -7267,14 +7659,14 @@ async function deleteCategoryPage(id) {
   const cat = await dbGet('categories', id);
   if (!cat) return;
   const hasProducts = allProducts.some(p => p.category == id);
-  if (hasProducts) return toast('لا يمكن حذف تصنيف به أصناف', 'error');
+  if (hasProducts) return toast(t('toast_cant_delete_has_items'), 'error');
   const hasChildren = allCategories.some(c => c.parentId === id);
   if (hasChildren) {
     if (!confirm(`التصنيف "${cat.name}" له تصنيفات فرعية. حذف الكل؟`)) return;
     // Delete children first
     const children = allCategories.filter(c => c.parentId === id);
     for (const child of children) {
-      if (allProducts.some(p => p.category == child.id)) return toast(`لا يمكن حذف "${child.name}" لأنه يحتوي على أصناف`, 'error');
+      if (allProducts.some(p => p.category == child.id)) return toast(t('toast_cant_delete_name_has_items').replace('{name}', child.name), 'error');
       await dbDelete('categories', child.id);
     }
   } else {
@@ -7282,7 +7674,7 @@ async function deleteCategoryPage(id) {
   }
   await dbDelete('categories', id);
   await logActivity('delete_category', `حذف تصنيف: ${cat.name}`);
-  toast('تم حذف التصنيف');
+  toast(t('toast_category_deleted'));
   loadCategoriesPage();
   populateCategoryFilters();
 }
@@ -7367,7 +7759,7 @@ function renderSuppliersTable() {
 
 // ============ CLIENT CRUD ============
 function openAddClient() {
-  document.getElementById('modal-client-title').textContent = 'إضافة عميل جديد';
+  document.getElementById('modal-client-title').textContent = t('modal_add_client');
   document.getElementById('client-form').reset();
   document.getElementById('client-id').value = '';
   document.getElementById('client-code').value = generateClientCode();
@@ -7377,7 +7769,7 @@ function openAddClient() {
 async function editClient(id) {
   const c = await dbGet('clients', id);
   if (!c) return;
-  document.getElementById('modal-client-title').textContent = 'تعديل بيانات العميل';
+  document.getElementById('modal-client-title').textContent = t('modal_edit_client');
   document.getElementById('client-id').value = c.id;
   document.getElementById('client-code').value = c.code;
   document.getElementById('client-name').value = c.name;
@@ -7410,10 +7802,10 @@ async function saveClient(e) {
     data.id = parseInt(id);
     data.balance = existing?.balance || 0;
     await dbPut('clients', data);
-    toast('تم تعديل بيانات العميل');
+    toast(t('toast_client_updated'));
   } else {
     await dbAdd('clients', data);
-    toast('تم إضافة العميل');
+    toast(t('toast_client_added'));
   }
   
   closeModal('modal-client');
@@ -7426,7 +7818,7 @@ async function deleteClient(id) {
   if (!confirm(`حذف العميل "${c?.name}"؟`)) return;
   allClients = allClients.filter(x => x.id !== id);
   renderClientsTable();
-  toast('تم حذف العميل');
+  toast(t('toast_client_deleted'));
   try { await dbDelete('clients', id); } catch(e) {}
 }
 
@@ -7472,7 +7864,7 @@ function generateClientCode() {
 
 // ============ SUPPLIER CRUD ============
 function openAddSupplier() {
-  document.getElementById('modal-supplier-title').textContent = 'إضافة مورد جديد';
+  document.getElementById('modal-supplier-title').textContent = t('modal_add_supplier');
   document.getElementById('supplier-form').reset();
   document.getElementById('supplier-id').value = '';
   document.getElementById('supplier-code').value = 'SP-' + String(Math.floor(Math.random() * 9999)).padStart(4, '0');
@@ -7482,7 +7874,7 @@ function openAddSupplier() {
 async function editSupplier(id) {
   const s = await dbGet('suppliers', id);
   if (!s) return;
-  document.getElementById('modal-supplier-title').textContent = 'تعديل بيانات المورد';
+  document.getElementById('modal-supplier-title').textContent = t('modal_edit_supplier');
   document.getElementById('supplier-id').value = s.id;
   document.getElementById('supplier-code').value = s.code;
   document.getElementById('supplier-name').value = s.name;
@@ -7509,10 +7901,10 @@ async function saveSupplier(e) {
     data.id = parseInt(id);
     data.balance = existing?.balance || 0;
     await dbPut('suppliers', data);
-    toast('تم تعديل بيانات المورد');
+    toast(t('toast_supplier_updated'));
   } else {
     await dbAdd('suppliers', data);
-    toast('تم إضافة المورد');
+    toast(t('toast_supplier_added'));
   }
   
   closeModal('modal-supplier');
@@ -7525,7 +7917,7 @@ async function deleteSupplier(id) {
   if (!confirm(`حذف المورد "${s?.name}"؟`)) return;
   allSuppliers = allSuppliers.filter(x => x.id !== id);
   renderSuppliersTable();
-  toast('تم حذف المورد');
+  toast(t('toast_supplier_deleted'));
   try { await dbDelete('suppliers', id); } catch(e) {}
 }
 
@@ -7677,7 +8069,7 @@ function getPaymentBadge(status) {
 function openNewSaleInvoice() {
   editingInvoiceType = 'sale';
   currentInvoiceItems = [];
-  document.getElementById('modal-invoice-title').textContent = 'فاتورة بيع جديدة';
+  document.getElementById('modal-invoice-title').textContent = t('new_sale_invoice');
   document.getElementById('invoice-form').reset();
   document.querySelectorAll('.inv-payment-section').forEach(el => el.style.display = 'none');
   document.getElementById('invoice-id').value = '';
@@ -7687,11 +8079,11 @@ function openNewSaleInvoice() {
   
   // Populate client dropdown
   const sel = document.getElementById('invoice-party');
-  sel.innerHTML = '<option value="">اختر العميل</option>' + 
+  sel.innerHTML = '<option value="">' + t('choose_client') + '</option>' + 
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
-    '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
+    '<option value="__other__">' + t('other_add_client') + '</option>';
   
-  document.getElementById('invoice-party-label').textContent = 'العميل';
+  document.getElementById('invoice-party-label').textContent = t('label_client');
   
   // Clear photos
   document.getElementById('invoice-photos').value = '';
@@ -7706,7 +8098,7 @@ function openNewSaleInvoice() {
 function openNewPurchaseInvoice() {
   editingInvoiceType = 'purchase';
   currentInvoiceItems = [];
-  document.getElementById('modal-invoice-title').textContent = 'فاتورة شراء جديدة';
+  document.getElementById('modal-invoice-title').textContent = t('new_purchase_invoice');
   document.getElementById('invoice-form').reset();
   document.querySelectorAll('.inv-payment-section').forEach(el => el.style.display = 'none');
   document.getElementById('invoice-id').value = '';
@@ -7715,11 +8107,11 @@ function openNewPurchaseInvoice() {
   document.getElementById('invoice-date').value = new Date().toISOString().split('T')[0];
   
   const sel = document.getElementById('invoice-party');
-  sel.innerHTML = '<option value="">اختر المورد</option>' + 
+  sel.innerHTML = '<option value="">' + t('choose_supplier') + '</option>' + 
     allSuppliers.map(s => `<option value="${s.id}">${s.name} (${s.code})</option>`).join('') +
-    '<option value="__other__">+ أخرى (إضافة مورد جديد)</option>';
+    '<option value="__other__">' + t('other_add_supplier') + '</option>';
   
-  document.getElementById('invoice-party-label').textContent = 'المورد';
+  document.getElementById('invoice-party-label').textContent = t('label_supplier');
   
   // Clear photos
   document.getElementById('invoice-photos').value = '';
@@ -7742,7 +8134,7 @@ async function editInvoice(id) {
     return item;
   });
   
-  document.getElementById('modal-invoice-title').textContent = inv.type === 'sale' ? 'تعديل فاتورة بيع' : 'تعديل فاتورة شراء';
+  document.getElementById('modal-invoice-title').textContent = inv.type === 'sale' ? t('edit_sale_invoice') : t('edit_purchase_invoice');
   document.getElementById('invoice-id').value = inv.id;
   document.getElementById('invoice-type').value = inv.type;
   document.getElementById('invoice-number').value = inv.number;
@@ -7756,13 +8148,13 @@ async function editInvoice(id) {
   
   const sel = document.getElementById('invoice-party');
   if (inv.type === 'sale') {
-    sel.innerHTML = '<option value="">اختر العميل</option>' + allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('') + '<option value="__other__">+ أخرى</option>';
+    sel.innerHTML = '<option value="">' + t('choose_client') + '</option>' + allClients.map(c => `<option value="${c.id}">${c.name}</option>`).join('') + '<option value="__other__">' + t('other_add_new') + '</option>';
     sel.value = inv.clientId || '';
-    document.getElementById('invoice-party-label').textContent = 'العميل';
+    document.getElementById('invoice-party-label').textContent = t('label_client');
   } else {
-    sel.innerHTML = '<option value="">اختر المورد</option>' + allSuppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('') + '<option value="__other__">+ أخرى</option>';
+    sel.innerHTML = '<option value="">' + t('choose_supplier') + '</option>' + allSuppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('') + '<option value="__other__">' + t('other_add_new') + '</option>';
     sel.value = inv.supplierId || '';
-    document.getElementById('invoice-party-label').textContent = 'المورد';
+    document.getElementById('invoice-party-label').textContent = t('label_supplier');
   }
   
   renderInvoiceItems();
@@ -7797,9 +8189,9 @@ function renderInvoiceItems() {
   container.innerHTML = currentInvoiceItems.map((item, idx) => `
     <div class="invoice-item-row" data-idx="${idx}">
       <select class="inv-product-select" data-idx="${idx}">
-        <option value="">اختر صنف</option>
+        <option value="">${t('choose_item')}</option>
         ${productsOptions}
-        <option value="__other__">+ أخرى (إضافة صنف جديد)</option>
+        <option value="__other__">${t('other_add_new')}</option>
       </select>
       <div class="inv-item-details">
         <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="الكمية" data-idx="${idx}">
@@ -7891,7 +8283,7 @@ function showInlineProductAdd(idx) {
 
 async function saveInlineProduct(idx) {
   const name = document.getElementById(`inline-prod-name-${idx}`).value.trim();
-  if (!name) { toast('أدخل اسم الصنف', 'error'); return; }
+  if (!name) { toast(t('toast_enter_item_name'), 'error'); return; }
   
   const sellPrice = parseFloat(document.getElementById(`inline-prod-price-${idx}`).value) || 0;
   const buyPrice = parseFloat(document.getElementById(`inline-prod-cost-${idx}`).value) || 0;
@@ -7915,7 +8307,7 @@ async function saveInlineProduct(idx) {
   currentInvoiceItems[idx].unitPrice = editingInvoiceType === 'sale' ? sellPrice : buyPrice;
   currentInvoiceItems[idx].total = currentInvoiceItems[idx].quantity * currentInvoiceItems[idx].unitPrice;
   
-  toast(`تم إضافة "${name}" ✅`);
+  toast(t("toast_inline_product_added").replace("{name}", name));
   renderInvoiceItems();
   updateInvoiceTotals();
 }
@@ -7957,7 +8349,7 @@ async function saveInvoice(e) {
   const paymentData = paymentMethod ? getInvoicePaymentData() : {};
   const notes = document.getElementById('invoice-notes').value.trim();
   
-  if (currentInvoiceItems.length === 0) return toast('أضف صنف واحد على الأقل', 'warning');
+  if (currentInvoiceItems.length === 0) return toast(t('toast_add_one_item'), 'warning');
   
   // Try to recover productId from the select elements before validation
   const invoiceSelects = document.querySelectorAll('.inv-product-select');
@@ -7974,7 +8366,7 @@ async function saveInvoice(e) {
     }
   });
   
-  if (currentInvoiceItems.some(i => !i.productId)) return toast('اختر المنتج لكل الأصناف', 'warning');
+  if (currentInvoiceItems.some(i => !i.productId)) return toast(t('toast_choose_product_all'), 'warning');
   
   const total = currentInvoiceItems.reduce((sum, i) => sum + i.total, 0);
   
@@ -8046,7 +8438,7 @@ async function saveInvoice(e) {
   await updateBalances();
   
   closeModal('modal-invoice');
-  toast(type === 'sale' ? 'تم حفظ فاتورة البيع' : 'تم حفظ فاتورة الشراء');
+  toast(type === 'sale' ? t('toast_sale_saved') : t('toast_purchase_saved'));
   
   if (type === 'sale') { await loadSalesPage(); renderSalesInvoices(); }
   else { await loadPurchasesPage(); renderPurchaseInvoices(); }
@@ -8133,7 +8525,7 @@ function updateBulkBar(section) {
 }
 
 async function bulkDeleteInvoices(type) {
-  if (!isAdmin()) { toast('مسح الفواتير متاح للمدير فقط', 'error'); return; }
+  if (!isAdmin()) { toast(t('toast_delete_invoices_admin'), 'error'); return; }
   const section = type === 'sale' ? 'sales' : 'purchases';
   const checked = document.querySelectorAll(`#${section}-tbody .row-select:checked`);
   if (checked.length === 0) return;
@@ -8145,7 +8537,7 @@ async function bulkDeleteInvoices(type) {
   allInvoices = allInvoices.filter(inv => !ids.includes(inv.id));
   if (type === 'sale') renderSalesInvoices();
   else renderPurchaseInvoices();
-  toast(`تم حذف ${ids.length} فاتورة`);
+  toast(t("toast_deleted_invoices").replace("{count}", ids.length));
   
   // Background: reverse stock + delete + sync
   for (const id of ids) {
@@ -8167,7 +8559,7 @@ async function bulkDeleteClients() {
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   allClients = allClients.filter(c => !ids.includes(c.id));
   renderClientsTable();
-  toast(`تم حذف ${checked.length} عميل`);
+  toast(t("toast_deleted_clients").replace("{count}", checked.length));
   for (const id of ids) { try { await dbDelete('clients', id); } catch(e) {} }
 }
 
@@ -8178,7 +8570,7 @@ async function bulkDeleteSuppliers() {
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   allSuppliers = allSuppliers.filter(s => !ids.includes(s.id));
   renderSuppliersTable();
-  toast(`تم حذف ${checked.length} مورد`);
+  toast(t("toast_deleted_suppliers").replace("{count}", checked.length));
   for (const id of ids) { try { await dbDelete('suppliers', id); } catch(e) {} }
 }
 
@@ -8189,7 +8581,7 @@ async function bulkDeleteMaintServices() {
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   _allServicesLoaded = _allServicesLoaded.filter(s => !ids.includes(s.id));
   renderServicesInAllPages();
-  toast(`تم حذف ${checked.length} خدمة`);
+  toast(t("toast_deleted_services").replace("{count}", checked.length));
   for (const id of ids) { try { await dbDelete('services', id); } catch(e) {} }
 }
 
@@ -8200,7 +8592,7 @@ async function bulkDeleteServices() {
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   _allServicesLoaded = _allServicesLoaded.filter(s => !ids.includes(s.id));
   renderServicesInAllPages();
-  toast(`تم حذف ${checked.length} خدمة`);
+  toast(t("toast_deleted_services").replace("{count}", checked.length));
   for (const id of ids) { try { await dbDelete('services', id); } catch(e) {} }
 }
 
@@ -8212,7 +8604,7 @@ async function bulkDeleteDevices() {
   allDevices = allDevices.filter(d => !ids.includes(d.id));
   renderDevicesTable();
   updateMaintenanceStats();
-  toast(`تم حذف ${checked.length} جهاز`);
+  toast(t("toast_deleted_devices").replace("{count}", checked.length));
   for (const id of ids) { try { await dbDelete('devices', id); } catch(e) {} }
 }
 
@@ -8223,7 +8615,7 @@ async function bulkDeleteExpenses(section) {
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   allExpenses = allExpenses.filter(e => !ids.includes(e.id));
   renderExpensesTable();
-  toast(`تم حذف ${checked.length} مصروف`);
+  toast(t("toast_deleted_expenses").replace("{count}", checked.length));
   for (const id of ids) { try { await dbDelete('expenses', id); } catch(e) {} }
 }
 
@@ -8234,12 +8626,12 @@ async function bulkDeleteEngineers() {
   const ids = Array.from(checked).map(cb => parseInt(cb.dataset.id));
   allEngineers = allEngineers.filter(e => !ids.includes(e.id));
   renderEngineersTable();
-  toast(`تم حذف ${checked.length} مهندس`);
+  toast(t("toast_deleted_engineers").replace("{count}", checked.length));
   for (const id of ids) { try { await dbDelete('engineers', id); } catch(e) {} }
 }
 
 async function bulkDeleteProducts() {
-  if (!isAdmin()) { toast('مسح الأصناف متاح للمدير فقط', 'error'); return; }
+  if (!isAdmin()) { toast(t('toast_delete_products_admin'), 'error'); return; }
   const checked = document.querySelectorAll('#products-tbody .row-select:checked');
   if (checked.length === 0) return;
   if (!confirm(`حذف ${checked.length} صنف؟ لا يمكن التراجع!`)) return;
@@ -8248,12 +8640,12 @@ async function bulkDeleteProducts() {
   for (const id of ids) {
     try { await dbDelete('products', id); } catch(e) {}
   }
-  toast(`تم حذف ${ids.length} صنف`);
+  toast(t("toast_deleted_products").replace("{count}", ids.length));
   await loadInventory();
 }
 
 async function deleteInvoice(id) {
-  if (!isAdmin()) { toast('مسح الفواتير متاح للمدير فقط', 'error'); return; }
+  if (!isAdmin()) { toast(t('toast_delete_invoices_admin'), 'error'); return; }
   const inv = await dbGet('invoices', id);
   if (!confirm(`حذف الفاتورة ${inv?.number}؟`)) return;
   
@@ -8261,7 +8653,7 @@ async function deleteInvoice(id) {
   allInvoices = allInvoices.filter(i => i.id !== id);
   renderSalesInvoices();
   renderPurchaseInvoices();
-  toast('تم حذف الفاتورة');
+  toast(t('toast_invoice_deleted'));
   
   // Delete + reverse stock — dbDelete now pushes immediately
   if (inv?.items) await reverseStockChanges(inv);
@@ -8288,7 +8680,7 @@ async function recordPayment(id) {
   
   await dbPut('invoices', inv);
   await updateBalances();
-  toast('تم تسجيل الدفع');
+  toast(t('toast_payment_recorded'));
   
   allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
   renderSalesInvoices();
@@ -8525,7 +8917,7 @@ async function printBarcodeSticker(productId) {
   const p = await dbGet('products', productId);
   if (!p) return;
   const barcodeVal = p.barcode || p.sku || '';
-  if (!barcodeVal) { toast('لا يوجد باركود', 'error'); return; }
+  if (!barcodeVal) { toast(t('toast_no_barcode'), 'error'); return; }
   
   const printWin = window.open('', '_blank');
   printWin.document.write(`<!DOCTYPE html><html><head>
@@ -8747,7 +9139,7 @@ async function createReturn(invoiceId) {
   await dbAdd('invoices', returnInv);
   // Return stock
   await reverseStockChanges(inv);
-  toast('تم إنشاء المرتجع');
+  toast(t('toast_return_created'));
 }
 
 // ============ HELPERS ============
@@ -8971,7 +9363,7 @@ function onClientSelect(sel, context) {
 
 async function saveInlineClient(context) {
   const name = document.getElementById(`new-client-${context}-name`).value.trim();
-  if (!name) { toast('أدخل الاسم', 'error'); return; }
+  if (!name) { toast(t('toast_enter_name'), 'error'); return; }
   const phone = document.getElementById(`new-client-${context}-phone`).value.trim();
   
   // Determine if this is a supplier (purchase invoice) or client
@@ -9003,7 +9395,7 @@ async function saveInlineClient(context) {
   sel.insertBefore(newOpt, otherOpt);
   sel.value = id;
   
-  toast(`تم إضافة ${isSupplier ? 'المورد' : 'العميل'} بنجاح`);
+  toast(t('toast_entity_added').replace('{type}', isSupplier ? t('label_supplier') : t('label_client')));
 }
 
 function openClientManager() {
@@ -9057,7 +9449,7 @@ async function deleteClientFromManager(id, store) {
     allSuppliers = allSuppliers.filter(s => s.id !== id);
   }
   autoPush();
-  toast(`تم حذف ${entity.name}`);
+  toast(t("toast_entity_deleted").replace("{name}", entity.name));
   // Refresh the manager list
   const listEl = document.getElementById('client-manager-list');
   if (listEl) {
@@ -9070,9 +9462,9 @@ function populateEngineerDropdown(selectedId) {
   const sel = document.getElementById('device-engineer');
   // Remove enhanced flag so it gets re-enhanced with new options
   delete sel.dataset.enhanced;
-  sel.innerHTML = '<option value="">اختر المهندس/الفني</option>' +
+  sel.innerHTML = '<option value="">' + t('choose_engineer') + '</option>' +
     allEngineers.map(e => `<option value="${e.id}">${e.name} (${e.specialty})</option>`).join('') +
-    '<option value="__other__">+ أخرى (إضافة مهندس جديد)</option>';
+    '<option value="__other__">' + t('other_add_engineer') + '</option>';
   if (selectedId) {
     sel.value = String(selectedId);
     // If value didn't match (type mismatch), try finding the option
@@ -9096,7 +9488,7 @@ function onEngineerSelect(sel) {
 
 async function saveInlineEngineer() {
   const name = document.getElementById('new-engineer-name').value.trim();
-  if (!name) { toast('أدخل اسم المهندس', 'error'); return; }
+  if (!name) { toast(t('toast_engineer_name_required'), 'error'); return; }
   const phone = document.getElementById('new-engineer-phone').value.trim();
   const specialty = document.getElementById('new-engineer-specialty').value;
   
@@ -9112,11 +9504,11 @@ async function saveInlineEngineer() {
   
   // Repopulate and select new engineer
   populateEngineerDropdown(id);
-  toast('تم إضافة المهندس بنجاح');
+  toast(t('toast_engineer_added'));
 }
 
 function openNewDevice() {
-  document.getElementById('modal-device-title').textContent = 'إذن استلام جهاز جديد';
+  document.getElementById('modal-device-title').textContent = t('modal_new_device');
   document.getElementById('device-form').reset();
   document.getElementById('device-id').value = '';
   document.getElementById('device-order-number').value = generateOrderNumber();
@@ -9130,9 +9522,9 @@ function openNewDevice() {
   
   // Populate client dropdown
   const sel = document.getElementById('device-client');
-  sel.innerHTML = '<option value="">اختر العميل</option>' +
+  sel.innerHTML = '<option value="">' + t('choose_client') + '</option>' +
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
-    '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
+    '<option value="__other__">' + t('other_add_client') + '</option>';
   
   // Populate engineer dropdown
   populateEngineerDropdown();
@@ -9149,7 +9541,7 @@ async function editDevice(id) {
   const d = await dbGet('devices', id);
   if (!d) return;
   
-  document.getElementById('modal-device-title').textContent = 'تعديل أمر الصيانة';
+  document.getElementById('modal-device-title').textContent = t('modal_edit_device');
   document.getElementById('device-id').value = d.id;
   document.getElementById('device-order-number').value = d.orderNumber;
   document.getElementById('device-intake-date').value = d.intakeDate?.split('T')[0] || '';
@@ -9170,9 +9562,9 @@ async function editDevice(id) {
   document.getElementById('warranty-months-group').style.display = d.hasWarranty ? '' : 'none';
   
   const sel = document.getElementById('device-client');
-  sel.innerHTML = '<option value="">اختر العميل</option>' +
+  sel.innerHTML = '<option value="">' + t('choose_client') + '</option>' +
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
-    '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
+    '<option value="__other__">' + t('other_add_client') + '</option>';
   sel.value = d.clientId || '';
   
   // Populate engineer dropdown
@@ -9275,7 +9667,7 @@ async function saveDevice(e) {
       notifyEngineerAssignment(data);
     }
     await dbPut('devices', data);
-    toast('تم تعديل أمر الصيانة');
+    toast(t('toast_maintenance_updated'));
   } else {
     data.taskStatus = data.engineerId ? 'assigned' : 'pending';
     const newId = await dbAdd('devices', data);
@@ -9283,7 +9675,7 @@ async function saveDevice(e) {
       data.id = newId;
       notifyEngineerAssignment(data);
     }
-    toast('تم إنشاء إذن الاستلام');
+    toast(t('toast_intake_created'));
   }
   
   // Deduct stock parts
@@ -9316,7 +9708,7 @@ async function notifyEngineerAssignment(device) {
   const deadlineStr = device.deadline ? new Date(device.deadline).toLocaleString('ar-EG') : 'غير محدد';
   
   // In-app notification (toast)
-  toast(`تم تخصيص الجهاز "${device.deviceName}" للمهندس ${engineer.name}`, 'success');
+  toast(t('toast_device_assigned').replace('{device}', device.deviceName).replace('{engineer}', engineer.name), 'success');
   
   // Add to activity log
   await dbAdd('activityLog', {
@@ -9379,11 +9771,11 @@ async function completeDeviceTask(deviceId) {
   });
   
   if (wasOnTime && d.reward) {
-    toast(`تم إتمام المهمة في الوقت — مكافأة ${formatMoney(d.reward)} للمهندس ${engineer?.name}`, 'success');
+    toast(t('toast_task_done_reward').replace('{amount}', formatMoney(d.reward)).replace('{name}', engineer?.name), 'success');
   } else if (!wasOnTime) {
-    toast(`تم إتمام المهمة (متأخر) — المهندس ${engineer?.name}`, 'warning');
+    toast(t('toast_task_done_late').replace('{name}', engineer?.name), 'warning');
   } else {
-    toast('تم إتمام المهمة بنجاح', 'success');
+    toast(t('toast_task_done_ok'), 'success');
   }
   
   // Refresh view
@@ -9408,7 +9800,7 @@ async function warnEngineer(deviceId) {
     engineerId: d.engineerId,
   });
   
-  toast(`تم إرسال إنذار ${d.warningsCount}/${d.warningsLimit} للمهندس ${engineer?.name}`, 'warning');
+  toast(t('toast_warning_sent').replace('{count}', d.warningsCount).replace('{limit}', d.warningsLimit).replace('{name}', engineer?.name), 'warning');
   viewDevice(deviceId);
 }
 
@@ -9433,7 +9825,7 @@ async function penalizeEngineer(deviceId) {
     penalty: d.penalty,
   });
   
-  toast(`تم تطبيق العقوبة ${formatMoney(d.penalty)} على المهندس ${engineer?.name}`, 'error');
+  toast(t('toast_penalty_applied').replace('{amount}', formatMoney(d.penalty)).replace('{name}', engineer?.name), 'error');
   viewDevice(deviceId);
 }
 
@@ -9862,7 +10254,7 @@ async function changeDeviceStatus(id) {
   if (nextStatus === 'delivered_not_paid') d.deliveryDate = new Date().toISOString();
   
   await dbPut('devices', d);
-  toast(`تم تغيير الحالة إلى ${nextLabel}`);
+  toast(t("toast_status_changed").replace("{status}", nextLabel));
   await loadMaintenancePage();
 }
 
@@ -9974,7 +10366,7 @@ async function viewDevice(id) {
   </div>`;
   
   document.getElementById('view-product-content').innerHTML = html;
-  document.querySelector('#modal-view-product .modal-header h3').textContent = 'تفاصيل أمر الصيانة';
+  document.querySelector('#modal-view-product .modal-header h3').textContent = t('maint_order_details');
   openModal('modal-view-product');
   
   // Generate QR
@@ -10320,13 +10712,13 @@ function showAccBreakdown(type) {
 // ============ PAYMENT LEDGER ============
 function openAdjustBalance(type, preselectedId) {
   const isClient = type === 'client';
-  document.getElementById('modal-adjust-balance-title').textContent = isClient ? 'سجل مدفوعات عميل' : 'سجل مدفوعات مورد';
+  document.getElementById('modal-adjust-balance-title').textContent = isClient ? t('payment_ledger_client') : t('payment_ledger_supplier');
   document.getElementById('adj-type').value = type;
   document.getElementById('adj-edit-idx').value = '-1';
   
   const sel = document.getElementById('adj-entity');
   const list = isClient ? allClients : allSuppliers;
-  sel.innerHTML = '<option value="">اختر...</option>' + list.map(e => `<option value="${e.id}">${e.name} (${formatMoney(e.balance || 0)})</option>`).join('');
+  sel.innerHTML = '<option value="">' + t('choose_placeholder') + '</option>' + list.map(e => `<option value="${e.id}">${e.name} (${formatMoney(e.balance || 0)})</option>`).join('');
   
   document.getElementById('adj-add-form').style.display = 'none';
   
@@ -10411,7 +10803,7 @@ function renderLedger(entity) {
 }
 
 function showAddPayment() {
-  document.getElementById('adj-form-title').textContent = 'تسجيل دفعة جديدة';
+  document.getElementById('adj-form-title').textContent = t('new_payment');
   document.getElementById('adj-edit-idx').value = '-1';
   document.getElementById('adj-pay-type').value = 'payment_in';
   document.getElementById('adj-pay-amount').value = '';
@@ -10422,7 +10814,7 @@ function showAddPayment() {
 }
 
 function showSetBalance() {
-  document.getElementById('adj-form-title').textContent = 'تعيين الرصيد يدوياً';
+  document.getElementById('adj-form-title').textContent = t('set_balance_manual');
   document.getElementById('adj-edit-idx').value = '-1';
   document.getElementById('adj-pay-type').value = 'adjust';
   document.getElementById('adj-pay-amount').value = '';
@@ -10444,7 +10836,7 @@ function editLedgerEntry(idx) {
   if (!entity?.payments?.[idx]) return;
   
   const p = entity.payments[idx];
-  document.getElementById('adj-form-title').textContent = 'تعديل الحركة';
+  document.getElementById('adj-form-title').textContent = t('edit_movement');
   document.getElementById('adj-edit-idx').value = idx;
   document.getElementById('adj-pay-type').value = p.type;
   document.getElementById('adj-pay-amount').value = p.amount;
@@ -10454,7 +10846,7 @@ function editLedgerEntry(idx) {
 }
 
 async function deleteLedgerEntry(idx) {
-  if (!confirm('حذف هذه الحركة؟')) return;
+  if (!confirm(t('confirm_delete_movement'))) return;
   const type = document.getElementById('adj-type').value;
   const id = parseInt(document.getElementById('adj-entity-id').value);
   const store = type === 'client' ? 'clients' : 'suppliers';
@@ -10662,7 +11054,7 @@ async function saveExpense(e) {
 }
 
 async function deleteExpense(id) {
-  if (!confirm('حذف هذا المصروف؟')) return;
+  if (!confirm(t('confirm_delete_expense'))) return;
   allExpenses = allExpenses.filter(x => x.id !== id);
   renderExpensesTable();
   toast('تم حذف المصروف');
@@ -10678,16 +11070,16 @@ async function loadServices() {
 }
 
 function openNewService() {
-  document.getElementById('modal-service-title').textContent = 'زيارة/خدمة جديدة';
+  document.getElementById('modal-service-title').textContent = t('modal_new_service');
   document.getElementById('service-form').reset();
   document.getElementById('service-id').value = '';
   document.getElementById('service-date').value = new Date().toISOString().split('T')[0];
   document.getElementById('service-status').value = 'pending';
   
   const sel = document.getElementById('service-client');
-  sel.innerHTML = '<option value="">اختر العميل</option>' +
+  sel.innerHTML = '<option value="">' + t('choose_client') + '</option>' +
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
-    '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
+    '<option value="__other__">' + t('other_add_client') + '</option>';
   
   openModal('modal-service');
 }
@@ -10695,7 +11087,7 @@ function openNewService() {
 async function editService(id) {
   const s = await dbGet('services', id);
   if (!s) return;
-  document.getElementById('modal-service-title').textContent = 'تعديل الزيارة/الخدمة';
+  document.getElementById('modal-service-title').textContent = t('edit_service');
   document.getElementById('service-id').value = s.id;
   document.getElementById('service-date').value = s.date?.split('T')[0] || '';
   document.getElementById('service-description').value = s.description || '';
@@ -10705,9 +11097,9 @@ async function editService(id) {
   document.getElementById('service-notes').value = s.notes || '';
   
   const sel = document.getElementById('service-client');
-  sel.innerHTML = '<option value="">اختر العميل</option>' +
+  sel.innerHTML = '<option value="">' + t('choose_client') + '</option>' +
     allClients.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('') +
-    '<option value="__other__">+ أخرى (إضافة عميل جديد)</option>';
+    '<option value="__other__">' + t('other_add_client') + '</option>';
   sel.value = s.clientId || '';
   
   openModal('modal-service');
@@ -10742,7 +11134,7 @@ async function saveService(e) {
 }
 
 async function deleteService(id) {
-  if (!confirm('حذف هذه الخدمة؟')) return;
+  if (!confirm(t('confirm_delete_service'))) return;
   _allServicesLoaded = _allServicesLoaded.filter(x => x.id !== id);
   renderServicesInAllPages();
   toast('تم حذف الخدمة');
@@ -11067,7 +11459,7 @@ function renderUsersTable() {
 function openAddUser() {
   document.getElementById('user-form').reset();
   document.getElementById('user-id').value = '';
-  document.getElementById('modal-user-title').textContent = 'إضافة مستخدم جديد';
+  document.getElementById('modal-user-title').textContent = t('modal_add_user');
   document.getElementById('user-password').required = true;
   document.getElementById('user-password').placeholder = 'كلمة المرور';
   document.getElementById('user-role').value = 'staff';
@@ -11078,7 +11470,7 @@ function openAddUser() {
 async function editUser(id) {
   const u = await dbGet('users', id);
   if (!u) return;
-  document.getElementById('modal-user-title').textContent = 'تعديل المستخدم';
+  document.getElementById('modal-user-title').textContent = t('modal_edit_user');
   document.getElementById('user-id').value = u.id;
   document.getElementById('user-fullname').value = u.name || '';
   document.getElementById('user-username').value = u.username;
@@ -11151,15 +11543,15 @@ async function saveUser(e) {
     user.permissions = permissions;
     if (password) user.password = hashPassword(password);
     await dbPut('users', user);
-    toast('تم تعديل المستخدم');
+    toast(t('toast_user_updated'));
   } else {
-    if (!password) return toast('أدخل كلمة المرور', 'warning');
+    if (!password) return toast(t('toast_enter_password'), 'warning');
     await dbAdd('users', {
       name, username, role, permissions,
       password: hashPassword(password),
       active: true,
     });
-    toast('تم إضافة المستخدم');
+    toast(t('toast_user_added'));
   }
   
   closeModal('modal-user');
@@ -11170,14 +11562,14 @@ async function toggleUser(id) {
   const u = await dbGet('users', id);
   u.active = !u.active;
   await dbPut('users', u);
-  toast(u.active ? 'تم تفعيل المستخدم' : 'تم تعطيل المستخدم');
+  toast(u.active ? t('toast_user_activated') : t('toast_user_deactivated'));
   await loadUsersPage();
 }
 
 async function deleteUser(id) {
-  if (!confirm('حذف هذا المستخدم؟')) return;
+  if (!confirm(t('confirm_delete_user'))) return;
   await dbDelete('users', id);
-  toast('تم حذف المستخدم');
+  toast(t('toast_user_deleted'));
   await loadUsersPage();
 }
 
@@ -11218,7 +11610,7 @@ function renderEngineersTable() {
 }
 
 function openAddEngineer() {
-  document.getElementById('modal-engineer-title').textContent = 'إضافة مهندس/فني جديد';
+  document.getElementById('modal-engineer-title').textContent = t('add_new_engineer');
   document.getElementById('engineer-form').reset();
   document.getElementById('engineer-id').value = '';
   openModal('modal-engineer');
@@ -11228,7 +11620,7 @@ async function editEngineer(id) {
   const engineer = await dbGet('engineers', id);
   if (!engineer) return;
   
-  document.getElementById('modal-engineer-title').textContent = 'تعديل المهندس/الفني';
+  document.getElementById('modal-engineer-title').textContent = t('edit_engineer');
   document.getElementById('engineer-id').value = engineer.id;
   document.getElementById('engineer-name').value = engineer.name;
   document.getElementById('engineer-phone').value = engineer.phone || '';
@@ -11264,7 +11656,7 @@ async function saveEngineer(e) {
 }
 
 async function deleteEngineer(id) {
-  if (!confirm('حذف هذا المهندس/الفني؟')) return;
+  if (!confirm(t('confirm_delete_engineer'))) return;
   
   const assignedDevices = allDevices.filter(d => d.engineerId === id);
   if (assignedDevices.length > 0) {
@@ -11419,7 +11811,7 @@ function populateEngineersDropdown() {
   const currentOptions = select.innerHTML;
   
   // Clear current options except for default and "other"
-  const defaultOption = '<option value="">-- اختر المهندس --</option>';
+  const defaultOption = '<option value="">' + t('choose_engineer') + '</option>';
   const otherOption = '<option value="__other__">مهندس آخر...</option>';
   
   const engineerOptions = allEngineers.map(eng => 
@@ -11522,7 +11914,7 @@ async function deleteHistoryEntry(index) {
   const device = currentDeviceForHistory;
   if (!device || !device.repairHistory || !device.repairHistory[index]) return;
   
-  if (!confirm('هل أنت متأكد من حذف هذا السجل؟')) return;
+  if (!confirm(t('confirm_delete_record'))) return;
   
   // Remove entry
   device.repairHistory.splice(index, 1);
@@ -11747,7 +12139,7 @@ function renderRecipients() {
 function openAddRecipient() {
   document.getElementById('recipient-form').reset();
   document.getElementById('recipient-idx').value = '';
-  document.getElementById('modal-recipient-title').textContent = 'إضافة مستلم';
+  document.getElementById('modal-recipient-title').textContent = t('modal_add_recipient');
   // Default all checked
   document.getElementById('rcpt-low-stock').checked = true;
   document.getElementById('rcpt-unpaid').checked = true;
@@ -11807,11 +12199,11 @@ async function toggleRecipient(idx) {
   notifRecipients[idx].enabled = !notifRecipients[idx].enabled;
   await saveRecipientsToDb();
   renderRecipients();
-  toast(notifRecipients[idx].enabled ? 'تم التفعيل' : 'تم التعطيل');
+  toast(notifRecipients[idx].enabled ? t('toast_notif_enabled') : t('toast_notif_disabled'));
 }
 
 async function deleteRecipient(idx) {
-  if (!confirm('حذف هذا المستلم؟')) return;
+  if (!confirm(t('confirm_delete_recipient'))) return;
   notifRecipients.splice(idx, 1);
   await saveRecipientsToDb();
   renderRecipients();
@@ -11915,7 +12307,7 @@ async function fetchChatIds() {
       `).join('')}
     `;
     
-    toast(`تم العثور على ${chatList.length} محادثة`);
+    toast(t("toast_chats_found").replace("{count}", chatList.length));
   } catch(e) {
     toast('خطأ في الاتصال', 'error');
   }
@@ -11929,7 +12321,7 @@ function useChatId(chatId, name) {
     document.getElementById('recipient-chat-id').value = chatId;
     document.getElementById('recipient-name').value = name;
   }, 100);
-  toast(`تم نسخ Chat ID: ${chatId}`);
+  toast(t("toast_chatid_copied").replace("{id}", chatId));
 }
 
 async function testRecipient() {
@@ -11937,7 +12329,7 @@ async function testRecipient() {
   const telegram = await dbGet('settings', 'telegram');
   if (!telegram?.value?.botToken || !chatId) return toast('أدخل التوكن و Chat ID', 'warning');
   const ok = await sendTelegram(telegram.value.botToken, chatId, '✅ تجربة إشعار من نظام SMS — الاتصال يعمل بنجاح!');
-  toast(ok ? 'تم الإرسال ✅' : 'فشل — تحقق من Chat ID', ok ? 'success' : 'error');
+  toast(ok ? t('toast_test_sent') : t('toast_test_failed'), ok ? 'success' : 'error');
 }
 
 async function testRecipientByIndex(idx) {
@@ -11945,7 +12337,7 @@ async function testRecipientByIndex(idx) {
   const telegram = await dbGet('settings', 'telegram');
   if (!telegram?.value?.botToken || !r?.chatId) return toast('تحقق من التوكن و Chat ID', 'warning');
   const ok = await sendTelegram(telegram.value.botToken, r.chatId, `✅ تجربة إشعار — مرحباً ${r.name}! الاتصال يعمل بنجاح.`);
-  toast(ok ? `تم الإرسال لـ ${r.name} ✅` : 'فشل — تحقق من Chat ID', ok ? 'success' : 'error');
+  toast(ok ? t('toast_test_sent_to').replace('{name}', r.name) : t('toast_test_failed'), ok ? 'success' : 'error');
 }
 
 // Keep old function name for backward compat
