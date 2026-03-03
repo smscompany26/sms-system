@@ -5009,22 +5009,62 @@ function logout() {
   document.getElementById('login-error').textContent = '';
 }
 
+// Map nav data-page attributes to the permission key(s) needed
+const PAGE_PERMISSION_MAP = {
+  dashboard: 'dashboard',
+  inventory: 'inventory',
+  categories: 'inventory',
+  sales: 'sales',
+  purchases: 'purchases',
+  maintenance: 'maintenance',
+  accounting: 'accounting',
+  reports: 'reports',
+  settings: 'settings',
+};
+
+function userHasPageAccess(page) {
+  if (!currentUser) return false;
+  if (currentUser.role === 'admin') return true;
+  const perms = currentUser.permissions || PERMISSIONS[currentUser.role] || [];
+  if (perms.includes('*')) return true;
+  const needed = PAGE_PERMISSION_MAP[page];
+  if (!needed) return true; // unknown pages default open
+  return perms.includes(needed);
+}
+
+function applyNavPermissions() {
+  // Sidebar nav items & groups
+  document.querySelectorAll('.nav-item[data-page], .nav-group[data-page]').forEach(el => {
+    const page = el.getAttribute('data-page');
+    el.style.display = userHasPageAccess(page) ? '' : 'none';
+  });
+  // Mobile nav
+  document.querySelectorAll('.mob-nav-item').forEach(btn => {
+    const onclick = btn.getAttribute('onclick') || '';
+    const m = onclick.match(/mobileNav\(['"](\w+)['"]\)/);
+    if (m) {
+      const page = m[1];
+      btn.style.display = userHasPageAccess(page) ? '' : 'none';
+    }
+  });
+  // Mobile "more" menu items
+  document.querySelectorAll('.mob-more-menu a').forEach(a => {
+    const onclick = a.getAttribute('onclick') || '';
+    const m = onclick.match(/mobileNav\(['"](\w+)['"]\)/);
+    if (m) {
+      a.style.display = userHasPageAccess(m[1]) ? '' : 'none';
+    }
+  });
+}
+
 function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
   document.getElementById('sidebar-username').textContent = currentUser.name || currentUser.username;
   document.getElementById('user-role-badge').textContent = ROLES[currentUser.role]?.label || currentUser.role;
   
-  // Hide restricted nav items for staff
-  if (currentUser.role === 'staff') {
-    document.querySelector('[data-page="accounting"]').style.display = 'none';
-    document.querySelector('[data-page="reports"]').style.display = 'none';
-    document.querySelector('[data-page="settings"]').style.display = 'none';
-  } else {
-    document.querySelector('[data-page="accounting"]').style.display = '';
-    document.querySelector('[data-page="reports"]').style.display = '';
-    document.querySelector('[data-page="settings"]').style.display = '';
-  }
+  // Apply permission-based nav visibility
+  applyNavPermissions();
   
   // Restore last page or default to dashboard
   const saved = localStorage.getItem('sms_last_page');
@@ -5187,6 +5227,11 @@ const PAGE_TITLES = {
 
 // Navigation with hash routing
 function navigate(page, sub) {
+  // Permission check — block access to restricted pages
+  if (!userHasPageAccess(page)) {
+    toast('ليس لديك صلاحية لهذه الصفحة', 'warning');
+    return false;
+  }
   // Save for persistence (hash + localStorage)
   const hashVal = sub ? page + '/' + sub : page;
   location.hash = hashVal;
