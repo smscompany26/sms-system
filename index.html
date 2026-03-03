@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>SMS — نظام إدارة المخزون والصيانة</title>
+<title>SMS — Inventory & Maintenance System</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
 // v7.0.6 — SMS System
@@ -1813,7 +1813,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <div class="login-logo">
       <i class='bx bx-cube-alt'></i>
       <h1>SMS</h1>
-      <p>نظام إدارة المخزون والصيانة</p>
+      <p data-i18n="system_subtitle">نظام إدارة المخزون والصيانة</p>
     </div>
     <form id="login-form" onsubmit="return handleLogin(event)">
       <div class="form-group">
@@ -2465,7 +2465,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
           <div id="devices-cards-empty" class="empty-state" style="display:none;">
             <i class='bx bx-wrench' style="font-size:48px;color:#ccc"></i>
-            <p>لا توجد أجهزة في الصيانة</p>
+            <p data-i18n="no_devices">لا توجد أجهزة في الصيانة</p>
             <button class="btn btn-primary" onclick="openNewDevice()">إذن استلام أول جهاز</button>
           </div>
         </div>
@@ -2675,7 +2675,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div id="fetched-chat-ids" style="display:none;margin-top:12px"></div>
           <div class="alert-warning" style="margin-top:12px;padding:10px;border-radius:8px;font-size:12px">
             <i class='bx bx-info-circle'></i> <strong data-i18n="chatid_howto">كيف يحصل المستلم على Chat ID؟</strong><br>
-            يبعت أي رسالة للبوت على Telegram (مثلاً /start) → ثم دوس "جلب Chat IDs" هنا → هيظهر الـ Chat ID تلقائي
+            <span data-i18n="chatid_help">يبعت أي رسالة للبوت على Telegram (مثلاً /start) → ثم دوس "جلب Chat IDs" هنا → هيظهر الـ Chat ID تلقائي</span>
           </div>
         </div>
 
@@ -2970,13 +2970,13 @@ tr:hover { background: rgba(108,60,233,0.02); }
     </div>
     <div class="ie-section">
       <h4><i class='bx bx-export'></i> تصدير</h4>
-      <p>تصدير كل الأصناف إلى ملف Excel</p>
+      <p data-i18n="desc_export">تصدير كل الأصناف إلى ملف Excel</p>
       <button class="btn btn-primary" onclick="exportProducts()"><i class='bx bx-download'></i> تصدير Excel</button>
     </div>
     <hr>
     <div class="ie-section">
       <h4><i class='bx bx-import'></i> استيراد</h4>
-      <p>استيراد أصناف من ملف Excel (يجب أن يتبع نفس التنسيق)</p>
+      <p data-i18n="desc_import">استيراد أصناف من ملف Excel (يجب أن يتبع نفس التنسيق)</p>
       <input type="file" id="import-file" accept=".xlsx,.xls,.csv" onchange="importProducts(this)">
     </div>
   </div>
@@ -3338,7 +3338,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <!-- Add Entry Button (Admin only) -->
       <div class="add-history-entry" id="add-history-btn-wrapper" style="padding:16px;display:none">
         <button class="btn btn-primary" onclick="showAddHistoryForm()">
-          <i class='bx bx-plus'></i> إضافة سجل
+          <i class='bx bx-plus'></i> <span data-i18n="btn_add_record">إضافة سجل</span>
         </button>
       </div>
 
@@ -4126,6 +4126,12 @@ const TRANSLATIONS = {
     action_test: 'اختبار', action_deliver: 'تسليم',
     move_payment_in: 'دفعة واردة (سداد من العميل)', move_payment_out: 'دفعة صادرة (دفع للمورد)',
     move_add_debt: 'إضافة دين جديد', move_adjust: 'تعيين رصيد يدوي',
+    system_subtitle: 'نظام إدارة المخزون والصيانة',
+    desc_export: 'تصدير كل الأصناف إلى ملف Excel',
+    desc_import: 'استيراد أصناف من ملف Excel (يجب أن يتبع نفس التنسيق)',
+    chatid_help: 'يبعت أي رسالة للبوت على Telegram (مثلاً /start) → ثم دوس "جلب Chat IDs" هنا → هيظهر الـ Chat ID تلقائي',
+    btn_add_record: 'إضافة سجل',
+    choose_part: 'اختر قطعة',
   },
   en: {
     // Navigation
@@ -4590,6 +4596,12 @@ const TRANSLATIONS = {
     action_test: 'Testing', action_deliver: 'Delivery',
     move_payment_in: 'Payment Received (from client)', move_payment_out: 'Payment Sent (to supplier)',
     move_add_debt: 'Add New Debt', move_adjust: 'Manual Balance Adjustment',
+    system_subtitle: 'Inventory & Maintenance Management System',
+    desc_export: 'Export all products to an Excel file',
+    desc_import: 'Import products from an Excel file (must follow the same format)',
+    chatid_help: 'Send any message to the bot on Telegram (e.g. /start) → then click "Get Chat IDs" here → the Chat ID will appear automatically',
+    btn_add_record: 'Add Record',
+    choose_part: 'Choose Part',
   }
 };
 
