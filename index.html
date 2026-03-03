@@ -7795,26 +7795,43 @@ function renderInvoiceItems() {
   ).join('');
   
   container.innerHTML = currentInvoiceItems.map((item, idx) => `
-    <div class="invoice-item-row">
-      <select class="inv-product-select" onchange="onInvoiceItemProductChange(${idx}, this)">
+    <div class="invoice-item-row" data-idx="${idx}">
+      <select class="inv-product-select" data-idx="${idx}">
         <option value="">اختر صنف</option>
         ${productsOptions}
         <option value="__other__">+ أخرى (إضافة صنف جديد)</option>
       </select>
       <div class="inv-item-details">
-        <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="الكمية" onchange="onInvoiceItemChange(${idx})">
-        <input type="number" class="inv-price" value="${item.unitPrice}" step="0.01" min="0" placeholder="السعر" onchange="onInvoiceItemChange(${idx})">
+        <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="الكمية" data-idx="${idx}">
+        <input type="number" class="inv-price" value="${item.unitPrice}" step="0.01" min="0" placeholder="السعر" data-idx="${idx}">
         <span class="inv-total">${formatMoney(item.total)}</span>
         <button class="btn-icon danger" onclick="removeInvoiceItem(${idx})"><i class='bx bx-trash'></i></button>
       </div>
     </div>
   `).join('');
   
-  // Set selected products
+  // Set selected products and attach event listeners
   const selects = container.querySelectorAll('.inv-product-select');
   currentInvoiceItems.forEach((item, idx) => {
     if (item.productId && selects[idx]) selects[idx].value = item.productId;
   });
+  
+  // Attach change listeners (more reliable than inline onchange with custom selects)
+  selects.forEach(sel => {
+    sel.addEventListener('change', function() {
+      const idx = parseInt(this.dataset.idx);
+      onInvoiceItemProductChange(idx, this);
+    });
+  });
+  container.querySelectorAll('.inv-qty').forEach(input => {
+    input.addEventListener('change', function() { onInvoiceItemChange(parseInt(this.dataset.idx)); });
+    input.addEventListener('input', function() { onInvoiceItemChange(parseInt(this.dataset.idx)); });
+  });
+  container.querySelectorAll('.inv-price').forEach(input => {
+    input.addEventListener('change', function() { onInvoiceItemChange(parseInt(this.dataset.idx)); });
+    input.addEventListener('input', function() { onInvoiceItemChange(parseInt(this.dataset.idx)); });
+  });
+  
   enhanceAllSelects();
 }
 
@@ -7823,8 +7840,12 @@ function onInvoiceItemProductChange(idx, sel) {
     showInlineProductAdd(idx);
     return;
   }
-  const product = allProducts.find(p => p.id == sel.value);
-  if (!product) return;
+  const selVal = sel.value;
+  const product = allProducts.find(p => p.id == selVal || String(p.id) === String(selVal));
+  if (!product) {
+    console.warn('Product not found for value:', selVal, 'allProducts count:', allProducts.length);
+    return;
+  }
   
   currentInvoiceItems[idx].productId = product.id;
   currentInvoiceItems[idx].productName = product.name;
