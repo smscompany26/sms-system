@@ -7823,7 +7823,7 @@ function onInvoiceItemProductChange(idx, sel) {
     showInlineProductAdd(idx);
     return;
   }
-  const product = allProducts.find(p => p.id === parseInt(sel.value));
+  const product = allProducts.find(p => p.id == sel.value);
   if (!product) return;
   
   currentInvoiceItems[idx].productId = product.id;
@@ -7937,6 +7937,22 @@ async function saveInvoice(e) {
   const notes = document.getElementById('invoice-notes').value.trim();
   
   if (currentInvoiceItems.length === 0) return toast('أضف صنف واحد على الأقل', 'warning');
+  
+  // Try to recover productId from the select elements before validation
+  const invoiceSelects = document.querySelectorAll('.inv-product-select');
+  currentInvoiceItems.forEach((item, idx) => {
+    if (!item.productId && invoiceSelects[idx] && invoiceSelects[idx].value) {
+      const selVal = parseInt(invoiceSelects[idx].value);
+      if (selVal) {
+        const prod = allProducts.find(p => p.id === selVal || p.id == invoiceSelects[idx].value);
+        if (prod) {
+          item.productId = prod.id;
+          item.productName = prod.name;
+        }
+      }
+    }
+  });
+  
   if (currentInvoiceItems.some(i => !i.productId)) return toast('اختر المنتج لكل الأصناف', 'warning');
   
   const total = currentInvoiceItems.reduce((sum, i) => sum + i.total, 0);
