@@ -9,12 +9,12 @@
 <title>SMS — نظام إدارة المخزون والصيانة</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.0.4 — SMS System
+// v7.0.5 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.0.4');
+console.log('SMS v7.0.5');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -2527,6 +2527,21 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
         </div>
 
+        <!-- مصادر استلام الفلوس -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+            <h3 style="margin:0"><i class='bx bx-transfer'></i> مصادر استلام الفلوس</h3>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <input type="date" id="payment-sources-from" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm)">
+              <span>إلى</span>
+              <input type="date" id="payment-sources-to" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm)">
+              <button class="btn btn-sm btn-primary" onclick="loadPaymentSources()"><i class='bx bx-search'></i> بحث</button>
+              <button class="btn btn-sm btn-outline" onclick="loadPaymentSources('all')"><i class='bx bx-list-ul'></i> الكل</button>
+            </div>
+          </div>
+          <div id="payment-sources-container"></div>
+        </div>
+
         <div class="card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
             <h3 style="margin:0"><i class='bx bx-money'></i> <span data-i18n="expenses">المصروفات</span></h3>
@@ -2605,7 +2620,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.0.4</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.0.5</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -2808,7 +2823,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.0.4 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.0.5 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -3437,9 +3452,66 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </select>
         </div>
       </div>
-      <div class="form-group">
-        <label>المبلغ المدفوع (ج.م)</label>
-        <input type="number" id="invoice-paid-amount" step="0.01" min="0" value="0">
+      <div class="form-row">
+        <div class="form-group">
+          <label>المبلغ المدفوع (ج.م)</label>
+          <input type="number" id="invoice-paid-amount" step="0.01" min="0" value="0">
+        </div>
+        <div class="form-group">
+          <label>طريقة الدفع</label>
+          <select id="invoice-payment-method" onchange="toggleInvoicePaymentFields()">
+            <option value="">— اختر —</option>
+            <option value="cash">💵 كاش</option>
+            <option value="instapay">📱 انستاباي</option>
+            <option value="vodafone">📲 فودافون كاش</option>
+          </select>
+        </div>
+      </div>
+      <!-- بيانات الدفع كاش - فاتورة -->
+      <div id="inv-payment-cash" class="inv-payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
+        <h4 style="margin-bottom:10px;color:var(--primary)">💵 بيانات الدفع كاش</h4>
+        <div class="form-row">
+          <div class="form-group"><label>تاريخ الدفع</label><input type="date" id="inv-pay-cash-date"></div>
+          <div class="form-group"><label>اسم الموظف المستلم</label><input type="text" id="inv-pay-cash-employee" placeholder="اسم الموظف"></div>
+        </div>
+      </div>
+      <!-- بيانات الدفع انستاباي - فاتورة -->
+      <div id="inv-payment-instapay" class="inv-payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
+        <h4 style="margin-bottom:10px;color:var(--primary)">📱 بيانات الدفع انستاباي</h4>
+        <div class="form-row">
+          <div class="form-group"><label>اسم الحساب المستلم</label><input type="text" id="inv-pay-insta-account-name" placeholder="اسم الحساب"></div>
+          <div class="form-group"><label>رقم الحساب / IBAN</label><input type="text" id="inv-pay-insta-iban" placeholder="رقم الحساب"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>رقم الموبايل المرتبط</label><input type="text" id="inv-pay-insta-mobile" placeholder="رقم الموبايل"></div>
+          <div class="form-group"><label>تاريخ التحويل</label><input type="date" id="inv-pay-insta-date"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>رقم العملية (Transaction ID)</label><input type="text" id="inv-pay-insta-transaction-id" placeholder="رقم العملية"></div>
+          <div class="form-group"><label>رقم التحويل *</label><input type="text" id="inv-pay-insta-transfer-number" placeholder="رقم التحويل (إلزامي)"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>صورة إيصال التحويل</label><input type="file" id="inv-pay-insta-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'inv-insta-receipt-preview')"><div id="inv-insta-receipt-preview" style="margin-top:6px"></div></div>
+        </div>
+      </div>
+      <!-- بيانات الدفع فودافون كاش - فاتورة -->
+      <div id="inv-payment-vodafone" class="inv-payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
+        <h4 style="margin-bottom:10px;color:var(--primary)">📲 بيانات الدفع فودافون كاش</h4>
+        <div class="form-row">
+          <div class="form-group"><label>رقم فودافون كاش المحول عليه</label><input type="text" id="inv-pay-voda-to-number" placeholder="رقم فودافون كاش"></div>
+          <div class="form-group"><label>اسم صاحب الخط</label><input type="text" id="inv-pay-voda-owner-name" placeholder="اسم صاحب الخط"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>تاريخ التحويل</label><input type="date" id="inv-pay-voda-date"></div>
+          <div class="form-group"><label>رقم العملية</label><input type="text" id="inv-pay-voda-transaction-id" placeholder="رقم العملية"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>رقم الموبايل المحول منه</label><input type="text" id="inv-pay-voda-from-number" placeholder="رقم المحول منه"></div>
+          <div class="form-group"><label>رقم التحويل</label><input type="text" id="inv-pay-voda-transfer-number" placeholder="رقم التحويل"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>صورة رسالة التحويل</label><input type="file" id="inv-pay-voda-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'inv-voda-receipt-preview')"><div id="inv-voda-receipt-preview" style="margin-top:6px"></div></div>
+        </div>
       </div>
       
       <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px">
@@ -6044,7 +6116,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.0.4';
+  if (backupEl) backupEl.textContent = 'v7.0.5';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -7562,6 +7634,7 @@ function openNewSaleInvoice() {
   currentInvoiceItems = [];
   document.getElementById('modal-invoice-title').textContent = 'فاتورة بيع جديدة';
   document.getElementById('invoice-form').reset();
+  document.querySelectorAll('.inv-payment-section').forEach(el => el.style.display = 'none');
   document.getElementById('invoice-id').value = '';
   document.getElementById('invoice-type').value = 'sale';
   document.getElementById('invoice-number').value = generateInvoiceNumber('S');
@@ -7590,6 +7663,7 @@ function openNewPurchaseInvoice() {
   currentInvoiceItems = [];
   document.getElementById('modal-invoice-title').textContent = 'فاتورة شراء جديدة';
   document.getElementById('invoice-form').reset();
+  document.querySelectorAll('.inv-payment-section').forEach(el => el.style.display = 'none');
   document.getElementById('invoice-id').value = '';
   document.getElementById('invoice-type').value = 'purchase';
   document.getElementById('invoice-number').value = generateInvoiceNumber('P');
@@ -7630,6 +7704,9 @@ async function editInvoice(id) {
   document.getElementById('invoice-date').value = inv.date?.split('T')[0] || '';
   document.getElementById('invoice-payment-status').value = inv.paymentStatus;
   document.getElementById('invoice-paid-amount').value = inv.paidAmount || 0;
+  document.getElementById('invoice-payment-method').value = inv.paymentMethod || '';
+  toggleInvoicePaymentFields();
+  if (inv.paymentMethod && inv.paymentData) loadInvoicePaymentData(inv.paymentMethod, inv.paymentData);
   document.getElementById('invoice-notes').value = inv.notes || '';
   
   const sel = document.getElementById('invoice-party');
@@ -7810,6 +7887,8 @@ async function saveInvoice(e) {
   const partyId = parseInt(document.getElementById('invoice-party').value) || null;
   const paymentStatus = document.getElementById('invoice-payment-status').value;
   const paidAmount = parseFloat(document.getElementById('invoice-paid-amount').value) || 0;
+  const paymentMethod = document.getElementById('invoice-payment-method').value || '';
+  const paymentData = paymentMethod ? getInvoicePaymentData() : {};
   const notes = document.getElementById('invoice-notes').value.trim();
   
   if (currentInvoiceItems.length === 0) return toast('أضف صنف واحد على الأقل', 'warning');
@@ -7860,7 +7939,7 @@ async function saveInvoice(e) {
     clientId, clientName, supplierId, supplierName,
     items: currentInvoiceItems,
     subtotal: total, total,
-    paymentStatus, paidAmount,
+    paymentStatus, paidAmount, paymentMethod, paymentData,
     notes,
     photos,
   };
@@ -9374,6 +9453,155 @@ function onPartPriceChange(idx, val) {
   currentDeviceParts[idx].total = currentDeviceParts[idx].quantity * currentDeviceParts[idx].unitPrice;
   renderDeviceParts();
   updateRepairCost();
+}
+
+async function loadPaymentSources(mode) {
+  const fromDate = mode === 'all' ? '' : document.getElementById('payment-sources-from').value;
+  const toDate = mode === 'all' ? '' : document.getElementById('payment-sources-to').value;
+  const container = document.getElementById('payment-sources-container');
+  container.innerHTML = '<p style="text-align:center;color:var(--text-muted)">جاري التحميل...</p>';
+  
+  // Collect from devices (maintenance)
+  const devices = await dbGetAll('devices') || [];
+  // Collect from invoices
+  const invoices = await dbGetAll('invoices') || [];
+  
+  const sources = {}; // key: method+account -> { method, account, label, total, transactions[] }
+  
+  function addSource(method, accountKey, accountLabel, amount, date, ref, type) {
+    if (!method || !amount) return;
+    if (fromDate && date && date < fromDate) return;
+    if (toDate && date && date > toDate) return;
+    const key = method + '|' + (accountKey || 'cash');
+    if (!sources[key]) sources[key] = { method, accountKey, accountLabel, total: 0, transactions: [] };
+    sources[key].total += amount;
+    sources[key].transactions.push({ amount, date, ref, type });
+  }
+  
+  // From maintenance devices
+  devices.forEach(d => {
+    if (!d.paymentMethod || !d.sellingPrice) return;
+    const pd = d.paymentData || {};
+    const date = pd.payDate || pd.transferDate || d.exitDate || d.intakeDate || '';
+    let accountKey = '', accountLabel = '';
+    if (d.paymentMethod === 'cash') {
+      accountKey = 'cash'; accountLabel = '💵 كاش' + (pd.employee ? ' — ' + pd.employee : '');
+    } else if (d.paymentMethod === 'instapay') {
+      accountKey = pd.mobile || pd.iban || pd.accountName || 'instapay';
+      accountLabel = '📱 ' + (pd.accountName || '') + (pd.mobile ? ' (' + pd.mobile + ')' : '') + (pd.iban ? ' [' + pd.iban + ']' : '');
+    } else if (d.paymentMethod === 'vodafone') {
+      accountKey = pd.toNumber || 'vodafone';
+      accountLabel = '📲 ' + (pd.ownerName || '') + (pd.toNumber ? ' (' + pd.toNumber + ')' : '');
+    }
+    const amt = d.paymentMethod === 'cash' ? (pd.amountPaid || d.sellingPrice || 0) : (d.sellingPrice || 0);
+    addSource(d.paymentMethod, accountKey, accountLabel, amt, date, 'صيانة #' + (d.orderNumber || d.id), 'maintenance');
+  });
+  
+  // From invoices (sales with payment)
+  invoices.forEach(inv => {
+    if (!inv.paymentMethod || !inv.paidAmount) return;
+    const pd = inv.paymentData || {};
+    const date = pd.payDate || pd.transferDate || inv.date || '';
+    let accountKey = '', accountLabel = '';
+    if (inv.paymentMethod === 'cash') {
+      accountKey = 'cash'; accountLabel = '💵 كاش' + (pd.employee ? ' — ' + pd.employee : '');
+    } else if (inv.paymentMethod === 'instapay') {
+      accountKey = pd.mobile || pd.iban || pd.accountName || 'instapay';
+      accountLabel = '📱 ' + (pd.accountName || '') + (pd.mobile ? ' (' + pd.mobile + ')' : '') + (pd.iban ? ' [' + pd.iban + ']' : '');
+    } else if (inv.paymentMethod === 'vodafone') {
+      accountKey = pd.toNumber || 'vodafone';
+      accountLabel = '📲 ' + (pd.ownerName || '') + (pd.toNumber ? ' (' + pd.toNumber + ')' : '');
+    }
+    addSource(inv.paymentMethod, accountKey, accountLabel, inv.paidAmount, date, (inv.type === 'sale' ? 'بيع' : 'شراء') + ' #' + (inv.number || inv.id), 'invoice');
+  });
+  
+  const entries = Object.values(sources).sort((a, b) => b.total - a.total);
+  if (entries.length === 0) {
+    container.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px">لا توجد مدفوعات في هذه الفترة</p>';
+    return;
+  }
+  
+  const grandTotal = entries.reduce((s, e) => s + e.total, 0);
+  let html = `<div style="margin-bottom:12px;padding:12px;background:var(--primary);color:#fff;border-radius:var(--radius-sm);text-align:center;font-size:18px;font-weight:700">إجمالي المبالغ المستلمة: ${formatMoney(grandTotal)}</div>`;
+  
+  entries.forEach(src => {
+    html += `<div style="border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:10px;overflow:hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg);cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <div>
+          <strong>${src.accountLabel || src.method}</strong>
+          <span style="color:var(--text-muted);margin-right:8px">(${src.transactions.length} عملية)</span>
+        </div>
+        <strong style="color:var(--primary)">${formatMoney(src.total)}</strong>
+      </div>
+      <div style="display:none;padding:8px">
+        <table style="width:100%;font-size:13px"><thead><tr><th>المرجع</th><th>التاريخ</th><th>المبلغ</th></tr></thead><tbody>
+        ${src.transactions.map(t => `<tr><td>${t.ref}</td><td>${t.date ? formatDate(t.date) : '-'}</td><td>${formatMoney(t.amount)}</td></tr>`).join('')}
+        </tbody></table>
+      </div>
+    </div>`;
+  });
+  
+  container.innerHTML = html;
+}
+
+function toggleInvoicePaymentFields() {
+  const method = document.getElementById('invoice-payment-method').value;
+  document.querySelectorAll('.inv-payment-section').forEach(el => el.style.display = 'none');
+  if (method === 'cash') document.getElementById('inv-payment-cash').style.display = 'block';
+  else if (method === 'instapay') document.getElementById('inv-payment-instapay').style.display = 'block';
+  else if (method === 'vodafone') document.getElementById('inv-payment-vodafone').style.display = 'block';
+}
+
+function getInvoicePaymentData() {
+  const method = document.getElementById('invoice-payment-method').value;
+  if (method === 'cash') {
+    return { payDate: document.getElementById('inv-pay-cash-date').value||'', employee: document.getElementById('inv-pay-cash-employee').value.trim()||'' };
+  } else if (method === 'instapay') {
+    return {
+      accountName: document.getElementById('inv-pay-insta-account-name').value.trim()||'',
+      iban: document.getElementById('inv-pay-insta-iban').value.trim()||'',
+      mobile: document.getElementById('inv-pay-insta-mobile').value.trim()||'',
+      transferDate: document.getElementById('inv-pay-insta-date').value||'',
+      transactionId: document.getElementById('inv-pay-insta-transaction-id').value.trim()||'',
+      transferNumber: document.getElementById('inv-pay-insta-transfer-number').value.trim()||'',
+      receiptImage: document.getElementById('inv-insta-receipt-preview').querySelector('img')?.src||''
+    };
+  } else if (method === 'vodafone') {
+    return {
+      toNumber: document.getElementById('inv-pay-voda-to-number').value.trim()||'',
+      ownerName: document.getElementById('inv-pay-voda-owner-name').value.trim()||'',
+      transferDate: document.getElementById('inv-pay-voda-date').value||'',
+      transactionId: document.getElementById('inv-pay-voda-transaction-id').value.trim()||'',
+      fromNumber: document.getElementById('inv-pay-voda-from-number').value.trim()||'',
+      transferNumber: document.getElementById('inv-pay-voda-transfer-number').value.trim()||'',
+      receiptImage: document.getElementById('inv-voda-receipt-preview').querySelector('img')?.src||''
+    };
+  }
+  return {};
+}
+
+function loadInvoicePaymentData(method, pd) {
+  if (!pd) pd = {};
+  if (method === 'cash') {
+    document.getElementById('inv-pay-cash-date').value = pd.payDate||'';
+    document.getElementById('inv-pay-cash-employee').value = pd.employee||'';
+  } else if (method === 'instapay') {
+    document.getElementById('inv-pay-insta-account-name').value = pd.accountName||'';
+    document.getElementById('inv-pay-insta-iban').value = pd.iban||'';
+    document.getElementById('inv-pay-insta-mobile').value = pd.mobile||'';
+    document.getElementById('inv-pay-insta-date').value = pd.transferDate||'';
+    document.getElementById('inv-pay-insta-transaction-id').value = pd.transactionId||'';
+    document.getElementById('inv-pay-insta-transfer-number').value = pd.transferNumber||'';
+    if (pd.receiptImage) document.getElementById('inv-insta-receipt-preview').innerHTML = `<img src="${pd.receiptImage}" style="max-width:150px;max-height:100px;border-radius:6px;border:1px solid var(--border)">`;
+  } else if (method === 'vodafone') {
+    document.getElementById('inv-pay-voda-to-number').value = pd.toNumber||'';
+    document.getElementById('inv-pay-voda-owner-name').value = pd.ownerName||'';
+    document.getElementById('inv-pay-voda-date').value = pd.transferDate||'';
+    document.getElementById('inv-pay-voda-transaction-id').value = pd.transactionId||'';
+    document.getElementById('inv-pay-voda-from-number').value = pd.fromNumber||'';
+    document.getElementById('inv-pay-voda-transfer-number').value = pd.transferNumber||'';
+    if (pd.receiptImage) document.getElementById('inv-voda-receipt-preview').innerHTML = `<img src="${pd.receiptImage}" style="max-width:150px;max-height:100px;border-radius:6px;border:1px solid var(--border)">`;
+  }
 }
 
 function togglePaymentFields() {
