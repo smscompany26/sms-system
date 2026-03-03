@@ -8490,18 +8490,18 @@ async function printBarcodeSticker(productId) {
       html, body { width: 58mm; height: 40mm; margin: 0; padding: 0; overflow: hidden; font-family: Arial, sans-serif; }
       .sticker {
         width: 58mm; height: 40mm;
-        display: flex; flex-direction: row; align-items: center; justify-content: center;
-        gap: 2mm; padding: 1mm 2mm;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 1mm; padding: 2mm 3mm;
       }
       .sticker .name {
-        writing-mode: vertical-rl; transform: rotate(180deg);
-        font-size: 9px; font-weight: bold; white-space: nowrap;
-        max-height: 36mm; overflow: hidden;
+        font-size: 10px; font-weight: bold; white-space: nowrap;
+        overflow: hidden; text-overflow: ellipsis; max-width: 52mm;
+        text-align: center;
       }
       .sticker .barcode-wrap {
-        flex: 1; display: flex; align-items: center; justify-content: center;
+        display: flex; align-items: center; justify-content: center;
       }
-      .sticker canvas { max-width: 48mm; height: 32mm !important; }
+      .sticker canvas { max-width: 52mm; height: 22mm !important; }
       @media print {
         @page { size: 58mm 40mm; margin: 0 !important; }
         html, body { width: 58mm !important; height: 40mm !important; }
@@ -8521,8 +8521,8 @@ async function printBarcodeSticker(productId) {
     </div>
     <script>
       JsBarcode('#bc', '${barcodeVal}', {
-        format: 'CODE128', width: 2, height: 80, displayValue: true,
-        fontSize: 14, font: 'monospace', textMargin: 3, margin: 2,
+        format: 'CODE128', width: 1.5, height: 50, displayValue: true,
+        fontSize: 11, font: 'monospace', textMargin: 2, margin: 1,
         background: '#fff', lineColor: '#000'
       });
       setTimeout(() => { window.print(); }, 500);
@@ -8606,14 +8606,15 @@ async function printReceipt(invoiceId) {
       .total-row { display: flex; justify-content: space-between; font-size: 11px; padding: 2px 0; }
       .total-row.final { font-weight: 700; font-size: 12px; border-top: 1px solid #000; padding-top: 4px; margin-top: 2px; }
       .qr-area { text-align: center; margin: 10px 0 6px; }
-      .footer { text-align: center; font-size: 9px; color: #555; margin-top: 6px; padding-bottom: 50px; }
+      .footer { text-align: center; font-size: 9px; color: #555; margin-top: 6px; padding-bottom: 0; }
       @media print {
-        @page { size: 80mm auto; margin: 0mm !important; padding: 0 !important; }
-        html { margin: 0 !important; padding: 0 !important; height: auto !important; }
-        body { width: 80mm !important; max-width: 80mm !important; margin: 0 !important; padding: 4px 6px !important; min-height: auto !important; height: auto !important; }
+        @page { size: 80mm auto; margin: 0 !important; padding: 0 !important; }
+        html, body { width: 80mm !important; max-width: 80mm !important; margin: 0 !important; padding: 2px 4px !important; min-height: auto !important; height: auto !important; }
         .no-print { display: none !important; }
         .footer { padding-bottom: 0 !important; margin-bottom: 0 !important; }
-        .qr-area { margin: 6px 0 2px !important; }
+        .qr-area { margin: 4px 0 2px !important; }
+        .header { margin-bottom: 4px !important; }
+        .header .name { font-size: 14px !important; }
       }
     </style>
   </head>
