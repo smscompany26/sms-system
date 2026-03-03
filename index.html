@@ -1817,14 +1817,14 @@ tr:hover { background: rgba(108,60,233,0.02); }
     </div>
     <form id="login-form" onsubmit="return handleLogin(event)">
       <div class="form-group">
-        <label>اسم المستخدم</label>
+        <label data-i18n="th_username">اسم المستخدم</label>
         <input type="text" id="login-username" required autocomplete="username">
       </div>
       <div class="form-group">
-        <label>كلمة المرور</label>
+        <label data-i18n="lbl_password">كلمة المرور</label>
         <input type="password" id="login-password" required autocomplete="current-password">
       </div>
-      <label class="remember-me"><input type="checkbox" id="login-remember" checked> تذكرني</label>
+      <label class="remember-me"><input type="checkbox" id="login-remember" checked> <span data-i18n="remember_me">تذكرني</span></label>
       <button type="submit" class="btn btn-primary btn-block">تسجيل الدخول</button>
       <p id="login-error" class="login-error"></p>
     </form>
@@ -2113,12 +2113,12 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <option value="" data-i18n="all_categories">كل التصنيفات</option>
             </select>
             <select id="inv-filter-condition" onchange="filterProducts()">
-              <option value="">الكل</option>
+              <option value="" data-i18n="filter_all">الكل</option>
               <option value="new" data-i18n="cond_new">جديد</option>
               <option value="used" data-i18n="cond_used">مستعمل</option>
             </select>
             <select id="inv-filter-type" onchange="filterProducts()">
-              <option value="">الكل</option>
+              <option value="" data-i18n="filter_all">الكل</option>
               <option value="device" data-i18n="type_device">جهاز</option>
               <option value="part" data-i18n="type_part">قطعة غيار</option>
             </select>
@@ -2325,7 +2325,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="page-header-actions">
               <div class="search-box">
                 <i class='bx bx-search'></i>
-                <input type="text" placeholder="بحث في الفواتير..." oninput="filterPurchaseInvoices(this.value)">
+                <input type="text" placeholder="بحث في الفواتير..." data-i18n-placeholder="search_invoices" oninput="filterPurchaseInvoices(this.value)">
               </div>
             </div>
             <div class="page-header-btns">
@@ -2599,11 +2599,11 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="card" style="margin-bottom:16px">
           <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
             <div id="report-daily-picker">
-              <label style="font-size:13px;font-weight:600;margin-left:8px">التاريخ:</label>
+              <label style="font-size:13px;font-weight:600;margin-left:8px" data-i18n="report_date_label">التاريخ:</label>
               <input type="date" id="report-date-input" onchange="generateDailyReport(this.value)" style="padding:8px;border:1px solid var(--border);border-radius:6px">
             </div>
             <div id="report-monthly-picker" style="display:none">
-              <label style="font-size:13px;font-weight:600;margin-left:8px">الشهر:</label>
+              <label style="font-size:13px;font-weight:600;margin-left:8px" data-i18n="report_month_label">الشهر:</label>
               <input type="month" id="report-month-input" onchange="generateMonthlyReport()" style="padding:8px;border:1px solid var(--border);border-radius:6px">
             </div>
             <button class="btn btn-outline" onclick="exportCurrentReport()"><i class='bx bx-printer'></i> <span data-i18n="print_pdf">طباعة / PDF</span></button>
@@ -2702,18 +2702,18 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="recipient-form" onsubmit="return saveRecipient(event)">
       <input type="hidden" id="recipient-idx" value="">
       <div class="form-row">
-        <div class="form-group"><label>الاسم *</label><input type="text" id="recipient-name" required placeholder="مثلاً: أحمد"></div>
-        <div class="form-group"><label>المسمى الوظيفي</label><input type="text" id="recipient-title" placeholder="مثلاً: مدير المخازن"></div>
+        <div class="form-group"><label data-i18n="lbl_name_req">الاسم *</label><input type="text" id="recipient-name" required placeholder="مثلاً: أحمد"></div>
+        <div class="form-group"><label data-i18n="lbl_job_title">المسمى الوظيفي</label><input type="text" id="recipient-title" placeholder="مثلاً: مدير المخازن"></div>
       </div>
       <div class="form-group"><label>Chat ID *</label><input type="text" id="recipient-chat-id" required dir="ltr" placeholder="مثلاً: 123456789"></div>
       <div class="form-group">
-        <label>الإشعارات المفعلة</label>
+        <label data-i18n="lbl_enabled_notifs">الإشعارات المفعلة</label>
         <div class="notif-toggles">
-          <label class="perm-checkbox"><input type="checkbox" id="rcpt-low-stock" checked> تنبيه مخزون منخفض</label>
-          <label class="perm-checkbox"><input type="checkbox" id="rcpt-unpaid" checked> فواتير غير مدفوعة</label>
-          <label class="perm-checkbox"><input type="checkbox" id="rcpt-devices-ready" checked> أجهزة جاهزة للتسليم</label>
-          <label class="perm-checkbox"><input type="checkbox" id="rcpt-warranty-expiry" checked> تنبيهات انتهاء الضمان</label>
-          <label class="perm-checkbox"><input type="checkbox" id="rcpt-daily-summary"> ملخص يومي</label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-low-stock" checked> <span data-i18n="notif_low_stock">تنبيه مخزون منخفض</span></label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-unpaid" checked> <span data-i18n="notif_unpaid">فواتير غير مدفوعة</span></label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-devices-ready" checked> <span data-i18n="notif_ready">أجهزة جاهزة للتسليم</span></label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-warranty-expiry" checked> <span data-i18n="notif_warranty">تنبيهات انتهاء الضمان</span></label>
+          <label class="perm-checkbox"><input type="checkbox" id="rcpt-daily-summary"> <span data-i18n="notif_daily_summary">ملخص يومي</span></label>
         </div>
       </div>
       <div class="modal-footer">
@@ -2841,7 +2841,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="form-group">
           <label data-i18n="label_sku">كود الصنف (SKU)</label>
           <div class="input-with-btn">
-            <input type="text" id="product-sku" placeholder="اتركه فارغ للتوليد التلقائي">
+            <input type="text" id="product-sku" placeholder="اتركه فارغ للتوليد التلقائي" data-i18n-placeholder="ph_auto_generate">
             <button type="button" class="btn btn-sm" onclick="generateSKU()"><i class='bx bx-refresh'></i></button>
           </div>
         </div>
@@ -2887,7 +2887,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
         </div>
         <div class="form-group">
           <label data-i18n="label_barcode">باركود</label>
-          <input type="text" id="product-barcode" placeholder="اتركه فارغ للتوليد التلقائي">
+          <input type="text" id="product-barcode" placeholder="اتركه فارغ للتوليد التلقائي" data-i18n-placeholder="ph_auto_generate">
         </div>
       </div>
       <div class="form-group">
@@ -2917,11 +2917,11 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <div class="category-form">
       <div class="form-row">
         <div class="form-group" style="flex:1">
-          <input type="text" id="new-category" placeholder="اسم التصنيف الجديد">
+          <input type="text" id="new-category" placeholder="اسم التصنيف الجديد" data-i18n-placeholder="ph_new_category">
         </div>
         <div class="form-group">
           <select id="parent-category">
-            <option value="">تصنيف رئيسي</option>
+            <option value="" data-i18n="root_category">تصنيف رئيسي</option>
           </select>
         </div>
         <button class="btn btn-primary" onclick="addCategory()"><i class='bx bx-plus'></i></button>
@@ -2942,15 +2942,15 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <input type="hidden" id="stock-product-id">
       <input type="hidden" id="stock-direction">
       <div class="form-group">
-        <label>الصنف</label>
+        <label data-i18n="th_product">الصنف</label>
         <input type="text" id="stock-product-name" readonly class="readonly-input">
       </div>
       <div class="form-group">
-        <label>الكمية *</label>
+        <label data-i18n="label_quantity">الكمية *</label>
         <input type="number" id="stock-qty" min="1" required>
       </div>
       <div class="form-group">
-        <label>ملاحظات</label>
+        <label data-i18n="th_notes">ملاحظات</label>
         <textarea id="stock-notes" rows="2"></textarea>
       </div>
       <div class="modal-footer">
@@ -3017,20 +3017,20 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="expense-form" novalidate onsubmit="return saveExpense(event)">
       <input type="hidden" id="expense-id">
       <div class="form-row">
-        <div class="form-group"><label>التاريخ</label><input type="date" id="expense-date" required></div>
-        <div class="form-group"><label>نوع المصروف</label>
+        <div class="form-group"><label data-i18n="th_date">التاريخ</label><input type="date" id="expense-date" required></div>
+        <div class="form-group"><label data-i18n="lbl_expense_type">نوع المصروف</label>
           <select id="expense-type"></select>
         </div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>التصنيف</label>
+        <div class="form-group"><label data-i18n="label_category">التصنيف</label>
           <select id="expense-category">
-            <option value="">عام</option>
+            <option value="" data-i18n="opt_general">عام</option>
           </select>
         </div>
       </div>
-      <div class="form-group"><label>البيان *</label><input type="text" id="expense-description" required></div>
-      <div class="form-group"><label>المبلغ (ج.م) *</label><input type="number" id="expense-amount" step="0.01" min="0" required></div>
+      <div class="form-group"><label data-i18n="lbl_statement_req">البيان *</label><input type="text" id="expense-description" required></div>
+      <div class="form-group"><label data-i18n="lbl_amount_req">المبلغ (ج.م) *</label><input type="number" id="expense-amount" step="0.01" min="0" required></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline" onclick="closeModal('modal-expense')">إلغاء</button>
         <button type="submit" class="btn btn-primary">حفظ</button>
@@ -3045,18 +3045,18 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <div class="modal-header"><h3 id="modal-user-title" data-i18n="modal_add_user">إضافة مستخدم</h3><button class="modal-close" onclick="closeModal('modal-user')">&times;</button></div>
     <form id="user-form" onsubmit="return saveUser(event)">
       <input type="hidden" id="user-id">
-      <div class="form-group"><label>الاسم الكامل</label><input type="text" id="user-fullname"></div>
-      <div class="form-group"><label>اسم المستخدم *</label><input type="text" id="user-username" required></div>
-      <div class="form-group"><label>كلمة المرور</label><input type="password" id="user-password"></div>
-      <div class="form-group"><label>الدور *</label>
+      <div class="form-group"><label data-i18n="lbl_fullname">الاسم الكامل</label><input type="text" id="user-fullname"></div>
+      <div class="form-group"><label data-i18n="lbl_username_req">اسم المستخدم *</label><input type="text" id="user-username" required></div>
+      <div class="form-group"><label data-i18n="lbl_password">كلمة المرور</label><input type="password" id="user-password"></div>
+      <div class="form-group"><label data-i18n="lbl_role_req">الدور *</label>
         <select id="user-role" required onchange="onRoleChange()">
-          <option value="admin">مدير — تحكم كامل</option>
-          <option value="manager">مشرف — بدون إعدادات</option>
-          <option value="staff">موظف — صلاحيات محدودة</option>
+          <option value="admin" data-i18n="role_admin_full">مدير — تحكم كامل</option>
+          <option value="manager" data-i18n="role_manager_full">مشرف — صلاحيات واسعة</option>
+          <option value="staff" data-i18n="role_staff_full">موظف — صلاحيات محدودة</option>
         </select>
       </div>
       <div class="form-group">
-        <label>الصلاحيات المخصصة</label>
+        <label data-i18n="lbl_custom_perms">الصلاحيات المخصصة</label>
         <div id="user-permissions-list" class="permissions-grid"></div>
       </div>
       <div class="modal-footer">
@@ -3073,18 +3073,18 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <div class="modal-header"><h3 id="modal-engineer-title" data-i18n="modal_add_engineer">إضافة مهندس/فني</h3><button class="modal-close" onclick="closeModal('modal-engineer')">&times;</button></div>
     <form id="engineer-form" novalidate onsubmit="return saveEngineer(event)">
       <input type="hidden" id="engineer-id">
-      <div class="form-group"><label>الاسم الكامل *</label><input type="text" id="engineer-name" required></div>
-      <div class="form-group"><label>رقم التليفون</label><input type="tel" id="engineer-phone" dir="ltr"></div>
-      <div class="form-group"><label>التخصص</label>
+      <div class="form-group"><label data-i18n="lbl_fullname_req">الاسم الكامل *</label><input type="text" id="engineer-name" required></div>
+      <div class="form-group"><label data-i18n="lbl_phone">رقم التليفون</label><input type="tel" id="engineer-phone" dir="ltr"></div>
+      <div class="form-group"><label data-i18n="lbl_specialty">التخصص</label>
         <select id="engineer-specialty">
-          <option value="عام">عام</option>
-          <option value="موبايلات">موبايلات</option>
-          <option value="لابتوب">لابتوب</option>
-          <option value="كمبيوتر">كمبيوتر</option>
-          <option value="طابعات">طابعات</option>
-          <option value="شبكات">شبكات</option>
-          <option value="كاميرات">كاميرات</option>
-          <option value="أخرى">أخرى</option>
+          <option value="عام" data-i18n="spec_general">عام</option>
+          <option value="موبايلات" data-i18n="spec_mobiles">موبايلات</option>
+          <option value="لابتوب" data-i18n="spec_laptop">لابتوب</option>
+          <option value="كمبيوتر" data-i18n="spec_computer">كمبيوتر</option>
+          <option value="طابعات" data-i18n="spec_printers">طابعات</option>
+          <option value="شبكات" data-i18n="spec_networks">شبكات</option>
+          <option value="كاميرات" data-i18n="spec_cameras">كاميرات</option>
+          <option value="أخرى" data-i18n="spec_other">أخرى</option>
         </select>
       </div>
       <div class="modal-footer">
@@ -3105,28 +3105,28 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="device-form" novalidate onsubmit="return saveDevice(event)">
       <input type="hidden" id="device-id">
       <div class="form-row">
-        <div class="form-group"><label>رقم أمر الصيانة</label><input type="text" id="device-order-number" readonly class="readonly-input"></div>
-        <div class="form-group"><label>تاريخ الدخول</label><input type="date" id="device-intake-date" required></div>
+        <div class="form-group"><label data-i18n="lbl_order_num">رقم أمر الصيانة</label><input type="text" id="device-order-number" readonly class="readonly-input"></div>
+        <div class="form-group"><label data-i18n="lbl_intake_date">تاريخ الدخول</label><input type="date" id="device-intake-date" required></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>تاريخ الخروج</label><input type="date" id="device-exit-date"></div>
-        <div class="form-group"><label>تاريخ التسليم</label><input type="date" id="device-delivery-date"></div>
+        <div class="form-group"><label data-i18n="lbl_exit_date">تاريخ الخروج</label><input type="date" id="device-exit-date"></div>
+        <div class="form-group"><label data-i18n="lbl_delivery_date">تاريخ التسليم</label><input type="date" id="device-delivery-date"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>طريقة الدفع</label>
+        <div class="form-group"><label data-i18n="lbl_payment_method">طريقة الدفع</label>
           <select id="device-payment-method" onchange="togglePaymentFields()">
-            <option value="">— اختر —</option>
-            <option value="cash">💵 كاش</option>
-            <option value="instapay">📱 انستاباي</option>
-            <option value="vodafone">📲 فودافون كاش</option>
+            <option value="" data-i18n="choose_placeholder">— اختر —</option>
+            <option value="cash" data-i18n="pay_cash">💵 كاش</option>
+            <option value="instapay" data-i18n="pay_instapay">📱 انستاباي</option>
+            <option value="vodafone" data-i18n="pay_vodafone">📲 فودافون كاش</option>
           </select>
         </div>
-        <div class="form-group"><label>الحالة</label>
+        <div class="form-group"><label data-i18n="lbl_status">الحالة</label>
           <select id="device-status-select">
-            <option value="under_repair">🔧 تحت الصيانة</option>
-            <option value="done_not_delivered">✅ خلصت ومتسلمتش</option>
-            <option value="delivered_not_paid">📦 اتسلمت ومدفعتش</option>
-            <option value="completed">💰 خلصت واتدفعت</option>
+            <option value="under_repair" data-i18n="device_under_repair">🔧 تحت الصيانة</option>
+            <option value="done_not_delivered" data-i18n="device_done_not_delivered">✅ خلصت ومتسلمتش</option>
+            <option value="delivered_not_paid" data-i18n="device_delivered_not_paid">📦 اتسلمت ومدفعتش</option>
+            <option value="completed" data-i18n="device_completed">💰 خلصت واتدفعت</option>
           </select>
         </div>
       </div>
@@ -3134,19 +3134,19 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div id="payment-cash-details" class="payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
         <h4 style="margin-bottom:10px;color:var(--primary)">💵 بيانات الدفع كاش</h4>
         <div class="form-row">
-          <div class="form-group"><label>المبلغ المستحق (ج.م)</label><input type="number" id="pay-cash-amount-due" step="0.01" min="0" readonly class="readonly-input"></div>
-          <div class="form-group"><label>المبلغ المدفوع (ج.م)</label><input type="number" id="pay-cash-amount-paid" step="0.01" min="0" value="0" oninput="calcCashRemaining()"></div>
+          <div class="form-group"><label data-i18n="lbl_amount_due">المبلغ المستحق (ج.م)</label><input type="number" id="pay-cash-amount-due" step="0.01" min="0" readonly class="readonly-input"></div>
+          <div class="form-group"><label data-i18n="lbl_amount_paid">المبلغ المدفوع (ج.م)</label><input type="number" id="pay-cash-amount-paid" step="0.01" min="0" value="0" oninput="calcCashRemaining()"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>الباقي (ج.م)</label><input type="number" id="pay-cash-remaining" readonly class="readonly-input"></div>
-          <div class="form-group"><label>تاريخ الدفع</label><input type="date" id="pay-cash-date"></div>
+          <div class="form-group"><label data-i18n="lbl_remaining">الباقي (ج.م)</label><input type="number" id="pay-cash-remaining" readonly class="readonly-input"></div>
+          <div class="form-group"><label data-i18n="lbl_payment_date">تاريخ الدفع</label><input type="date" id="pay-cash-date"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>اسم الموظف المستلم</label><input type="text" id="pay-cash-employee" placeholder="اسم الموظف"></div>
-          <div class="form-group"><label>حالة الدفع</label>
+          <div class="form-group"><label data-i18n="lbl_receiving_employee">اسم الموظف المستلم</label><input type="text" id="pay-cash-employee" placeholder="اسم الموظف"></div>
+          <div class="form-group"><label data-i18n="lbl_payment_status">حالة الدفع</label>
             <select id="pay-cash-status">
-              <option value="paid_full">✅ مدفوع بالكامل</option>
-              <option value="paid_partial">⚠️ مدفوع جزئيًا</option>
+              <option value="paid_full" data-i18n="pay_full">✅ مدفوع بالكامل</option>
+              <option value="paid_partial" data-i18n="pay_partial">⚠️ مدفوع جزئيًا</option>
             </select>
           </div>
         </div>
@@ -3155,104 +3155,104 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div id="payment-instapay-details" class="payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
         <h4 style="margin-bottom:10px;color:var(--primary)">📱 بيانات الدفع انستاباي</h4>
         <div class="form-row">
-          <div class="form-group"><label>اسم الحساب المستلم</label><input type="text" id="pay-insta-account-name" placeholder="اسم الحساب"></div>
-          <div class="form-group"><label>رقم الحساب / IBAN</label><input type="text" id="pay-insta-iban" placeholder="رقم الحساب أو IBAN"></div>
+          <div class="form-group"><label data-i18n="lbl_account_name">اسم الحساب المستلم</label><input type="text" id="pay-insta-account-name" placeholder="اسم الحساب"></div>
+          <div class="form-group"><label data-i18n="lbl_iban">رقم الحساب / IBAN</label><input type="text" id="pay-insta-iban" placeholder="رقم الحساب أو IBAN"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>رقم الموبايل المرتبط</label><input type="text" id="pay-insta-mobile" placeholder="رقم الموبايل"></div>
-          <div class="form-group"><label>المبلغ المطلوب (ج.م)</label><input type="number" id="pay-insta-amount" step="0.01" min="0" readonly class="readonly-input"></div>
+          <div class="form-group"><label data-i18n="lbl_linked_mobile">رقم الموبايل المرتبط</label><input type="text" id="pay-insta-mobile" placeholder="رقم الموبايل"></div>
+          <div class="form-group"><label data-i18n="lbl_amount_required">المبلغ المطلوب (ج.م)</label><input type="number" id="pay-insta-amount" step="0.01" min="0" readonly class="readonly-input"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>تاريخ التحويل</label><input type="date" id="pay-insta-date"></div>
-          <div class="form-group"><label>رقم العملية (Transaction ID)</label><input type="text" id="pay-insta-transaction-id" placeholder="رقم العملية"></div>
+          <div class="form-group"><label data-i18n="lbl_transfer_date">تاريخ التحويل</label><input type="date" id="pay-insta-date"></div>
+          <div class="form-group"><label data-i18n="lbl_transaction_id">رقم العملية (Transaction ID)</label><input type="text" id="pay-insta-transaction-id" placeholder="رقم العملية"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>رقم التحويل *</label><input type="text" id="pay-insta-transfer-number" placeholder="رقم التحويل (إلزامي)" required></div>
-          <div class="form-group"><label>صورة إيصال التحويل</label><input type="file" id="pay-insta-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'insta-receipt-preview')"><div id="insta-receipt-preview" style="margin-top:6px"></div></div>
+          <div class="form-group"><label data-i18n="lbl_transfer_num_req">رقم التحويل *</label><input type="text" id="pay-insta-transfer-number" placeholder="رقم التحويل (إلزامي)" required></div>
+          <div class="form-group"><label data-i18n="lbl_transfer_receipt">صورة إيصال التحويل</label><input type="file" id="pay-insta-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'insta-receipt-preview')"><div id="insta-receipt-preview" style="margin-top:6px"></div></div>
         </div>
       </div>
       <!-- بيانات الدفع فودافون كاش -->
       <div id="payment-vodafone-details" class="payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
         <h4 style="margin-bottom:10px;color:var(--primary)">📲 بيانات الدفع فودافون كاش</h4>
         <div class="form-row">
-          <div class="form-group"><label>رقم فودافون كاش المحول عليه</label><input type="text" id="pay-voda-to-number" placeholder="رقم فودافون كاش"></div>
-          <div class="form-group"><label>اسم صاحب الخط</label><input type="text" id="pay-voda-owner-name" placeholder="اسم صاحب الخط"></div>
+          <div class="form-group"><label data-i18n="lbl_voda_to">رقم فودافون كاش المحول عليه</label><input type="text" id="pay-voda-to-number" placeholder="رقم فودافون كاش"></div>
+          <div class="form-group"><label data-i18n="lbl_line_owner">اسم صاحب الخط</label><input type="text" id="pay-voda-owner-name" placeholder="اسم صاحب الخط"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>المبلغ المطلوب (ج.م)</label><input type="number" id="pay-voda-amount" step="0.01" min="0" readonly class="readonly-input"></div>
-          <div class="form-group"><label>تاريخ التحويل</label><input type="date" id="pay-voda-date"></div>
+          <div class="form-group"><label data-i18n="lbl_amount_required">المبلغ المطلوب (ج.م)</label><input type="number" id="pay-voda-amount" step="0.01" min="0" readonly class="readonly-input"></div>
+          <div class="form-group"><label data-i18n="lbl_transfer_date">تاريخ التحويل</label><input type="date" id="pay-voda-date"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>رقم العملية</label><input type="text" id="pay-voda-transaction-id" placeholder="رقم العملية"></div>
-          <div class="form-group"><label>رقم الموبايل المحول منه</label><input type="text" id="pay-voda-from-number" placeholder="رقم المحول منه"></div>
+          <div class="form-group"><label data-i18n="lbl_transaction_id_short">رقم العملية</label><input type="text" id="pay-voda-transaction-id" placeholder="رقم العملية"></div>
+          <div class="form-group"><label data-i18n="lbl_from_mobile">رقم الموبايل المحول منه</label><input type="text" id="pay-voda-from-number" placeholder="رقم المحول منه"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>رقم التحويل</label><input type="text" id="pay-voda-transfer-number" placeholder="رقم التحويل"></div>
-          <div class="form-group"><label>صورة رسالة التحويل</label><input type="file" id="pay-voda-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'voda-receipt-preview')"><div id="voda-receipt-preview" style="margin-top:6px"></div></div>
+          <div class="form-group"><label data-i18n="lbl_transfer_num">رقم التحويل</label><input type="text" id="pay-voda-transfer-number" placeholder="رقم التحويل"></div>
+          <div class="form-group"><label data-i18n="lbl_transfer_msg_img">صورة رسالة التحويل</label><input type="file" id="pay-voda-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'voda-receipt-preview')"><div id="voda-receipt-preview" style="margin-top:6px"></div></div>
         </div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>العميل</label>
+        <div class="form-group"><label data-i18n="label_client">العميل</label>
           <select id="device-client" onchange="onClientSelect(this, 'device')"></select>
           <div id="new-client-device-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
-              <input type="text" id="new-client-device-name" placeholder="اسم العميل" style="flex:2;min-width:120px">
-              <input type="text" id="new-client-device-phone" placeholder="الهاتف" style="flex:1;min-width:100px">
+              <input type="text" id="new-client-device-name" placeholder="اسم العميل" data-i18n-placeholder="ph_client_name" style="flex:2;min-width:120px">
+              <input type="text" id="new-client-device-phone" placeholder="الهاتف" data-i18n-placeholder="ph_phone" style="flex:1;min-width:100px">
               <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineClient('device')" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
             </div>
           </div>
         </div>
-        <div class="form-group"><label>اسم الجهاز *</label><input type="text" id="device-name" required></div>
+        <div class="form-group"><label data-i18n="lbl_device_name_req">اسم الجهاز *</label><input type="text" id="device-name" required></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>المهندس/الفني المسؤول</label>
+        <div class="form-group"><label data-i18n="lbl_assigned_engineer">المهندس/الفني المسؤول</label>
           <select id="device-engineer" onchange="onEngineerSelect(this)"><option value="" data-i18n="choose_engineer">اختر المهندس/الفني</option></select>
           <div id="new-engineer-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
-              <input type="text" id="new-engineer-name" placeholder="اسم المهندس" style="flex:2;min-width:120px">
-              <input type="text" id="new-engineer-phone" placeholder="الهاتف (اختياري)" style="flex:1;min-width:100px">
+              <input type="text" id="new-engineer-name" placeholder="اسم المهندس" data-i18n-placeholder="ph_engineer_name" style="flex:2;min-width:120px">
+              <input type="text" id="new-engineer-phone" placeholder="الهاتف (اختياري)" data-i18n-placeholder="ph_phone_optional" style="flex:1;min-width:100px">
               <select id="new-engineer-specialty" style="flex:1;min-width:100px">
-                <option value="عام">عام</option><option value="موبايلات">موبايلات</option><option value="لابتوب">لابتوب</option>
-                <option value="كمبيوتر">كمبيوتر</option><option value="طابعات">طابعات</option><option value="شبكات">شبكات</option>
-                <option value="كاميرات">كاميرات</option><option value="أخرى">أخرى</option>
+                <option value="عام" data-i18n="spec_general">عام</option><option value="موبايلات" data-i18n="spec_mobiles">موبايلات</option><option value="لابتوب" data-i18n="spec_laptop">لابتوب</option>
+                <option value="كمبيوتر" data-i18n="spec_computer">كمبيوتر</option><option value="طابعات" data-i18n="spec_printers">طابعات</option><option value="شبكات" data-i18n="spec_networks">شبكات</option>
+                <option value="كاميرات" data-i18n="spec_cameras">كاميرات</option><option value="أخرى" data-i18n="spec_other">أخرى</option>
               </select>
               <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineEngineer()" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
             </div>
           </div>
         </div>
-        <div class="form-group"><label>المواصفات</label><input type="text" id="device-specs" placeholder="الموديل، الرقم التسلسلي..."></div>
+        <div class="form-group"><label data-i18n="lbl_specs">المواصفات</label><input type="text" id="device-specs" placeholder="الموديل، الرقم التسلسلي..."></div>
       </div>
       
       <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)">
       <h4 style="margin-bottom:12px;color:var(--primary)"><i class='bx bx-task'></i> تخصيص المهمة</h4>
       
       <div class="form-row">
-        <div class="form-group"><label>الموعد النهائي (Deadline)</label><input type="datetime-local" id="device-deadline"></div>
-        <div class="form-group"><label>المكافأة عند الإنجاز في الوقت (ج.م)</label><input type="number" id="device-reward" step="0.01" min="0" value="0" placeholder="0"></div>
+        <div class="form-group"><label data-i18n="lbl_deadline">الموعد النهائي (Deadline)</label><input type="datetime-local" id="device-deadline"></div>
+        <div class="form-group"><label data-i18n="lbl_reward">المكافأة عند الإنجاز في الوقت (ج.م)</label><input type="number" id="device-reward" step="0.01" min="0" value="0" placeholder="0"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>العقوبة عند التأخير (ج.م)</label><input type="number" id="device-penalty" step="0.01" min="0" value="0" placeholder="0"></div>
-        <div class="form-group"><label>عدد الإنذارات قبل العقوبة</label>
+        <div class="form-group"><label data-i18n="lbl_penalty">العقوبة عند التأخير (ج.م)</label><input type="number" id="device-penalty" step="0.01" min="0" value="0" placeholder="0"></div>
+        <div class="form-group"><label data-i18n="lbl_warnings_limit">عدد الإنذارات قبل العقوبة</label>
           <select id="device-warnings-limit">
-            <option value="0">بدون إنذارات — عقوبة مباشرة</option>
-            <option value="1">إنذار واحد</option>
-            <option value="2" selected>إنذاران</option>
-            <option value="3">3 إنذارات</option>
+            <option value="0" data-i18n="warn_0">بدون إنذارات — عقوبة مباشرة</option>
+            <option value="1" data-i18n="warn_1">إنذار واحد</option>
+            <option value="2" selected data-i18n="warn_2">إنذاران</option>
+            <option value="3" data-i18n="warn_3">3 إنذارات</option>
           </select>
         </div>
       </div>
-      <div class="form-group"><label>ملاحظات المهمة</label><textarea id="device-task-notes" rows="2" placeholder="تعليمات خاصة للمهندس..."></textarea></div>
+      <div class="form-group"><label data-i18n="lbl_task_notes">ملاحظات المهمة</label><textarea id="device-task-notes" rows="2" placeholder="تعليمات خاصة للمهندس..."></textarea></div>
       
       <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)">
       
       <div class="form-row">
-        <div class="form-group"><label class="perm-checkbox"><input type="checkbox" id="device-warranty" onchange="toggleWarrantyField()"> الجهاز عليه ضمان</label></div>
-        <div class="form-group" id="warranty-months-group" style="display:none"><label>مدة الضمان (شهور)</label><input type="number" id="device-warranty-months" min="1" max="120" value="12"></div>
+        <div class="form-group"><label class="perm-checkbox"><input type="checkbox" id="device-warranty" onchange="toggleWarrantyField()"> <span data-i18n="lbl_has_warranty">الجهاز عليه ضمان</span></label></div>
+        <div class="form-group" id="warranty-months-group" style="display:none"><label data-i18n="lbl_warranty_months">مدة الضمان (شهور)</label><input type="number" id="device-warranty-months" min="1" max="120" value="12"></div>
       </div>
-      <div class="form-group"><label>المشكلة</label><textarea id="device-problem" rows="2" placeholder="وصف العطل أو المشكلة"></textarea></div>
-      <div class="form-group"><label>ملاحظات</label><textarea id="device-notes" rows="2"></textarea></div>
+      <div class="form-group"><label data-i18n="lbl_problem">المشكلة</label><textarea id="device-problem" rows="2" placeholder="وصف العطل أو المشكلة"></textarea></div>
+      <div class="form-group"><label data-i18n="th_notes">ملاحظات</label><textarea id="device-notes" rows="2"></textarea></div>
       <div class="form-group">
-        <label>صور الجهاز</label>
+        <label data-i18n="lbl_device_photos">صور الجهاز</label>
         <input type="file" id="device-photos" accept="image/*" multiple>
         <div id="device-photos-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
       </div>
@@ -3268,8 +3268,8 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)">
       
       <div class="form-row">
-        <div class="form-group"><label>مصاريف إضافية (ج.م)</label><input type="number" id="device-extra-expenses" value="0" step="0.01" min="0" oninput="updateRepairCost()"></div>
-        <div class="form-group"><label>سعر البيع للعميل (ج.م)</label><input type="number" id="device-selling-price" step="0.01" min="0" oninput="updateRepairCost()"></div>
+        <div class="form-group"><label data-i18n="lbl_extra_expenses">مصاريف إضافية (ج.م)</label><input type="number" id="device-extra-expenses" value="0" step="0.01" min="0" oninput="updateRepairCost()"></div>
+        <div class="form-group"><label data-i18n="lbl_selling_price">سعر البيع للعميل (ج.م)</label><input type="number" id="device-selling-price" step="0.01" min="0" oninput="updateRepairCost()"></div>
       </div>
       
       <div class="invoice-summary">
@@ -3297,19 +3297,19 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="client-form" onsubmit="return saveClient(event)">
       <input type="hidden" id="client-id">
       <div class="form-row">
-        <div class="form-group"><label>كود العميل</label><input type="text" id="client-code" readonly class="readonly-input"></div>
-        <div class="form-group"><label>الاسم *</label><input type="text" id="client-name" required></div>
+        <div class="form-group"><label data-i18n="lbl_client_code">كود العميل</label><input type="text" id="client-code" readonly class="readonly-input"></div>
+        <div class="form-group"><label data-i18n="lbl_name_req">الاسم *</label><input type="text" id="client-name" required></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>التليفون</label><input type="tel" id="client-phone" dir="ltr"></div>
-        <div class="form-group"><label>الإيميل</label><input type="email" id="client-email" dir="ltr"></div>
+        <div class="form-group"><label data-i18n="lbl_phone">التليفون</label><input type="tel" id="client-phone" dir="ltr"></div>
+        <div class="form-group"><label data-i18n="lbl_email">الإيميل</label><input type="email" id="client-email" dir="ltr"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>اسم المصنع</label><input type="text" id="client-factory-name"></div>
-        <div class="form-group"><label>مكان المصنع</label><input type="text" id="client-factory-location"></div>
+        <div class="form-group"><label data-i18n="lbl_factory_name">اسم المصنع</label><input type="text" id="client-factory-name"></div>
+        <div class="form-group"><label data-i18n="lbl_factory_location">مكان المصنع</label><input type="text" id="client-factory-location"></div>
       </div>
-      <div class="form-group"><label>نشاط المصنع</label><input type="text" id="client-factory-activity"></div>
-      <div class="form-group"><label>ملاحظات</label><textarea id="client-notes" rows="2"></textarea></div>
+      <div class="form-group"><label data-i18n="lbl_factory_activity">نشاط المصنع</label><input type="text" id="client-factory-activity"></div>
+      <div class="form-group"><label data-i18n="th_notes">ملاحظات</label><textarea id="client-notes" rows="2"></textarea></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline" onclick="closeModal('modal-client')">إلغاء</button>
         <button type="submit" class="btn btn-primary">حفظ</button>
@@ -3347,31 +3347,31 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <input type="hidden" id="history-entry-index">
         <div class="history-form-grid">
           <div class="form-group">
-            <label>التاريخ</label>
+            <label data-i18n="th_date">التاريخ</label>
             <input type="datetime-local" id="history-entry-date" class="form-input">
           </div>
           <div class="form-group">
-            <label>نوع الإجراء</label>
+            <label data-i18n="lbl_action_type">نوع الإجراء</label>
             <select id="history-entry-action" class="form-input">
-              <option value="استلام">استلام</option>
-              <option value="فحص">فحص</option>
-              <option value="إصلاح">إصلاح</option>
-              <option value="اختبار">اختبار</option>
-              <option value="تسليم">تسليم</option>
-              <option value="أخرى">أخرى</option>
+              <option value="استلام" data-i18n="action_intake">استلام</option>
+              <option value="فحص" data-i18n="action_inspect">فحص</option>
+              <option value="إصلاح" data-i18n="action_repair">إصلاح</option>
+              <option value="اختبار" data-i18n="action_test">اختبار</option>
+              <option value="تسليم" data-i18n="action_deliver">تسليم</option>
+              <option value="أخرى" data-i18n="spec_other">أخرى</option>
             </select>
           </div>
         </div>
         <div class="form-group">
-          <label>الوصف / الملاحظات</label>
-          <textarea id="history-entry-note" class="form-input" rows="3" placeholder="اكتب الوصف أو الملاحظات..."></textarea>
+          <label data-i18n="lbl_desc_notes">الوصف / الملاحظات</label>
+          <textarea id="history-entry-note" class="form-input" rows="3" placeholder="اكتب الوصف أو الملاحظات..." data-i18n-placeholder="ph_desc_notes"></textarea>
         </div>
         <div class="form-group">
-          <label>المهندس</label>
+          <label data-i18n="th_engineer">المهندس</label>
           <select id="history-entry-engineer" class="form-input">
             <option value="" data-i18n="choose_engineer">-- اختر المهندس --</option>
             <!-- Will be populated dynamically -->
-            <option value="__other__">مهندس آخر...</option>
+            <option value="__other__" data-i18n="other_engineer">مهندس آخر...</option>
           </select>
         </div>
         <div class="form-actions" style="display:flex;gap:8px;margin-top:12px;">
@@ -3399,14 +3399,14 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="supplier-form" onsubmit="return saveSupplier(event)">
       <input type="hidden" id="supplier-id">
       <div class="form-row">
-        <div class="form-group"><label>كود المورد</label><input type="text" id="supplier-code" readonly class="readonly-input"></div>
-        <div class="form-group"><label>الاسم *</label><input type="text" id="supplier-name" required></div>
+        <div class="form-group"><label data-i18n="lbl_supplier_code">كود المورد</label><input type="text" id="supplier-code" readonly class="readonly-input"></div>
+        <div class="form-group"><label data-i18n="lbl_name_req">الاسم *</label><input type="text" id="supplier-name" required></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>التليفون</label><input type="tel" id="supplier-phone" dir="ltr"></div>
-        <div class="form-group"><label>الشركة</label><input type="text" id="supplier-company"></div>
+        <div class="form-group"><label data-i18n="lbl_phone">التليفون</label><input type="tel" id="supplier-phone" dir="ltr"></div>
+        <div class="form-group"><label data-i18n="lbl_company">الشركة</label><input type="text" id="supplier-company"></div>
       </div>
-      <div class="form-group"><label>ملاحظات</label><textarea id="supplier-notes" rows="2"></textarea></div>
+      <div class="form-group"><label data-i18n="th_notes">ملاحظات</label><textarea id="supplier-notes" rows="2"></textarea></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline" onclick="closeModal('modal-supplier')">إلغاء</button>
         <button type="submit" class="btn btn-primary">حفظ</button>
@@ -3426,44 +3426,44 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <input type="hidden" id="invoice-id">
       <input type="hidden" id="invoice-type">
       <div class="form-row">
-        <div class="form-group"><label>رقم الفاتورة</label><input type="text" id="invoice-number" readonly class="readonly-input"></div>
-        <div class="form-group"><label>التاريخ</label><input type="date" id="invoice-date" required></div>
+        <div class="form-group"><label data-i18n="lbl_invoice_num">رقم الفاتورة</label><input type="text" id="invoice-number" readonly class="readonly-input"></div>
+        <div class="form-group"><label data-i18n="th_date">التاريخ</label><input type="date" id="invoice-date" required></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label id="invoice-party-label">العميل</label>
+        <div class="form-group"><label id="invoice-party-label" data-i18n="label_client">العميل</label>
           <div style="display:flex;gap:4px;align-items:center">
             <select id="invoice-party" onchange="onClientSelect(this, 'invoice')" style="flex:1"></select>
             <button type="button" class="list-edit-btn" onclick="openClientManager()" title="إدارة العملاء"><i class='bx bx-edit-alt'></i></button>
           </div>
           <div id="new-client-invoice-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
-              <input type="text" id="new-client-invoice-name" placeholder="الاسم" style="flex:2;min-width:120px">
-              <input type="text" id="new-client-invoice-phone" placeholder="الهاتف" style="flex:1;min-width:100px">
+              <input type="text" id="new-client-invoice-name" placeholder="الاسم" data-i18n-placeholder="ph_name" style="flex:2;min-width:120px">
+              <input type="text" id="new-client-invoice-phone" placeholder="الهاتف" data-i18n-placeholder="ph_phone" style="flex:1;min-width:100px">
               <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineClient('invoice')" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
             </div>
           </div>
         </div>
         <div class="form-group">
-          <label>حالة الدفع</label>
+          <label data-i18n="lbl_payment_status">حالة الدفع</label>
           <select id="invoice-payment-status">
-            <option value="unpaid">غير مدفوعة</option>
-            <option value="partial">دفع جزئي</option>
-            <option value="paid">مدفوعة بالكامل</option>
+            <option value="unpaid" data-i18n="invoice_unpaid">غير مدفوعة</option>
+            <option value="partial" data-i18n="invoice_partial">دفع جزئي</option>
+            <option value="paid" data-i18n="invoice_paid">مدفوعة بالكامل</option>
           </select>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>المبلغ المدفوع (ج.م)</label>
+          <label data-i18n="lbl_amount_paid">المبلغ المدفوع (ج.م)</label>
           <input type="number" id="invoice-paid-amount" step="0.01" min="0" value="0">
         </div>
         <div class="form-group">
-          <label>طريقة الدفع</label>
+          <label data-i18n="lbl_payment_method">طريقة الدفع</label>
           <select id="invoice-payment-method" onchange="toggleInvoicePaymentFields()">
-            <option value="">— اختر —</option>
-            <option value="cash">💵 كاش</option>
-            <option value="instapay">📱 انستاباي</option>
-            <option value="vodafone">📲 فودافون كاش</option>
+            <option value="" data-i18n="choose_placeholder">— اختر —</option>
+            <option value="cash" data-i18n="pay_cash">💵 كاش</option>
+            <option value="instapay" data-i18n="pay_instapay">📱 انستاباي</option>
+            <option value="vodafone" data-i18n="pay_vodafone">📲 فودافون كاش</option>
           </select>
         </div>
       </div>
@@ -3471,46 +3471,46 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div id="inv-payment-cash" class="inv-payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
         <h4 style="margin-bottom:10px;color:var(--primary)">💵 بيانات الدفع كاش</h4>
         <div class="form-row">
-          <div class="form-group"><label>تاريخ الدفع</label><input type="date" id="inv-pay-cash-date"></div>
-          <div class="form-group"><label>اسم الموظف المستلم</label><input type="text" id="inv-pay-cash-employee" placeholder="اسم الموظف"></div>
+          <div class="form-group"><label data-i18n="lbl_payment_date">تاريخ الدفع</label><input type="date" id="inv-pay-cash-date"></div>
+          <div class="form-group"><label data-i18n="lbl_receiving_employee">اسم الموظف المستلم</label><input type="text" id="inv-pay-cash-employee" placeholder="اسم الموظف"></div>
         </div>
       </div>
       <!-- بيانات الدفع انستاباي - فاتورة -->
       <div id="inv-payment-instapay" class="inv-payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
         <h4 style="margin-bottom:10px;color:var(--primary)">📱 بيانات الدفع انستاباي</h4>
         <div class="form-row">
-          <div class="form-group"><label>اسم الحساب المستلم</label><input type="text" id="inv-pay-insta-account-name" placeholder="اسم الحساب"></div>
-          <div class="form-group"><label>رقم الحساب / IBAN</label><input type="text" id="inv-pay-insta-iban" placeholder="رقم الحساب"></div>
+          <div class="form-group"><label data-i18n="lbl_account_name">اسم الحساب المستلم</label><input type="text" id="inv-pay-insta-account-name" placeholder="اسم الحساب"></div>
+          <div class="form-group"><label data-i18n="lbl_iban">رقم الحساب / IBAN</label><input type="text" id="inv-pay-insta-iban" placeholder="رقم الحساب"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>رقم الموبايل المرتبط</label><input type="text" id="inv-pay-insta-mobile" placeholder="رقم الموبايل"></div>
-          <div class="form-group"><label>تاريخ التحويل</label><input type="date" id="inv-pay-insta-date"></div>
+          <div class="form-group"><label data-i18n="lbl_linked_mobile">رقم الموبايل المرتبط</label><input type="text" id="inv-pay-insta-mobile" placeholder="رقم الموبايل"></div>
+          <div class="form-group"><label data-i18n="lbl_transfer_date">تاريخ التحويل</label><input type="date" id="inv-pay-insta-date"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>رقم العملية (Transaction ID)</label><input type="text" id="inv-pay-insta-transaction-id" placeholder="رقم العملية"></div>
-          <div class="form-group"><label>رقم التحويل *</label><input type="text" id="inv-pay-insta-transfer-number" placeholder="رقم التحويل (إلزامي)"></div>
+          <div class="form-group"><label data-i18n="lbl_transaction_id">رقم العملية (Transaction ID)</label><input type="text" id="inv-pay-insta-transaction-id" placeholder="رقم العملية"></div>
+          <div class="form-group"><label data-i18n="lbl_transfer_num_req">رقم التحويل *</label><input type="text" id="inv-pay-insta-transfer-number" placeholder="رقم التحويل (إلزامي)"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>صورة إيصال التحويل</label><input type="file" id="inv-pay-insta-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'inv-insta-receipt-preview')"><div id="inv-insta-receipt-preview" style="margin-top:6px"></div></div>
+          <div class="form-group"><label data-i18n="lbl_transfer_receipt">صورة إيصال التحويل</label><input type="file" id="inv-pay-insta-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'inv-insta-receipt-preview')"><div id="inv-insta-receipt-preview" style="margin-top:6px"></div></div>
         </div>
       </div>
       <!-- بيانات الدفع فودافون كاش - فاتورة -->
       <div id="inv-payment-vodafone" class="inv-payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
         <h4 style="margin-bottom:10px;color:var(--primary)">📲 بيانات الدفع فودافون كاش</h4>
         <div class="form-row">
-          <div class="form-group"><label>رقم فودافون كاش المحول عليه</label><input type="text" id="inv-pay-voda-to-number" placeholder="رقم فودافون كاش"></div>
-          <div class="form-group"><label>اسم صاحب الخط</label><input type="text" id="inv-pay-voda-owner-name" placeholder="اسم صاحب الخط"></div>
+          <div class="form-group"><label data-i18n="lbl_voda_to">رقم فودافون كاش المحول عليه</label><input type="text" id="inv-pay-voda-to-number" placeholder="رقم فودافون كاش"></div>
+          <div class="form-group"><label data-i18n="lbl_line_owner">اسم صاحب الخط</label><input type="text" id="inv-pay-voda-owner-name" placeholder="اسم صاحب الخط"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>تاريخ التحويل</label><input type="date" id="inv-pay-voda-date"></div>
-          <div class="form-group"><label>رقم العملية</label><input type="text" id="inv-pay-voda-transaction-id" placeholder="رقم العملية"></div>
+          <div class="form-group"><label data-i18n="lbl_transfer_date">تاريخ التحويل</label><input type="date" id="inv-pay-voda-date"></div>
+          <div class="form-group"><label data-i18n="lbl_transaction_id_short">رقم العملية</label><input type="text" id="inv-pay-voda-transaction-id" placeholder="رقم العملية"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>رقم الموبايل المحول منه</label><input type="text" id="inv-pay-voda-from-number" placeholder="رقم المحول منه"></div>
-          <div class="form-group"><label>رقم التحويل</label><input type="text" id="inv-pay-voda-transfer-number" placeholder="رقم التحويل"></div>
+          <div class="form-group"><label data-i18n="lbl_from_mobile">رقم الموبايل المحول منه</label><input type="text" id="inv-pay-voda-from-number" placeholder="رقم المحول منه"></div>
+          <div class="form-group"><label data-i18n="lbl_transfer_num">رقم التحويل</label><input type="text" id="inv-pay-voda-transfer-number" placeholder="رقم التحويل"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>صورة رسالة التحويل</label><input type="file" id="inv-pay-voda-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'inv-voda-receipt-preview')"><div id="inv-voda-receipt-preview" style="margin-top:6px"></div></div>
+          <div class="form-group"><label data-i18n="lbl_transfer_msg_img">صورة رسالة التحويل</label><input type="file" id="inv-pay-voda-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'inv-voda-receipt-preview')"><div id="inv-voda-receipt-preview" style="margin-top:6px"></div></div>
         </div>
       </div>
       
@@ -3528,11 +3528,11 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="inv-summary-row total"><span>الإجمالي:</span><strong id="invoice-total-display">0 ج.م</strong></div>
       </div>
       
-      <div class="form-group"><label>ملاحظات</label><textarea id="invoice-notes" rows="2"></textarea></div>
+      <div class="form-group"><label data-i18n="th_notes">ملاحظات</label><textarea id="invoice-notes" rows="2"></textarea></div>
       
       <!-- Photo attachments section -->
       <div class="form-group" id="invoice-photos-section">
-        <label><i class='bx bx-camera' style="color:var(--primary)"></i> مرفقات صور (للفواتير)</label>
+        <label><i class='bx bx-camera' style="color:var(--primary)"></i> <span data-i18n="lbl_photo_attachments">مرفقات صور (للفواتير)</span></label>
         <input type="file" id="invoice-photos" accept="image/*" multiple onchange="previewInvoicePhotos(this)">
         <div id="invoice-photos-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
       </div>
@@ -3556,32 +3556,32 @@ tr:hover { background: rgba(108,60,233,0.02); }
     <form id="service-form" onsubmit="return saveService(event)">
       <input type="hidden" id="service-id">
       <div class="form-row">
-        <div class="form-group"><label>التاريخ</label><input type="date" id="service-date" required></div>
-        <div class="form-group"><label>العميل</label>
+        <div class="form-group"><label data-i18n="th_date">التاريخ</label><input type="date" id="service-date" required></div>
+        <div class="form-group"><label data-i18n="label_client">العميل</label>
           <select id="service-client" onchange="onClientSelect(this, 'service')"><option value="" data-i18n="choose_client">اختر العميل</option></select>
           <div id="new-client-service-inline" style="display:none;margin-top:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
             <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
-              <input type="text" id="new-client-service-name" placeholder="اسم العميل" style="flex:2;min-width:120px">
-              <input type="text" id="new-client-service-phone" placeholder="الهاتف" style="flex:1;min-width:100px">
+              <input type="text" id="new-client-service-name" placeholder="اسم العميل" data-i18n-placeholder="ph_client_name" style="flex:2;min-width:120px">
+              <input type="text" id="new-client-service-phone" placeholder="الهاتف" data-i18n-placeholder="ph_phone" style="flex:1;min-width:100px">
               <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineClient('service')" style="white-space:nowrap"><i class='bx bx-check'></i> حفظ</button>
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group"><label>الوصف *</label><input type="text" id="service-description" required placeholder="وصف الخدمة أو الزيارة"></div>
-      <div class="form-group"><label>الموقع</label><input type="text" id="service-location" placeholder="عنوان أو موقع الزيارة"></div>
+      <div class="form-group"><label data-i18n="lbl_desc_req">الوصف *</label><input type="text" id="service-description" required placeholder="وصف الخدمة أو الزيارة"></div>
+      <div class="form-group"><label data-i18n="th_location">الموقع</label><input type="text" id="service-location" placeholder="عنوان أو موقع الزيارة"></div>
       <div class="form-row">
-        <div class="form-group"><label>السعر (ج.م)</label><input type="number" id="service-price" step="0.01" min="0" value="0"></div>
-        <div class="form-group"><label>الحالة</label>
+        <div class="form-group"><label data-i18n="lbl_price">السعر (ج.م)</label><input type="number" id="service-price" step="0.01" min="0" value="0"></div>
+        <div class="form-group"><label data-i18n="lbl_status">الحالة</label>
           <select id="service-status">
-            <option value="pending">قيد الانتظار</option>
-            <option value="in_progress">جاري التنفيذ</option>
-            <option value="completed">مكتملة</option>
-            <option value="cancelled">ملغاة</option>
+            <option value="pending" data-i18n="service_pending">قيد الانتظار</option>
+            <option value="in_progress" data-i18n="service_in_progress">جاري التنفيذ</option>
+            <option value="completed" data-i18n="service_completed">مكتملة</option>
+            <option value="cancelled" data-i18n="service_cancelled">ملغاة</option>
           </select>
         </div>
       </div>
-      <div class="form-group"><label>ملاحظات</label><textarea id="service-notes" rows="2"></textarea></div>
+      <div class="form-group"><label data-i18n="th_notes">ملاحظات</label><textarea id="service-notes" rows="2"></textarea></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline" onclick="closeModal('modal-service')">إلغاء</button>
         <button type="submit" class="btn btn-primary">حفظ</button>
@@ -3622,27 +3622,27 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div style="font-weight:700;font-size:14px;margin-bottom:12px" id="adj-form-title">تسجيل دفعة جديدة</div>
       <input type="hidden" id="adj-edit-idx" value="-1">
       <div class="form-group" style="margin-bottom:10px">
-        <label style="font-size:12px;margin-bottom:4px;display:block">نوع الحركة</label>
+        <label style="font-size:12px;margin-bottom:4px;display:block" data-i18n="lbl_movement_type">نوع الحركة</label>
         <select id="adj-pay-type" style="width:100%">
-          <option value="payment_in">دفعة واردة (سداد من العميل)</option>
-          <option value="payment_out">دفعة صادرة (دفع للمورد)</option>
-          <option value="add_debt">إضافة دين جديد</option>
-          <option value="adjust">تعيين رصيد يدوي</option>
+          <option value="payment_in" data-i18n="move_payment_in">دفعة واردة (سداد من العميل)</option>
+          <option value="payment_out" data-i18n="move_payment_out">دفعة صادرة (دفع للمورد)</option>
+          <option value="add_debt" data-i18n="move_add_debt">إضافة دين جديد</option>
+          <option value="adjust" data-i18n="move_adjust">تعيين رصيد يدوي</option>
         </select>
       </div>
       <div style="display:flex;gap:10px;margin-bottom:10px">
         <div class="form-group" style="flex:1;margin:0">
-          <label style="font-size:12px;margin-bottom:4px;display:block">المبلغ</label>
+          <label style="font-size:12px;margin-bottom:4px;display:block" data-i18n="th_amount">المبلغ</label>
           <input type="number" id="adj-pay-amount" placeholder="0.00" step="0.01" min="0" style="width:100%">
         </div>
         <div class="form-group" style="flex:1;margin:0">
-          <label style="font-size:12px;margin-bottom:4px;display:block">التاريخ</label>
+          <label style="font-size:12px;margin-bottom:4px;display:block" data-i18n="th_date">التاريخ</label>
           <input type="date" id="adj-pay-date" style="width:100%">
         </div>
       </div>
       <div class="form-group" style="margin-bottom:12px">
-        <label style="font-size:12px;margin-bottom:4px;display:block">ملاحظات</label>
-        <input type="text" id="adj-pay-notes" placeholder="وصف الحركة..." style="width:100%">
+        <label style="font-size:12px;margin-bottom:4px;display:block" data-i18n="th_notes">ملاحظات</label>
+        <input type="text" id="adj-pay-notes" placeholder="وصف الحركة..." data-i18n-placeholder="ph_movement_desc" style="width:100%">
       </div>
       <div style="display:flex;gap:8px;justify-content:flex-end">
         <button type="button" class="btn btn-outline" onclick="cancelLedgerEdit()" style="font-size:13px;padding:6px 16px">إلغاء</button>
@@ -4068,6 +4068,64 @@ const TRANSLATIONS = {
     no_payments_period: 'لا توجد مدفوعات في هذه الفترة',
     no_movements_recorded: 'لا توجد حركات مسجلة',
     no_new_messages: 'لا توجد رسائل جديدة. اطلب من المستلم يبعت /start للبوت وجرب تاني',
+    
+    // Form labels
+    lbl_password: 'كلمة المرور', lbl_fullname: 'الاسم الكامل', lbl_fullname_req: 'الاسم الكامل *',
+    lbl_username_req: 'اسم المستخدم *', lbl_role_req: 'الدور *', lbl_custom_perms: 'الصلاحيات المخصصة',
+    lbl_name_req: 'الاسم *', lbl_job_title: 'المسمى الوظيفي', lbl_enabled_notifs: 'الإشعارات المفعلة',
+    lbl_phone: 'رقم التليفون', lbl_specialty: 'التخصص', lbl_email: 'الإيميل',
+    lbl_order_num: 'رقم أمر الصيانة', lbl_intake_date: 'تاريخ الدخول', lbl_exit_date: 'تاريخ الخروج',
+    lbl_delivery_date: 'تاريخ التسليم', lbl_payment_method: 'طريقة الدفع', lbl_status: 'الحالة',
+    lbl_payment_status: 'حالة الدفع', lbl_payment_date: 'تاريخ الدفع',
+    lbl_amount_due: 'المبلغ المستحق (ج.م)', lbl_amount_paid: 'المبلغ المدفوع (ج.م)',
+    lbl_remaining: 'الباقي (ج.م)', lbl_receiving_employee: 'اسم الموظف المستلم',
+    lbl_account_name: 'اسم الحساب المستلم', lbl_iban: 'رقم الحساب / IBAN',
+    lbl_linked_mobile: 'رقم الموبايل المرتبط', lbl_transaction_id: 'رقم العملية (Transaction ID)',
+    lbl_transfer_num_req: 'رقم التحويل *', lbl_transfer_num: 'رقم التحويل',
+    lbl_transfer_receipt: 'صورة إيصال التحويل', lbl_transfer_date: 'تاريخ التحويل',
+    lbl_amount_required: 'المبلغ المطلوب (ج.م)', lbl_amount_req: 'المبلغ (ج.م) *',
+    lbl_voda_to: 'رقم فودافون كاش المحول عليه', lbl_line_owner: 'اسم صاحب الخط',
+    lbl_transaction_id_short: 'رقم العملية', lbl_from_mobile: 'رقم الموبايل المحول منه',
+    lbl_transfer_msg_img: 'صورة رسالة التحويل',
+    lbl_device_name_req: 'اسم الجهاز *', lbl_assigned_engineer: 'المهندس/الفني المسؤول',
+    lbl_specs: 'المواصفات', lbl_deadline: 'الموعد النهائي (Deadline)',
+    lbl_reward: 'المكافأة عند الإنجاز في الوقت (ج.م)', lbl_penalty: 'العقوبة عند التأخير (ج.م)',
+    lbl_warnings_limit: 'عدد الإنذارات قبل العقوبة', lbl_task_notes: 'ملاحظات المهمة',
+    lbl_has_warranty: 'الجهاز عليه ضمان', lbl_warranty_months: 'مدة الضمان (شهور)',
+    lbl_problem: 'المشكلة', lbl_device_photos: 'صور الجهاز',
+    lbl_extra_expenses: 'مصاريف إضافية (ج.م)', lbl_selling_price: 'سعر البيع للعميل (ج.م)',
+    lbl_client_code: 'كود العميل', lbl_factory_name: 'اسم المصنع',
+    lbl_factory_location: 'مكان المصنع', lbl_factory_activity: 'نشاط المصنع',
+    lbl_action_type: 'نوع الإجراء', lbl_desc_notes: 'الوصف / الملاحظات',
+    lbl_supplier_code: 'كود المورد', lbl_company: 'الشركة',
+    lbl_invoice_num: 'رقم الفاتورة', lbl_statement_req: 'البيان *', lbl_expense_type: 'نوع المصروف',
+    lbl_desc_req: 'الوصف *', lbl_price: 'السعر (ج.م)',
+    lbl_photo_attachments: 'مرفقات صور (للفواتير)', lbl_movement_type: 'نوع الحركة',
+    remember_me: 'تذكرني',
+    role_admin_full: 'مدير — تحكم كامل', role_manager_full: 'مشرف — صلاحيات واسعة', role_staff_full: 'موظف — صلاحيات محدودة',
+    notif_low_stock: 'تنبيه مخزون منخفض', notif_unpaid: 'فواتير غير مدفوعة',
+    notif_ready: 'أجهزة جاهزة للتسليم', notif_warranty: 'تنبيهات انتهاء الضمان',
+    notif_daily_summary: 'ملخص يومي',
+    
+    // Placeholders
+    ph_auto_generate: 'اتركه فارغ للتوليد التلقائي', ph_new_category: 'اسم التصنيف الجديد',
+    ph_client_name: 'اسم العميل', ph_phone: 'الهاتف', ph_engineer_name: 'اسم المهندس',
+    ph_phone_optional: 'الهاتف (اختياري)', ph_desc_notes: 'اكتب الوصف أو الملاحظات...',
+    ph_name: 'الاسم', ph_movement_desc: 'وصف الحركة...', ph_type_here: 'اكتب هنا...',
+    ph_search: 'بحث...', ph_add_new_item: 'إضافة عنصر جديد...', ph_qty: 'الكمية', ph_price: 'السعر',
+    
+    // Select options
+    opt_general: 'عام', other_engineer: 'مهندس آخر...', choose_part: 'اختر قطعة',
+    pay_cash: '💵 كاش', pay_instapay: '📱 انستاباي', pay_vodafone: '📲 فودافون كاش',
+    pay_full: '✅ مدفوع بالكامل', pay_partial: '⚠️ مدفوع جزئيًا',
+    spec_general: 'عام', spec_mobiles: 'موبايلات', spec_laptop: 'لابتوب',
+    spec_computer: 'كمبيوتر', spec_printers: 'طابعات', spec_networks: 'شبكات',
+    spec_cameras: 'كاميرات', spec_other: 'أخرى',
+    warn_0: 'بدون إنذارات — عقوبة مباشرة', warn_1: 'إنذار واحد', warn_2: 'إنذاران', warn_3: '3 إنذارات',
+    action_intake: 'استلام', action_inspect: 'فحص', action_repair: 'إصلاح',
+    action_test: 'اختبار', action_deliver: 'تسليم',
+    move_payment_in: 'دفعة واردة (سداد من العميل)', move_payment_out: 'دفعة صادرة (دفع للمورد)',
+    move_add_debt: 'إضافة دين جديد', move_adjust: 'تعيين رصيد يدوي',
   },
   en: {
     // Navigation
@@ -4474,6 +4532,64 @@ const TRANSLATIONS = {
     no_payments_period: 'No payments in this period',
     no_movements_recorded: 'No recorded movements',
     no_new_messages: 'No new messages. Ask the recipient to send /start to the bot and try again',
+    
+    // Form labels
+    lbl_password: 'Password', lbl_fullname: 'Full Name', lbl_fullname_req: 'Full Name *',
+    lbl_username_req: 'Username *', lbl_role_req: 'Role *', lbl_custom_perms: 'Custom Permissions',
+    lbl_name_req: 'Name *', lbl_job_title: 'Job Title', lbl_enabled_notifs: 'Enabled Notifications',
+    lbl_phone: 'Phone Number', lbl_specialty: 'Specialty', lbl_email: 'Email',
+    lbl_order_num: 'Maintenance Order #', lbl_intake_date: 'Intake Date', lbl_exit_date: 'Exit Date',
+    lbl_delivery_date: 'Delivery Date', lbl_payment_method: 'Payment Method', lbl_status: 'Status',
+    lbl_payment_status: 'Payment Status', lbl_payment_date: 'Payment Date',
+    lbl_amount_due: 'Amount Due (EGP)', lbl_amount_paid: 'Amount Paid (EGP)',
+    lbl_remaining: 'Remaining (EGP)', lbl_receiving_employee: 'Receiving Employee',
+    lbl_account_name: 'Receiving Account Name', lbl_iban: 'Account # / IBAN',
+    lbl_linked_mobile: 'Linked Mobile #', lbl_transaction_id: 'Transaction ID',
+    lbl_transfer_num_req: 'Transfer # *', lbl_transfer_num: 'Transfer #',
+    lbl_transfer_receipt: 'Transfer Receipt Image', lbl_transfer_date: 'Transfer Date',
+    lbl_amount_required: 'Amount Required (EGP)', lbl_amount_req: 'Amount (EGP) *',
+    lbl_voda_to: 'Vodafone Cash # (Recipient)', lbl_line_owner: 'Line Owner Name',
+    lbl_transaction_id_short: 'Transaction ID', lbl_from_mobile: 'Sender Mobile #',
+    lbl_transfer_msg_img: 'Transfer Message Image',
+    lbl_device_name_req: 'Device Name *', lbl_assigned_engineer: 'Assigned Engineer/Tech',
+    lbl_specs: 'Specifications', lbl_deadline: 'Deadline',
+    lbl_reward: 'On-Time Completion Reward (EGP)', lbl_penalty: 'Late Penalty (EGP)',
+    lbl_warnings_limit: 'Warnings Before Penalty', lbl_task_notes: 'Task Notes',
+    lbl_has_warranty: 'Device Has Warranty', lbl_warranty_months: 'Warranty Period (months)',
+    lbl_problem: 'Problem', lbl_device_photos: 'Device Photos',
+    lbl_extra_expenses: 'Extra Expenses (EGP)', lbl_selling_price: 'Selling Price to Client (EGP)',
+    lbl_client_code: 'Client Code', lbl_factory_name: 'Factory Name',
+    lbl_factory_location: 'Factory Location', lbl_factory_activity: 'Factory Activity',
+    lbl_action_type: 'Action Type', lbl_desc_notes: 'Description / Notes',
+    lbl_supplier_code: 'Supplier Code', lbl_company: 'Company',
+    lbl_invoice_num: 'Invoice #', lbl_statement_req: 'Statement *', lbl_expense_type: 'Expense Type',
+    lbl_desc_req: 'Description *', lbl_price: 'Price (EGP)',
+    lbl_photo_attachments: 'Photo Attachments (for invoices)', lbl_movement_type: 'Movement Type',
+    remember_me: 'Remember me',
+    role_admin_full: 'Admin — Full Control', role_manager_full: 'Manager — Wide Access', role_staff_full: 'Staff — Limited Access',
+    notif_low_stock: 'Low Stock Alert', notif_unpaid: 'Unpaid Invoices',
+    notif_ready: 'Devices Ready for Delivery', notif_warranty: 'Warranty Expiry Alerts',
+    notif_daily_summary: 'Daily Summary',
+    
+    // Placeholders
+    ph_auto_generate: 'Leave empty for auto-generation', ph_new_category: 'New category name',
+    ph_client_name: 'Client name', ph_phone: 'Phone', ph_engineer_name: 'Engineer name',
+    ph_phone_optional: 'Phone (optional)', ph_desc_notes: 'Write description or notes...',
+    ph_name: 'Name', ph_movement_desc: 'Movement description...', ph_type_here: 'Type here...',
+    ph_search: 'Search...', ph_add_new_item: 'Add new item...', ph_qty: 'Qty', ph_price: 'Price',
+    
+    // Select options
+    opt_general: 'General', other_engineer: 'Other engineer...', choose_part: 'Choose Part',
+    pay_cash: '💵 Cash', pay_instapay: '📱 InstaPay', pay_vodafone: '📲 Vodafone Cash',
+    pay_full: '✅ Paid in Full', pay_partial: '⚠️ Partially Paid',
+    spec_general: 'General', spec_mobiles: 'Mobiles', spec_laptop: 'Laptop',
+    spec_computer: 'Computer', spec_printers: 'Printers', spec_networks: 'Networks',
+    spec_cameras: 'Cameras', spec_other: 'Other',
+    warn_0: 'No warnings — direct penalty', warn_1: '1 Warning', warn_2: '2 Warnings', warn_3: '3 Warnings',
+    action_intake: 'Intake', action_inspect: 'Inspection', action_repair: 'Repair',
+    action_test: 'Testing', action_deliver: 'Delivery',
+    move_payment_in: 'Payment Received (from client)', move_payment_out: 'Payment Sent (to supplier)',
+    move_add_debt: 'Add New Debt', move_adjust: 'Manual Balance Adjustment',
   }
 };
 
@@ -4743,7 +4859,7 @@ function enhanceSelect(selectId, listKey, options = {}) {
   otherDiv.style.cssText = 'display:none;margin-top:8px;';
   otherDiv.innerHTML = `
     <div style="display:flex;gap:6px;align-items:center;">
-      <input type="text" class="other-text-input" placeholder="اكتب هنا..." style="flex:1;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;">
+      <input type="text" class="other-text-input" placeholder="اكتب هنا..." data-i18n-placeholder="ph_type_here" style="flex:1;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;">
       <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted);white-space:nowrap;cursor:pointer;">
         <input type="checkbox" class="other-save-cb" checked style="accent-color:var(--primary);">
         <span>احفظ</span>
@@ -4785,7 +4901,7 @@ function enhanceSelect(selectId, listKey, options = {}) {
 
 // Shared: build bottom sheet with search
 function _buildSelectSheet(overlay, title, optionsData, onSelect, showSearch) {
-  const searchHtml = showSearch ? `<div style="padding:8px 16px 4px"><input type="text" class="cs-search" placeholder="بحث..." style="width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;outline:none" autofocus></div>` : '';
+  const searchHtml = showSearch ? `<div style="padding:8px 16px 4px"><input type="text" class="cs-search" placeholder="بحث..." data-i18n-placeholder="ph_search" style="width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;outline:none" autofocus></div>` : '';
   
   const optionsHtml = optionsData.map(o => o.html).join('');
   
@@ -4956,7 +5072,7 @@ function openListEditor(selectId, listKey, options) {
       </div>
       <div class="list-editor-body" id="list-editor-items"></div>
       <div class="list-editor-add">
-        <input type="text" id="list-editor-new" placeholder="إضافة عنصر جديد..." style="flex:1;">
+        <input type="text" id="list-editor-new" placeholder="إضافة عنصر جديد..." data-i18n-placeholder="ph_add_new_item" style="flex:1;">
         <button onclick="listEditorAdd()" class="list-editor-add-btn"><i class='bx bx-plus'></i> إضافة</button>
       </div>
       <div class="list-editor-footer">
@@ -7199,7 +7315,7 @@ function openStockOut(id) {
   document.getElementById('modal-stock-title').textContent = t('modal_stock_out');
   document.getElementById('stock-product-id').value = id;
   document.getElementById('stock-direction').value = 'out';
-  document.getElementById('stock-product-name').value = `${p.name} (متاح: ${p.quantity})`;
+  document.getElementById('stock-product-name').value = `${p.name} (${t("available_qty")} ${p.quantity})`;
   document.getElementById('stock-qty').value = '';
   document.getElementById('stock-notes').value = '';
   openModal('modal-stock');
@@ -8194,8 +8310,8 @@ function renderInvoiceItems() {
         <option value="__other__">${t('other_add_new')}</option>
       </select>
       <div class="inv-item-details">
-        <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="الكمية" data-idx="${idx}">
-        <input type="number" class="inv-price" value="${item.unitPrice}" step="0.01" min="0" placeholder="السعر" data-idx="${idx}">
+        <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="${t('ph_qty')}" data-idx="${idx}">
+        <input type="number" class="inv-price" value="${item.unitPrice}" step="0.01" min="0" placeholder="${t('ph_price')}" data-idx="${idx}">
         <span class="inv-total">${formatMoney(item.total)}</span>
         <button class="btn-icon danger" onclick="removeInvoiceItem(${idx})"><i class='bx bx-trash'></i></button>
       </div>
@@ -8268,7 +8384,7 @@ function showInlineProductAdd(idx) {
     <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--primary)">إضافة صنف جديد</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
       <input type="text" id="inline-prod-name-${idx}" placeholder="اسم الصنف *" style="flex:2;min-width:120px">
-      <input type="number" id="inline-prod-price-${idx}" placeholder="السعر" style="flex:1;min-width:80px" step="0.01">
+      <input type="number" id="inline-prod-price-${idx}" placeholder="${t('ph_price')}" style="flex:1;min-width:80px" step="0.01">
       <input type="number" id="inline-prod-cost-${idx}" placeholder="التكلفة" style="flex:1;min-width:80px" step="0.01">
       <input type="text" id="inline-prod-sku-${idx}" placeholder="الكود (اختياري)" style="flex:1;min-width:80px">
     </div>
@@ -9858,7 +9974,7 @@ function renderDeviceParts() {
   const container = document.getElementById('device-parts-list');
   
   const productOptions = allProducts.filter(p => p.type === 'part' || true).map(p =>
-    `<option value="${p.id}">${p.name} (متاح: ${p.quantity})</option>`
+    `<option value="${p.id}">${p.name} (${t("available_qty")} ${p.quantity})</option>`
   ).join('');
   
   container.innerHTML = currentDeviceParts.map((part, idx) => `
@@ -9872,7 +9988,7 @@ function renderDeviceParts() {
       </div>
       ${part.fromStock ? `
         <select onchange="onPartProductChange(${idx}, this.value)">
-          <option value="">اختر قطعة</option>
+          <option value="">${t("choose_part")}</option>
           ${productOptions}
         </select>
       ` : `
@@ -9880,8 +9996,8 @@ function renderDeviceParts() {
         <input type="text" placeholder="المورد" value="${part.supplier||''}" onchange="currentDeviceParts[${idx}].supplier=this.value">
       `}
       <div class="part-row-nums">
-        <input type="number" placeholder="الكمية" value="${part.quantity}" min="1" onchange="onPartQtyChange(${idx}, this.value)">
-        <input type="number" placeholder="السعر" value="${part.unitPrice}" step="0.01" onchange="onPartPriceChange(${idx}, this.value)">
+        <input type="number" placeholder="${t('ph_qty')}" value="${part.quantity}" min="1" onchange="onPartQtyChange(${idx}, this.value)">
+        <input type="number" placeholder="${t('ph_price')}" value="${part.unitPrice}" step="0.01" onchange="onPartPriceChange(${idx}, this.value)">
         <span class="part-total">${formatMoney(part.total)}</span>
       </div>
     </div>
@@ -11812,7 +11928,7 @@ function populateEngineersDropdown() {
   
   // Clear current options except for default and "other"
   const defaultOption = '<option value="">' + t('choose_engineer') + '</option>';
-  const otherOption = '<option value="__other__">مهندس آخر...</option>';
+  const otherOption = '<option value="__other__" data-i18n="other_engineer">مهندس آخر...</option>';
   
   const engineerOptions = allEngineers.map(eng => 
     `<option value="${eng.id}">${eng.name}</option>`
