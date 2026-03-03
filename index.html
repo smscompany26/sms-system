@@ -3515,10 +3515,16 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </div>
       
       <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px">
-        <h4>الأصناف</h4>
-        <div style="display:flex;gap:6px">
-          <button type="button" class="btn btn-sm btn-outline" onclick="openBarcodeScanner('invoice')"><i class='bx bx-barcode'></i> مسح</button>
-          <button type="button" class="btn btn-sm btn-primary" onclick="addInvoiceItem()"><i class='bx bx-plus'></i> إضافة صنف</button>
+        <h4 data-i18n="lbl_items">الأصناف</h4>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div id="purchase-mode-toggle" style="display:none">
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;background:var(--bg);padding:4px 10px;border-radius:var(--radius-sm);border:1px solid var(--border)">
+              <input type="checkbox" id="purchase-external-mode" onchange="togglePurchaseMode(this.checked)" style="accent-color:var(--primary)">
+              <span data-i18n="purchase_external">شراء خارجي</span>
+            </label>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline" onclick="openBarcodeScanner('invoice')"><i class='bx bx-barcode'></i> <span data-i18n="scan_barcode">مسح</span></button>
+          <button type="button" class="btn btn-sm btn-primary" onclick="addInvoiceItem()"><i class='bx bx-plus'></i> <span data-i18n="add_product">إضافة صنف</span></button>
         </div>
       </div>
       <div id="invoice-items-list" class="invoice-items-container"></div>
@@ -4132,6 +4138,8 @@ const TRANSLATIONS = {
     chatid_help: 'يبعت أي رسالة للبوت على Telegram (مثلاً /start) → ثم دوس "جلب Chat IDs" هنا → هيظهر الـ Chat ID تلقائي',
     btn_add_record: 'إضافة سجل',
     choose_part: 'اختر قطعة',
+    purchase_external: 'شراء خارجي',
+    lbl_items: 'الأصناف',
   },
   en: {
     // Navigation
@@ -4602,6 +4610,8 @@ const TRANSLATIONS = {
     chatid_help: 'Send any message to the bot on Telegram (e.g. /start) → then click "Get Chat IDs" here → the Chat ID will appear automatically',
     btn_add_record: 'Add Record',
     choose_part: 'Choose Part',
+    purchase_external: 'External Purchase',
+    lbl_items: 'Items',
   }
 };
 
@@ -8196,6 +8206,9 @@ function getPaymentBadge(status) {
 // ============ CREATE/EDIT INVOICE ============
 function openNewSaleInvoice() {
   editingInvoiceType = 'sale';
+  purchaseExternalMode = false;
+  const extCheckbox = document.getElementById('purchase-external-mode');
+  if (extCheckbox) extCheckbox.checked = false;
   currentInvoiceItems = [];
   document.getElementById('modal-invoice-title').textContent = t('new_sale_invoice');
   document.getElementById('invoice-form').reset();
@@ -8225,6 +8238,9 @@ function openNewSaleInvoice() {
 
 function openNewPurchaseInvoice() {
   editingInvoiceType = 'purchase';
+  purchaseExternalMode = false;
+  const extCheckbox = document.getElementById('purchase-external-mode');
+  if (extCheckbox) extCheckbox.checked = false;
   currentInvoiceItems = [];
   document.getElementById('modal-invoice-title').textContent = t('new_purchase_invoice');
   document.getElementById('invoice-form').reset();
@@ -8307,8 +8323,21 @@ function removeInvoiceItem(idx) {
   updateInvoiceTotals();
 }
 
+let purchaseExternalMode = false;
+
+function togglePurchaseMode(isExternal) {
+  purchaseExternalMode = isExternal;
+  renderInvoiceItems();
+  updateInvoiceTotals();
+}
+
 function renderInvoiceItems() {
   const container = document.getElementById('invoice-items-list');
+  const isExternal = purchaseExternalMode && editingInvoiceType === 'purchase';
+  
+  // Show/hide purchase mode toggle
+  const toggleEl = document.getElementById('purchase-mode-toggle');
+  if (toggleEl) toggleEl.style.display = editingInvoiceType === 'purchase' ? '' : 'none';
   
   const productsOptions = allProducts.map(p => 
     `<option value="${p.id}" data-buy="${p.buyPrice}" data-sell="${p.sellPrice}" data-qty="${p.quantity}">${p.name} (${p.sku})</option>`
@@ -8316,11 +8345,14 @@ function renderInvoiceItems() {
   
   container.innerHTML = currentInvoiceItems.map((item, idx) => `
     <div class="invoice-item-row" data-idx="${idx}">
+      ${isExternal ? `
+        <input type="text" class="inv-product-name" data-idx="${idx}" value="${item.productName || ''}" placeholder="${t('lbl_name_req')}" style="flex:2;min-width:120px">
+      ` : `
       <select class="inv-product-select" data-idx="${idx}">
         <option value="">${t('choose_item')}</option>
         ${productsOptions}
         <option value="__other__">${t('other_add_new')}</option>
-      </select>
+      </select>`}
       <div class="inv-item-details">
         <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="${t('ph_qty')}" data-idx="${idx}">
         <input type="number" class="inv-price" value="${item.unitPrice}" step="0.01" min="0" placeholder="${t('ph_price')}" data-idx="${idx}">
@@ -8331,18 +8363,30 @@ function renderInvoiceItems() {
   `).join('');
   
   // Set selected products and attach event listeners
-  const selects = container.querySelectorAll('.inv-product-select');
-  currentInvoiceItems.forEach((item, idx) => {
-    if (item.productId && selects[idx]) selects[idx].value = item.productId;
-  });
-  
-  // Attach change listeners (more reliable than inline onchange with custom selects)
-  selects.forEach(sel => {
-    sel.addEventListener('change', function() {
-      const idx = parseInt(this.dataset.idx);
-      onInvoiceItemProductChange(idx, this);
+  if (isExternal) {
+    // External purchase mode: text input for product name
+    container.querySelectorAll('.inv-product-name').forEach(input => {
+      input.addEventListener('input', function() {
+        const idx = parseInt(this.dataset.idx);
+        currentInvoiceItems[idx].productName = this.value;
+        currentInvoiceItems[idx].productId = '__external__'; // Mark as external
+        currentInvoiceItems[idx].isExternal = true;
+      });
     });
-  });
+  } else {
+    const selects = container.querySelectorAll('.inv-product-select');
+    currentInvoiceItems.forEach((item, idx) => {
+      if (item.productId && item.productId !== '__external__' && selects[idx]) selects[idx].value = item.productId;
+    });
+    
+    // Attach change listeners (more reliable than inline onchange with custom selects)
+    selects.forEach(sel => {
+      sel.addEventListener('change', function() {
+        const idx = parseInt(this.dataset.idx);
+        onInvoiceItemProductChange(idx, this);
+      });
+    });
+  }
   container.querySelectorAll('.inv-qty').forEach(input => {
     input.addEventListener('change', function() { onInvoiceItemChange(parseInt(this.dataset.idx)); });
     input.addEventListener('input', function() { onInvoiceItemChange(parseInt(this.dataset.idx)); });
@@ -8424,7 +8468,7 @@ async function saveInlineProduct(idx) {
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
   };
   
-  const id = await dbPut('products', product);
+  const id = await dbAdd('products', product);
   product.id = id;
   allProducts.push(product);
   autoPush();
@@ -8494,7 +8538,9 @@ async function saveInvoice(e) {
     }
   });
   
-  if (currentInvoiceItems.some(i => !i.productId)) return toast(t('toast_choose_product_all'), 'warning');
+  // For external purchase items, ensure they have a name
+  if (currentInvoiceItems.some(i => i.isExternal && !i.productName?.trim())) return toast(t('toast_enter_product'), 'warning');
+  if (currentInvoiceItems.some(i => !i.productId && !i.isExternal)) return toast(t('toast_choose_product_all'), 'warning');
   
   const total = currentInvoiceItems.reduce((sum, i) => sum + i.total, 0);
   
