@@ -3091,6 +3091,20 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div class="form-row">
         <div class="form-group"><label>رقم أمر الصيانة</label><input type="text" id="device-order-number" readonly class="readonly-input"></div>
         <div class="form-group"><label>تاريخ الدخول</label><input type="date" id="device-intake-date" required></div>
+        <div class="form-group"><label>تاريخ الخروج</label><input type="date" id="device-exit-date"></div>
+        <div class="form-group"><label>تاريخ التسليم</label><input type="date" id="device-delivery-date"></div>
+        <div class="form-group"><label>طريقة الدفع</label>
+          <select id="device-payment-method" onchange="toggleTransferFields()">
+            <option value="">— اختر —</option>
+            <option value="cash">💵 كاش</option>
+            <option value="instapay">📱 انستاباي</option>
+            <option value="vodafone">📲 فودافون كاش</option>
+          </select>
+        </div>
+        <div id="transfer-details" style="display:none">
+          <div class="form-group"><label>رقم التحويل</label><input type="text" id="device-transfer-number" placeholder="رقم التحويل"></div>
+          <div class="form-group"><label>الدفع على رقم</label><input type="text" id="device-transfer-to" placeholder="الرقم المحول عليه"></div>
+        </div>
         <div class="form-group"><label>الحالة</label>
           <select id="device-status-select">
             <option value="under_repair">🔧 تحت الصيانة</option>
@@ -8879,6 +8893,12 @@ function openNewDevice() {
   document.getElementById('device-id').value = '';
   document.getElementById('device-order-number').value = generateOrderNumber();
   document.getElementById('device-intake-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('device-exit-date').value = '';
+  document.getElementById('device-delivery-date').value = '';
+  document.getElementById('device-payment-method').value = '';
+  document.getElementById('device-transfer-number').value = '';
+  document.getElementById('device-transfer-to').value = '';
+  document.getElementById('transfer-details').style.display = 'none';
   document.getElementById('device-status-select').value = 'under_repair';
   document.getElementById('device-photos-preview').innerHTML = '';
   
@@ -8907,6 +8927,12 @@ async function editDevice(id) {
   document.getElementById('device-id').value = d.id;
   document.getElementById('device-order-number').value = d.orderNumber;
   document.getElementById('device-intake-date').value = d.intakeDate?.split('T')[0] || '';
+  document.getElementById('device-exit-date').value = d.exitDate?.split('T')[0] || '';
+  document.getElementById('device-delivery-date').value = d.deliveryDate?.split('T')[0] || '';
+  document.getElementById('device-payment-method').value = d.paymentMethod || '';
+  document.getElementById('device-transfer-number').value = d.transferNumber || '';
+  document.getElementById('device-transfer-to').value = d.transferTo || '';
+  toggleTransferFields();
   document.getElementById('device-name').value = d.deviceName;
   document.getElementById('device-specs').value = d.specs || '';
   document.getElementById('device-problem').value = d.problem || '';
@@ -8966,6 +8992,11 @@ async function saveDevice(e) {
   const data = {
     orderNumber: document.getElementById('device-order-number').value,
     intakeDate: document.getElementById('device-intake-date').value,
+    exitDate: document.getElementById('device-exit-date').value || '',
+    deliveryDate: document.getElementById('device-delivery-date').value || '',
+    paymentMethod: document.getElementById('device-payment-method').value || '',
+    transferNumber: document.getElementById('device-transfer-number').value.trim() || '',
+    transferTo: document.getElementById('device-transfer-to').value.trim() || '',
     clientId: parseInt(document.getElementById('device-client').value) || null,
     clientName: document.getElementById('device-client').selectedOptions[0]?.text?.split(' (')[0] || '',
     deviceName: document.getElementById('device-name').value.trim(),
@@ -9287,6 +9318,12 @@ function onPartPriceChange(idx, val) {
   updateRepairCost();
 }
 
+function toggleTransferFields() {
+  const method = document.getElementById('device-payment-method').value;
+  const details = document.getElementById('transfer-details');
+  details.style.display = (method === 'instapay' || method === 'vodafone') ? 'block' : 'none';
+}
+
 function updateRepairCost() {
   const stockCost = currentDeviceParts.filter(p => p.fromStock).reduce((s, p) => s + p.total, 0);
   const externalCost = currentDeviceParts.filter(p => !p.fromStock).reduce((s, p) => s + p.total, 0);
@@ -9349,6 +9386,11 @@ async function viewDevice(id) {
     <div class="view-item"><div class="view-label">المواصفات</div><div class="view-value">${d.specs || '-'}</div></div>
     <div class="view-item"><div class="view-label">المشكلة</div><div class="view-value">${d.problem || '-'}</div></div>
     <div class="view-item"><div class="view-label">تاريخ الدخول</div><div class="view-value">${formatDate(d.intakeDate)}</div></div>
+    <div class="view-item"><div class="view-label">تاريخ الخروج</div><div class="view-value">${d.exitDate ? formatDate(d.exitDate) : '-'}</div></div>
+    <div class="view-item"><div class="view-label">تاريخ التسليم</div><div class="view-value">${d.deliveryDate ? formatDate(d.deliveryDate) : '-'}</div></div>
+    <div class="view-item"><div class="view-label">طريقة الدفع</div><div class="view-value">${d.paymentMethod === 'cash' ? '💵 كاش' : d.paymentMethod === 'instapay' ? '📱 انستاباي' : d.paymentMethod === 'vodafone' ? '📲 فودافون كاش' : '-'}</div></div>
+    ${d.transferNumber ? `<div class="view-item"><div class="view-label">رقم التحويل</div><div class="view-value">${d.transferNumber}</div></div>` : ''}
+    ${d.transferTo ? `<div class="view-item"><div class="view-label">الدفع على رقم</div><div class="view-value">${d.transferTo}</div></div>` : ''}
     <div class="view-item"><div class="view-label">العميل</div><div class="view-value">${client?.name || d.clientName || '-'}</div></div>
     <div class="view-item"><div class="view-label">مصنع العميل</div><div class="view-value">${client?.factoryName || '-'}</div></div>
     <div class="view-item"><div class="view-label">المهندس المسؤول</div><div class="view-value">${engineer ? `<span class="badge" style="background:rgba(108,60,233,0.1);color:var(--primary)">👷 ${engineer.name} (${engineer.specialty})</span>` : '-'}</div></div>
@@ -9557,7 +9599,9 @@ async function printMaintenanceReceipt(id) {
       </div>
       <div style="text-align:left">
         <p><strong>رقم الأمر:</strong> ${d.orderNumber}</p>
-        <p><strong>التاريخ:</strong> ${formatDate(d.intakeDate)}</p>
+        <p><strong>تاريخ الدخول:</strong> ${formatDate(d.intakeDate)}</p>
+        ${d.exitDate ? `<p><strong>تاريخ الخروج:</strong> ${formatDate(d.exitDate)}</p>` : ''}
+        ${d.deliveryDate ? `<p><strong>تاريخ التسليم:</strong> ${formatDate(d.deliveryDate)}</p>` : ''}
         <p><strong>الحالة:</strong> ${st.label || d.status}</p>
       </div>
     </div>
@@ -9570,15 +9614,11 @@ async function printMaintenanceReceipt(id) {
       <div class="info-item" style="grid-column:1/-1"><strong>المشكلة:</strong> ${d.problem || '-'}</div>
       ${d.hasWarranty ? `<div class="info-item" style="grid-column:1/-1"><span class="warranty-badge">🛡️ ضمان ${d.warrantyMonths} شهر</span></div>` : ''}
     </div>
-    ${d.parts && d.parts.length > 0 ? `
-    <table>
-      <thead><tr><th>القطعة</th><th>المصدر</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
-      <tbody>${d.parts.map(p => `<tr><td>${p.name}</td><td>${p.fromStock?'مخزون':'خارجي'}</td><td>${p.quantity}</td><td>${formatMoney(p.unitPrice)}</td><td>${formatMoney(p.total)}</td></tr>`).join('')}</tbody>
-    </table>` : ''}
     <div class="totals">
-      <div><span>تكلفة القطع:</span><span>${formatMoney((d.stockPartsCost||0) + (d.externalPartsCost||0))}</span></div>
-      <div><span>مصاريف إضافية:</span><span>${formatMoney(d.extraExpenses||0)}</span></div>
-      <div class="total-main"><span>سعر البيع:</span><strong>${formatMoney(d.sellingPrice||0)}</strong></div>
+      <div class="total-main"><span>الإجمالي:</span><strong>${formatMoney(d.sellingPrice||0)}</strong></div>
+      ${d.paymentMethod ? `<div style="margin-top:6px"><span>طريقة الدفع:</span><span>${d.paymentMethod === 'cash' ? '💵 كاش' : d.paymentMethod === 'instapay' ? '📱 انستاباي' : '📲 فودافون كاش'}</span></div>` : ''}
+      ${d.transferNumber ? `<div><span>رقم التحويل:</span><span>${d.transferNumber}</span></div>` : ''}
+      ${d.transferTo ? `<div><span>الدفع على رقم:</span><span>${d.transferTo}</span></div>` : ''}
     </div>
     ${d.notes ? `<p style="margin-top:12px;font-size:13px"><strong>ملاحظات:</strong> ${d.notes}</p>` : ''}
     <div class="qr-section">
