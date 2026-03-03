@@ -2095,6 +2095,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <button class="qa-btn" onclick="navigate('sales')"><i class='bx bx-receipt'></i> <span data-i18n="sale_invoice">فاتورة بيع</span></button>
               <button class="qa-btn" onclick="navigate('purchases')"><i class='bx bx-cart-download'></i> <span data-i18n="purchase_invoice">فاتورة شراء</span></button>
               <button class="qa-btn" onclick="navigate('maintenance')"><i class='bx bx-wrench'></i> <span data-i18n="maint_order">إذن صيانة</span></button>
+              <button class="qa-btn" onclick="navigate('accounting');setTimeout(openAddExpense,300)"><i class='bx bx-wallet'></i> <span data-i18n="add_expense">إضافة مصروف</span></button>
             </div>
           </div>
         </div>
@@ -3631,7 +3632,7 @@ const TRANSLATIONS = {
     
     // Buttons & Actions
     add_product: 'إضافة صنف', sale_invoice: 'فاتورة بيع',
-    purchase_invoice: 'فاتورة شراء', maint_order: 'إذن صيانة',
+    purchase_invoice: 'فاتورة شراء', maint_order: 'إذن صيانة', add_expense: 'إضافة مصروف',
     scan_barcode: 'مسح باركود', import_export: 'استيراد/تصدير',
     new_sale_invoice: 'فاتورة بيع جديدة', add_client: 'إضافة عميل',
     new_service: 'زيارة/خدمة جديدة', new_purchase_invoice: 'فاتورة شراء جديدة',
