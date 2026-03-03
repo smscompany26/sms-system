@@ -3091,8 +3091,12 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div class="form-row">
         <div class="form-group"><label>رقم أمر الصيانة</label><input type="text" id="device-order-number" readonly class="readonly-input"></div>
         <div class="form-group"><label>تاريخ الدخول</label><input type="date" id="device-intake-date" required></div>
+      </div>
+      <div class="form-row">
         <div class="form-group"><label>تاريخ الخروج</label><input type="date" id="device-exit-date"></div>
         <div class="form-group"><label>تاريخ التسليم</label><input type="date" id="device-delivery-date"></div>
+      </div>
+      <div class="form-row">
         <div class="form-group"><label>طريقة الدفع</label>
           <select id="device-payment-method" onchange="toggleTransferFields()">
             <option value="">— اختر —</option>
@@ -3100,10 +3104,6 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <option value="instapay">📱 انستاباي</option>
             <option value="vodafone">📲 فودافون كاش</option>
           </select>
-        </div>
-        <div id="transfer-details" style="display:none">
-          <div class="form-group"><label>رقم التحويل</label><input type="text" id="device-transfer-number" placeholder="رقم التحويل"></div>
-          <div class="form-group"><label>الدفع على رقم</label><input type="text" id="device-transfer-to" placeholder="الرقم المحول عليه"></div>
         </div>
         <div class="form-group"><label>الحالة</label>
           <select id="device-status-select">
@@ -3113,6 +3113,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <option value="completed">💰 خلصت واتدفعت</option>
           </select>
         </div>
+      </div>
+      <div class="form-row" id="transfer-details" style="display:none">
+        <div class="form-group"><label>رقم التحويل</label><input type="text" id="device-transfer-number" placeholder="رقم التحويل"></div>
+        <div class="form-group"><label>الدفع على رقم</label><input type="text" id="device-transfer-to" placeholder="الرقم المحول عليه"></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label>العميل</label>
