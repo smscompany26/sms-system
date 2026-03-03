@@ -3260,8 +3260,8 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <hr style="margin:16px 0;border:none;border-top:1px solid var(--border)">
       
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <h4><i class='bx bx-cog' style="color:var(--primary)"></i> القطع المستخدمة</h4>
-        <button type="button" class="btn btn-sm btn-primary" onclick="addDevicePart()"><i class='bx bx-plus'></i> إضافة قطعة</button>
+        <h4><i class='bx bx-cog' style="color:var(--primary)"></i> <span data-i18n="used_parts">القطع المستخدمة</span></h4>
+        <button type="button" class="btn btn-sm btn-primary" onclick="addDevicePart()"><i class='bx bx-plus'></i> <span data-i18n="add_part">إضافة قطعة</span></button>
       </div>
       <div id="device-parts-list"></div>
       
@@ -4152,6 +4152,10 @@ const TRANSLATIONS = {
     btn_edit: 'تعديل', btn_record_payment: 'تسجيل دفع',
     units_items: 'صنف',
     th_supplier: 'المورد',
+    from_stock: 'من المخزون',
+    part_name: 'اسم القطعة',
+    used_parts: 'القطع المستخدمة',
+    add_part: 'إضافة قطعة',
   },
   en: {
     // Navigation
@@ -4634,6 +4638,10 @@ const TRANSLATIONS = {
     btn_edit: 'Edit', btn_record_payment: 'Record Payment',
     units_items: 'items',
     th_supplier: 'Supplier',
+    from_stock: 'From Stock',
+    part_name: 'Part Name',
+    used_parts: 'Used Parts',
+    add_part: 'Add Part',
   }
 };
 
@@ -10105,11 +10113,11 @@ function renderDeviceParts() {
   container.innerHTML = currentDeviceParts.map((part, idx) => `
     <div class="part-row">
       <div class="part-row-header">
-        <label class="part-toggle">
-          <input type="checkbox" ${part.fromStock ? 'checked' : ''} onchange="togglePartSource(${idx}, this.checked)">
-          <span>${part.fromStock ? 'من المخزون' : 'شراء خارجي'}</span>
-        </label>
         <button class="btn-icon danger btn-sm" onclick="removeDevicePart(${idx})"><i class='bx bx-trash'></i></button>
+        <label class="part-toggle">
+          <span>${part.fromStock ? t('from_stock') : t('purchase_external')}</span>
+          <input type="checkbox" ${part.fromStock ? 'checked' : ''} onchange="togglePartSource(${idx}, this.checked)">
+        </label>
       </div>
       ${part.fromStock ? `
         <select onchange="onPartProductChange(${idx}, this.value)">
@@ -10117,8 +10125,8 @@ function renderDeviceParts() {
           ${productOptions}
         </select>
       ` : `
-        <input type="text" placeholder="اسم القطعة" value="${part.name}" onchange="currentDeviceParts[${idx}].name=this.value">
-        <input type="text" placeholder="المورد" value="${part.supplier||''}" onchange="currentDeviceParts[${idx}].supplier=this.value">
+        <input type="text" placeholder="${t('part_name')}" value="${part.name}" onchange="currentDeviceParts[${idx}].name=this.value">
+        <input type="text" placeholder="${t('th_supplier')}" value="${part.supplier||''}" onchange="currentDeviceParts[${idx}].supplier=this.value">
       `}
       <div class="part-row-nums">
         <input type="number" placeholder="${t('ph_qty')}" value="${part.quantity}" min="1" onchange="onPartQtyChange(${idx}, this.value)">
