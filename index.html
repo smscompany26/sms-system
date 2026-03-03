@@ -9,12 +9,12 @@
 <title>SMS — Inventory & Maintenance System</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.1.2 — SMS System
+// v7.1.3 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.1.2');
+console.log('SMS v7.1.3');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -2620,7 +2620,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.1.2</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.1.3</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -2823,7 +2823,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.1.2 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.1.3 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -3517,13 +3517,11 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px">
         <h4 data-i18n="lbl_items">الأصناف</h4>
         <div style="display:flex;gap:6px;align-items:center">
-          <div id="purchase-mode-toggle" style="display:none;gap:4px">
-            <button type="button" id="purchase-mode-stock" class="btn btn-sm btn-primary" onclick="setPurchaseMode(false)" style="font-size:11px;padding:4px 10px">
-              <i class='bx bx-package'></i> <span data-i18n="purchase_from_stock">من المخزون</span>
-            </button>
-            <button type="button" id="purchase-mode-external" class="btn btn-sm btn-outline" onclick="setPurchaseMode(true)" style="font-size:11px;padding:4px 10px">
-              <i class='bx bx-cart'></i> <span data-i18n="purchase_external">شراء خارجي</span>
-            </button>
+          <div id="purchase-mode-toggle" style="display:none;align-items:center;gap:8px">
+            <span id="purchase-mode-label" style="font-size:13px;font-weight:600"></span>
+            <label class="part-toggle" style="margin:0">
+              <input type="checkbox" id="purchase-mode-checkbox" onchange="setPurchaseMode(this.checked)">
+            </label>
           </div>
           <button type="button" class="btn btn-sm btn-outline" onclick="openBarcodeScanner('invoice')"><i class='bx bx-barcode'></i> <span data-i18n="scan_barcode">مسح</span></button>
           <button type="button" class="btn btn-sm btn-primary" onclick="addInvoiceItem()"><i class='bx bx-plus'></i> <span data-i18n="add_product">إضافة صنف</span></button>
@@ -6740,7 +6738,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.1.2';
+  if (backupEl) backupEl.textContent = 'v7.1.3';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -8307,6 +8305,12 @@ function openNewPurchaseInvoice() {
   document.getElementById('invoice-photos-preview').innerHTML = '';
   existingInvoicePhotos = [];
   
+  // Reset toggle
+  const cb = document.getElementById('purchase-mode-checkbox');
+  if (cb) cb.checked = false;
+  const label = document.getElementById('purchase-mode-label');
+  if (label) label.textContent = t('from_stock');
+  
   // Auto-add first item
   addInvoiceItem();
   updateInvoiceTotals();
@@ -8381,18 +8385,15 @@ let purchaseExternalMode = false;
 
 function setPurchaseMode(isExternal) {
   purchaseExternalMode = isExternal;
-  // Update button styles
-  const stockBtn = document.getElementById('purchase-mode-stock');
-  const extBtn = document.getElementById('purchase-mode-external');
-  if (stockBtn) {
-    stockBtn.className = isExternal ? 'btn btn-sm btn-outline' : 'btn btn-sm btn-primary';
-  }
-  if (extBtn) {
-    extBtn.className = isExternal ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline';
-  }
+  // Update label
+  const label = document.getElementById('purchase-mode-label');
+  if (label) label.textContent = isExternal ? t('purchase_external') : t('from_stock');
+  // Sync checkbox
+  const cb = document.getElementById('purchase-mode-checkbox');
+  if (cb) cb.checked = isExternal;
   // Clear items when switching mode
   currentInvoiceItems = [];
-  renderInvoiceItems();
+  addInvoiceItem();
   updateInvoiceTotals();
 }
 
