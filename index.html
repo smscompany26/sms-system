@@ -2226,7 +2226,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <table id="sales-table">
                 <thead><tr>
                   <th style="width:36px"><input type="checkbox" id="sales-select-all" onchange="toggleSelectAll('sales')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th>
-                  <th>رقم الفاتورة</th><th>التاريخ</th><th>العميل</th><th>الأصناف</th><th>الإجمالي</th><th>الحالة</th><th>بواسطة</th><th>إجراءات</th>
+                  <th data-i18n="th_invoice_num">رقم الفاتورة</th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_client">العميل</th><th data-i18n="th_items">الأصناف</th><th data-i18n="th_total">الإجمالي</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_by">بواسطة</th><th data-i18n="th_actions">إجراءات</th>
                 </tr></thead>
                 <tbody id="sales-tbody"></tbody>
               </table>
@@ -2260,7 +2260,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="table-responsive">
               <table id="clients-table">
                 <thead><tr>
-                  <th style="width:36px"><input type="checkbox" id="clients-select-all" onchange="toggleSelectAll('clients')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>الكود</th><th>الاسم</th><th>التليفون</th><th>المصنع</th><th>النشاط</th><th>الرصيد</th><th>إجراءات</th>
+                  <th style="width:36px"><input type="checkbox" id="clients-select-all" onchange="toggleSelectAll('clients')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_code">الكود</th><th data-i18n="th_name">الاسم</th><th data-i18n="th_phone">التليفون</th><th data-i18n="th_factory">المصنع</th><th data-i18n="th_activity">النشاط</th><th data-i18n="th_balance">الرصيد</th><th data-i18n="th_actions">إجراءات</th>
                 </tr></thead>
                 <tbody id="clients-tbody"></tbody>
               </table>
@@ -2294,7 +2294,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="table-responsive">
               <table id="services-table">
                 <thead><tr>
-                  <th style="width:36px"><input type="checkbox" id="services-select-all" onchange="toggleSelectAll('services')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>العميل</th><th>الوصف</th><th>الموقع</th><th>السعر</th><th>الحالة</th><th>إجراءات</th>
+                  <th style="width:36px"><input type="checkbox" id="services-select-all" onchange="toggleSelectAll('services')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_client">العميل</th><th data-i18n="th_description">الوصف</th><th data-i18n="th_location">الموقع</th><th data-i18n="th_price">السعر</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_actions">إجراءات</th>
                 </tr></thead>
                 <tbody id="services-tbody"></tbody>
               </table>
@@ -2337,7 +2337,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <table id="purchases-table">
                 <thead><tr>
                   <th style="width:36px"><input type="checkbox" id="purchases-select-all" onchange="toggleSelectAll('purchases')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th>
-                  <th>رقم الفاتورة</th><th>التاريخ</th><th>المورد</th><th>الأصناف</th><th>الإجمالي</th><th>الحالة</th><th>بواسطة</th><th>إجراءات</th>
+                  <th data-i18n="th_invoice_num">رقم الفاتورة</th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_supplier">المورد</th><th data-i18n="th_items">الأصناف</th><th data-i18n="th_total">الإجمالي</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_by">بواسطة</th><th data-i18n="th_actions">إجراءات</th>
                 </tr></thead>
                 <tbody id="purchases-tbody"></tbody>
               </table>
@@ -2370,7 +2370,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="table-responsive">
               <table id="suppliers-table">
                 <thead><tr>
-                  <th style="width:36px"><input type="checkbox" id="suppliers-select-all" onchange="toggleSelectAll('suppliers')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>الكود</th><th>الاسم</th><th>التليفون</th><th>الشركة</th><th>الرصيد</th><th>إجراءات</th>
+                  <th style="width:36px"><input type="checkbox" id="suppliers-select-all" onchange="toggleSelectAll('suppliers')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_code">الكود</th><th data-i18n="th_name">الاسم</th><th data-i18n="th_phone">التليفون</th><th data-i18n="th_company">الشركة</th><th data-i18n="th_balance">الرصيد</th><th data-i18n="th_actions">إجراءات</th>
                 </tr></thead>
                 <tbody id="suppliers-tbody"></tbody>
               </table>
@@ -2442,7 +2442,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div class="table-responsive">
             <table id="devices-table">
               <thead><tr>
-                <th style="width:36px"><input type="checkbox" id="devices-select-all" onchange="toggleSelectAll('devices')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>رقم الأمر</th><th>الجهاز</th><th>العميل</th><th>المهندس</th><th>المشكلة</th><th>الحالة</th><th>تاريخ الدخول</th><th>السعر</th><th>إجراءات</th>
+                <th style="width:36px"><input type="checkbox" id="devices-select-all" onchange="toggleSelectAll('devices')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_order_num">رقم الأمر</th><th data-i18n="th_device">الجهاز</th><th data-i18n="th_client">العميل</th><th data-i18n="th_engineer">المهندس</th><th data-i18n="lbl_problem">المشكلة</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_intake_date">تاريخ الدخول</th><th data-i18n="th_price">السعر</th><th data-i18n="th_actions">إجراءات</th>
               </tr></thead>
               <tbody id="devices-tbody"></tbody>
             </table>
@@ -2487,7 +2487,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div class="card table-card">
             <div class="table-responsive">
               <table id="maint-services-table">
-                <thead><tr><th style="width:36px"><input type="checkbox" id="maint-services-select-all" onchange="toggleSelectAll('maint-services')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>العميل</th><th>الوصف</th><th>الموقع</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                <thead><tr><th style="width:36px"><input type="checkbox" id="maint-services-select-all" onchange="toggleSelectAll('maint-services')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_client">العميل</th><th data-i18n="th_description">الوصف</th><th data-i18n="th_location">الموقع</th><th data-i18n="th_price">السعر</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_actions">إجراءات</th></tr></thead>
                 <tbody id="maint-services-tbody"></tbody>
               </table>
             </div>
@@ -2555,7 +2555,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div id="expense-tab-treasury" class="tab-content active">
             <div class="stat-card" style="margin-bottom:12px;border-right-color:var(--warning)"><div class="stat-info"><span class="stat-value" id="treasury-total" style="font-size:18px">0</span><span class="stat-label" data-i18n="stat_treasury_total">إجمالي مصروفات الخزينة</span></div></div>
             <div class="table-responsive">
-              <table id="treasury-expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="treasury-expenses-select-all" onchange="toggleSelectAll('treasury-expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="treasury-expenses-tbody"></tbody></table>
+              <table id="treasury-expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="treasury-expenses-select-all" onchange="toggleSelectAll('treasury-expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_classification">التصنيف</th><th data-i18n="th_statement">البيان</th><th data-i18n="th_amount">المبلغ</th><th data-i18n="th_actions">إجراءات</th></tr></thead><tbody id="treasury-expenses-tbody"></tbody></table>
             </div>
             <div id="treasury-expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات خزينة</p></div>
           <div id="treasury-expenses-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
@@ -2566,7 +2566,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div id="expense-tab-indirect" class="tab-content">
             <div class="stat-card" style="margin-bottom:12px;border-right-color:var(--primary)"><div class="stat-info"><span class="stat-value" id="indirect-total" style="font-size:18px">0</span><span class="stat-label" data-i18n="stat_indirect_total">إجمالي المصروفات غير المباشرة</span></div></div>
             <div class="table-responsive">
-              <table id="indirect-expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="indirect-expenses-select-all" onchange="toggleSelectAll('indirect-expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="indirect-expenses-tbody"></tbody></table>
+              <table id="indirect-expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="indirect-expenses-select-all" onchange="toggleSelectAll('indirect-expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_classification">التصنيف</th><th data-i18n="th_statement">البيان</th><th data-i18n="th_amount">المبلغ</th><th data-i18n="th_actions">إجراءات</th></tr></thead><tbody id="indirect-expenses-tbody"></tbody></table>
             </div>
             <div id="indirect-expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات غير مباشرة</p></div>
           <div id="indirect-expenses-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
@@ -2576,7 +2576,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
           <div id="expense-tab-all" class="tab-content">
             <div class="table-responsive">
-              <table id="expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="expenses-select-all" onchange="toggleSelectAll('expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>النوع</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="expenses-tbody"></tbody></table>
+              <table id="expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="expenses-select-all" onchange="toggleSelectAll('expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_expense_type">النوع</th><th data-i18n="th_classification">التصنيف</th><th data-i18n="th_statement">البيان</th><th data-i18n="th_amount">المبلغ</th><th data-i18n="th_actions">إجراءات</th></tr></thead><tbody id="expenses-tbody"></tbody></table>
             </div>
             <div id="expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات</p></div>
           <div id="expenses-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
@@ -2686,7 +2686,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
           <div class="table-responsive">
             <table>
-              <thead><tr><th>الاسم</th><th>Chat ID</th><th>الإشعارات</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+              <thead><tr><th data-i18n="th_name">الاسم</th><th>Chat ID</th><th data-i18n="th_notifications">الإشعارات</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_actions">إجراءات</th></tr></thead>
               <tbody id="recipients-tbody"></tbody>
             </table>
           </div>
@@ -2772,7 +2772,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <button class="btn btn-primary" onclick="openAddUser()"><i class='bx bx-plus'></i> <span data-i18n="add_user">إضافة مستخدم</span></button>
           </div>
           <div class="table-responsive">
-            <table><thead><tr><th>الاسم</th><th>اسم المستخدم</th><th>الدور</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+            <table><thead><tr><th data-i18n="th_name">الاسم</th><th data-i18n="th_username">اسم المستخدم</th><th data-i18n="th_role">الدور</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_actions">إجراءات</th></tr></thead>
             <tbody id="users-tbody"></tbody></table>
           </div>
           <div style="margin-top:12px;padding:12px;background:var(--bg);border-radius:8px;font-size:13px">
@@ -2794,7 +2794,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
           <div class="table-responsive">
             <table id="engineers-table">
-              <thead><tr><th style="width:36px"><input type="checkbox" id="engineers-select-all" onchange="toggleSelectAll('engineers')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>الاسم</th><th>التليفون</th><th>التخصص</th><th>إجراءات</th></tr></thead>
+              <thead><tr><th style="width:36px"><input type="checkbox" id="engineers-select-all" onchange="toggleSelectAll('engineers')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_name">الاسم</th><th data-i18n="th_phone">التليفون</th><th data-i18n="th_specialty">التخصص</th><th data-i18n="th_actions">إجراءات</th></tr></thead>
               <tbody id="engineers-tbody"></tbody>
             </table>
           </div>
@@ -4151,6 +4151,7 @@ const TRANSLATIONS = {
     barcode_not_found_add: 'لم يتم العثور على منتج بباركود: {code}\nهل تريد إضافة منتج جديد؟',
     btn_edit: 'تعديل', btn_record_payment: 'تسجيل دفع',
     units_items: 'صنف',
+    th_supplier: 'المورد',
   },
   en: {
     // Navigation
@@ -4632,6 +4633,7 @@ const TRANSLATIONS = {
     barcode_not_found_add: 'No product found with barcode: {code}\nWould you like to add a new product?',
     btn_edit: 'Edit', btn_record_payment: 'Record Payment',
     units_items: 'items',
+    th_supplier: 'Supplier',
   }
 };
 
@@ -4700,6 +4702,19 @@ function setLanguage(lang) {
 
 function toggleLanguage() {
   setLanguage(currentLang === 'ar' ? 'en' : 'ar');
+  // Re-render dynamic content after language switch
+  try {
+    if (typeof renderSalesInvoices === 'function') renderSalesInvoices();
+    if (typeof renderPurchaseInvoices === 'function') renderPurchaseInvoices();
+    if (typeof renderClientsTable === 'function') renderClientsTable();
+    if (typeof renderSuppliersTable === 'function') renderSuppliersTable();
+    if (typeof renderProductCards === 'function') renderProductCards();
+    if (typeof renderDevicesTable === 'function') renderDevicesTable();
+    if (typeof renderExpensesTable === 'function') renderExpensesTable();
+    if (typeof renderServicesInAllPages === 'function') renderServicesInAllPages();
+    if (typeof loadDashboard === 'function') loadDashboard();
+    if (typeof applyResponsiveTables === 'function') applyResponsiveTables();
+  } catch(e) { console.warn('Re-render after lang switch:', e); }
 }
 
 // Apply language on load
@@ -5908,21 +5923,25 @@ function toast(message, type = 'success') {
 // Format currency
 function formatMoney(amount) {
   const n = parseFloat(amount);
-  if (isNaN(n) || amount === undefined || amount === null) return '٠ ج.م';
-  return new Intl.NumberFormat('ar-EG', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(n) + ' ج.م';
+  const currency = t('currency');
+  if (isNaN(n) || amount === undefined || amount === null) return '0 ' + currency;
+  const locale = currentLang === 'en' ? 'en-US' : 'ar-EG';
+  return new Intl.NumberFormat(locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(n) + ' ' + currency;
 }
 
 // Format date
 function formatDate(dateStr) {
   if (!dateStr) return '-';
   const d = new Date(dateStr);
-  return d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' });
+  const locale = currentLang === 'en' ? 'en-US' : 'ar-EG';
+  return d.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 function formatDateTime(dateStr) {
   if (!dateStr) return '-';
   const d = new Date(dateStr);
-  return d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const locale = currentLang === 'en' ? 'en-US' : 'ar-EG';
+  return d.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 // ============ DARK MODE ============
@@ -7326,7 +7345,7 @@ async function viewProduct(id) {
   if (movements.length > 0) {
     html += `<h3 style="margin-top:24px;font-size:15px"><i class='bx bx-history' style="color:var(--primary)"></i> سجل الحركات</h3>
     <div class="table-responsive" style="margin-top:8px"><table>
-      <thead><tr><th>التاريخ</th><th>النوع</th><th>الكمية</th><th>ملاحظات</th></tr></thead>
+      <thead><tr><th>${t("th_date")}</th><th>${t("th_type")}</th><th>${t("th_quantity")}</th><th>${t("th_notes")}</th></tr></thead>
       <tbody>${movements.map(m => `<tr>
         <td>${formatDateTime(m.date)}</td>
         <td>${m.type === 'in' ? '<span style="color:var(--success)">إضافة</span>' : '<span style="color:var(--danger)">صرف</span>'}</td>
@@ -8003,7 +8022,7 @@ async function viewClient(id) {
   if (invoices.length > 0) {
     html += `<h4 style="margin-top:20px">الفواتير (${invoices.length})</h4>
     <div class="table-responsive"><table>
-      <thead><tr><th>رقم</th><th>التاريخ</th><th>الإجمالي</th><th>الحالة</th></tr></thead>
+      <thead><tr><th>${t("th_num")}</th><th>${t("th_date")}</th><th>${t("th_total")}</th><th>${t("th_status")}</th></tr></thead>
       <tbody>${invoices.map(inv => `<tr>
         <td>${inv.number}</td>
         <td>${formatDate(inv.date)}</td>
@@ -8218,9 +8237,9 @@ function renderPurchaseInvoices() {
 
 function getPaymentBadge(status) {
   switch(status) {
-    case 'paid': return '<span class="badge badge-new">مدفوعة</span>';
-    case 'partial': return '<span class="badge badge-used">جزئي</span>';
-    case 'unpaid': return '<span class="badge badge-low">غير مدفوعة</span>';
+    case 'paid': return '<span class="badge badge-new">' + t('invoice_paid') + '</span>';
+    case 'partial': return '<span class="badge badge-used">' + t('invoice_partial') + '</span>';
+    case 'unpaid': return '<span class="badge badge-low">' + t('invoice_unpaid') + '</span>';
     default: return '<span class="badge">' + (status||'-') + '</span>';
   }
 }
@@ -8934,7 +8953,7 @@ async function viewInvoice(id) {
     <hr>
     <p><strong>${partyLabel}:</strong> ${partyName || 'غير محدد'}</p>
     <table class="inv-table">
-      <thead><tr><th>#</th><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
+      <thead><tr><th>#</th><th>${t("th_product")}</th><th>${t("th_quantity")}</th><th>${t("th_price")}</th><th>${t("th_total")}</th></tr></thead>
       <tbody>${inv.items.map((item, i) => `<tr>
         <td>${i+1}</td>
         <td>${item.productName}</td>
@@ -9088,7 +9107,7 @@ async function printInvoice(invoiceId) {
     </div>
     <div class="party-info"><strong>${partyLabel}:</strong> ${partyName || 'غير محدد'}</div>
     <table>
-      <thead><tr><th>#</th><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
+      <thead><tr><th>#</th><th>${t("th_product")}</th><th>${t("th_quantity")}</th><th>${t("th_price")}</th><th>${t("th_total")}</th></tr></thead>
       <tbody>${(inv.items||[]).map((item, i) => `<tr>
         <td>${i+1}</td><td>${item.productName}</td><td>${item.quantity}</td>
         <td>${formatMoney(item.unitPrice)}</td><td>${formatMoney(item.total)}</td>
@@ -9290,7 +9309,7 @@ async function printReceipt(invoiceId) {
     <!-- Items Table -->
     <table class="items-table">
       <thead>
-        <tr><th style="text-align:center;width:20px">#</th><th>الصنف</th><th style="text-align:center;width:30px">الكمية</th><th style="width:55px">السعر</th><th style="width:60px">الإجمالي</th></tr>
+        <tr><th style="text-align:center;width:20px">#</th><th>${t("th_product")}</th><th style="text-align:center;width:30px">${t("th_quantity")}</th><th style="width:55px">${t("th_price")}</th><th style="width:60px">${t("th_total")}</th></tr>
       </thead>
       <tbody>${itemsRows}</tbody>
     </table>
@@ -10224,7 +10243,7 @@ async function loadPaymentSources(mode) {
         <strong style="color:var(--primary)">${formatMoney(src.total)}</strong>
       </div>
       <div style="display:none;padding:8px">
-        <table style="width:100%;font-size:13px"><thead><tr><th>المرجع</th><th>التاريخ</th><th>المبلغ</th></tr></thead><tbody>
+        <table style="width:100%;font-size:13px"><thead><tr><th>${t("th_source")}</th><th>${t("th_date")}</th><th>${t("th_amount")}</th></tr></thead><tbody>
         ${src.transactions.map(t => `<tr><td>${t.ref}</td><td>${t.date ? formatDate(t.date) : '-'}</td><td>${formatMoney(t.amount)}</td></tr>`).join('')}
         </tbody></table>
       </div>
@@ -10545,7 +10564,7 @@ async function viewDevice(id) {
   if (d.parts && d.parts.length > 0) {
     html += `<h4 style="margin-top:20px">القطع المستخدمة</h4>
     <div class="table-responsive"><table>
-      <thead><tr><th>القطعة</th><th>المصدر</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
+      <thead><tr><th>${t("th_product")}</th><th>${t("th_source")}</th><th>${t("th_quantity")}</th><th>${t("th_price")}</th><th>${t("th_total")}</th></tr></thead>
       <tbody>${d.parts.map(p => `<tr>
         <td>${p.name}</td>
         <td>${p.fromStock ? '<span class="badge badge-new">مخزون</span>' : '<span class="badge badge-used">خارجي</span>'}</td>
@@ -11457,13 +11476,13 @@ async function generateDailyReport(dateStr) {
     <div class="dashboard-grid">
       <div class="card">
         <h3>فواتير البيع (${daySales.length})</h3>
-        ${daySales.length > 0 ? `<table><thead><tr><th>الرقم</th><th>العميل</th><th>الإجمالي</th></tr></thead><tbody>
+        ${daySales.length > 0 ? `<table><thead><tr><th>${t("th_num")}</th><th>${t("th_client")}</th><th>${t("th_total")}</th></tr></thead><tbody>
           ${daySales.map(i=>`<tr><td>${i.number}</td><td>${i.clientName||'-'}</td><td>${formatMoney(i.total)}</td></tr>`).join('')}
         </tbody></table>` : '<p class="empty-state">لا توجد مبيعات</p>'}
       </div>
       <div class="card">
         <h3>فواتير الشراء (${dayPurchases.length})</h3>
-        ${dayPurchases.length > 0 ? `<table><thead><tr><th>الرقم</th><th>المورد</th><th>الإجمالي</th></tr></thead><tbody>
+        ${dayPurchases.length > 0 ? `<table><thead><tr><th>${t("th_num")}</th><th>${t("th_supplier")}</th><th>${t("th_total")}</th></tr></thead><tbody>
           ${dayPurchases.map(i=>`<tr><td>${i.number}</td><td>${i.supplierName||'-'}</td><td>${formatMoney(i.total)}</td></tr>`).join('')}
         </tbody></table>` : '<p class="empty-state">لا توجد مشتريات</p>'}
       </div>
