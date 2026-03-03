@@ -8299,7 +8299,8 @@ function openNewPurchaseInvoice() {
   document.getElementById('invoice-photos-preview').innerHTML = '';
   existingInvoicePhotos = [];
   
-  renderInvoiceItems();
+  // Auto-add first item
+  addInvoiceItem();
   updateInvoiceTotals();
   openModal('modal-invoice');
 }
@@ -8399,24 +8400,34 @@ function renderInvoiceItems() {
     `<option value="${p.id}" data-buy="${p.buyPrice}" data-sell="${p.sellPrice}" data-qty="${p.quantity}">${p.name} (${p.sku})</option>`
   ).join('');
   
-  container.innerHTML = currentInvoiceItems.map((item, idx) => `
-    <div class="invoice-item-row" data-idx="${idx}">
-      ${isExternal ? `
-        <input type="text" class="inv-product-name" data-idx="${idx}" value="${item.productName || ''}" placeholder="${t('lbl_name_req')}" style="flex:2;min-width:120px">
-      ` : `
+  container.innerHTML = currentInvoiceItems.map((item, idx) => {
+    if (isExternal) {
+      return `<div class="invoice-item-row" data-idx="${idx}" style="flex-direction:column;gap:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px">
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="text" class="inv-product-name" data-idx="${idx}" value="${item.productName || ''}" placeholder="${t('inline_prod_name')}" style="flex:2;min-width:100px">
+          <button class="btn-icon danger" onclick="removeInvoiceItem(${idx})"><i class='bx bx-trash'></i></button>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="${t('ph_qty')}" data-idx="${idx}" style="flex:1">
+          <input type="number" class="inv-price" value="${item.unitPrice}" step="0.01" min="0" placeholder="${t('ph_price')}" data-idx="${idx}" style="flex:1">
+          <span class="inv-total" style="min-width:70px;text-align:center;font-weight:600">${formatMoney(item.total)}</span>
+        </div>
+      </div>`;
+    }
+    return `<div class="invoice-item-row" data-idx="${idx}">
       <select class="inv-product-select" data-idx="${idx}">
         <option value="">${t('choose_item')}</option>
         ${productsOptions}
         <option value="__other__">${t('other_add_new')}</option>
-      </select>`}
+      </select>
       <div class="inv-item-details">
         <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="${t('ph_qty')}" data-idx="${idx}">
         <input type="number" class="inv-price" value="${item.unitPrice}" step="0.01" min="0" placeholder="${t('ph_price')}" data-idx="${idx}">
         <span class="inv-total">${formatMoney(item.total)}</span>
         <button class="btn-icon danger" onclick="removeInvoiceItem(${idx})"><i class='bx bx-trash'></i></button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
   
   // Set selected products and attach event listeners
   if (isExternal) {
