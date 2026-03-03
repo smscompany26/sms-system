@@ -1778,7 +1778,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
 [dir="ltr"] .nav-arrow { margin-left: 0; margin-right: auto; }
 [dir="ltr"] .sidebar-footer .btn-logout { margin-left: 0; margin-right: auto; }
 [dir="ltr"] .mobile-bottom-nav { direction: ltr; }
-[dir="ltr"] .mobile-more-menu { right: auto; left: 0; }
+[dir="ltr"] .mobile-more-menu { right: 0; left: 0; }
 [dir="ltr"] .stat-card[style*="border-right-color"] { border-right: none !important; border-left: 4px solid var(--primary-light) !important; }
 [dir="ltr"] .stat-card[style*="border-right-color:#f59e0b"] { border-left-color: #f59e0b !important; }
 [dir="ltr"] .stat-card[style*="border-right-color:#6c3ce9"] { border-left-color: #6c3ce9 !important; }
@@ -3517,11 +3517,13 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px">
         <h4 data-i18n="lbl_items">الأصناف</h4>
         <div style="display:flex;gap:6px;align-items:center">
-          <div id="purchase-mode-toggle" style="display:none">
-            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;background:var(--bg);padding:4px 10px;border-radius:var(--radius-sm);border:1px solid var(--border)">
-              <input type="checkbox" id="purchase-external-mode" onchange="togglePurchaseMode(this.checked)" style="accent-color:var(--primary)">
-              <span data-i18n="purchase_external">شراء خارجي</span>
-            </label>
+          <div id="purchase-mode-toggle" style="display:none;gap:4px">
+            <button type="button" id="purchase-mode-stock" class="btn btn-sm btn-primary" onclick="setPurchaseMode(false)" style="font-size:11px;padding:4px 10px">
+              <i class='bx bx-package'></i> <span data-i18n="purchase_from_stock">من المخزون</span>
+            </button>
+            <button type="button" id="purchase-mode-external" class="btn btn-sm btn-outline" onclick="setPurchaseMode(true)" style="font-size:11px;padding:4px 10px">
+              <i class='bx bx-cart'></i> <span data-i18n="purchase_external">شراء خارجي</span>
+            </button>
           </div>
           <button type="button" class="btn btn-sm btn-outline" onclick="openBarcodeScanner('invoice')"><i class='bx bx-barcode'></i> <span data-i18n="scan_barcode">مسح</span></button>
           <button type="button" class="btn btn-sm btn-primary" onclick="addInvoiceItem()"><i class='bx bx-plus'></i> <span data-i18n="add_product">إضافة صنف</span></button>
@@ -4139,7 +4141,16 @@ const TRANSLATIONS = {
     btn_add_record: 'إضافة سجل',
     choose_part: 'اختر قطعة',
     purchase_external: 'شراء خارجي',
+    purchase_from_stock: 'من المخزون',
     lbl_items: 'الأصناف',
+    inline_add_title: 'إضافة صنف جديد',
+    inline_prod_name: 'اسم الصنف *',
+    inline_prod_cost: 'التكلفة',
+    inline_prod_sku: 'الكود (اختياري)',
+    btn_save_add: 'حفظ وإضافة',
+    barcode_not_found_add: 'لم يتم العثور على منتج بباركود: {code}\nهل تريد إضافة منتج جديد؟',
+    btn_edit: 'تعديل', btn_record_payment: 'تسجيل دفع',
+    units_items: 'صنف',
   },
   en: {
     // Navigation
@@ -4611,7 +4622,16 @@ const TRANSLATIONS = {
     btn_add_record: 'Add Record',
     choose_part: 'Choose Part',
     purchase_external: 'External Purchase',
+    purchase_from_stock: 'From Stock',
     lbl_items: 'Items',
+    inline_add_title: 'Add New Product',
+    inline_prod_name: 'Product Name *',
+    inline_prod_cost: 'Cost',
+    inline_prod_sku: 'Code (optional)',
+    btn_save_add: 'Save & Add',
+    barcode_not_found_add: 'No product found with barcode: {code}\nWould you like to add a new product?',
+    btn_edit: 'Edit', btn_record_payment: 'Record Payment',
+    units_items: 'items',
   }
 };
 
@@ -4974,7 +4994,7 @@ function openCustomSelect(select, listKey, options, title) {
   
   const optionsData = Array.from(select.options).map((opt, i) => {
     if (opt.value === '__other__') {
-      return { html: `<div class="cs-divider"></div><div class="cs-option cs-other" data-value="__other__">أخرى...</div>` };
+      return { html: `<div class="cs-divider"></div><div class="cs-option cs-other" data-value="__other__">' + t('other_option') + '</div>` };
     }
     const selected = opt.value === select.value ? ' selected' : '';
     const divider = i > 0 && select.options[i-1].value !== '' ? '<div class="cs-divider"></div>' : '';
@@ -5129,7 +5149,7 @@ async function renderListEditorItems() {
     <div class="list-editor-item" data-idx="${idx}" draggable="true">
       <span class="list-drag-handle"><i class='bx bx-grid-vertical'></i></span>
       <span class="list-item-text">${escHtml(item)}</span>
-      <button class="list-item-delete" onclick="listEditorRemove(${idx})" title="حذف"><i class='bx bx-trash'></i></button>
+      <button class="list-item-delete" onclick="listEditorRemove(${idx})" title="${t('btn_delete')}"><i class='bx bx-trash'></i></button>
     </div>
   `).join('');
   
@@ -5233,7 +5253,7 @@ function listEditorAdd() {
 
 function listEditorRemove(idx) {
   const item = _listEditorState._items[idx];
-  if (!confirm(`حذف "${item}"؟`)) return;
+  if (!confirm(t("confirm_delete_product"))) return;
   _listEditorState._items.splice(idx, 1);
   renderListEditorItemsFromState();
 }
@@ -5251,7 +5271,7 @@ function renderListEditorItemsFromState() {
     <div class="list-editor-item" data-idx="${idx}" draggable="true">
       <span class="list-drag-handle"><i class='bx bx-grid-vertical'></i></span>
       <span class="list-item-text">${escHtml(item)}</span>
-      <button class="list-item-delete" onclick="listEditorRemove(${idx})" title="حذف"><i class='bx bx-trash'></i></button>
+      <button class="list-item-delete" onclick="listEditorRemove(${idx})" title="${t('btn_delete')}"><i class='bx bx-trash'></i></button>
     </div>
   `).join('');
   
@@ -5578,7 +5598,7 @@ function applyNavPermissions() {
     }
   });
   // Mobile "more" menu items
-  document.querySelectorAll('.mob-more-menu a').forEach(a => {
+  document.querySelectorAll('.mobile-more-menu a').forEach(a => {
     const onclick = a.getAttribute('onclick') || '';
     const m = onclick.match(/mobileNav\(['"](\w+)['"]\)/);
     if (m) {
@@ -6016,7 +6036,7 @@ async function handleBarcodeResult(code) {
     if (found) {
       viewProduct(found.id);
     } else {
-      if (confirm(`لم يتم العثور على منتج بباركود: ${code}\nهل تريد إضافة منتج جديد؟`)) {
+      if (confirm(t('barcode_not_found_add').replace('{code}', code))) {
         openAddProduct();
         document.getElementById('product-barcode').value = code;
       }
@@ -6884,10 +6904,10 @@ function renderProducts(products) {
       <td>${p.minStock}</td>
       <td class="actions-cell">
         <button class="btn-icon" title="عرض" onclick="viewProduct(${p.id})"><i class='bx bx-show'></i></button>
-        <button class="btn-icon" title="تعديل" onclick="editProduct(${p.id})"><i class='bx bx-edit'></i></button>
+        <button class="btn-icon" title="${t('btn_edit')}" onclick="editProduct(${p.id})"><i class='bx bx-edit'></i></button>
         <button class="btn-icon" title="إضافة مخزون" onclick="openStockIn(${p.id})"><i class='bx bx-plus-circle'></i></button>
         <button class="btn-icon" title="صرف مخزون" onclick="openStockOut(${p.id})"><i class='bx bx-minus-circle'></i></button>
-        <button class="btn-icon danger" title="حذف" onclick="deleteProduct(${p.id})"><i class='bx bx-trash'></i></button>
+        <button class="btn-icon danger" title="${t('btn_delete')}" onclick="deleteProduct(${p.id})"><i class='bx bx-trash'></i></button>
       </td>
     </tr>`;
   }).join('');
@@ -6945,7 +6965,7 @@ function renderProductsGrid(products) {
         <h4>${p.name}</h4>
         <div class="pc-meta">${condBadge} ${typeBadge} ${isLow ? '<span class="badge badge-low">مخزون منخفض</span>' : ''}</div>
         ${showPrices ? `<div class="pc-price">${formatMoney(p.sellPrice)}</div>` : ''}
-        <div class="pc-qty">المتاح: <strong ${isLow?'style="color:var(--danger)"':''}>${p.quantity}</strong> | SKU: ${p.sku || '-'}</div>
+        <div class="pc-qty">${t("available_qty")} <strong ${isLow?'style="color:var(--danger)"':''}>${p.quantity}</strong> | SKU: ${p.sku || '-'}</div>
       </div>
       <div class="product-card-footer">
         <button class="btn-icon" onclick="event.stopPropagation();editProduct(${p.id})"><i class='bx bx-edit'></i></button>
@@ -7862,8 +7882,8 @@ function renderClientsTable() {
     <td>${formatMoney(c.balance || 0)}</td>
     <td class="actions-cell">
       <button class="btn-icon" title="عرض" onclick="viewClient(${c.id})"><i class='bx bx-show'></i></button>
-      <button class="btn-icon" title="تعديل" onclick="editClient(${c.id})"><i class='bx bx-edit'></i></button>
-      <button class="btn-icon danger" title="حذف" onclick="deleteClient(${c.id})"><i class='bx bx-trash'></i></button>
+      <button class="btn-icon" title="${t('btn_edit')}" onclick="editClient(${c.id})"><i class='bx bx-edit'></i></button>
+      <button class="btn-icon danger" title="${t('btn_delete')}" onclick="deleteClient(${c.id})"><i class='bx bx-trash'></i></button>
     </td>
   </tr>`).join('');
 }
@@ -7891,8 +7911,8 @@ function renderSuppliersTable() {
     <td>${s.company || '-'}</td>
     <td>${formatMoney(s.balance || 0)}</td>
     <td class="actions-cell">
-      <button class="btn-icon" title="تعديل" onclick="editSupplier(${s.id})"><i class='bx bx-edit'></i></button>
-      <button class="btn-icon danger" title="حذف" onclick="deleteSupplier(${s.id})"><i class='bx bx-trash'></i></button>
+      <button class="btn-icon" title="${t('btn_edit')}" onclick="editSupplier(${s.id})"><i class='bx bx-edit'></i></button>
+      <button class="btn-icon danger" title="${t('btn_delete')}" onclick="deleteSupplier(${s.id})"><i class='bx bx-trash'></i></button>
     </td>
   </tr>`).join('');
 }
@@ -8150,15 +8170,15 @@ function renderSalesInvoices() {
     <td><strong>${inv.number}</strong></td>
     <td>${formatDate(inv.date)}</td>
     <td>${inv.clientName || '-'}</td>
-    <td>${inv.items?.length || 0} صنف</td>
+    <td>${inv.items?.length || 0} ${t("units_items")}</td>
     <td>${formatMoney(inv.total)}</td>
     <td>${getPaymentBadge(inv.paymentStatus)}</td>
     <td style="font-size:11px;color:var(--text-muted)">${inv.createdBy || '-'}</td>
     <td class="actions-cell">
-      <button class="btn-icon" title="عرض/طباعة" onclick="viewInvoice(${inv.id})"><i class='bx bx-printer'></i></button>
-      <button class="btn-icon" title="تعديل" onclick="editInvoice(${inv.id})"><i class='bx bx-edit'></i></button>
-      ${inv.paymentStatus !== 'paid' ? `<button class="btn-icon" title="تسجيل دفع" onclick="recordPayment(${inv.id})"><i class='bx bx-money'></i></button>` : ''}
-      ${isAdmin() ? `<button class="btn-icon danger" title="حذف" onclick="deleteInvoice(${inv.id})"><i class='bx bx-trash'></i></button>` : ''}
+      <button class="btn-icon" title="${t('print_pdf')}" onclick="viewInvoice(${inv.id})"><i class='bx bx-printer'></i></button>
+      <button class="btn-icon" title="${t('btn_edit')}" onclick="editInvoice(${inv.id})"><i class='bx bx-edit'></i></button>
+      ${inv.paymentStatus !== 'paid' ? `<button class="btn-icon" title="${t('btn_record_payment')}" onclick="recordPayment(${inv.id})"><i class='bx bx-money'></i></button>` : ''}
+      ${isAdmin() ? `<button class="btn-icon danger" title="${t('btn_delete')}" onclick="deleteInvoice(${inv.id})"><i class='bx bx-trash'></i></button>` : ''}
     </td>
   </tr>`).join('');
   // Reset select all
@@ -8181,14 +8201,14 @@ function renderPurchaseInvoices() {
     <td><strong>${inv.number}</strong></td>
     <td>${formatDate(inv.date)}</td>
     <td>${inv.supplierName || '-'}</td>
-    <td>${inv.items?.length || 0} صنف</td>
+    <td>${inv.items?.length || 0} ${t("units_items")}</td>
     <td>${formatMoney(inv.total)}</td>
     <td>${getPaymentBadge(inv.paymentStatus)}</td>
     <td style="font-size:11px;color:var(--text-muted)">${inv.createdBy || '-'}</td>
     <td class="actions-cell">
       <button class="btn-icon" title="عرض" onclick="viewInvoice(${inv.id})"><i class='bx bx-printer'></i></button>
-      <button class="btn-icon" title="تعديل" onclick="editInvoice(${inv.id})"><i class='bx bx-edit'></i></button>
-      ${isAdmin() ? `<button class="btn-icon danger" title="حذف" onclick="deleteInvoice(${inv.id})"><i class='bx bx-trash'></i></button>` : ''}
+      <button class="btn-icon" title="${t('btn_edit')}" onclick="editInvoice(${inv.id})"><i class='bx bx-edit'></i></button>
+      ${isAdmin() ? `<button class="btn-icon danger" title="${t('btn_delete')}" onclick="deleteInvoice(${inv.id})"><i class='bx bx-trash'></i></button>` : ''}
     </td>
   </tr>`).join('');
   const selectAll = document.getElementById('purchases-select-all');
@@ -8209,8 +8229,6 @@ function getPaymentBadge(status) {
 function openNewSaleInvoice() {
   editingInvoiceType = 'sale';
   purchaseExternalMode = false;
-  const extCheckbox = document.getElementById('purchase-external-mode');
-  if (extCheckbox) extCheckbox.checked = false;
   currentInvoiceItems = [];
   document.getElementById('modal-invoice-title').textContent = t('new_sale_invoice');
   document.getElementById('invoice-form').reset();
@@ -8241,8 +8259,6 @@ function openNewSaleInvoice() {
 function openNewPurchaseInvoice() {
   editingInvoiceType = 'purchase';
   purchaseExternalMode = false;
-  const extCheckbox = document.getElementById('purchase-external-mode');
-  if (extCheckbox) extCheckbox.checked = false;
   currentInvoiceItems = [];
   document.getElementById('modal-invoice-title').textContent = t('new_purchase_invoice');
   document.getElementById('invoice-form').reset();
@@ -8315,7 +8331,15 @@ async function editInvoice(id) {
 
 // ============ INVOICE ITEMS ============
 function addInvoiceItem() {
-  currentInvoiceItems.push({ productId: null, productName: '', quantity: 1, unitPrice: 0, total: 0 });
+  const isExternal = purchaseExternalMode && editingInvoiceType === 'purchase';
+  currentInvoiceItems.push({ 
+    productId: isExternal ? '__external__' : null, 
+    productName: '', 
+    quantity: 1, 
+    unitPrice: 0, 
+    total: 0,
+    isExternal: isExternal 
+  });
   renderInvoiceItems();
 }
 
@@ -8327,8 +8351,19 @@ function removeInvoiceItem(idx) {
 
 let purchaseExternalMode = false;
 
-function togglePurchaseMode(isExternal) {
+function setPurchaseMode(isExternal) {
   purchaseExternalMode = isExternal;
+  // Update button styles
+  const stockBtn = document.getElementById('purchase-mode-stock');
+  const extBtn = document.getElementById('purchase-mode-external');
+  if (stockBtn) {
+    stockBtn.className = isExternal ? 'btn btn-sm btn-outline' : 'btn btn-sm btn-primary';
+  }
+  if (extBtn) {
+    extBtn.className = isExternal ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline';
+  }
+  // Clear items when switching mode
+  currentInvoiceItems = [];
   renderInvoiceItems();
   updateInvoiceTotals();
 }
@@ -8339,7 +8374,7 @@ function renderInvoiceItems() {
   
   // Show/hide purchase mode toggle
   const toggleEl = document.getElementById('purchase-mode-toggle');
-  if (toggleEl) toggleEl.style.display = editingInvoiceType === 'purchase' ? '' : 'none';
+  if (toggleEl) toggleEl.style.display = editingInvoiceType === 'purchase' ? 'flex' : 'none';
   
   const productsOptions = allProducts.map(p => 
     `<option value="${p.id}" data-buy="${p.buyPrice}" data-sell="${p.sellPrice}" data-qty="${p.quantity}">${p.name} (${p.sku})</option>`
@@ -8439,16 +8474,16 @@ function showInlineProductAdd(idx) {
   form.className = 'inline-product-add';
   form.style.cssText = 'margin-top:8px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px dashed var(--primary)';
   form.innerHTML = `
-    <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--primary)">إضافة صنف جديد</div>
+    <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--primary)">${t('inline_add_title')}</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:end">
-      <input type="text" id="inline-prod-name-${idx}" placeholder="اسم الصنف *" style="flex:2;min-width:120px">
+      <input type="text" id="inline-prod-name-${idx}" placeholder="${t('inline_prod_name')}" style="flex:2;min-width:120px">
       <input type="number" id="inline-prod-price-${idx}" placeholder="${t('ph_price')}" style="flex:1;min-width:80px" step="0.01">
-      <input type="number" id="inline-prod-cost-${idx}" placeholder="التكلفة" style="flex:1;min-width:80px" step="0.01">
-      <input type="text" id="inline-prod-sku-${idx}" placeholder="الكود (اختياري)" style="flex:1;min-width:80px">
+      <input type="number" id="inline-prod-cost-${idx}" placeholder="${t('inline_prod_cost')}" style="flex:1;min-width:80px" step="0.01">
+      <input type="text" id="inline-prod-sku-${idx}" placeholder="${t('inline_prod_sku')}" style="flex:1;min-width:80px">
     </div>
     <div style="display:flex;gap:6px;margin-top:8px;justify-content:flex-end">
-      <button type="button" class="btn btn-outline btn-sm" onclick="this.closest('.inline-product-add').remove();renderInvoiceItems()">إلغاء</button>
-      <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineProduct(${idx})"><i class='bx bx-check'></i> حفظ وإضافة</button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="this.closest('.inline-product-add').remove();renderInvoiceItems()">${t('btn_cancel')}</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="saveInlineProduct(${idx})"><i class='bx bx-check'></i> ${t('btn_save_add')}</button>
     </div>
   `;
   row.appendChild(form);
@@ -9389,11 +9424,11 @@ function renderDevicesTable(filter) {
       <td>${canSeePrices() ? formatMoney(d.sellingPrice || 0) : '—'}</td>
       <td class="actions-cell">
         <button class="btn-icon" title="عرض" onclick="viewDevice(${d.id})"><i class='bx bx-show'></i></button>
-        <button class="btn-icon" title="تعديل" onclick="editDevice(${d.id})"><i class='bx bx-edit'></i></button>
+        <button class="btn-icon" title="${t('btn_edit')}" onclick="editDevice(${d.id})"><i class='bx bx-edit'></i></button>
         <button class="btn-icon" title="تاريخ الصيانة" onclick="viewRepairHistory(${d.id})"><i class='bx bx-history'></i></button>
         <button class="btn-icon" title="QR Code" onclick="showDeviceQR(${d.id})"><i class='bx bx-qr'></i></button>
         ${d.status !== 'completed' ? `<button class="btn-icon" title="تغيير الحالة" onclick="changeDeviceStatus(${d.id})"><i class='bx bx-transfer'></i></button>` : ''}
-        <button class="btn-icon danger" title="حذف" onclick="deleteDevice(${d.id})"><i class='bx bx-trash'></i></button>
+        <button class="btn-icon danger" title="${t('btn_delete')}" onclick="deleteDevice(${d.id})"><i class='bx bx-trash'></i></button>
       </td>
     </tr>`;
   }).join('');
@@ -9512,11 +9547,11 @@ function renderDevicesCards(filter) {
         
         <div class="device-card-actions">
           <button class="btn-icon" title="عرض" onclick="viewDevice(${d.id})"><i class='bx bx-show'></i></button>
-          <button class="btn-icon" title="تعديل" onclick="editDevice(${d.id})"><i class='bx bx-edit'></i></button>
+          <button class="btn-icon" title="${t('btn_edit')}" onclick="editDevice(${d.id})"><i class='bx bx-edit'></i></button>
           <button class="btn-icon" title="تاريخ الصيانة" onclick="viewRepairHistory(${d.id})"><i class='bx bx-history'></i></button>
           <button class="btn-icon" title="QR Code" onclick="showDeviceQR(${d.id})"><i class='bx bx-qr'></i></button>
           ${d.status !== 'completed' ? `<button class="btn-icon" title="تغيير الحالة" onclick="changeDeviceStatus(${d.id})"><i class='bx bx-transfer'></i></button>` : ''}
-          <button class="btn-icon danger" title="حذف" onclick="deleteDevice(${d.id})"><i class='bx bx-trash'></i></button>
+          <button class="btn-icon danger" title="${t('btn_delete')}" onclick="deleteDevice(${d.id})"><i class='bx bx-trash'></i></button>
         </div>
       </div>
     `;
@@ -11778,8 +11813,8 @@ function renderEngineersTable() {
       <td>${eng.phone || '-'}</td>
       <td><span class="badge" style="background:rgba(108,60,233,0.1);color:var(--primary)">${eng.specialty}</span></td>
       <td class="actions-cell">
-        <button class="btn-icon" title="تعديل" onclick="editEngineer(${eng.id})"><i class='bx bx-edit'></i></button>
-        <button class="btn-icon danger" title="حذف" onclick="deleteEngineer(${eng.id})"><i class='bx bx-trash'></i></button>
+        <button class="btn-icon" title="${t('btn_edit')}" onclick="editEngineer(${eng.id})"><i class='bx bx-edit'></i></button>
+        <button class="btn-icon danger" title="${t('btn_delete')}" onclick="deleteEngineer(${eng.id})"><i class='bx bx-trash'></i></button>
       </td>
     </tr>
   `).join('');
@@ -11947,10 +11982,10 @@ function generateRepairTimeline(device) {
           ${engName ? `<div class="tl-engineer"><i class='bx bx-wrench'></i> ${engName}</div>` : ''}
           ${isEditable ? `
             <div class="timeline-actions">
-              <button class="timeline-action-btn" onclick="editHistoryEntry(${entry.historyIndex ?? -1}, ${idx})" title="تعديل">
+              <button class="timeline-action-btn" onclick="editHistoryEntry(${entry.historyIndex ?? -1}, ${idx})" title="${t('btn_edit')}">
                 <i class='bx bx-edit'></i>
               </button>
-              <button class="timeline-action-btn" onclick="deleteHistoryEntry(${entry.historyIndex ?? -1}, ${idx})" title="حذف" style="color:var(--danger)">
+              <button class="timeline-action-btn" onclick="deleteHistoryEntry(${entry.historyIndex ?? -1}, ${idx})" title="${t('btn_delete')}" style="color:var(--danger)">
                 <i class='bx bx-trash'></i>
               </button>
             </div>
@@ -12303,10 +12338,10 @@ function renderRecipients() {
       <td>${badges || '—'}</td>
       <td><span class="badge ${r.enabled !== false ? 'badge-new' : 'badge-low'}">${r.enabled !== false ? 'مفعل' : 'معطل'}</span></td>
       <td class="actions-cell">
-        <button class="btn-icon" onclick="editRecipient(${i})" title="تعديل"><i class='bx bx-edit'></i></button>
+        <button class="btn-icon" onclick="editRecipient(${i})" title="${t('btn_edit')}"><i class='bx bx-edit'></i></button>
         <button class="btn-icon" onclick="toggleRecipient(${i})" title="تفعيل/تعطيل"><i class='bx bx-power-off'></i></button>
         <button class="btn-icon" onclick="testRecipientByIndex(${i})" title="اختبار"><i class='bx bx-send'></i></button>
-        <button class="btn-icon danger" onclick="deleteRecipient(${i})" title="حذف"><i class='bx bx-trash'></i></button>
+        <button class="btn-icon danger" onclick="deleteRecipient(${i})" title="${t('btn_delete')}"><i class='bx bx-trash'></i></button>
       </td>
     </tr>`;
   }).join('');
