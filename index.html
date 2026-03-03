@@ -9,12 +9,12 @@
 <title>SMS — نظام إدارة المخزون والصيانة</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.2.3 — SMS System
+// v7.0.4 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.2.3');
+console.log('SMS v7.0.4');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -2604,7 +2604,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.3</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.0.4</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -2807,7 +2807,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.2.3 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.0.4 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -3098,7 +3098,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </div>
       <div class="form-row">
         <div class="form-group"><label>طريقة الدفع</label>
-          <select id="device-payment-method" onchange="toggleTransferFields()">
+          <select id="device-payment-method" onchange="togglePaymentFields()">
             <option value="">— اختر —</option>
             <option value="cash">💵 كاش</option>
             <option value="instapay">📱 انستاباي</option>
@@ -3114,9 +3114,66 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </select>
         </div>
       </div>
-      <div class="form-row" id="transfer-details" style="display:none">
-        <div class="form-group"><label>رقم التحويل</label><input type="text" id="device-transfer-number" placeholder="رقم التحويل"></div>
-        <div class="form-group"><label>الدفع على رقم</label><input type="text" id="device-transfer-to" placeholder="الرقم المحول عليه"></div>
+      <!-- بيانات الدفع كاش -->
+      <div id="payment-cash-details" class="payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
+        <h4 style="margin-bottom:10px;color:var(--primary)">💵 بيانات الدفع كاش</h4>
+        <div class="form-row">
+          <div class="form-group"><label>المبلغ المستحق (ج.م)</label><input type="number" id="pay-cash-amount-due" step="0.01" min="0" readonly class="readonly-input"></div>
+          <div class="form-group"><label>المبلغ المدفوع (ج.م)</label><input type="number" id="pay-cash-amount-paid" step="0.01" min="0" value="0" oninput="calcCashRemaining()"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>الباقي (ج.م)</label><input type="number" id="pay-cash-remaining" readonly class="readonly-input"></div>
+          <div class="form-group"><label>تاريخ الدفع</label><input type="date" id="pay-cash-date"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>اسم الموظف المستلم</label><input type="text" id="pay-cash-employee" placeholder="اسم الموظف"></div>
+          <div class="form-group"><label>حالة الدفع</label>
+            <select id="pay-cash-status">
+              <option value="paid_full">✅ مدفوع بالكامل</option>
+              <option value="paid_partial">⚠️ مدفوع جزئيًا</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <!-- بيانات الدفع انستاباي -->
+      <div id="payment-instapay-details" class="payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
+        <h4 style="margin-bottom:10px;color:var(--primary)">📱 بيانات الدفع انستاباي</h4>
+        <div class="form-row">
+          <div class="form-group"><label>اسم الحساب المستلم</label><input type="text" id="pay-insta-account-name" placeholder="اسم الحساب"></div>
+          <div class="form-group"><label>رقم الحساب / IBAN</label><input type="text" id="pay-insta-iban" placeholder="رقم الحساب أو IBAN"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>رقم الموبايل المرتبط</label><input type="text" id="pay-insta-mobile" placeholder="رقم الموبايل"></div>
+          <div class="form-group"><label>المبلغ المطلوب (ج.م)</label><input type="number" id="pay-insta-amount" step="0.01" min="0" readonly class="readonly-input"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>تاريخ التحويل</label><input type="date" id="pay-insta-date"></div>
+          <div class="form-group"><label>رقم العملية (Transaction ID)</label><input type="text" id="pay-insta-transaction-id" placeholder="رقم العملية"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>رقم التحويل *</label><input type="text" id="pay-insta-transfer-number" placeholder="رقم التحويل (إلزامي)" required></div>
+          <div class="form-group"><label>صورة إيصال التحويل</label><input type="file" id="pay-insta-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'insta-receipt-preview')"><div id="insta-receipt-preview" style="margin-top:6px"></div></div>
+        </div>
+      </div>
+      <!-- بيانات الدفع فودافون كاش -->
+      <div id="payment-vodafone-details" class="payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
+        <h4 style="margin-bottom:10px;color:var(--primary)">📲 بيانات الدفع فودافون كاش</h4>
+        <div class="form-row">
+          <div class="form-group"><label>رقم فودافون كاش المحول عليه</label><input type="text" id="pay-voda-to-number" placeholder="رقم فودافون كاش"></div>
+          <div class="form-group"><label>اسم صاحب الخط</label><input type="text" id="pay-voda-owner-name" placeholder="اسم صاحب الخط"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>المبلغ المطلوب (ج.م)</label><input type="number" id="pay-voda-amount" step="0.01" min="0" readonly class="readonly-input"></div>
+          <div class="form-group"><label>تاريخ التحويل</label><input type="date" id="pay-voda-date"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>رقم العملية</label><input type="text" id="pay-voda-transaction-id" placeholder="رقم العملية"></div>
+          <div class="form-group"><label>رقم الموبايل المحول منه</label><input type="text" id="pay-voda-from-number" placeholder="رقم المحول منه"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>رقم التحويل</label><input type="text" id="pay-voda-transfer-number" placeholder="رقم التحويل"></div>
+          <div class="form-group"><label>صورة رسالة التحويل</label><input type="file" id="pay-voda-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'voda-receipt-preview')"><div id="voda-receipt-preview" style="margin-top:6px"></div></div>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group"><label>العميل</label>
@@ -5986,7 +6043,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.2.3';
+  if (backupEl) backupEl.textContent = 'v7.0.4';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -8900,9 +8957,7 @@ function openNewDevice() {
   document.getElementById('device-exit-date').value = '';
   document.getElementById('device-delivery-date').value = '';
   document.getElementById('device-payment-method').value = '';
-  document.getElementById('device-transfer-number').value = '';
-  document.getElementById('device-transfer-to').value = '';
-  document.getElementById('transfer-details').style.display = 'none';
+  document.querySelectorAll('.payment-section').forEach(el => el.style.display = 'none');
   document.getElementById('device-status-select').value = 'under_repair';
   document.getElementById('device-photos-preview').innerHTML = '';
   
@@ -8934,9 +8989,8 @@ async function editDevice(id) {
   document.getElementById('device-exit-date').value = d.exitDate?.split('T')[0] || '';
   document.getElementById('device-delivery-date').value = d.deliveryDate?.split('T')[0] || '';
   document.getElementById('device-payment-method').value = d.paymentMethod || '';
-  document.getElementById('device-transfer-number').value = d.transferNumber || '';
-  document.getElementById('device-transfer-to').value = d.transferTo || '';
-  toggleTransferFields();
+  togglePaymentFields();
+  if (d.paymentMethod && d.paymentData) loadPaymentData(d.paymentMethod, d.paymentData);
   document.getElementById('device-name').value = d.deviceName;
   document.getElementById('device-specs').value = d.specs || '';
   document.getElementById('device-problem').value = d.problem || '';
@@ -8999,8 +9053,7 @@ async function saveDevice(e) {
     exitDate: document.getElementById('device-exit-date').value || '',
     deliveryDate: document.getElementById('device-delivery-date').value || '',
     paymentMethod: document.getElementById('device-payment-method').value || '',
-    transferNumber: document.getElementById('device-transfer-number').value.trim() || '',
-    transferTo: document.getElementById('device-transfer-to').value.trim() || '',
+    paymentData: getPaymentData(),
     clientId: parseInt(document.getElementById('device-client').value) || null,
     clientName: document.getElementById('device-client').selectedOptions[0]?.text?.split(' (')[0] || '',
     deviceName: document.getElementById('device-name').value.trim(),
@@ -9322,10 +9375,141 @@ function onPartPriceChange(idx, val) {
   updateRepairCost();
 }
 
-function toggleTransferFields() {
+function togglePaymentFields() {
   const method = document.getElementById('device-payment-method').value;
-  const details = document.getElementById('transfer-details');
-  details.style.display = (method === 'instapay' || method === 'vodafone') ? 'block' : 'none';
+  document.querySelectorAll('.payment-section').forEach(el => el.style.display = 'none');
+  const sellingPrice = parseFloat(document.getElementById('device-selling-price')?.value) || 0;
+  if (method === 'cash') {
+    document.getElementById('payment-cash-details').style.display = 'block';
+    document.getElementById('pay-cash-amount-due').value = sellingPrice;
+    calcCashRemaining();
+  } else if (method === 'instapay') {
+    document.getElementById('payment-instapay-details').style.display = 'block';
+    document.getElementById('pay-insta-amount').value = sellingPrice;
+  } else if (method === 'vodafone') {
+    document.getElementById('payment-vodafone-details').style.display = 'block';
+    document.getElementById('pay-voda-amount').value = sellingPrice;
+  }
+}
+
+function calcCashRemaining() {
+  const due = parseFloat(document.getElementById('pay-cash-amount-due').value) || 0;
+  const paid = parseFloat(document.getElementById('pay-cash-amount-paid').value) || 0;
+  document.getElementById('pay-cash-remaining').value = (due - paid).toFixed(2);
+  const statusEl = document.getElementById('pay-cash-status');
+  if (paid >= due && due > 0) statusEl.value = 'paid_full';
+  else if (paid > 0) statusEl.value = 'paid_partial';
+}
+
+function previewPaymentImage(input, previewId) {
+  const preview = document.getElementById(previewId);
+  preview.innerHTML = '';
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.innerHTML = `<img src="${e.target.result}" style="max-width:150px;max-height:100px;border-radius:6px;border:1px solid var(--border)">`;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function renderPaymentDetails(method, pd) {
+  if (!pd) return '';
+  let html = '';
+  if (method === 'cash') {
+    html += `<div class="view-item"><div class="view-label">المبلغ المستحق</div><div class="view-value">${formatMoney(pd.amountDue||0)}</div></div>`;
+    html += `<div class="view-item"><div class="view-label">المبلغ المدفوع</div><div class="view-value">${formatMoney(pd.amountPaid||0)}</div></div>`;
+    html += `<div class="view-item"><div class="view-label">الباقي</div><div class="view-value" style="color:${(pd.remaining||0)>0?'var(--danger)':'var(--success)'}">${formatMoney(pd.remaining||0)}</div></div>`;
+    if (pd.payDate) html += `<div class="view-item"><div class="view-label">تاريخ الدفع</div><div class="view-value">${formatDate(pd.payDate)}</div></div>`;
+    if (pd.employee) html += `<div class="view-item"><div class="view-label">الموظف المستلم</div><div class="view-value">${pd.employee}</div></div>`;
+    html += `<div class="view-item"><div class="view-label">حالة الدفع</div><div class="view-value">${pd.payStatus==='paid_full'?'✅ مدفوع بالكامل':'⚠️ مدفوع جزئيًا'}</div></div>`;
+  } else if (method === 'instapay') {
+    if (pd.accountName) html += `<div class="view-item"><div class="view-label">اسم الحساب المستلم</div><div class="view-value">${pd.accountName}</div></div>`;
+    if (pd.iban) html += `<div class="view-item"><div class="view-label">رقم الحساب / IBAN</div><div class="view-value">${pd.iban}</div></div>`;
+    if (pd.mobile) html += `<div class="view-item"><div class="view-label">رقم الموبايل المرتبط</div><div class="view-value">${pd.mobile}</div></div>`;
+    html += `<div class="view-item"><div class="view-label">المبلغ المطلوب</div><div class="view-value">${formatMoney(pd.amount||0)}</div></div>`;
+    if (pd.transferDate) html += `<div class="view-item"><div class="view-label">تاريخ التحويل</div><div class="view-value">${formatDate(pd.transferDate)}</div></div>`;
+    if (pd.transactionId) html += `<div class="view-item"><div class="view-label">رقم العملية</div><div class="view-value">${pd.transactionId}</div></div>`;
+    if (pd.transferNumber) html += `<div class="view-item"><div class="view-label">رقم التحويل</div><div class="view-value">${pd.transferNumber}</div></div>`;
+    if (pd.receiptImage) html += `<div class="view-item" style="grid-column:1/-1"><div class="view-label">إيصال التحويل</div><div class="view-value"><img src="${pd.receiptImage}" style="max-width:200px;border-radius:6px"></div></div>`;
+  } else if (method === 'vodafone') {
+    if (pd.toNumber) html += `<div class="view-item"><div class="view-label">رقم فودافون كاش المحول عليه</div><div class="view-value">${pd.toNumber}</div></div>`;
+    if (pd.ownerName) html += `<div class="view-item"><div class="view-label">اسم صاحب الخط</div><div class="view-value">${pd.ownerName}</div></div>`;
+    html += `<div class="view-item"><div class="view-label">المبلغ المطلوب</div><div class="view-value">${formatMoney(pd.amount||0)}</div></div>`;
+    if (pd.transferDate) html += `<div class="view-item"><div class="view-label">تاريخ التحويل</div><div class="view-value">${formatDate(pd.transferDate)}</div></div>`;
+    if (pd.transactionId) html += `<div class="view-item"><div class="view-label">رقم العملية</div><div class="view-value">${pd.transactionId}</div></div>`;
+    if (pd.fromNumber) html += `<div class="view-item"><div class="view-label">رقم المحول منه</div><div class="view-value">${pd.fromNumber}</div></div>`;
+    if (pd.transferNumber) html += `<div class="view-item"><div class="view-label">رقم التحويل</div><div class="view-value">${pd.transferNumber}</div></div>`;
+    if (pd.receiptImage) html += `<div class="view-item" style="grid-column:1/-1"><div class="view-label">صورة التحويل</div><div class="view-value"><img src="${pd.receiptImage}" style="max-width:200px;border-radius:6px"></div></div>`;
+  }
+  return html;
+}
+
+function getPaymentData() {
+  const method = document.getElementById('device-payment-method').value;
+  if (method === 'cash') {
+    return {
+      amountDue: parseFloat(document.getElementById('pay-cash-amount-due').value) || 0,
+      amountPaid: parseFloat(document.getElementById('pay-cash-amount-paid').value) || 0,
+      remaining: parseFloat(document.getElementById('pay-cash-remaining').value) || 0,
+      payDate: document.getElementById('pay-cash-date').value || '',
+      employee: document.getElementById('pay-cash-employee').value.trim() || '',
+      payStatus: document.getElementById('pay-cash-status').value || ''
+    };
+  } else if (method === 'instapay') {
+    return {
+      accountName: document.getElementById('pay-insta-account-name').value.trim() || '',
+      iban: document.getElementById('pay-insta-iban').value.trim() || '',
+      mobile: document.getElementById('pay-insta-mobile').value.trim() || '',
+      amount: parseFloat(document.getElementById('pay-insta-amount').value) || 0,
+      transferDate: document.getElementById('pay-insta-date').value || '',
+      transactionId: document.getElementById('pay-insta-transaction-id').value.trim() || '',
+      transferNumber: document.getElementById('pay-insta-transfer-number').value.trim() || '',
+      receiptImage: document.getElementById('insta-receipt-preview').querySelector('img')?.src || ''
+    };
+  } else if (method === 'vodafone') {
+    return {
+      toNumber: document.getElementById('pay-voda-to-number').value.trim() || '',
+      ownerName: document.getElementById('pay-voda-owner-name').value.trim() || '',
+      amount: parseFloat(document.getElementById('pay-voda-amount').value) || 0,
+      transferDate: document.getElementById('pay-voda-date').value || '',
+      transactionId: document.getElementById('pay-voda-transaction-id').value.trim() || '',
+      fromNumber: document.getElementById('pay-voda-from-number').value.trim() || '',
+      transferNumber: document.getElementById('pay-voda-transfer-number').value.trim() || '',
+      receiptImage: document.getElementById('voda-receipt-preview').querySelector('img')?.src || ''
+    };
+  }
+  return {};
+}
+
+function loadPaymentData(method, pd) {
+  if (!pd) pd = {};
+  if (method === 'cash') {
+    document.getElementById('pay-cash-amount-due').value = pd.amountDue || 0;
+    document.getElementById('pay-cash-amount-paid').value = pd.amountPaid || 0;
+    document.getElementById('pay-cash-remaining').value = pd.remaining || 0;
+    document.getElementById('pay-cash-date').value = pd.payDate || '';
+    document.getElementById('pay-cash-employee').value = pd.employee || '';
+    document.getElementById('pay-cash-status').value = pd.payStatus || 'paid_full';
+  } else if (method === 'instapay') {
+    document.getElementById('pay-insta-account-name').value = pd.accountName || '';
+    document.getElementById('pay-insta-iban').value = pd.iban || '';
+    document.getElementById('pay-insta-mobile').value = pd.mobile || '';
+    document.getElementById('pay-insta-amount').value = pd.amount || 0;
+    document.getElementById('pay-insta-date').value = pd.transferDate || '';
+    document.getElementById('pay-insta-transaction-id').value = pd.transactionId || '';
+    document.getElementById('pay-insta-transfer-number').value = pd.transferNumber || '';
+    if (pd.receiptImage) document.getElementById('insta-receipt-preview').innerHTML = `<img src="${pd.receiptImage}" style="max-width:150px;max-height:100px;border-radius:6px;border:1px solid var(--border)">`;
+  } else if (method === 'vodafone') {
+    document.getElementById('pay-voda-to-number').value = pd.toNumber || '';
+    document.getElementById('pay-voda-owner-name').value = pd.ownerName || '';
+    document.getElementById('pay-voda-amount').value = pd.amount || 0;
+    document.getElementById('pay-voda-date').value = pd.transferDate || '';
+    document.getElementById('pay-voda-transaction-id').value = pd.transactionId || '';
+    document.getElementById('pay-voda-from-number').value = pd.fromNumber || '';
+    document.getElementById('pay-voda-transfer-number').value = pd.transferNumber || '';
+    if (pd.receiptImage) document.getElementById('voda-receipt-preview').innerHTML = `<img src="${pd.receiptImage}" style="max-width:150px;max-height:100px;border-radius:6px;border:1px solid var(--border)">`;
+  }
 }
 
 function updateRepairCost() {
@@ -9393,8 +9577,7 @@ async function viewDevice(id) {
     <div class="view-item"><div class="view-label">تاريخ الخروج</div><div class="view-value">${d.exitDate ? formatDate(d.exitDate) : '-'}</div></div>
     <div class="view-item"><div class="view-label">تاريخ التسليم</div><div class="view-value">${d.deliveryDate ? formatDate(d.deliveryDate) : '-'}</div></div>
     <div class="view-item"><div class="view-label">طريقة الدفع</div><div class="view-value">${d.paymentMethod === 'cash' ? '💵 كاش' : d.paymentMethod === 'instapay' ? '📱 انستاباي' : d.paymentMethod === 'vodafone' ? '📲 فودافون كاش' : '-'}</div></div>
-    ${d.transferNumber ? `<div class="view-item"><div class="view-label">رقم التحويل</div><div class="view-value">${d.transferNumber}</div></div>` : ''}
-    ${d.transferTo ? `<div class="view-item"><div class="view-label">الدفع على رقم</div><div class="view-value">${d.transferTo}</div></div>` : ''}
+    ${d.paymentMethod && d.paymentData ? renderPaymentDetails(d.paymentMethod, d.paymentData) : ''}
     <div class="view-item"><div class="view-label">العميل</div><div class="view-value">${client?.name || d.clientName || '-'}</div></div>
     <div class="view-item"><div class="view-label">مصنع العميل</div><div class="view-value">${client?.factoryName || '-'}</div></div>
     <div class="view-item"><div class="view-label">المهندس المسؤول</div><div class="view-value">${engineer ? `<span class="badge" style="background:rgba(108,60,233,0.1);color:var(--primary)">👷 ${engineer.name} (${engineer.specialty})</span>` : '-'}</div></div>
@@ -9621,8 +9804,13 @@ async function printMaintenanceReceipt(id) {
     <div class="totals">
       <div class="total-main"><span>الإجمالي:</span><strong>${formatMoney(d.sellingPrice||0)}</strong></div>
       ${d.paymentMethod ? `<div style="margin-top:6px"><span>طريقة الدفع:</span><span>${d.paymentMethod === 'cash' ? '💵 كاش' : d.paymentMethod === 'instapay' ? '📱 انستاباي' : '📲 فودافون كاش'}</span></div>` : ''}
-      ${d.transferNumber ? `<div><span>رقم التحويل:</span><span>${d.transferNumber}</span></div>` : ''}
-      ${d.transferTo ? `<div><span>الدفع على رقم:</span><span>${d.transferTo}</span></div>` : ''}
+      ${d.paymentMethod === 'cash' && d.paymentData ? `
+        <div><span>المبلغ المدفوع:</span><span>${formatMoney(d.paymentData.amountPaid||0)}</span></div>
+        ${(d.paymentData.remaining||0) > 0 ? `<div style="color:#dc2626"><span>الباقي:</span><span>${formatMoney(d.paymentData.remaining)}</span></div>` : ''}
+        <div><span>حالة الدفع:</span><span>${d.paymentData.payStatus==='paid_full'?'✅ مدفوع بالكامل':'⚠️ مدفوع جزئيًا'}</span></div>
+      ` : ''}
+      ${d.paymentMethod === 'instapay' && d.paymentData?.transferNumber ? `<div><span>رقم التحويل:</span><span>${d.paymentData.transferNumber}</span></div>` : ''}
+      ${d.paymentMethod === 'vodafone' && d.paymentData?.transferNumber ? `<div><span>رقم التحويل:</span><span>${d.paymentData.transferNumber}</span></div>` : ''}
     </div>
     ${d.notes ? `<p style="margin-top:12px;font-size:13px"><strong>ملاحظات:</strong> ${d.notes}</p>` : ''}
     <div class="qr-section">
