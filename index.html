@@ -1811,8 +1811,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
 <div id="login-screen" class="login-screen" style="display:none">
   <div class="login-card">
     <div class="login-logo">
-      <i class='bx bx-cube-alt'></i>
-      <h1>SMS</h1>
+      <img id="login-logo-img" src="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;display:none;margin:0 auto 8px;">
+      <i id="login-default-icon" class='bx bx-cube-alt'></i>
+      <h1 id="login-company-title">SMS</h1>
       <p data-i18n="system_subtitle">نظام إدارة المخزون والصيانة</p>
     </div>
     <form id="login-form" onsubmit="return handleLogin(event)">
@@ -1836,8 +1837,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
   <!-- Sidebar -->
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-header">
-      <i class='bx bx-cube-alt'></i>
-      <span class="sidebar-title">SMS</span>
+      <img id="sidebar-logo" src="" style="width:36px;height:36px;border-radius:8px;object-fit:cover;display:none;flex-shrink:0;">
+      <i id="sidebar-default-icon" class='bx bx-cube-alt'></i>
+      <span id="sidebar-company-name" class="sidebar-title">SMS</span>
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class='bx bx-menu'></i></button>
     </div>
     <nav class="sidebar-nav">
@@ -5631,6 +5633,7 @@ function applyNavPermissions() {
 function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
+  applyCompanyBranding();
   document.getElementById('sidebar-username').textContent = currentUser.name || currentUser.username;
   document.getElementById('user-role-badge').textContent = ROLES[currentUser.role]?.label || currentUser.role;
   
@@ -6613,6 +6616,7 @@ async function initApp() {
       showApp();
     } else {
       document.getElementById('login-screen').style.display = 'flex';
+    applyCompanyBranding();
     }
     
     await loadDefaultCategories();
@@ -12615,6 +12619,44 @@ async function loadCompanySettings() {
   }
 }
 
+
+async function applyCompanyBranding() {
+  const company = await dbGet('settings', 'company');
+  const logo = company?.value?.logo || null;
+  const name = company?.value?.name || 'SMS';
+
+  // --- Sidebar ---
+  const sidebarLogo = document.getElementById('sidebar-logo');
+  const sidebarIcon = document.getElementById('sidebar-default-icon');
+  const sidebarName = document.getElementById('sidebar-company-name');
+  if (sidebarName) sidebarName.textContent = name;
+  if (logo && sidebarLogo) {
+    sidebarLogo.src = logo;
+    sidebarLogo.style.display = 'block';
+    if (sidebarIcon) sidebarIcon.style.display = 'none';
+  } else if (sidebarLogo) {
+    sidebarLogo.style.display = 'none';
+    if (sidebarIcon) sidebarIcon.style.display = '';
+  }
+
+  // --- Login Screen ---
+  const loginImg   = document.getElementById('login-logo-img');
+  const loginIcon  = document.getElementById('login-default-icon');
+  const loginTitle = document.getElementById('login-company-title');
+  if (loginTitle) loginTitle.textContent = name;
+  if (logo && loginImg) {
+    loginImg.src = logo;
+    loginImg.style.display = 'block';
+    if (loginIcon) loginIcon.style.display = 'none';
+  } else if (loginImg) {
+    loginImg.style.display = 'none';
+    if (loginIcon) loginIcon.style.display = '';
+  }
+
+  // --- Browser Tab Title ---
+  document.title = name + ' — SMS System';
+}
+
 async function saveCompanySettings() {
   const logoInput = document.getElementById('company-logo');
   let logo = null;
@@ -12638,6 +12680,7 @@ async function saveCompanySettings() {
   });
   
   toast('تم حفظ بيانات الشركة ✅');
+  applyCompanyBranding();
 }
 </script>
 <script>
