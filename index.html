@@ -9,12 +9,12 @@
 <title>SMS — Inventory & Maintenance System</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.2.5 — SMS System
+// v7.2.7 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.2.5');
+console.log('SMS v7.2.7');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -41,7 +41,57 @@ console.log('SMS v7.2.5');
   --font: 'Cairo', sans-serif;
 }
 
-/* ========== Dark Mode ========== */
+/* ========== Auto-Scan Toggle ========== */
+.auto-scan-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all var(--transition);
+  background: var(--bg);
+  white-space: nowrap;
+}
+.auto-scan-toggle:has(input:checked) {
+  border-color: var(--success);
+  color: var(--success);
+  background: rgba(34,197,94,0.08);
+}
+.auto-scan-toggle input { display: none; }
+.auto-scan-slider {
+  width: 30px;
+  height: 16px;
+  border-radius: 10px;
+  background: var(--border);
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.auto-scan-slider::after {
+  content: '';
+  position: absolute;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  top: 2px; right: 2px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.auto-scan-toggle:has(input:checked) .auto-scan-slider {
+  background: var(--success);
+}
+.auto-scan-toggle:has(input:checked) .auto-scan-slider::after {
+  transform: translateX(-14px);
+}
+.auto-scan-label { font-size: 12px; }
+
+
 [data-theme="dark"] {
   --bg: #0f0f1a;
   --bg-card: #1a1a2e;
@@ -2632,7 +2682,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.5</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.7</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -2738,6 +2788,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
           <div style="margin-top:16px;display:flex;gap:8px">
             <button class="btn btn-primary" onclick="saveScannerSettings()"><i class='bx bx-save'></i> حفظ الإعدادات</button>
+            <button class="btn btn-outline" onclick="resetScannerPref()" id="reset-scanner-pref-btn" title="مسح الاختيار المحفوظ للكاميرا/الجهاز"><i class='bx bx-reset'></i> إعادة تعيين تفضيل المسح</button>
+          </div>
+          <div id="scanner-pref-info" style="margin-top:10px;font-size:13px;color:var(--text-muted)">
+            التفضيل المحفوظ: <strong id="scanner-saved-pref-display">—</strong>
           </div>
         </div>
         </div>
@@ -3361,7 +3415,12 @@ tr:hover { background: rgba(108,60,233,0.02); }
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <h4><i class='bx bx-cog' style="color:var(--primary)"></i> <span data-i18n="used_parts">القطع المستخدمة</span></h4>
         <div style="display:flex;gap:8px">
-          <button type="button" class="btn btn-sm btn-outline" onclick="openBarcodeScanner('maintenance')"><i class='bx bx-barcode'></i> مسح باركود</button>
+          <button type="button" class="btn btn-sm btn-outline" id="maint-scan-btn" onclick="openBarcodeScanner('maintenance')"><i class='bx bx-barcode'></i> مسح باركود</button>
+          <label class="auto-scan-toggle" title="مسح تلقائي مستمر — كل ما الجهاز يقرأ باركود بيضيف القطعة مباشرة">
+            <input type="checkbox" id="auto-scan-maintenance" onchange="toggleAutoScan('maintenance', this.checked)">
+            <span class="auto-scan-slider"></span>
+            <span class="auto-scan-label">تلقائي</span>
+          </label>
           <button type="button" class="btn btn-sm btn-primary" onclick="addDevicePart()"><i class='bx bx-plus'></i> <span data-i18n="add_part">إضافة قطعة</span></button>
         </div>
       </div>
@@ -3625,7 +3684,12 @@ tr:hover { background: rgba(108,60,233,0.02); }
               <input type="checkbox" id="purchase-mode-checkbox" onchange="setPurchaseMode(this.checked)">
             </label>
           </div>
-          <button type="button" class="btn btn-sm btn-outline" onclick="openBarcodeScanner('invoice')"><i class='bx bx-barcode'></i> <span data-i18n="scan_barcode">مسح</span></button>
+          <button type="button" class="btn btn-sm btn-outline" id="invoice-scan-btn" onclick="openBarcodeScanner('invoice')"><i class='bx bx-barcode'></i> <span data-i18n="scan_barcode">مسح</span></button>
+          <label class="auto-scan-toggle" title="مسح تلقائي مستمر — كل ما الجهاز يقرأ باركود بيضيف الصنف مباشرة">
+            <input type="checkbox" id="auto-scan-invoice" onchange="toggleAutoScan('invoice', this.checked)">
+            <span class="auto-scan-slider"></span>
+            <span class="auto-scan-label">تلقائي</span>
+          </label>
           <button type="button" class="btn btn-sm btn-primary" onclick="addInvoiceItem()"><i class='bx bx-plus'></i> <span data-i18n="add_product">إضافة صنف</span></button>
         </div>
       </div>
@@ -6081,6 +6145,7 @@ function toggleTheme() {
 // ============ BARCODE SCANNER ============
 let _scannerStream = null;
 let _scannerContext = null; // 'inventory' or 'invoice'
+let _autoScanActive = {}; // tracks auto-scan toggle per context
 
 async function openBarcodeScanner(context) {
   _scannerContext = context || 'inventory';
@@ -6090,10 +6155,32 @@ async function openBarcodeScanner(context) {
   const hasHardware = scannerCfg?.value?.enabled && scannerCfg?.value?.name;
   
   if (hasHardware) {
-    // Show picker: hardware device OR camera
+    // Check remembered preference
+    const savedPref = localStorage.getItem('sms_scanner_pref'); // 'hardware' or 'camera'
+    
+    if (savedPref === 'hardware') {
+      startHardwareScanner();
+      return;
+    } else if (savedPref === 'camera') {
+      startCameraScanner();
+      return;
+    }
+    
+    // No remembered preference — show picker with current pref info
     const lbl = document.getElementById('scanner-device-label');
     if (lbl) lbl.textContent = scannerCfg.value.name;
     document.getElementById('scanner-option-device').style.display = 'flex';
+    
+    // Show current saved pref if any
+    const prefDiv = document.getElementById('scanner-current-pref');
+    const prefLabel = document.getElementById('scanner-pref-label');
+    if (savedPref && prefDiv && prefLabel) {
+      prefLabel.textContent = savedPref === 'hardware' ? 'جهاز القراءة' : 'الكاميرا';
+      prefDiv.style.display = 'block';
+    } else if (prefDiv) {
+      prefDiv.style.display = 'none';
+    }
+    
     openModal('modal-scanner-picker');
   } else {
     // No hardware configured — go straight to camera
@@ -6103,6 +6190,9 @@ async function openBarcodeScanner(context) {
 
 function startHardwareScanner() {
   closeModal('modal-scanner-picker');
+  // Remember preference if checkbox is checked
+  const rememberCb = document.getElementById('scanner-remember-pref');
+  if (rememberCb?.checked) localStorage.setItem('sms_scanner_pref', 'hardware');
   // Hardware scanner acts as keyboard — show a listening overlay with a hidden input
   const overlay = document.createElement('div');
   overlay.className = 'scanner-overlay';
@@ -6147,6 +6237,9 @@ function startHardwareScanner() {
 
 async function startCameraScanner() {
   closeModal('modal-scanner-picker');
+  // Remember preference if checkbox is checked
+  const rememberCb = document.getElementById('scanner-remember-pref');
+  if (rememberCb?.checked) localStorage.setItem('sms_scanner_pref', 'camera');
   
   const overlay = document.createElement('div');
   overlay.className = 'scanner-overlay';
@@ -6274,6 +6367,65 @@ async function handleBarcodeResult(code) {
       toast(t('toast_product_not_found_barcode') + ': ' + code, 'warning');
     }
   }
+}
+
+// ============ AUTO-SCAN (Toggle) ============
+// _autoScanActive is declared globally above with _scannerContext
+
+function toggleAutoScan(context, enabled) {
+  _autoScanActive[context] = enabled;
+  
+  // Update button appearance
+  const btn = context === 'invoice' 
+    ? document.getElementById('invoice-scan-btn')
+    : document.getElementById('maint-scan-btn');
+  if (btn) {
+    if (enabled) {
+      btn.style.opacity = '0.4';
+      btn.style.pointerEvents = 'none';
+      btn.title = 'المسح التلقائي شغال — مش محتاج تضغط';
+    } else {
+      btn.style.opacity = '';
+      btn.style.pointerEvents = '';
+      btn.title = '';
+    }
+  }
+  
+  if (enabled) {
+    // Set context for global hardware scanner
+    _scannerContext = context;
+    toast('✅ المسح التلقائي شغال — وجّه جهاز القراءة للباركود', 'success');
+  } else {
+    toast('تم إيقاف المسح التلقائي', 'info');
+  }
+}
+
+// Reset auto-scan toggles when modals close
+document.addEventListener('click', function(e) {
+  if (e.target.closest('.modal-close') || e.target.closest('[onclick*="closeModal"]')) {
+    setTimeout(() => {
+      const invoiceCb = document.getElementById('auto-scan-invoice');
+      const maintCb = document.getElementById('auto-scan-maintenance');
+      if (invoiceCb && !document.getElementById('modal-invoice')?.classList.contains('active')) {
+        if (invoiceCb.checked) { invoiceCb.checked = false; toggleAutoScan('invoice', false); }
+      }
+      if (maintCb && !document.getElementById('modal-device')?.classList.contains('active')) {
+        if (maintCb.checked) { maintCb.checked = false; toggleAutoScan('maintenance', false); }
+      }
+    }, 100);
+  }
+});
+
+// Reset saved scanner preference
+function resetScannerPref() {
+  localStorage.removeItem('sms_scanner_pref');
+  const prefDisplay = document.getElementById('scanner-saved-pref-display');
+  if (prefDisplay) { prefDisplay.textContent = 'لم يتم التحديد'; prefDisplay.style.color = 'var(--text-muted)'; }
+  const prefDiv = document.getElementById('scanner-current-pref');
+  if (prefDiv) prefDiv.style.display = 'none';
+  const rememberCb = document.getElementById('scanner-remember-pref');
+  if (rememberCb) rememberCb.checked = false;
+  toast('تم مسح الاختيار المحفوظ — هتختار من أول وجديد', 'info');
 }
 
 // Dashboard
@@ -12920,6 +13072,24 @@ async function handleGlobalScan(code) {
   const cfg = await dbGet('settings', 'scanner');
   if (!cfg?.value?.enabled) return;
 
+  // If auto-scan toggle is active — use that context directly
+  if (_autoScanActive && _autoScanActive['invoice']) {
+    const invoiceModal = document.getElementById('modal-invoice');
+    if (invoiceModal?.classList.contains('active')) {
+      _scannerContext = 'invoice';
+      await handleBarcodeResult(code);
+      return;
+    }
+  }
+  if (_autoScanActive && _autoScanActive['maintenance']) {
+    const deviceModal = document.getElementById('modal-device');
+    if (deviceModal?.classList.contains('active')) {
+      _scannerContext = 'maintenance';
+      await handleBarcodeResult(code);
+      return;
+    }
+  }
+
   // Determine current active page
   const activePage = document.querySelector('.page.active')?.id?.replace('page-', '') || '';
   const invoiceModalOpen = document.getElementById('modal-invoice')?.style.display !== 'none' &&
@@ -13021,6 +13191,14 @@ async function loadScannerSettings() {
 
   // Start listening for test input (global scanner buffer)
   startScannerTestListener();
+  
+  // Show saved scanner preference
+  const pref = localStorage.getItem('sms_scanner_pref');
+  const prefDisplay = document.getElementById('scanner-saved-pref-display');
+  if (prefDisplay) {
+    prefDisplay.textContent = pref === 'hardware' ? 'جهاز القراءة' : pref === 'camera' ? 'الكاميرا' : 'لم يتم التحديد';
+    prefDisplay.style.color = pref ? 'var(--primary)' : 'var(--text-muted)';
+  }
 }
 
 function toggleScannerEnabled(checked) {
@@ -13264,6 +13442,17 @@ setTimeout(() => { if (_cacheReady) seedTestInvoices(); }, 2000);
           <div style="font-size:12px;color:var(--text-muted)">استخدام كاميرا الجهاز</div>
         </div>
         <i class='bx bx-chevron-left' style="margin-right:auto;color:var(--text-muted)"></i>
+      </div>
+      <div style="padding:8px 4px;border-top:1px solid var(--border);margin-top:4px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text-muted)">
+          <input type="checkbox" id="scanner-remember-pref" style="accent-color:var(--primary);width:15px;height:15px">
+          <span>تذكر اختياري ولا تسألني تاني</span>
+        </label>
+        <div id="scanner-current-pref" style="margin-top:8px;font-size:12px;display:none">
+          <span style="color:var(--text-muted)">الاختيار المحفوظ: </span>
+          <strong id="scanner-pref-label" style="color:var(--primary)"></strong>
+          <button type="button" onclick="resetScannerPref()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px;margin-right:8px;font-family:inherit;text-decoration:underline">تغيير</button>
+        </div>
       </div>
     </div>
   </div>
