@@ -12894,39 +12894,41 @@ async function testTelegramNotification() {
 
 // ============ GLOBAL HARDWARE SCANNER LISTENER ============
 // Listens to keyboard-wedge barcode scanners at all times
-(function() {
-  let _hwBuffer = '';
-  let _hwTimer = null;
-  const MIN_BARCODE_LEN = 3;
-  const SCAN_TIMEOUT = 80; // ms between chars — scanner is faster than human typing
+let _hwBuffer = '';
+let _hwTimer = null;
+const _HW_MIN_LEN = 3;
+const _HW_TIMEOUT = 80;
 
-  document.addEventListener('keydown', function(e) {
-    // Ignore if user is typing in an input/textarea/select (except hw-scanner-input)
+function _hwKeyHandler(e) {
+  try {
     const tag = document.activeElement?.tagName;
     const isHwInput = document.activeElement?.id === 'hw-scanner-input';
     if (!isHwInput && (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT')) return;
-    // Ignore modifier keys
     if (e.ctrlKey || e.altKey || e.metaKey) return;
 
     if (e.key === 'Enter') {
       const code = _hwBuffer.trim();
       _hwBuffer = '';
       clearTimeout(_hwTimer);
-      if (code.length >= MIN_BARCODE_LEN && !document.getElementById('barcode-scanner-overlay')) {
-        handleGlobalScan(code);
+      if (code.length >= _HW_MIN_LEN && !document.getElementById('barcode-scanner-overlay')) {
+        handleGlobalScan(code).catch(() => {});
       }
       return;
     }
-
     if (e.key.length === 1) {
       _hwBuffer += e.key;
       clearTimeout(_hwTimer);
-      _hwTimer = setTimeout(() => { _hwBuffer = ''; }, SCAN_TIMEOUT);
+      _hwTimer = setTimeout(() => { _hwBuffer = ''; }, _HW_TIMEOUT);
     }
-  });
-})();
+  } catch(err) { /* silent */ }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('keydown', _hwKeyHandler);
+});
 
 async function handleGlobalScan(code) {
+  try {
   // Check if hardware scanner is enabled in settings
   const cfg = await dbGet('settings', 'scanner');
   if (!cfg?.value?.enabled) return;
@@ -12954,6 +12956,7 @@ async function handleGlobalScan(code) {
     _scannerContext = 'inventory';
     await handleBarcodeResult(code);
   }
+  } catch(err) { console.warn('Scanner error:', err); }
 }
 
 // Keep old save function working
@@ -13039,8 +13042,8 @@ async function loadScannerSettings() {
     if (notSupported) notSupported.style.display = 'block';
   }
 
-  // Start listening for test input
-  startScannerTestListener();
+  // Start listening for test input (lazy init)
+  if (!_scannerTestActive) startScannerTestListener();
 }
 
 function toggleScannerEnabled(checked) {
