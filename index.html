@@ -9,12 +9,12 @@
 <title>SMS — Inventory & Maintenance System</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.2.3 — SMS System
+// v7.2.4 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.2.3');
+console.log('SMS v7.2.4');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -1432,6 +1432,16 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .theme-toggle:hover { border-color: var(--primary); color: var(--primary); }
 
 /* ========== Barcode Scanner ========== */
+
+/* ===== Scanner Picker ===== */
+.scanner-pick-btn {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border); cursor: pointer;
+  transition: all var(--transition); background: var(--bg);
+}
+.scanner-pick-btn:hover { border-color: var(--primary); background: rgba(108,60,233,0.04); }
+
 .scanner-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.9); z-index: 2000;
@@ -2622,7 +2632,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.3</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.4</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -2637,6 +2647,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="settings-nav-item" onclick="openSettingsSection('users')"><i class='bx bx-group'></i><div><strong data-i18n="settings_nav_team">فريق العمل</strong><small data-i18n="settings_nav_team_sub">المستخدمين والصلاحيات</small></div><i class='bx bx-chevron-left'></i></div>
             <div class="settings-nav-item" onclick="openSettingsSection('engineers')"><i class='bx bx-hard-hat'></i><div><strong data-i18n="settings_nav_engineers">المهندسين والفنيين</strong><small data-i18n="settings_nav_engineers_sub">إدارة فريق الصيانة</small></div><i class='bx bx-chevron-left'></i></div>
             <div class="settings-nav-item" onclick="openSettingsSection('backup')"><i class='bx bx-data'></i><div><strong data-i18n="settings_nav_backup">النسخ الاحتياطي</strong><small data-i18n="settings_nav_backup_sub">تصدير/استيراد البيانات</small></div><i class='bx bx-chevron-left'></i></div>
+            <div class="settings-nav-item" onclick="openSettingsSection('scanner')"><i class='bx bx-barcode-reader'></i><div><strong>جهاز القراءة (Scanner)</strong><small>إعداد جهاز الباركود المتصل</small></div><i class='bx bx-chevron-left'></i></div>
             <div class="settings-nav-item" onclick="openSettingsSection('activity')"><i class='bx bx-history'></i><div><strong data-i18n="settings_nav_activity">سجل النشاط</strong><small data-i18n="settings_nav_activity_sub">من عمل ايه وامتى</small></div><i class='bx bx-chevron-left'></i></div>
           </div>
         </div>
@@ -2645,6 +2656,48 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div id="settings-sections">
         <div id="settings-back" class="settings-back" onclick="closeSettingsSection()"><i class='bx bx-arrow-right'></i> <span data-i18n="btn_back">رجوع</span></div>
         
+
+        <!-- Scanner Settings -->
+        <div class="settings-section" id="section-scanner">
+        <div class="card">
+          <h3><i class='bx bx-barcode-reader'></i> إعداد جهاز القراءة (Scanner)</h3>
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px">
+            إذا عندك جهاز باركود USB أو Bluetooth بيشتغل زي keyboard (Keyboard Wedge)، فعّله هنا وهيشتغل تلقائياً في كل الشاشات.
+          </p>
+          <div class="form-group">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="checkbox" id="scanner-enabled" onchange="toggleScannerEnabled(this.checked)" style="width:18px;height:18px;cursor:pointer">
+              <span style="font-weight:600">تفعيل جهاز القراءة الخارجي</span>
+            </label>
+          </div>
+          <div id="scanner-config" style="display:none">
+            <div class="form-group">
+              <label>اسم الجهاز (للتعرف عليه)</label>
+              <input type="text" id="scanner-name" placeholder="مثال: Honeywell 1950g" style="max-width:300px">
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;margin-bottom:8px;display:block">طريقة العمل</label>
+              <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px;border:1px solid var(--border);font-size:13px;color:var(--text-muted)">
+                <div style="display:flex;gap:8px;margin-bottom:6px"><i class='bx bx-check-circle' style="color:var(--success);font-size:16px"></i> الجهاز يشتغل تلقائياً في أي شاشة بدون ما تضغط أي زرار</div>
+                <div style="display:flex;gap:8px;margin-bottom:6px"><i class='bx bx-check-circle' style="color:var(--success);font-size:16px"></i> لو الفاتورة مفتوحة — بيضيف الصنف للفاتورة مباشرة</div>
+                <div style="display:flex;gap:8px;margin-bottom:6px"><i class='bx bx-check-circle' style="color:var(--success);font-size:16px"></i> لو إذن الصيانة مفتوح — بيضيف القطعة للصيانة</div>
+                <div style="display:flex;gap:8px"><i class='bx bx-check-circle' style="color:var(--success);font-size:16px"></i> في أي شاشة تانية — بيفتح المنتج في المخزون</div>
+              </div>
+            </div>
+            <div id="scanner-test-area" style="margin-top:8px">
+              <label style="font-weight:600;margin-bottom:6px;display:block">اختبار الجهاز</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <input type="text" id="scanner-test-input" placeholder="اعمل scan هنا لاختبار الجهاز..." style="flex:1;max-width:320px" onkeydown="testScannerInput(event)">
+                <span id="scanner-test-result" style="font-size:13px;color:var(--success);font-weight:600"></span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:16px">
+            <button class="btn btn-primary" onclick="saveScannerSettings()"><i class='bx bx-save'></i> حفظ الإعدادات</button>
+          </div>
+        </div>
+        </div>
+
         <!-- Company Info -->
         <div class="settings-section" id="section-company">
         <div class="card">
@@ -2825,7 +2878,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.2.3 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.2.4 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -5988,6 +6041,69 @@ let _scannerContext = null; // 'inventory' or 'invoice'
 async function openBarcodeScanner(context) {
   _scannerContext = context || 'inventory';
   
+  // Check if hardware scanner is configured
+  const scannerCfg = await dbGet('settings', 'scanner');
+  const hasHardware = scannerCfg?.value?.enabled && scannerCfg?.value?.name;
+  
+  if (hasHardware) {
+    // Show picker: hardware device OR camera
+    const lbl = document.getElementById('scanner-device-label');
+    if (lbl) lbl.textContent = scannerCfg.value.name;
+    document.getElementById('scanner-option-device').style.display = 'flex';
+    openModal('modal-scanner-picker');
+  } else {
+    // No hardware configured — go straight to camera
+    startCameraScanner();
+  }
+}
+
+function startHardwareScanner() {
+  closeModal('modal-scanner-picker');
+  // Hardware scanner acts as keyboard — show a listening overlay with a hidden input
+  const overlay = document.createElement('div');
+  overlay.className = 'scanner-overlay';
+  overlay.id = 'barcode-scanner-overlay';
+  overlay.style.cssText = 'background:rgba(0,0,0,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px';
+  overlay.innerHTML = `
+    <i class='bx bx-barcode-reader' style="font-size:64px;color:var(--accent)"></i>
+    <p style="color:#fff;font-size:18px;font-weight:700">جاهز للقراءة...</p>
+    <p style="color:rgba(255,255,255,0.6);font-size:13px">وجّه جهاز القراءة نحو الباركود</p>
+    <input id="hw-scanner-input" style="position:fixed;opacity:0;width:1px;height:1px;top:0;left:0" autofocus autocomplete="off">
+    <button class="scanner-close" onclick="closeBarcodeScanner()">إغلاق</button>
+  `;
+  document.body.appendChild(overlay);
+  
+  // Focus hidden input to capture keyboard wedge input
+  setTimeout(() => {
+    const inp = document.getElementById('hw-scanner-input');
+    if (inp) inp.focus();
+    
+    let buffer = '';
+    let bufferTimer = null;
+    
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        if (buffer.trim()) {
+          handleBarcodeResult(buffer.trim());
+          buffer = '';
+        }
+        return;
+      }
+      if (e.key.length === 1) {
+        buffer += e.key;
+        clearTimeout(bufferTimer);
+        bufferTimer = setTimeout(() => {
+          if (buffer.trim()) handleBarcodeResult(buffer.trim());
+          buffer = '';
+        }, 100);
+      }
+    });
+  }, 100);
+}
+
+async function startCameraScanner() {
+  closeModal('modal-scanner-picker');
+  
   const overlay = document.createElement('div');
   overlay.className = 'scanner-overlay';
   overlay.id = 'barcode-scanner-overlay';
@@ -6000,7 +6116,6 @@ async function openBarcodeScanner(context) {
   document.body.appendChild(overlay);
   
   try {
-    // Try rear camera first, fallback to any camera (works on PC too)
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } } });
@@ -6011,23 +6126,18 @@ async function openBarcodeScanner(context) {
     const video = document.getElementById('scanner-video');
     video.srcObject = stream;
     
-    // Try native BarcodeDetector first
     if ('BarcodeDetector' in window) {
       const detector = new BarcodeDetector({ formats: ['code_128', 'ean_13', 'ean_8', 'upc_a', 'upc_e', 'qr_code'] });
       const scanLoop = async () => {
         if (!_scannerStream) return;
         try {
           const barcodes = await detector.detect(video);
-          if (barcodes.length > 0) {
-            handleBarcodeResult(barcodes[0].rawValue);
-            return;
-          }
+          if (barcodes.length > 0) { handleBarcodeResult(barcodes[0].rawValue); return; }
         } catch(e) {}
         requestAnimationFrame(scanLoop);
       };
       video.onloadedmetadata = () => scanLoop();
     } else if (typeof Quagga !== 'undefined') {
-      // Fallback to QuaggaJS
       Quagga.init({
         inputStream: { type: 'LiveStream', target: video, constraints: { facingMode: 'environment' } },
         decoder: { readers: ['code_128_reader', 'ean_reader', 'ean_8_reader', 'upc_reader'] },
@@ -6035,10 +6145,7 @@ async function openBarcodeScanner(context) {
         if (!err) {
           Quagga.start();
           Quagga.onDetected((result) => {
-            if (result?.codeResult?.code) {
-              Quagga.stop();
-              handleBarcodeResult(result.codeResult.code);
-            }
+            if (result?.codeResult?.code) { Quagga.stop(); handleBarcodeResult(result.codeResult.code); }
           });
         }
       });
@@ -6731,6 +6838,7 @@ function filterPurchaseInvoices(q) {
 
 // ============ SETTINGS SECTIONS ============
 function openSettingsSection(section) {
+  if (section === 'scanner') { loadScannerSettings(); }
   // Hide overview
   const overview = document.getElementById('settings-overview');
   if (overview) overview.style.display = 'none';
@@ -6778,7 +6886,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.2.3';
+  if (backupEl) backupEl.textContent = 'v7.2.4';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -12728,6 +12836,71 @@ async function testTelegramNotification() {
   toast('تم إرسال اختبار لكل المستلمين ✅');
 }
 
+
+// ============ GLOBAL HARDWARE SCANNER LISTENER ============
+// Listens to keyboard-wedge barcode scanners at all times
+(function() {
+  let _hwBuffer = '';
+  let _hwTimer = null;
+  const MIN_BARCODE_LEN = 3;
+  const SCAN_TIMEOUT = 80; // ms between chars — scanner is faster than human typing
+
+  document.addEventListener('keydown', function(e) {
+    // Ignore if user is typing in an input/textarea/select (except hw-scanner-input)
+    const tag = document.activeElement?.tagName;
+    const isHwInput = document.activeElement?.id === 'hw-scanner-input';
+    if (!isHwInput && (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT')) return;
+    // Ignore modifier keys
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+    if (e.key === 'Enter') {
+      const code = _hwBuffer.trim();
+      _hwBuffer = '';
+      clearTimeout(_hwTimer);
+      if (code.length >= MIN_BARCODE_LEN && !document.getElementById('barcode-scanner-overlay')) {
+        handleGlobalScan(code);
+      }
+      return;
+    }
+
+    if (e.key.length === 1) {
+      _hwBuffer += e.key;
+      clearTimeout(_hwTimer);
+      _hwTimer = setTimeout(() => { _hwBuffer = ''; }, SCAN_TIMEOUT);
+    }
+  });
+})();
+
+async function handleGlobalScan(code) {
+  // Check if hardware scanner is enabled in settings
+  const cfg = await dbGet('settings', 'scanner');
+  if (!cfg?.value?.enabled) return;
+
+  // Determine current active page
+  const activePage = document.querySelector('.page.active')?.id?.replace('page-', '') || '';
+  const invoiceModalOpen = document.getElementById('modal-invoice')?.style.display !== 'none' &&
+                           document.getElementById('modal-invoice')?.classList.contains('open');
+  const deviceModalOpen  = document.getElementById('modal-device')?.style.display !== 'none' &&
+                           document.getElementById('modal-device')?.classList.contains('open');
+
+  if (deviceModalOpen) {
+    _scannerContext = 'maintenance';
+    await handleBarcodeResult(code);
+  } else if (invoiceModalOpen) {
+    _scannerContext = 'invoice';
+    await handleBarcodeResult(code);
+  } else if (activePage === 'sales' || activePage === 'purchases') {
+    _scannerContext = 'invoice';
+    await handleBarcodeResult(code);
+  } else if (activePage === 'maintenance') {
+    _scannerContext = 'inventory';
+    await handleBarcodeResult(code);
+  } else {
+    _scannerContext = 'inventory';
+    await handleBarcodeResult(code);
+  }
+}
+
 // Keep old save function working
 async function saveNotificationSettings() { await saveBotToken(); }
 
@@ -12779,6 +12952,44 @@ async function applyCompanyBranding() {
 
   // --- Browser Tab Title ---
   document.title = name + ' — SMS System';
+}
+
+
+// ============ SCANNER SETTINGS ============
+async function loadScannerSettings() {
+  const cfg = await dbGet('settings', 'scanner');
+  const enabled = cfg?.value?.enabled || false;
+  const name = cfg?.value?.name || '';
+  const el = document.getElementById('scanner-enabled');
+  const nameEl = document.getElementById('scanner-name');
+  if (el) el.checked = enabled;
+  if (nameEl) nameEl.value = name;
+  const cfgDiv = document.getElementById('scanner-config');
+  if (cfgDiv) cfgDiv.style.display = enabled ? 'block' : 'none';
+}
+
+function toggleScannerEnabled(checked) {
+  const cfgDiv = document.getElementById('scanner-config');
+  if (cfgDiv) cfgDiv.style.display = checked ? 'block' : 'none';
+}
+
+async function saveScannerSettings() {
+  const enabled = document.getElementById('scanner-enabled')?.checked || false;
+  const name = document.getElementById('scanner-name')?.value.trim() || 'Scanner';
+  await dbPut('settings', { key: 'scanner', value: { enabled, name } });
+  toast('تم حفظ إعدادات جهاز القراءة ✅', 'success');
+}
+
+function testScannerInput(e) {
+  if (e.key === 'Enter') {
+    const val = e.target.value.trim();
+    const result = document.getElementById('scanner-test-result');
+    if (val) {
+      if (result) result.textContent = '✅ تم قراءة: ' + val;
+      toast('✅ الجهاز يعمل — تم قراءة: ' + val, 'success');
+      e.target.value = '';
+    }
+  }
 }
 
 async function saveCompanySettings() {
@@ -12885,5 +13096,34 @@ async function seedTestInvoices() {
 setTimeout(() => { if (_cacheReady) seedTestInvoices(); }, 2000);
 </script>
 <script src="system-check.js"></script>
+
+<!-- ===== SCANNER SETTINGS MODAL ===== -->
+<div id="modal-scanner-picker" class="modal" style="z-index:9999">
+  <div class="modal-content" style="max-width:420px">
+    <div class="modal-header">
+      <h3><i class='bx bx-barcode-reader' style="color:var(--primary)"></i> اختر طريقة المسح</h3>
+      <button class="modal-close" onclick="closeModal('modal-scanner-picker')">×</button>
+    </div>
+    <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+      <div id="scanner-option-device" class="scanner-pick-btn" onclick="startHardwareScanner()" style="display:none">
+        <i class='bx bx-usb' style="font-size:24px;color:var(--primary)"></i>
+        <div>
+          <div style="font-weight:700;font-size:14px" id="scanner-device-label">جهاز القراءة المتصل</div>
+          <div style="font-size:12px;color:var(--text-muted)">USB / Bluetooth Scanner</div>
+        </div>
+        <i class='bx bx-chevron-left' style="margin-right:auto;color:var(--text-muted)"></i>
+      </div>
+      <div class="scanner-pick-btn" onclick="startCameraScanner()">
+        <i class='bx bx-camera' style="font-size:24px;color:var(--accent)"></i>
+        <div>
+          <div style="font-weight:700;font-size:14px">الكاميرا</div>
+          <div style="font-size:12px;color:var(--text-muted)">استخدام كاميرا الجهاز</div>
+        </div>
+        <i class='bx bx-chevron-left' style="margin-right:auto;color:var(--text-muted)"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
