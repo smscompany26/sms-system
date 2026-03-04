@@ -9,12 +9,12 @@
 <title>SMS — Inventory & Maintenance System</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.2.6 — SMS System
+// v7.2.5 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.2.6');
+console.log('SMS v7.2.5');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -2632,7 +2632,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.6</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.5</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -2922,7 +2922,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.2.6 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.2.5 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -6793,20 +6793,8 @@ async function initApp() {
   try {
     try { indexedDB.deleteDatabase('sms_db'); indexedDB.deleteDatabase('sms_system'); } catch(e) {}
     
-    // Load from server — if fails, continue with empty cache (don't crash)
-    try {
-      await loadFromServer();
-      updateSyncStatus('connected');
-    } catch(serverErr) {
-      console.warn('Server load failed, continuing offline:', serverErr);
-      // Mark cache as ready with empty stores so app still works
-      const { STORES } = window;
-      if (typeof STORES !== 'undefined') {
-        for (const s of Object.keys(STORES)) { if (!_cache[s]) _cache[s] = []; }
-      }
-      _cacheReady = true;
-      updateSyncStatus('disconnected');
-    }
+    await loadFromServer();
+    updateSyncStatus('connected');
     
     await ensureDefaultAdmin();
     
@@ -6815,7 +6803,7 @@ async function initApp() {
       showApp();
     } else {
       document.getElementById('login-screen').style.display = 'flex';
-      applyCompanyBranding();
+    applyCompanyBranding();
     }
     
     await loadDefaultCategories();
@@ -6823,6 +6811,7 @@ async function initApp() {
     enhanceAllSelects();
   } catch (err) {
     console.error('Init error:', err);
+    // Show login screen even on error so the page isn't blank
     document.getElementById('login-screen').style.display = 'flex';
     toast(t('toast_system_load_error'), 'error');
   }
@@ -6941,7 +6930,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.2.6';
+  if (backupEl) backupEl.textContent = 'v7.2.5';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -12894,41 +12883,39 @@ async function testTelegramNotification() {
 
 // ============ GLOBAL HARDWARE SCANNER LISTENER ============
 // Listens to keyboard-wedge barcode scanners at all times
-let _hwBuffer = '';
-let _hwTimer = null;
-const _HW_MIN_LEN = 3;
-const _HW_TIMEOUT = 80;
+(function() {
+  let _hwBuffer = '';
+  let _hwTimer = null;
+  const MIN_BARCODE_LEN = 3;
+  const SCAN_TIMEOUT = 80; // ms between chars — scanner is faster than human typing
 
-function _hwKeyHandler(e) {
-  try {
+  document.addEventListener('keydown', function(e) {
+    // Ignore if user is typing in an input/textarea/select (except hw-scanner-input)
     const tag = document.activeElement?.tagName;
     const isHwInput = document.activeElement?.id === 'hw-scanner-input';
     if (!isHwInput && (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT')) return;
+    // Ignore modifier keys
     if (e.ctrlKey || e.altKey || e.metaKey) return;
 
     if (e.key === 'Enter') {
       const code = _hwBuffer.trim();
       _hwBuffer = '';
       clearTimeout(_hwTimer);
-      if (code.length >= _HW_MIN_LEN && !document.getElementById('barcode-scanner-overlay')) {
-        handleGlobalScan(code).catch(() => {});
+      if (code.length >= MIN_BARCODE_LEN && !document.getElementById('barcode-scanner-overlay')) {
+        handleGlobalScan(code);
       }
       return;
     }
+
     if (e.key.length === 1) {
       _hwBuffer += e.key;
       clearTimeout(_hwTimer);
-      _hwTimer = setTimeout(() => { _hwBuffer = ''; }, _HW_TIMEOUT);
+      _hwTimer = setTimeout(() => { _hwBuffer = ''; }, SCAN_TIMEOUT);
     }
-  } catch(err) { /* silent */ }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  document.addEventListener('keydown', _hwKeyHandler);
-});
+  });
+})();
 
 async function handleGlobalScan(code) {
-  try {
   // Check if hardware scanner is enabled in settings
   const cfg = await dbGet('settings', 'scanner');
   if (!cfg?.value?.enabled) return;
@@ -12956,7 +12943,6 @@ async function handleGlobalScan(code) {
     _scannerContext = 'inventory';
     await handleBarcodeResult(code);
   }
-  } catch(err) { console.warn('Scanner error:', err); }
 }
 
 // Keep old save function working
@@ -13015,35 +13001,26 @@ async function applyCompanyBranding() {
 
 // ============ SCANNER SETTINGS ============
 async function loadScannerSettings() {
-  let cfg = null;
-  try { cfg = await dbGet('settings', 'scanner'); } catch(e) {}
+  const cfg = await dbGet('settings', 'scanner');
   const enabled = cfg?.value?.enabled || false;
   const name = cfg?.value?.name || '';
-
   const el = document.getElementById('scanner-enabled');
   const nameEl = document.getElementById('scanner-name');
+  if (el) el.checked = enabled;
+  if (nameEl) nameEl.value = name;
   const cfgDiv = document.getElementById('scanner-config');
-
-  if (!el || !nameEl || !cfgDiv) {
-    // Section not in DOM yet — retry after short delay
-    setTimeout(loadScannerSettings, 200);
-    return;
-  }
-
-  el.checked = enabled;
-  nameEl.value = name;
-  cfgDiv.style.display = enabled ? 'block' : 'none';
+  if (cfgDiv) cfgDiv.style.display = enabled ? 'block' : 'none';
 
   // Check WebHID support
   if (!navigator.hid) {
-    const btnDetect = document.getElementById('btn-detect-hid');
+    const hidSection = document.getElementById('scanner-hid-section');
     const notSupported = document.getElementById('hid-not-supported');
-    if (btnDetect) btnDetect.style.display = 'none';
+    if (hidSection) hidSection.querySelector('#btn-detect-hid').style.display = 'none';
     if (notSupported) notSupported.style.display = 'block';
   }
 
-  // Start listening for test input (lazy init)
-  if (!_scannerTestActive) startScannerTestListener();
+  // Start listening for test input (global scanner buffer)
+  startScannerTestListener();
 }
 
 function toggleScannerEnabled(checked) {
@@ -13147,8 +13124,7 @@ function showScannerTestResult(code) {
   const res = document.getElementById('scanner-test-result');
   if (inp) inp.value = code;
   if (res) {
-    res.innerHTML = '<i class='bx bx-check-circle' style="color:var(--success)"></i> ✅ الجهاز شغال — تم قراءة: <strong>' + code + '</strong>';
-    setTimeout(() => { if (res) res.innerHTML = ''; }, 4000);
+res.innerHTML = '<i class="bx bx-check-circle" style="color:var(--success)"></i> ✅ الجهاز شغال — تم قراءة: <strong>' + code + '</strong>';    setTimeout(() => { if (res) res.innerHTML = ''; }, 4000);
   }
   toast('✅ الجهاز شغال — تم قراءة: ' + code, 'success');
 }
