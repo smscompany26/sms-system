@@ -9,12 +9,12 @@
 <title>SMS — Inventory & Maintenance System</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.1.3 — SMS System
+// v7.2.2 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.1.5');
+console.log('SMS v7.2.2');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -2622,7 +2622,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.1.5</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.2</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -2825,7 +2825,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.1.5 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.2.2 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -3263,7 +3263,10 @@ tr:hover { background: rgba(108,60,233,0.02); }
       
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <h4><i class='bx bx-cog' style="color:var(--primary)"></i> <span data-i18n="used_parts">القطع المستخدمة</span></h4>
-        <button type="button" class="btn btn-sm btn-primary" onclick="addDevicePart()"><i class='bx bx-plus'></i> <span data-i18n="add_part">إضافة قطعة</span></button>
+        <div style="display:flex;gap:8px">
+          <button type="button" class="btn btn-sm btn-outline" onclick="openBarcodeScanner('maintenance')"><i class='bx bx-barcode'></i> مسح باركود</button>
+          <button type="button" class="btn btn-sm btn-primary" onclick="addDevicePart()"><i class='bx bx-plus'></i> <span data-i18n="add_part">إضافة قطعة</span></button>
+        </div>
       </div>
       <div id="device-parts-list"></div>
       
@@ -6004,7 +6007,7 @@ async function openBarcodeScanner(context) {
     
     // Try native BarcodeDetector first
     if ('BarcodeDetector' in window) {
-      const detector = new BarcodeDetector({ formats: ['ean_13','ean_8','code_128','code_39','upc_a','upc_e','qr_code'] });
+      const detector = new BarcodeDetector({ formats: ['code_128', 'ean_13', 'ean_8', 'upc_a', 'upc_e', 'qr_code'] });
       const scanLoop = async () => {
         if (!_scannerStream) return;
         try {
@@ -6021,7 +6024,7 @@ async function openBarcodeScanner(context) {
       // Fallback to QuaggaJS
       Quagga.init({
         inputStream: { type: 'LiveStream', target: video, constraints: { facingMode: 'environment' } },
-        decoder: { readers: ['ean_reader','ean_8_reader','code_128_reader','code_39_reader','upc_reader'] },
+        decoder: { readers: ['code_128_reader', 'ean_reader', 'ean_8_reader', 'upc_reader'] },
       }, (err) => {
         if (!err) {
           Quagga.start();
@@ -6055,36 +6058,63 @@ function closeBarcodeScanner() {
 
 async function handleBarcodeResult(code) {
   closeBarcodeScanner();
-  toast(t('toast_scanned').replace('{code}', code), 'info');
   
   const products = await dbGetAll('products');
   const found = products.find(p => p.barcode === code || p.sku === code);
   
   if (_scannerContext === 'inventory') {
     if (found) {
+      toast('✅ ' + found.name, 'success');
       viewProduct(found.id);
     } else {
+      toast(t('toast_product_not_found_barcode') + ': ' + code, 'warning');
       if (confirm(t('barcode_not_found_add').replace('{code}', code))) {
         openAddProduct();
-        document.getElementById('product-barcode').value = code;
+        setTimeout(() => { document.getElementById('product-barcode').value = code; }, 200);
       }
     }
   } else if (_scannerContext === 'invoice') {
     if (found) {
-      // Add to current invoice items
+      // Add immediately to invoice
       const existing = currentInvoiceItems.find(i => i.productId === found.id);
       if (existing) {
         existing.quantity++;
         existing.total = existing.quantity * existing.unitPrice;
       } else {
-        const price = editingInvoiceType === 'sale' ? found.sellPrice : found.buyPrice;
+        const price = editingInvoiceType === 'sale'
+          ? (found.salePrice || found.sellPrice || found.price || 0)
+          : (found.purchasePrice || found.buyPrice || found.costPrice || 0);
         currentInvoiceItems.push({ productId: found.id, productName: found.name, quantity: 1, unitPrice: price, total: price });
       }
       renderInvoiceItems();
       updateInvoiceTotals();
-      toast(t("toast_product_added_to_invoice").replace("{name}", found.name), "success");
+      toast('✅ ' + found.name, 'success');
     } else {
       toast(t('toast_product_not_found_barcode'), 'warning');
+    }
+  } else if (_scannerContext === 'maintenance') {
+    if (found) {
+      // Add part directly to currentDeviceParts
+      const existing = currentDeviceParts.find(p => p.productId === found.id);
+      if (existing) {
+        existing.quantity = (existing.quantity || 1) + 1;
+        existing.total = existing.quantity * (existing.unitPrice || 0);
+      } else {
+        currentDeviceParts.push({
+          fromStock: true,
+          productId: found.id,
+          name: found.name,
+          quantity: 1,
+          unitPrice: found.salePrice || found.sellPrice || found.price || 0,
+          total: found.salePrice || found.sellPrice || found.price || 0,
+          supplier: ''
+        });
+      }
+      if (typeof renderDeviceParts === 'function') renderDeviceParts();
+      if (typeof updateRepairCost === 'function') updateRepairCost();
+      toast('✅ ' + found.name, 'success');
+    } else {
+      toast(t('toast_product_not_found_barcode') + ': ' + code, 'warning');
     }
   }
 }
@@ -6742,7 +6772,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.1.5';
+  if (backupEl) backupEl.textContent = 'v7.2.2';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -9172,69 +9202,99 @@ async function printBarcodeSticker(productId) {
   if (!p) return;
   const barcodeVal = p.barcode || p.sku || '';
   if (!barcodeVal) { toast(t('toast_no_barcode'), 'error'); return; }
-  
+
+  // Sanitize barcode: CODE128 supports all ASCII, so keep as-is
   const printWin = window.open('', '_blank');
   printWin.document.write(`<!DOCTYPE html><html><head>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\\/script>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * { margin: 0 !important; padding: 0 !important; box-sizing: border-box; }
       html, body {
-        width: 57.5mm; height: 30mm;
-        margin: 0; padding: 0;
+        width: 50mm;
+        height: 20mm;
         overflow: hidden;
         font-family: Arial, sans-serif;
+        background: #fff;
       }
       .sticker {
-        width: 57.5mm; height: 30mm;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        gap: 0.5mm; padding: 1.5mm 2mm;
+        width: 50mm;
+        height: 20mm;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1mm 1.5mm;
         overflow: hidden;
+        page-break-after: avoid;
+        page-break-inside: avoid;
       }
       .sticker .name {
-        font-size: 9px; font-weight: bold;
-        white-space: nowrap; overflow: hidden;
-        text-overflow: ellipsis; max-width: 54mm;
-        text-align: center; line-height: 1.2;
+        font-size: 8pt;
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 47mm;
+        text-align: center;
+        margin-bottom: 0.5mm;
       }
-      .sticker .price {
-        font-size: 9px; font-weight: bold; text-align: center;
-        color: #000;
-      }
-      .sticker .barcode-wrap {
-        display: flex; align-items: center; justify-content: center;
-        width: 100%;
-      }
-      .sticker canvas {
-        max-width: 54mm !important;
-        height: 16mm !important;
+      .sticker svg {
+        max-width: 47mm !important;
+        height: 10mm !important;
         display: block;
       }
       @media print {
-        @page { size: 57.5mm 30mm; margin: 0 !important; }
-        html, body { width: 57.5mm !important; height: 30mm !important; overflow: hidden !important; }
+        @page {
+          size: 50mm 20mm;
+          margin: 0mm !important;
+        }
+        html, body {
+          width: 50mm !important;
+          height: 20mm !important;
+          overflow: hidden !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
         .no-print { display: none !important; }
       }
-      .no-print { text-align: center; margin-top: 10px; }
+      .no-print {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        text-align: center; padding: 8px;
+        background: #f0f0f0;
+      }
     </style>
   </head><body>
     <div class="sticker">
-      <div class="name">${p.name}</div>
-      <div class="barcode-wrap">
-        <canvas id="bc"></canvas>
-      </div>
-      ${p.salePrice ? `<div class="price">${p.salePrice} ${p.currency || ''}</div>` : ''}
+      <div class="name">${p.name.replace(/</g,'&lt;')}</div>
+      <svg id="bc"></svg>
     </div>
     <div class="no-print">
-      <button onclick="window.print()" style="padding:8px 20px;font-size:14px;cursor:pointer">طباعة</button>
+      <button onclick="window.print()" style="padding:6px 18px;font-size:13px;cursor:pointer;margin:4px">طباعة</button>
+      <button onclick="window.close()" style="padding:6px 18px;font-size:13px;cursor:pointer;margin:4px">اغلاق</button>
     </div>
     <script>
-      JsBarcode('#bc', '${barcodeVal}', {
-        format: 'CODE128', width: 1.3, height: 38, displayValue: true,
-        fontSize: 9, font: 'monospace', textMargin: 1, margin: 1,
-        background: '#fff', lineColor: '#000'
-      });
-      setTimeout(() => { window.print(); }, 500);
-    <\/script>
+      window.onload = function() {
+        try {
+          JsBarcode('#bc', '${barcodeVal.replace(/'/g,"\\'")}', {
+            format: 'CODE128',
+            width: 1.1,
+            height: 20,
+            displayValue: true,
+            fontSize: 6,
+            font: 'monospace',
+            textMargin: 0,
+            margin: 0,
+            background: '#ffffff',
+            lineColor: '#000000'
+          });
+          // Force SVG to fit sticker
+          const svg = document.getElementById('bc');
+          if (svg) { svg.style.maxWidth = '47mm'; svg.style.height = '10mm'; }
+        } catch(e) { document.body.innerHTML += '<p style="color:red;font-size:10px">خطأ: ' + e.message + '</p>'; }
+        setTimeout(() => { window.print(); window.close(); }, 700);
+      };
+    <\\/script>
   </body></html>`);
   printWin.document.close();
 }
@@ -9633,40 +9693,69 @@ function onClientSelect(sel, context) {
 }
 
 async function saveInlineClient(context) {
-  const name = document.getElementById(`new-client-${context}-name`).value.trim();
+  const nameEl = document.getElementById(`new-client-${context}-name`);
+  const phoneEl = document.getElementById(`new-client-${context}-phone`);
+  const saveBtn = document.querySelector(`#new-client-${context}-inline .btn-primary`);
+  
+  const name = nameEl.value.trim();
   if (!name) { toast(t('toast_enter_name'), 'error'); return; }
-  const phone = document.getElementById(`new-client-${context}-phone`).value.trim();
+  const phone = phoneEl.value.trim();
   
-  // Determine if this is a supplier (purchase invoice) or client
-  const sel = context === 'invoice' ? document.getElementById('invoice-party') : 
-              context === 'device' ? document.getElementById('device-client') :
-              document.getElementById('service-client');
+  // Prevent double-save
+  if (saveBtn && saveBtn.disabled) return;
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.style.opacity = '0.6'; }
   
-  const isSupplier = context === 'invoice' && document.getElementById('invoice-type')?.value === 'purchase';
-  const store = isSupplier ? 'suppliers' : 'clients';
-  const allItems = isSupplier ? allSuppliers : allClients;
-  const code = (isSupplier ? 'SUP-' : 'CL-') + String(allItems.length + 1).padStart(3, '0');
-  
-  const item = { name, phone, code, address: '', balance: 0, createdAt: new Date().toISOString() };
-  const id = await dbAdd(store, item);
-  item.id = id;
-  allItems.push(item);
-  autoPush();
-  
-  // Reset inline form
-  document.getElementById(`new-client-${context}-name`).value = '';
-  document.getElementById(`new-client-${context}-phone`).value = '';
-  document.getElementById(`new-client-${context}-inline`).style.display = 'none';
-  
-  // Add new option and select it
-  const newOpt = document.createElement('option');
-  newOpt.value = id;
-  newOpt.textContent = `${name} (${code})`;
-  const otherOpt = sel.querySelector('option[value="__other__"]');
-  sel.insertBefore(newOpt, otherOpt);
-  sel.value = id;
-  
-  toast(t('toast_entity_added').replace('{type}', isSupplier ? t('label_supplier') : t('label_client')));
+  try {
+    // Determine if this is a supplier (purchase invoice) or client
+    const sel = context === 'invoice' ? document.getElementById('invoice-party') : 
+                context === 'device' ? document.getElementById('device-client') :
+                document.getElementById('service-client');
+    
+    const isSupplier = context === 'invoice' && document.getElementById('invoice-type')?.value === 'purchase';
+    const store = isSupplier ? 'suppliers' : 'clients';
+    const allItems = isSupplier ? allSuppliers : allClients;
+    
+    // Check for duplicate name before saving
+    const duplicate = allItems.find(x => x.name.trim().toLowerCase() === name.toLowerCase());
+    if (duplicate) {
+      // Just select the existing one
+      if (sel) { sel.value = duplicate.id; }
+      nameEl.value = '';
+      phoneEl.value = '';
+      document.getElementById(`new-client-${context}-inline`).style.display = 'none';
+      toast('تم اختيار العميل الموجود: ' + duplicate.name, 'info');
+      return;
+    }
+    
+    const code = (isSupplier ? 'SUP-' : 'CL-') + String(allItems.length + 1).padStart(3, '0');
+    const item = { name, phone, code, address: '', balance: 0, createdAt: new Date().toISOString() };
+    const id = await dbAdd(store, item);
+    item.id = id;
+    allItems.push(item); // update in-memory array immediately
+    autoPush();
+    
+    // Reset inline form
+    nameEl.value = '';
+    phoneEl.value = '';
+    document.getElementById(`new-client-${context}-inline`).style.display = 'none';
+    
+    // Add new option and select it immediately
+    if (sel) {
+      const newOpt = document.createElement('option');
+      newOpt.value = id;
+      newOpt.textContent = `${name} (${code})`;
+      const otherOpt = sel.querySelector('option[value="__other__"]');
+      if (otherOpt) sel.insertBefore(newOpt, otherOpt);
+      else sel.appendChild(newOpt);
+      sel.value = id;
+      // Trigger change event so any dependent logic fires
+      sel.dispatchEvent(new Event('change'));
+    }
+    
+    toast(t('toast_entity_added').replace('{type}', isSupplier ? t('label_supplier') : t('label_client')));
+  } finally {
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.style.opacity = ''; }
+  }
 }
 
 function openClientManager() {
