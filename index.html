@@ -41,6 +41,66 @@ console.log('SMS v7.2.7');
   --font: 'Cairo', sans-serif;
 }
 
+/* ═══ ACCOUNTING v10 ═══ */
+.acc-tab-content{animation:accFadeIn .18s ease}
+@keyframes accFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+/* KPI strip */
+.acc-kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+.acc-kpi{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--border);cursor:pointer;transition:transform .15s,box-shadow .15s;border-right:3px solid transparent}
+.acc-kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.acc-kpi-g{border-right-color:var(--success)}.acc-kpi-r{border-right-color:var(--danger)}.acc-kpi-p{border-right-color:var(--primary)}.acc-kpi-o{border-right-color:var(--warning)}
+.acc-kpi-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.acc-kpi-g .acc-kpi-ico{background:rgba(34,197,94,.12);color:var(--success)}
+.acc-kpi-r .acc-kpi-ico{background:rgba(239,68,68,.12);color:var(--danger)}
+.acc-kpi-p .acc-kpi-ico{background:rgba(108,60,233,.12);color:var(--primary)}
+.acc-kpi-o .acc-kpi-ico{background:rgba(245,158,11,.12);color:var(--warning)}
+.acc-kpi-val{font-size:18px;font-weight:800;line-height:1}
+.acc-kpi-lbl{font-size:11px;color:var(--text-muted);margin-top:3px}
+.acc-kpi-sub{font-size:10px;color:var(--text-muted);margin-top:2px}
+/* Tab bar */
+.acc-tabbar{display:flex;background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;margin-bottom:18px}
+.acc-tabbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:var(--font);font-size:10.5px;font-weight:700;background:transparent;color:var(--text-muted);transition:all .16s;min-width:60px}
+.acc-tabbtn i{font-size:17px}
+.acc-tabbtn:hover{background:rgba(108,60,233,.04);color:var(--primary)}
+.acc-tabbtn.atv{border-bottom-color:var(--primary);background:rgba(108,60,233,.07);color:var(--primary)}
+/* Filter row */
+.acc-frow{display:flex;flex-wrap:wrap;gap:9px;align-items:flex-end}
+.acc-fld{display:flex;flex-direction:column;gap:4px;flex:1;min-width:100px}
+.acc-fld label{font-size:10.5px;font-weight:700;color:var(--text-muted)}
+.acc-fld input,.acc-fld select{padding:7px 9px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:var(--font);font-size:12px}
+.acc-fact{display:flex;gap:6px;align-items:flex-end;padding-bottom:1px;flex-shrink:0}
+/* Mini summary bar */
+.acc-sumbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:9px;margin-bottom:14px}
+.acc-smc{padding:9px 13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg-card)}
+.acc-smc-lbl{font-size:10.5px;color:var(--text-muted);margin-bottom:2px}
+.acc-smc-val{font-size:16px;font-weight:800}
+.acc-smc-g{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05)}.acc-smc-g .acc-smc-val{color:var(--success)}
+.acc-smc-r{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.05)}.acc-smc-r .acc-smc-val{color:var(--danger)}
+.acc-smc-p{border-color:rgba(108,60,233,.3);background:rgba(108,60,233,.05)}.acc-smc-p .acc-smc-val{color:var(--primary)}
+.acc-smc-b{border-color:rgba(0,180,255,.3);background:rgba(0,180,255,.05)}.acc-smc-b .acc-smc-val{color:#0891b2}
+/* PM chips */
+.acc-pmbar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.acc-pmchip{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid}
+/* Table header */
+.acc-thead{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.acc-thead h3{margin:0;font-size:14px;font-weight:700}
+.acc-badge{font-size:11px;color:var(--text-muted);background:var(--bg);padding:3px 10px;border-radius:20px;border:1px solid var(--border)}
+/* Settings toggles */
+.acc-tog{display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg-card);transition:border-color .15s;user-select:none}
+.acc-tog input{display:none}
+.acc-trk{width:34px;height:18px;border-radius:9px;background:var(--border);position:relative;flex-shrink:0;transition:background .2s}
+.acc-trk::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;top:3px;right:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.acc-tog:has(input:checked) .acc-trk{background:var(--primary)}
+.acc-tog:has(input:checked) .acc-trk::after{transform:translateX(-16px)}
+.acc-tog:has(input:checked){border-color:var(--primary)}
+@media(max-width:600px){
+  .acc-kpi-strip{grid-template-columns:repeat(2,1fr)}
+  .acc-tabbar{overflow-x:auto}
+  .acc-tabbtn span{display:none}
+  .acc-tabbtn{min-width:42px;padding:9px}
+  .acc-fld{min-width:calc(50% - 5px)}
+}
+
 /* ========== Auto-Scan Toggle ========== */
 .auto-scan-toggle {
   display: inline-flex;
@@ -1951,8 +2011,11 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <i class='bx bx-chevron-down nav-arrow'></i>
         </a>
         <div class="nav-sub">
-          <a href="#" class="nav-sub-item" onclick="navigate('accounting')" data-i18n="nav_summary">الملخص</a>
-          <a href="#" class="nav-sub-item" onclick="navigate('accounting');setTimeout(()=>document.getElementById('expenses-table')?.scrollIntoView({behavior:'smooth'}),200)" data-i18n="nav_expenses">المصروفات</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('accounting');setTimeout(()=>switchAccTab('transactions'),250)">سجل المعاملات</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('accounting');setTimeout(()=>switchAccTab('income'),250)">الإيرادات</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('accounting');setTimeout(()=>switchAccTab('expenses'),250)" data-i18n="nav_expenses">المصروفات</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('accounting');setTimeout(()=>switchAccTab('cashflow'),250)">التدفق النقدي</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('accounting');setTimeout(()=>switchAccTab('balances'),250)">الأرصدة</a>
         </div>
       </div>
 
@@ -2356,7 +2419,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="table-responsive">
               <table id="services-table">
                 <thead><tr>
-                  <th style="width:36px"><input type="checkbox" id="services-select-all" onchange="toggleSelectAll('services')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_client">العميل</th><th data-i18n="th_description">الوصف</th><th data-i18n="th_location">الموقع</th><th data-i18n="th_price">السعر</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_actions">إجراءات</th>
+                  <th style="width:36px"><input type="checkbox" id="services-select-all" onchange="toggleSelectAll('services')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_client">العميل</th><th data-i18n="th_description">الوصف</th><th data-i18n="th_location">الموقع</th><th data-i18n="th_price">السعر</th><th>طريقة الدفع</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_actions">إجراءات</th>
                 </tr></thead>
                 <tbody id="services-tbody"></tbody>
               </table>
@@ -2549,7 +2612,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div class="card table-card">
             <div class="table-responsive">
               <table id="maint-services-table">
-                <thead><tr><th style="width:36px"><input type="checkbox" id="maint-services-select-all" onchange="toggleSelectAll('maint-services')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_client">العميل</th><th data-i18n="th_description">الوصف</th><th data-i18n="th_location">الموقع</th><th data-i18n="th_price">السعر</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_actions">إجراءات</th></tr></thead>
+                <thead><tr><th style="width:36px"><input type="checkbox" id="maint-services-select-all" onchange="toggleSelectAll('maint-services')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_client">العميل</th><th data-i18n="th_description">الوصف</th><th data-i18n="th_location">الموقع</th><th data-i18n="th_price">السعر</th><th>طريقة الدفع</th><th data-i18n="th_status">الحالة</th><th data-i18n="th_actions">إجراءات</th></tr></thead>
                 <tbody id="maint-services-tbody"></tbody>
               </table>
             </div>
@@ -2567,88 +2630,294 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
       <!-- Accounting Page -->
       <section id="page-accounting" class="page">
-        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
-          <div class="stat-card stat-sales" style="cursor:pointer;position:relative" onclick="showAccBreakdown('income')"><div class="stat-icon"><i class='bx bx-trending-up'></i></div><div class="stat-info"><span class="stat-value" id="acc-income-total">0</span><span class="stat-label" data-i18n="stat_total_revenue">إجمالي الإيرادات</span><small id="acc-income-month" style="color:var(--text-muted)">0</small></div><i class='bx bx-info-circle' style="position:absolute;top:8px;left:8px;color:var(--text-muted);font-size:16px"></i></div>
-          <div class="stat-card stat-purchases" style="cursor:pointer;position:relative" onclick="showAccBreakdown('expenses')"><div class="stat-icon"><i class='bx bx-trending-down'></i></div><div class="stat-info"><span class="stat-value" id="acc-expenses-total">0</span><span class="stat-label" data-i18n="stat_total_expenses">إجمالي المصروفات</span><small id="acc-expenses-month" style="color:var(--text-muted)">0</small></div><i class='bx bx-info-circle' style="position:absolute;top:8px;left:8px;color:var(--text-muted);font-size:16px"></i></div>
-          <div class="stat-card stat-profit" style="cursor:pointer;position:relative" onclick="showAccBreakdown('profit')"><div class="stat-icon"><i class='bx bx-wallet'></i></div><div class="stat-info"><span class="stat-value" id="acc-profit-total">0</span><span class="stat-label">صافي الربح</span><small id="acc-profit-month" style="color:var(--text-muted)">0</small></div><i class='bx bx-info-circle' style="position:absolute;top:8px;left:8px;color:var(--text-muted);font-size:16px"></i></div>
-        </div>
-        
-        <div class="stat-card" style="margin-bottom:20px;border-right-color:var(--danger)">
-          <div class="stat-icon" style="background:rgba(239,68,68,0.1);color:var(--danger)"><i class='bx bx-money'></i></div>
-          <div class="stat-info"><span class="stat-value" id="acc-owed" style="color:var(--danger)">0</span><span class="stat-label" data-i18n="stat_owed_by_clients">مبالغ مستحقة من العملاء</span></div>
+
+        <!-- KPI STRIP -->
+        <div class="acc-kpi-strip">
+          <div class="acc-kpi acc-kpi-g" onclick="switchAccTab('transactions')">
+            <div class="acc-kpi-ico"><i class='bx bx-trending-up'></i></div>
+            <div><div class="acc-kpi-val" id="acc-income-total">0</div><div class="acc-kpi-lbl">إجمالي الإيرادات</div><div class="acc-kpi-sub" id="acc-income-month">هذا الشهر: 0</div></div>
+          </div>
+          <div class="acc-kpi acc-kpi-r" onclick="switchAccTab('expenses')">
+            <div class="acc-kpi-ico"><i class='bx bx-trending-down'></i></div>
+            <div><div class="acc-kpi-val" id="acc-expenses-total">0</div><div class="acc-kpi-lbl">إجمالي المصروفات</div><div class="acc-kpi-sub" id="acc-expenses-month">هذا الشهر: 0</div></div>
+          </div>
+          <div class="acc-kpi acc-kpi-p" onclick="switchAccTab('cashflow')">
+            <div class="acc-kpi-ico"><i class='bx bx-wallet'></i></div>
+            <div><div class="acc-kpi-val" id="acc-profit-total">0</div><div class="acc-kpi-lbl">صافي الربح</div><div class="acc-kpi-sub" id="acc-profit-month">هذا الشهر: 0</div></div>
+          </div>
+          <div class="acc-kpi acc-kpi-o" onclick="switchAccTab('balances')">
+            <div class="acc-kpi-ico"><i class='bx bx-time-five'></i></div>
+            <div><div class="acc-kpi-val" id="acc-owed" style="color:var(--warning)">0</div><div class="acc-kpi-lbl">مستحق من العملاء</div><div class="acc-kpi-sub">اضغط للتفاصيل</div></div>
+          </div>
         </div>
 
-        <div class="dashboard-grid">
-          <div class="card">
-            <h3><i class='bx bx-user'></i> <span data-i18n="client_balances">أرصدة العملاء (مين عليه فلوس)</span></h3>
-            <div id="acc-client-balances" style="max-height:250px;overflow-y:auto"></div>
-          </div>
-          <div class="card">
-            <h3><i class='bx bx-store'></i> <span data-i18n="supplier_balances">أرصدة الموردين (مين لينا عنده فلوس)</span></h3>
-            <div id="acc-supplier-balances" style="max-height:250px;overflow-y:auto"></div>
-          </div>
+        <!-- TAB BAR -->
+        <div class="acc-tabbar">
+          <button class="acc-tabbtn atv" data-tab="transactions" onclick="switchAccTab('transactions')"><i class='bx bx-receipt'></i><span>المعاملات</span></button>
+          <button class="acc-tabbtn" data-tab="income"       onclick="switchAccTab('income')"><i class='bx bx-trending-up'></i><span>الإيرادات</span></button>
+          <button class="acc-tabbtn" data-tab="expenses"     onclick="switchAccTab('expenses')"><i class='bx bx-trending-down'></i><span>المصروفات</span></button>
+          <button class="acc-tabbtn" data-tab="cashflow"     onclick="switchAccTab('cashflow')"><i class='bx bx-bar-chart-alt-2'></i><span>التدفق النقدي</span></button>
+          <button class="acc-tabbtn" data-tab="balances"     onclick="switchAccTab('balances')"><i class='bx bx-user-check'></i><span>الأرصدة</span></button>
+          <button class="acc-tabbtn" data-tab="acc-settings" onclick="switchAccTab('acc-settings')"><i class='bx bx-cog'></i><span>إعدادات</span></button>
         </div>
 
-        <!-- مصادر استلام الفلوس -->
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
-            <h3 style="margin:0"><i class='bx bx-transfer'></i> مصادر استلام الفلوس</h3>
-            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-              <input type="date" id="payment-sources-from" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm)">
-              <span>إلى</span>
-              <input type="date" id="payment-sources-to" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm)">
-              <button class="btn btn-sm btn-primary" onclick="loadPaymentSources()"><i class='bx bx-search'></i> بحث</button>
-              <button class="btn btn-sm btn-outline" onclick="loadPaymentSources('all')"><i class='bx bx-list-ul'></i> الكل</button>
+        <!-- ══ TAB: TRANSACTIONS ══ -->
+        <div id="acc-tab-transactions" class="acc-tab-content">
+          <div class="card" style="padding:14px 16px;margin-bottom:14px">
+            <div class="acc-frow">
+              <div class="acc-fld"><label>من</label><input type="date" id="txn-from"></div>
+              <div class="acc-fld"><label>إلى</label><input type="date" id="txn-to"></div>
+              <div class="acc-fld"><label>طريقة الدفع</label>
+                <select id="txn-method-filter">
+                  <option value="">الكل</option><option value="cash">💵 كاش</option>
+                  <option value="instapay">📱 انستاباي</option><option value="vodafone">📲 فودافون</option>
+                </select>
+              </div>
+              <div class="acc-fld"><label>نوع العملية</label>
+                <select id="txn-type-filter">
+                  <option value="">الكل</option><option value="invoice">📄 فاتورة بيع</option>
+                  <option value="purchase">🛒 فاتورة شراء</option><option value="maintenance">🔧 صيانة</option>
+                  <option value="service">🛠 خدمة</option><option value="ledger">💳 دفعة يدوية</option>
+                </select>
+              </div>
+              <div class="acc-fld"><label>حالة الدفع</label>
+                <select id="txn-status-filter">
+                  <option value="">الكل</option><option value="paid">مكتمل ✅</option>
+                  <option value="partial">جزئي 🟡</option><option value="unpaid">لم يدفع ❌</option>
+                  <option value="pending">معلق ⏳</option>
+                </select>
+              </div>
+              <div class="acc-fact">
+                <button class="btn btn-primary btn-sm" onclick="loadTransactionsTable()"><i class='bx bx-search'></i></button>
+                <button class="btn btn-outline btn-sm" onclick="loadTransactionsTable('all')"><i class='bx bx-refresh'></i> الكل</button>
+                <button class="btn btn-outline btn-sm" onclick="exportTransactionsCSV()" title="تصدير"><i class='bx bx-download'></i></button>
+              </div>
             </div>
           </div>
-          <div id="payment-sources-container"></div>
+          <div id="txn-sum-bar" class="acc-sumbar"></div>
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="acc-thead">
+              <h3><i class='bx bx-receipt'></i> سجل كل المعاملات</h3>
+              <span id="txn-badge" class="acc-badge">0 عملية</span>
+            </div>
+            <div class="table-responsive">
+              <table id="txn-table" style="display:none">
+                <thead><tr>
+                  <th>التاريخ</th><th>النوع</th><th>الطرف (من/لمن)</th>
+                  <th>الوصف</th><th>طريقة الدفع</th>
+                  <th>المبلغ الكلي</th><th>المدفوع</th><th>المتبقي</th>
+                  <th>الحالة</th><th style="width:50px">⚙</th>
+                </tr></thead>
+                <tbody id="txn-tbody"></tbody>
+              </table>
+            </div>
+            <div id="txn-empty" class="empty-state">
+              <i class='bx bx-receipt' style="font-size:44px;color:var(--text-muted)"></i>
+              <p>اضغط <strong>الكل</strong> لعرض جميع المعاملات</p>
+            </div>
+          </div>
         </div>
 
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <h3 style="margin:0"><i class='bx bx-money'></i> <span data-i18n="expenses">المصروفات</span></h3>
-            <button class="btn btn-primary" onclick="openAddExpense()"><i class='bx bx-plus'></i> <span data-i18n="add_expense">إضافة مصروف</span></button>
+        <!-- ══ TAB: INCOME ══ -->
+        <div id="acc-tab-income" class="acc-tab-content" style="display:none">
+          <div class="card" style="padding:14px 16px;margin-bottom:14px">
+            <div class="acc-frow">
+              <div class="acc-fld"><label>من</label><input type="date" id="income-from"></div>
+              <div class="acc-fld"><label>إلى</label><input type="date" id="income-to"></div>
+              <div class="acc-fld"><label>المصدر</label>
+                <select id="income-src-filter">
+                  <option value="">كل المصادر</option><option value="invoice">📄 فواتير بيع</option>
+                  <option value="maintenance">🔧 صيانة</option><option value="service">🛠 خدمات</option>
+                  <option value="ledger">💳 دفعات يدوية</option>
+                </select>
+              </div>
+              <div class="acc-fact">
+                <button class="btn btn-primary btn-sm" onclick="loadIncomeTable()"><i class='bx bx-search'></i></button>
+                <button class="btn btn-outline btn-sm" onclick="loadIncomeTable('all')"><i class='bx bx-refresh'></i> الكل</button>
+              </div>
+            </div>
           </div>
-          <div class="tabs-bar" style="margin-bottom:16px">
-            <button class="tab-btn active" onclick="switchExpenseTab('treasury')" data-i18n="tab_treasury">مصروفات خزينة</button>
-            <button class="tab-btn" onclick="switchExpenseTab('indirect')" data-i18n="tab_indirect">مصروفات غير مباشرة</button>
-            <button class="tab-btn" onclick="switchExpenseTab('all')" data-i18n="tab_all">الكل</button>
+          <div id="income-sum-bar" class="acc-sumbar"></div>
+          <div id="income-pm-bar" class="acc-pmbar"></div>
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="acc-thead">
+              <h3><i class='bx bx-trending-up'></i> تفاصيل الإيرادات</h3>
+              <span id="income-badge" class="acc-badge">0 عملية</span>
+            </div>
+            <div class="table-responsive">
+              <table id="income-table" style="display:none">
+                <thead><tr>
+                  <th>التاريخ</th><th>المصدر</th><th>الطرف</th><th>الوصف</th>
+                  <th>طريقة الدفع</th><th>المبلغ الكلي</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th>
+                </tr></thead>
+                <tbody id="income-tbody"></tbody>
+              </table>
+            </div>
+            <div id="income-empty" class="empty-state">
+              <i class='bx bx-trending-up' style="font-size:44px;color:var(--text-muted)"></i>
+              <p>اضغط <strong>الكل</strong> لعرض جميع الإيرادات</p>
+            </div>
           </div>
+        </div>
+
+        <!-- ══ TAB: EXPENSES ══ -->
+        <div id="acc-tab-expenses" class="acc-tab-content" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+            <div class="tabs-bar" style="margin:0">
+              <button class="tab-btn active" onclick="switchExpenseTab('treasury')">خزينة</button>
+              <button class="tab-btn" onclick="switchExpenseTab('indirect')">غير مباشرة</button>
+              <button class="tab-btn" onclick="switchExpenseTab('all')">الكل</button>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openAddExpense()"><i class='bx bx-plus'></i> مصروف جديد</button>
+          </div>
+          <!-- Treasury -->
           <div id="expense-tab-treasury" class="tab-content active">
-            <div class="stat-card" style="margin-bottom:12px;border-right-color:var(--warning)"><div class="stat-info"><span class="stat-value" id="treasury-total" style="font-size:18px">0</span><span class="stat-label" data-i18n="stat_treasury_total">إجمالي مصروفات الخزينة</span></div></div>
-            <div class="table-responsive">
-              <table id="treasury-expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="treasury-expenses-select-all" onchange="toggleSelectAll('treasury-expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_classification">التصنيف</th><th data-i18n="th_statement">البيان</th><th data-i18n="th_amount">المبلغ</th><th data-i18n="th_actions">إجراءات</th></tr></thead><tbody id="treasury-expenses-tbody"></tbody></table>
+            <div class="acc-sumbar" style="margin-bottom:12px"><div class="acc-smc" style="border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05)"><div class="acc-smc-lbl">إجمالي مصروفات الخزينة</div><div class="acc-smc-val" id="treasury-total" style="color:var(--warning)">0</div></div></div>
+            <div class="card" style="padding:0;overflow:hidden">
+              <div class="table-responsive"><table id="treasury-expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="treasury-expenses-select-all" onchange="toggleSelectAll('treasury-expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="treasury-expenses-tbody"></tbody></table></div>
+              <div id="treasury-expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات خزينة</p></div>
+              <div id="treasury-expenses-bulk-bar" style="display:none;padding:10px 16px;background:var(--danger);border-radius:0 0 12px 12px;align-items:center;justify-content:space-between;gap:12px"><span style="color:#fff;font-size:13px;font-weight:600" id="treasury-expenses-selected-count">0 محدد</span><button class="btn" onclick="bulkDeleteExpenses('treasury-expenses')" style="background:rgba(255,255,255,.2);color:#fff;border:none;font-size:12px;padding:5px 14px"><i class='bx bx-trash'></i> حذف</button></div>
             </div>
-            <div id="treasury-expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات خزينة</p></div>
-          <div id="treasury-expenses-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
-            <span style="color:#fff;font-size:13px;font-weight:600" id="treasury-expenses-selected-count">0 محدد</span>
-            <button class="btn" onclick="bulkDeleteExpenses('treasury-expenses')" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
           </div>
-          </div>
+          <!-- Indirect -->
           <div id="expense-tab-indirect" class="tab-content">
-            <div class="stat-card" style="margin-bottom:12px;border-right-color:var(--primary)"><div class="stat-info"><span class="stat-value" id="indirect-total" style="font-size:18px">0</span><span class="stat-label" data-i18n="stat_indirect_total">إجمالي المصروفات غير المباشرة</span></div></div>
-            <div class="table-responsive">
-              <table id="indirect-expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="indirect-expenses-select-all" onchange="toggleSelectAll('indirect-expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_classification">التصنيف</th><th data-i18n="th_statement">البيان</th><th data-i18n="th_amount">المبلغ</th><th data-i18n="th_actions">إجراءات</th></tr></thead><tbody id="indirect-expenses-tbody"></tbody></table>
+            <div class="acc-sumbar" style="margin-bottom:12px"><div class="acc-smc acc-smc-p"><div class="acc-smc-lbl">إجمالي المصروفات غير المباشرة</div><div class="acc-smc-val" id="indirect-total">0</div></div></div>
+            <div class="card" style="padding:0;overflow:hidden">
+              <div class="table-responsive"><table id="indirect-expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="indirect-expenses-select-all" onchange="toggleSelectAll('indirect-expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="indirect-expenses-tbody"></tbody></table></div>
+              <div id="indirect-expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات غير مباشرة</p></div>
+              <div id="indirect-expenses-bulk-bar" style="display:none;padding:10px 16px;background:var(--danger);border-radius:0 0 12px 12px;align-items:center;justify-content:space-between;gap:12px"><span style="color:#fff;font-size:13px;font-weight:600" id="indirect-expenses-selected-count">0 محدد</span><button class="btn" onclick="bulkDeleteExpenses('indirect-expenses')" style="background:rgba(255,255,255,.2);color:#fff;border:none;font-size:12px;padding:5px 14px"><i class='bx bx-trash'></i> حذف</button></div>
             </div>
-            <div id="indirect-expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات غير مباشرة</p></div>
-          <div id="indirect-expenses-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
-            <span style="color:#fff;font-size:13px;font-weight:600" id="indirect-expenses-selected-count">0 محدد</span>
-            <button class="btn" onclick="bulkDeleteExpenses('indirect-expenses')" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
           </div>
-          </div>
+          <!-- All -->
           <div id="expense-tab-all" class="tab-content">
-            <div class="table-responsive">
-              <table id="expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="expenses-select-all" onchange="toggleSelectAll('expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th data-i18n="th_date">التاريخ</th><th data-i18n="th_expense_type">النوع</th><th data-i18n="th_classification">التصنيف</th><th data-i18n="th_statement">البيان</th><th data-i18n="th_amount">المبلغ</th><th data-i18n="th_actions">إجراءات</th></tr></thead><tbody id="expenses-tbody"></tbody></table>
+            <div class="card" style="padding:0;overflow:hidden">
+              <div class="table-responsive"><table id="expenses-table"><thead><tr><th style="width:36px"><input type="checkbox" id="expenses-select-all" onchange="toggleSelectAll('expenses')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></th><th>التاريخ</th><th>النوع</th><th>التصنيف</th><th>البيان</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody id="expenses-tbody"></tbody></table></div>
+              <div id="expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات</p></div>
+              <div id="expenses-bulk-bar" style="display:none;padding:10px 16px;background:var(--danger);border-radius:0 0 12px 12px;align-items:center;justify-content:space-between;gap:12px"><span style="color:#fff;font-size:13px;font-weight:600" id="expenses-selected-count">0 محدد</span><button class="btn" onclick="bulkDeleteExpenses('expenses')" style="background:rgba(255,255,255,.2);color:#fff;border:none;font-size:12px;padding:5px 14px"><i class='bx bx-trash'></i> حذف</button></div>
             </div>
-            <div id="expenses-empty" class="empty-state" style="display:none"><p>لا توجد مصروفات</p></div>
-          <div id="expenses-bulk-bar" style="display:none;padding:12px 16px;background:var(--danger);border-radius:12px;margin-top:12px;align-items:center;justify-content:space-between;gap:12px">
-            <span style="color:#fff;font-size:13px;font-weight:600" id="expenses-selected-count">0 محدد</span>
-            <button class="btn" onclick="bulkDeleteExpenses('expenses')" style="background:rgba(255,255,255,0.2);color:#fff;border:none;font-size:13px;padding:6px 16px"><i class='bx bx-trash'></i> حذف المحدد</button>
-          </div>
           </div>
         </div>
-      </section>
 
+        <!-- ══ TAB: CASH FLOW ══ -->
+        <div id="acc-tab-cashflow" class="acc-tab-content" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+            <h3 style="margin:0"><i class='bx bx-bar-chart-alt-2'></i> التدفق النقدي</h3>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <select id="cashflow-period" onchange="loadCashFlowReport()" style="padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:var(--font);font-size:12px">
+                <option value="this_month">هذا الشهر</option><option value="last_month">الشهر الماضي</option>
+                <option value="this_quarter">هذا الربع</option><option value="this_year">هذا العام</option>
+                <option value="all">الكل</option>
+              </select>
+              <button class="btn btn-outline btn-sm" onclick="exportCashFlow()"><i class='bx bx-download'></i> تصدير</button>
+            </div>
+          </div>
+          <!-- CF KPIs -->
+          <div class="acc-kpi-strip" style="margin-bottom:16px">
+            <div class="acc-kpi acc-kpi-g" style="cursor:default"><div class="acc-kpi-ico"><i class='bx bx-down-arrow-alt'></i></div><div><div class="acc-kpi-val" id="cf-inflow">0</div><div class="acc-kpi-lbl">التدفق الوارد</div></div></div>
+            <div class="acc-kpi acc-kpi-r" style="cursor:default"><div class="acc-kpi-ico"><i class='bx bx-up-arrow-alt'></i></div><div><div class="acc-kpi-val" id="cf-outflow">0</div><div class="acc-kpi-lbl">التدفق الصادر</div></div></div>
+            <div class="acc-kpi acc-kpi-p" style="cursor:default"><div class="acc-kpi-ico"><i class='bx bx-transfer-alt'></i></div><div><div class="acc-kpi-val" id="cf-net">0</div><div class="acc-kpi-lbl">صافي التدفق</div></div></div>
+          </div>
+          <div class="card" style="margin-bottom:14px;padding:14px 16px">
+            <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:10px"><i class='bx bx-wallet-alt'></i> الإيرادات حسب طريقة الدفع</div>
+            <div id="cf-by-method" class="acc-pmbar"></div>
+          </div>
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="acc-thead"><h3><i class='bx bx-table'></i> التفصيل الشهري (آخر 12 شهر)</h3></div>
+            <div class="table-responsive">
+              <table id="cashflow-table">
+                <thead><tr><th>الشهر</th><th>الإيرادات</th><th>المصروفات</th><th>صافي الربح</th><th>هامش %</th><th>التراكمي</th></tr></thead>
+                <tbody id="cashflow-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ TAB: BALANCES ══ -->
+        <div id="acc-tab-balances" class="acc-tab-content" style="display:none">
+          <!-- Payment Sources -->
+          <div class="card" style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+              <h3 style="margin:0;font-size:14px"><i class='bx bx-transfer-alt'></i> مصادر استلام الفلوس</h3>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <input type="date" id="payment-sources-from" style="padding:6px 9px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:var(--font);font-size:12px">
+                <span style="color:var(--text-muted);font-size:12px">إلى</span>
+                <input type="date" id="payment-sources-to" style="padding:6px 9px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:var(--font);font-size:12px">
+                <button class="btn btn-sm btn-primary" onclick="loadPaymentSources()"><i class='bx bx-search'></i></button>
+                <button class="btn btn-sm btn-outline" onclick="loadPaymentSources('all')">الكل</button>
+              </div>
+            </div>
+            <div id="payment-sources-container"><div class="empty-state" style="padding:16px"><p>اضغط <strong>الكل</strong> لعرض مصادر الدفع</p></div></div>
+          </div>
+          <!-- Client & Supplier Balances -->
+          <div class="dashboard-grid" style="margin-bottom:14px">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <h3 style="margin:0;font-size:13px"><i class='bx bx-user'></i> أرصدة العملاء <small style="color:var(--text-muted);font-weight:400">(عليهم)</small></h3>
+                <button class="btn btn-sm btn-primary" onclick="openAdjustBalance('client')"><i class='bx bx-plus'></i></button>
+              </div>
+              <div id="acc-client-balances"></div>
+            </div>
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <h3 style="margin:0;font-size:13px"><i class='bx bx-store'></i> أرصدة الموردين <small style="color:var(--text-muted);font-weight:400">(لينا عندهم)</small></h3>
+                <button class="btn btn-sm btn-primary" onclick="openAdjustBalance('supplier')"><i class='bx bx-plus'></i></button>
+              </div>
+              <div id="acc-supplier-balances"></div>
+            </div>
+          </div>
+          <!-- Outstanding -->
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="acc-thead">
+              <h3><i class='bx bx-time-five'></i> قائمة المستحقات</h3>
+              <button class="btn btn-sm btn-outline" onclick="refreshBalances()"><i class='bx bx-refresh'></i> تحديث</button>
+            </div>
+            <div class="table-responsive">
+              <table id="outstanding-table" style="display:none">
+                <thead><tr><th>الاسم</th><th>النوع</th><th>المبلغ المستحق</th><th>الحركات</th><th>إجراءات</th></tr></thead>
+                <tbody id="outstanding-tbody"></tbody>
+              </table>
+            </div>
+            <div id="outstanding-empty" class="empty-state"><p>لا توجد مستحقات ✅</p></div>
+          </div>
+        </div>
+
+        <!-- ══ TAB: SETTINGS ══ -->
+        <div id="acc-tab-acc-settings" class="acc-tab-content" style="display:none">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
+            <div class="card">
+              <h3 style="margin-bottom:14px"><i class='bx bx-money'></i> العملة</h3>
+              <div class="form-group"><label>العملة الافتراضية</label>
+                <select id="acc-setting-currency" onchange="saveAccSettings()">
+                  <option value="EGP">🇪🇬 ج.م — جنيه مصري</option>
+                  <option value="SAR">🇸🇦 ر.س — ريال سعودي</option>
+                  <option value="AED">🇦🇪 د.إ — درهم إماراتي</option>
+                </select>
+              </div>
+              <div class="form-group"><label>رمز العملة</label><input type="text" id="acc-setting-currency-symbol" placeholder="ج.م" oninput="saveAccSettings()"></div>
+            </div>
+            <div class="card">
+              <h3 style="margin-bottom:14px"><i class='bx bx-credit-card'></i> طرق الدفع المفعّلة</h3>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <label class="acc-tog"><input type="checkbox" id="pm-cash" checked onchange="saveAccSettings()"><span class="acc-trk"></span><span>💵 كاش</span></label>
+                <label class="acc-tog"><input type="checkbox" id="pm-instapay" checked onchange="saveAccSettings()"><span class="acc-trk"></span><span>📱 انستاباي</span></label>
+                <label class="acc-tog"><input type="checkbox" id="pm-vodafone" checked onchange="saveAccSettings()"><span class="acc-trk"></span><span>📲 فودافون كاش</span></label>
+              </div>
+            </div>
+            <div class="card">
+              <h3 style="margin-bottom:14px"><i class='bx bx-phone'></i> أرقام الحسابات</h3>
+              <div class="form-group"><label>رقم انستاباي</label><input type="text" id="acc-instapay-account" placeholder="01xxxxxxxxx" oninput="saveAccSettings()"></div>
+              <div class="form-group"><label>رقم فودافون كاش</label><input type="text" id="acc-vodafone-account" placeholder="01xxxxxxxxx" oninput="saveAccSettings()"></div>
+            </div>
+            <div class="card">
+              <h3 style="margin-bottom:14px"><i class='bx bx-bell'></i> التنبيهات</h3>
+              <div class="form-group"><label>تنبيه تجاوز المصروفات (ج.م/شهر)</label><input type="number" id="acc-alert-expense" placeholder="0" oninput="saveAccSettings()"></div>
+              <div class="form-group"><label>تذكير المستحقات بعد (أيام)</label><input type="number" id="acc-alert-overdue" placeholder="30" oninput="saveAccSettings()"></div>
+              <div style="padding:9px 12px;border-radius:var(--radius-sm);background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);font-size:11px;color:var(--success);font-weight:600"><i class='bx bx-check-circle'></i> الإعدادات تُحفظ تلقائياً</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
       <!-- Reports Page -->
       <section id="page-reports" class="page">
         <div class="tabs-bar">
@@ -2976,7 +3245,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.2.5 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.2.7 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -3752,6 +4021,43 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <option value="cancelled" data-i18n="service_cancelled">ملغاة</option>
           </select>
         </div>
+      </div>
+      <!-- Payment Method for Service -->
+      <div class="form-row">
+        <div class="form-group">
+          <label data-i18n="lbl_payment_method">طريقة الدفع</label>
+          <select id="service-payment-method" onchange="toggleServicePaymentFields()">
+            <option value="">-- اختر طريقة الدفع --</option>
+            <option value="cash">💵 كاش</option>
+            <option value="instapay">📱 انستاباي</option>
+            <option value="vodafone">📲 فودافون كاش</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label data-i18n="lbl_payment_status">حالة الدفع</label>
+          <select id="service-payment-status">
+            <option value="unpaid">غير مدفوع</option>
+            <option value="paid">مدفوع بالكامل</option>
+            <option value="partial">مدفوع جزئياً</option>
+          </select>
+        </div>
+      </div>
+      <div id="service-payment-details" style="display:none">
+        <!-- Cash fields -->
+        <div id="service-cash-fields" style="display:none">
+          <div class="form-row">
+            <div class="form-group"><label>المبلغ المدفوع</label><input type="number" id="service-cash-paid" step="0.01" min="0" placeholder="0.00"></div>
+            <div class="form-group"><label>الباقي</label><input type="number" id="service-cash-change" step="0.01" min="0" placeholder="0.00" readonly style="background:var(--bg)"></div>
+          </div>
+        </div>
+        <!-- Transfer fields (instapay/vodafone/bank) -->
+        <div id="service-transfer-fields" style="display:none">
+          <div class="form-row">
+            <div class="form-group"><label>رقم التحويل</label><input type="text" id="service-transfer-number" placeholder="أدخل رقم التحويل"></div>
+            <div class="form-group"><label>اسم المرسل</label><input type="text" id="service-transfer-sender" placeholder="اسم صاحب الحساب"></div>
+          </div>
+        </div>
+
       </div>
       <div class="form-group"><label data-i18n="th_notes">ملاحظات</label><textarea id="service-notes" rows="2"></textarea></div>
       <div class="modal-footer">
@@ -5181,7 +5487,7 @@ function openCustomSelect(select, listKey, options, title) {
   
   const optionsData = Array.from(select.options).map((opt, i) => {
     if (opt.value === '__other__') {
-      return { html: `<div class="cs-divider"></div><div class="cs-option cs-other" data-value="__other__">' + t('other_option') + '</div>` };
+      return { html: `<div class="cs-divider"></div><div class="cs-option cs-other" data-value="__other__">${t('other_option')}</div>` };
     }
     const selected = opt.value === select.value ? ' selected' : '';
     const divider = i > 0 && select.options[i-1].value !== '' ? '<div class="cs-divider"></div>' : '';
@@ -7082,7 +7388,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.2.5';
+  if (backupEl) backupEl.textContent = 'v7.2.7';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -11757,6 +12063,9 @@ function openNewService() {
   document.getElementById('service-id').value = '';
   document.getElementById('service-date').value = new Date().toISOString().split('T')[0];
   document.getElementById('service-status').value = 'pending';
+  document.getElementById('service-payment-method').value = '';
+  document.getElementById('service-payment-status').value = 'unpaid';
+  toggleServicePaymentFields();
   
   const sel = document.getElementById('service-client');
   sel.innerHTML = '<option value="">' + t('choose_client') + '</option>' +
@@ -11764,6 +12073,29 @@ function openNewService() {
     '<option value="__other__">' + t('other_add_client') + '</option>';
   
   openModal('modal-service');
+}
+
+function toggleServicePaymentFields() {
+  const method = document.getElementById('service-payment-method').value;
+  const details = document.getElementById('service-payment-details');
+  const cashFields = document.getElementById('service-cash-fields');
+  const transferFields = document.getElementById('service-transfer-fields');
+  
+  details.style.display = method ? 'block' : 'none';
+  cashFields.style.display = (method === 'cash') ? 'block' : 'none';
+  transferFields.style.display = (['instapay','vodafone'].includes(method)) ? 'block' : 'none';
+  
+  // Auto-calc change for cash
+  if (method === 'cash') {
+    const paidInput = document.getElementById('service-cash-paid');
+    const changeInput = document.getElementById('service-cash-change');
+    const priceInput = document.getElementById('service-price');
+    paidInput.oninput = () => {
+      const paid = parseFloat(paidInput.value) || 0;
+      const price = parseFloat(priceInput.value) || 0;
+      changeInput.value = paid > price ? (paid - price).toFixed(2) : '0.00';
+    };
+  }
 }
 
 async function editService(id) {
@@ -11777,6 +12109,18 @@ async function editService(id) {
   document.getElementById('service-price').value = s.price || 0;
   document.getElementById('service-status').value = s.status || 'pending';
   document.getElementById('service-notes').value = s.notes || '';
+  document.getElementById('service-payment-method').value = s.paymentMethod || '';
+  document.getElementById('service-payment-status').value = s.paymentStatus || 'unpaid';
+  toggleServicePaymentFields();
+  if (s.paymentData) {
+    if (s.paymentMethod === 'cash') {
+      document.getElementById('service-cash-paid').value = s.paymentData.amountPaid || '';
+      document.getElementById('service-cash-change').value = s.paymentData.change || '';
+    } else if (['instapay','vodafone'].includes(s.paymentMethod)) {
+      document.getElementById('service-transfer-number').value = s.paymentData.transferNumber || '';
+      document.getElementById('service-transfer-sender').value = s.paymentData.senderName || '';
+    }
+  }
   
   const sel = document.getElementById('service-client');
   sel.innerHTML = '<option value="">' + t('choose_client') + '</option>' +
@@ -11791,6 +12135,16 @@ async function saveService(e) {
   e.preventDefault();
   const id = document.getElementById('service-id').value;
   const clientSel = document.getElementById('service-client');
+  const payMethod = document.getElementById('service-payment-method').value;
+  
+  // Build payment data based on method
+  let paymentData = {};
+  if (payMethod === 'cash') {
+    paymentData = { amountPaid: parseFloat(document.getElementById('service-cash-paid').value) || 0, change: parseFloat(document.getElementById('service-cash-change').value) || 0 };
+  } else if (['instapay','vodafone'].includes(payMethod)) {
+    paymentData = { transferNumber: document.getElementById('service-transfer-number').value.trim(), senderName: document.getElementById('service-transfer-sender').value.trim() };
+  }
+  
   const data = {
     date: document.getElementById('service-date').value,
     clientId: parseInt(clientSel.value) || null,
@@ -11799,6 +12153,9 @@ async function saveService(e) {
     location: document.getElementById('service-location').value.trim(),
     price: parseFloat(document.getElementById('service-price').value) || 0,
     status: document.getElementById('service-status').value,
+    paymentMethod: payMethod,
+    paymentStatus: document.getElementById('service-payment-status').value,
+    paymentData: payMethod ? paymentData : {},
     notes: document.getElementById('service-notes').value.trim(),
   };
   
@@ -11848,6 +12205,14 @@ function renderServicesTableInto(tbodyId, tableId, emptyId, services) {
     'cancelled': '<span class="badge badge-low">ملغاة</span>',
   };
   
+  const pmLabels = {
+    'cash': '<span style="font-size:11px;padding:2px 7px;border-radius:20px;background:rgba(34,197,94,0.1);color:var(--success);font-weight:600">💵 كاش</span>',
+    'instapay': '<span style="font-size:11px;padding:2px 7px;border-radius:20px;background:rgba(0,200,255,0.1);color:#0891b2;font-weight:600">📱 انستاباي</span>',
+    'vodafone': '<span style="font-size:11px;padding:2px 7px;border-radius:20px;background:rgba(239,68,68,0.1);color:var(--danger);font-weight:600">📲 فودافون</span>',
+    'bank': '<span style="font-size:11px;padding:2px 7px;border-radius:20px;background:rgba(108,60,233,0.1);color:var(--primary);font-weight:600">🏦 بنكي</span>',
+    'credit': '<span style="font-size:11px;padding:2px 7px;border-radius:20px;background:rgba(245,158,11,0.1);color:var(--warning);font-weight:600">💳 بطاقة</span>',
+  };
+  
   tbody.innerHTML = services.map(s => `<tr>
     <td><input type="checkbox" class="row-select" data-id="${s.id}" data-section="${sectionName}" onchange="updateBulkBar('${sectionName}')" style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer"></td>
     <td>${formatDate(s.date)}</td>
@@ -11855,6 +12220,7 @@ function renderServicesTableInto(tbodyId, tableId, emptyId, services) {
     <td>${s.description || '-'}</td>
     <td>${s.location || '-'}</td>
     <td>${formatMoney(s.price || 0)}</td>
+    <td>${s.paymentMethod ? (pmLabels[s.paymentMethod] || s.paymentMethod) : '<span style="color:var(--text-muted);font-size:11px">—</span>'}</td>
     <td>${statusLabels[s.status] || s.status}</td>
     <td class="actions-cell">
       <button class="btn-icon" onclick="editService(${s.id})"><i class='bx bx-edit'></i></button>
@@ -13417,7 +13783,7 @@ async function seedTestInvoices() {
 // Run seed after DB is ready
 setTimeout(() => { if (_cacheReady) seedTestInvoices(); }, 2000);
 </script>
-<script src="system-check.js"></script>
+<!-- system-check: inline single-file build -->
 
 <!-- ===== SCANNER SETTINGS MODAL ===== -->
 <div id="modal-scanner-picker" class="modal" style="z-index:9999">
@@ -13457,6 +13823,368 @@ setTimeout(() => { if (_cacheReady) seedTestInvoices(); }, 2000);
     </div>
   </div>
 </div>
+
+
+<script>
+// ════════════════════════════════════════════════
+// ACCOUNTING MODULE v10
+// ════════════════════════════════════════════════
+
+const PM_LBL = { cash:'💵 كاش', instapay:'📱 انستاباي', vodafone:'📲 فودافون' };
+const PM_RGB = { cash:'34,197,94', instapay:'0,200,255', vodafone:'239,68,68' };
+const ST_CFG = {
+  paid:    {l:'مكتمل ✅',  bg:'rgba(34,197,94,.1)',  c:'var(--success)'},
+  partial: {l:'جزئي 🟡',  bg:'rgba(245,158,11,.1)', c:'var(--warning)'},
+  unpaid:  {l:'لم يدفع ❌',bg:'rgba(239,68,68,.1)',  c:'var(--danger)'},
+  pending: {l:'معلق ⏳',  bg:'rgba(107,114,128,.1)',c:'var(--text-muted)'},
+};
+const TY_CFG = {
+  invoice:     {l:'📄 بيع',    r:'34,197,94'},
+  purchase:    {l:'🛒 شراء',   r:'239,68,68'},
+  maintenance: {l:'🔧 صيانة',  r:'0,200,255'},
+  service:     {l:'🛠 خدمة',   r:'108,60,233'},
+  ledger:      {l:'💳 دفعة',   r:'245,158,11'},
+};
+
+function _pmBadge(m) {
+  if (!m) return '<span style="color:var(--text-muted);font-size:11px">—</span>';
+  const c = PM_RGB[m]||'107,114,128';
+  return `<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(${c},.12);color:rgba(${c},1);font-weight:700">${PM_LBL[m]||m}</span>`;
+}
+function _stBadge(s) {
+  const cfg = ST_CFG[s]||{l:s,bg:'rgba(107,114,128,.1)',c:'var(--text-muted)'};
+  return `<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${cfg.bg};color:${cfg.c};font-weight:700">${cfg.l}</span>`;
+}
+function _tyBadge(t) {
+  const cfg = TY_CFG[t]||{l:t,r:'107,114,128'};
+  return `<span style="font-size:11px;padding:2px 7px;border-radius:20px;background:rgba(${cfg.r},.1);color:rgba(${cfg.r},1);font-weight:700">${cfg.l}</span>`;
+}
+
+// ── TAB SWITCHER ──────────────────────────────────
+function switchAccTab(tab) {
+  document.querySelectorAll('.acc-tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.acc-tabbtn').forEach(b => b.classList.remove('atv'));
+  const el = document.getElementById('acc-tab-' + tab);
+  if (el) el.style.display = 'block';
+  const btn = document.querySelector('.acc-tabbtn[data-tab="' + tab + '"]');
+  if (btn) btn.classList.add('atv');
+  if (tab === 'transactions') loadTransactionsTable('all');
+  if (tab === 'income')       loadIncomeTable('all');
+  if (tab === 'expenses')     renderExpensesTable();
+  if (tab === 'cashflow')     loadCashFlowReport();
+  if (tab === 'balances')     { loadPaymentSources('all'); refreshBalances(); }
+  if (tab === 'acc-settings') loadAccSettings();
+}
+
+// ── BUILD TRANSACTIONS — uses already-loaded global arrays ──
+function _buildTxns() {
+  const rows = [];
+  const inv = allInvoices || [];
+  const dev = allDevices  || [];
+  const svc = allServices || [];
+  const cli = allClients  || [];
+  const sup = allSuppliers|| [];
+
+  inv.filter(i=>i.type==='sale').forEach(i=>{
+    const tot=i.total||0, paid=i.paidAmount||0, rem=Math.max(0,tot-paid);
+    const ps=i.paymentStatus||(paid>=tot&&tot>0?'paid':paid>0?'partial':'unpaid');
+    const cname=cli.find(c=>c.id===i.clientId)?.name||i.clientName||'-';
+    rows.push({date:i.date||'',type:'invoice',party:cname,dir:'in',
+      desc:'فاتورة بيع #'+(i.number||i.id||''),method:i.paymentMethod||'',
+      tot,paid,rem,ps,fn:`editInvoice(${i.id})`});
+  });
+  inv.filter(i=>i.type==='purchase').forEach(i=>{
+    const tot=i.total||0, paid=i.paidAmount||0, rem=Math.max(0,tot-paid);
+    const ps=i.paymentStatus||(paid>=tot&&tot>0?'paid':paid>0?'partial':'unpaid');
+    const sname=sup.find(s=>s.id===i.supplierId)?.name||i.supplierName||'-';
+    rows.push({date:i.date||'',type:'purchase',party:sname,dir:'out',
+      desc:'فاتورة شراء #'+(i.number||i.id||''),method:i.paymentMethod||'',
+      tot,paid,rem,ps,fn:`editInvoice(${i.id})`});
+  });
+  dev.forEach(d=>{
+    const tot=d.sellingPrice||0, pd=d.paymentData||{};
+    const paid=d.paymentMethod==='cash'?(pd.amountPaid||tot):(d.paymentMethod?tot:0);
+    const rem=Math.max(0,tot-paid);
+    const ps=d.paymentMethod?(paid>=tot?'paid':paid>0?'partial':'unpaid'):'pending';
+    const date=pd.payDate||pd.transferDate||d.exitDate||d.intakeDate||d.date||'';
+    rows.push({date,type:'maintenance',party:d.clientName||'-',dir:'in',
+      desc:'صيانة #'+(d.orderNumber||d.id||'')+(d.deviceName?' — '+d.deviceName:''),
+      method:d.paymentMethod||'',tot,paid,rem,ps,fn:`editDevice(${d.id})`});
+  });
+  svc.forEach(s=>{
+    const tot=s.price||0;
+    const ps=s.paymentStatus||(s.paymentMethod&&s.status==='completed'?'paid':s.paymentMethod?'partial':'pending');
+    const paid=ps==='paid'?tot:(s.paymentData?.amountPaid||0);
+    const rem=Math.max(0,tot-paid);
+    rows.push({date:s.date||'',type:'service',party:s.clientName||'-',dir:'in',
+      desc:s.description||'خدمة/زيارة',method:s.paymentMethod||'',
+      tot,paid,rem,ps,fn:`editService(${s.id})`});
+  });
+  cli.forEach(c=>(c.payments||[]).filter(p=>p.type==='payment_in').forEach(p=>{
+    rows.push({date:p.date?p.date.split('T')[0]:'',type:'ledger',party:c.name,dir:'in',
+      desc:'دفعة من العميل'+(p.notes?' — '+p.notes:''),method:p.method||'',
+      tot:p.amount||0,paid:p.amount||0,rem:0,ps:'paid',fn:`openAdjustBalance('client',${c.id})`});
+  }));
+  sup.forEach(s=>(s.payments||[]).filter(p=>p.type==='payment_out').forEach(p=>{
+    rows.push({date:p.date?p.date.split('T')[0]:'',type:'ledger',party:s.name,dir:'out',
+      desc:'دفعة للمورد'+(p.notes?' — '+p.notes:''),method:p.method||'',
+      tot:p.amount||0,paid:p.amount||0,rem:0,ps:'paid',fn:`openAdjustBalance('supplier',${s.id})`});
+  }));
+
+  return rows.sort((a,b)=>(b.date>a.date?1:-1));
+}
+
+// ── TRANSACTIONS TABLE ────────────────────────────
+function loadTransactionsTable(mode) {
+  const all = _buildTxns();
+  const from = mode==='all'?'':(document.getElementById('txn-from')?.value||'');
+  const to   = mode==='all'?'':(document.getElementById('txn-to')?.value||'');
+  const mth  = document.getElementById('txn-method-filter')?.value||'';
+  const typ  = document.getElementById('txn-type-filter')?.value||'';
+  const st   = document.getElementById('txn-status-filter')?.value||'';
+
+  let rows = all;
+  if (from) rows = rows.filter(r=>r.date>=from);
+  if (to)   rows = rows.filter(r=>r.date<=to);
+  if (mth)  rows = rows.filter(r=>r.method===mth);
+  if (typ)  rows = rows.filter(r=>r.type===typ);
+  if (st)   rows = rows.filter(r=>r.ps===st);
+
+  const tIn  = rows.filter(r=>r.dir==='in').reduce((s,r)=>s+r.tot,0);
+  const tOut = rows.filter(r=>r.dir==='out').reduce((s,r)=>s+r.tot,0);
+  const tPd  = rows.reduce((s,r)=>s+r.paid,0);
+  const tRem = rows.reduce((s,r)=>s+r.rem,0);
+
+  const sb = document.getElementById('txn-sum-bar');
+  if (sb) sb.innerHTML =
+    `<div class="acc-smc acc-smc-g"><div class="acc-smc-lbl">إجمالي الوارد</div><div class="acc-smc-val">${formatMoney(tIn)}</div></div>`+
+    `<div class="acc-smc acc-smc-r"><div class="acc-smc-lbl">إجمالي الصادر</div><div class="acc-smc-val">${formatMoney(tOut)}</div></div>`+
+    `<div class="acc-smc acc-smc-g"><div class="acc-smc-lbl">المدفوع فعلاً</div><div class="acc-smc-val">${formatMoney(tPd)}</div></div>`+
+    `<div class="acc-smc acc-smc-r"><div class="acc-smc-lbl">المتبقي</div><div class="acc-smc-val">${formatMoney(tRem)}</div></div>`+
+    `<div class="acc-smc acc-smc-p"><div class="acc-smc-lbl">عدد العمليات</div><div class="acc-smc-val">${rows.length}</div></div>`;
+
+  const badge = document.getElementById('txn-badge');
+  if (badge) badge.textContent = rows.length + ' عملية';
+  const table = document.getElementById('txn-table');
+  const empty = document.getElementById('txn-empty');
+  const tbody = document.getElementById('txn-tbody');
+
+  if (!rows.length) { if(table)table.style.display='none'; if(empty)empty.style.display=''; return; }
+  if(table)table.style.display=''; if(empty)empty.style.display='none';
+
+  tbody.innerHTML = rows.map(r=>{
+    const di=r.dir==='in'
+      ?'<i class="bx bx-down-arrow-alt" style="color:var(--success);font-size:14px;vertical-align:middle"></i>'
+      :'<i class="bx bx-up-arrow-alt" style="color:var(--danger);font-size:14px;vertical-align:middle"></i>';
+    return `<tr>
+      <td style="white-space:nowrap;font-size:12px">${formatDate(r.date)}</td>
+      <td>${_tyBadge(r.type)} ${di}</td>
+      <td style="font-weight:600;font-size:13px">${r.party}</td>
+      <td style="font-size:11px;color:var(--text-muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.desc}">${r.desc}</td>
+      <td>${_pmBadge(r.method)}</td>
+      <td style="font-weight:700;font-size:13px">${formatMoney(r.tot)}</td>
+      <td style="color:var(--success);font-weight:600;font-size:13px">${r.paid>0?formatMoney(r.paid):'—'}</td>
+      <td style="${r.rem>0?'font-weight:700;color:var(--danger)':'color:var(--text-muted)'};font-size:13px">${r.rem>0?formatMoney(r.rem):'—'}</td>
+      <td>${_stBadge(r.ps)}</td>
+      <td><button class="btn-icon" onclick="${r.fn}"><i class='bx bx-edit'></i></button></td>
+    </tr>`;
+  }).join('');
+}
+
+function exportTransactionsCSV() {
+  const rows = _buildTxns();
+  let csv = '﻿التاريخ,النوع,الطرف,الوصف,طريقة الدفع,المبلغ الكلي,المدفوع,المتبقي,الحالة\n';
+  rows.forEach(r=>{
+    csv += [r.date,TY_CFG[r.type]?.l||r.type,r.party,r.desc,PM_LBL[r.method]||r.method||'',
+      r.tot,r.paid,r.rem,ST_CFG[r.ps]?.l||r.ps
+    ].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')+'\n';
+  });
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='transactions.csv';a.click();
+  URL.revokeObjectURL(url); toast('تم التصدير');
+}
+
+// ── INCOME TABLE ──────────────────────────────────
+function loadIncomeTable(mode) {
+  let rows = _buildTxns().filter(r=>r.dir==='in');
+  const from = mode==='all'?'':(document.getElementById('income-from')?.value||'');
+  const to   = mode==='all'?'':(document.getElementById('income-to')?.value||'');
+  const src  = document.getElementById('income-src-filter')?.value||'';
+  if (from) rows = rows.filter(r=>r.date>=from);
+  if (to)   rows = rows.filter(r=>r.date<=to);
+  if (src)  rows = rows.filter(r=>r.type===src);
+
+  const tot=rows.reduce((s,r)=>s+r.tot,0);
+  const paid=rows.reduce((s,r)=>s+r.paid,0);
+  const rem=rows.reduce((s,r)=>s+r.rem,0);
+
+  const sb=document.getElementById('income-sum-bar');
+  if (sb) sb.innerHTML=
+    `<div class="acc-smc acc-smc-g"><div class="acc-smc-lbl">إجمالي الإيرادات</div><div class="acc-smc-val">${formatMoney(tot)}</div></div>`+
+    `<div class="acc-smc acc-smc-g"><div class="acc-smc-lbl">المدفوع فعلاً</div><div class="acc-smc-val">${formatMoney(paid)}</div></div>`+
+    `<div class="acc-smc acc-smc-r"><div class="acc-smc-lbl">المتبقي</div><div class="acc-smc-val">${formatMoney(rem)}</div></div>`+
+    `<div class="acc-smc acc-smc-b"><div class="acc-smc-lbl">عدد العمليات</div><div class="acc-smc-val">${rows.length}</div></div>`+
+    `<div class="acc-smc acc-smc-p"><div class="acc-smc-lbl">متوسط العملية</div><div class="acc-smc-val">${formatMoney(rows.length?tot/rows.length:0)}</div></div>`;
+
+  const pmTot={};
+  rows.forEach(r=>{if(r.method)pmTot[r.method]=(pmTot[r.method]||0)+r.tot;});
+  const pb=document.getElementById('income-pm-bar');
+  if (pb) pb.innerHTML=Object.entries(pmTot).map(([m,amt])=>{
+    const c=PM_RGB[m]||'107,114,128';
+    return `<div class="acc-pmchip" style="background:rgba(${c},.1);color:rgba(${c},1);border-color:rgba(${c},.3)">${PM_LBL[m]||m} — ${formatMoney(amt)}</div>`;
+  }).join('');
+
+  const table=document.getElementById('income-table');
+  const empty=document.getElementById('income-empty');
+  const tbody=document.getElementById('income-tbody');
+  const badge=document.getElementById('income-badge');
+  if(badge)badge.textContent=rows.length+' عملية';
+  if(!rows.length){if(table)table.style.display='none';if(empty)empty.style.display='';return;}
+  if(table)table.style.display='';if(empty)empty.style.display='none';
+
+  tbody.innerHTML=rows.map(r=>`<tr>
+    <td style="white-space:nowrap;font-size:12px">${formatDate(r.date)}</td>
+    <td>${_tyBadge(r.type)}</td>
+    <td style="font-weight:600">${r.party}</td>
+    <td style="font-size:11px;color:var(--text-muted)">${r.desc}</td>
+    <td>${_pmBadge(r.method)}</td>
+    <td style="font-weight:700">${formatMoney(r.tot)}</td>
+    <td style="color:var(--success);font-weight:600">${r.paid>0?formatMoney(r.paid):'—'}</td>
+    <td style="${r.rem>0?'font-weight:700;color:var(--danger)':'color:var(--text-muted)'}">${r.rem>0?formatMoney(r.rem):'—'}</td>
+    <td>${_stBadge(r.ps)}</td>
+  </tr>`).join('');
+}
+
+// ── CASH FLOW ─────────────────────────────────────
+function loadCashFlowReport() {
+  const period=document.getElementById('cashflow-period')?.value||'this_month';
+  const now=new Date();
+  let fd=null, td=new Date(now);
+  if(period==='this_month')  fd=new Date(now.getFullYear(),now.getMonth(),1);
+  else if(period==='last_month'){fd=new Date(now.getFullYear(),now.getMonth()-1,1);td=new Date(now.getFullYear(),now.getMonth(),0);}
+  else if(period==='this_quarter'){const q=Math.floor(now.getMonth()/3);fd=new Date(now.getFullYear(),q*3,1);}
+  else if(period==='this_year') fd=new Date(now.getFullYear(),0,1);
+
+  const txns=_buildTxns();
+  const exp=allExpenses||[];
+  const inR =txns.filter(r=>r.dir==='in'&&(!fd||(new Date(r.date)>=fd&&new Date(r.date)<=td)));
+  const outR=exp.filter(r=>!fd||(new Date(r.date)>=fd&&new Date(r.date)<=td));
+  const inflow=inR.reduce((s,r)=>s+r.tot,0);
+  const outflow=outR.reduce((s,r)=>s+(r.amount||0),0);
+  const net=inflow-outflow;
+
+  const g=id=>document.getElementById(id);
+  if(g('cf-inflow'))  g('cf-inflow').textContent=formatMoney(inflow);
+  if(g('cf-outflow')) g('cf-outflow').textContent=formatMoney(outflow);
+  if(g('cf-net')){g('cf-net').textContent=formatMoney(net);g('cf-net').style.color=net>=0?'var(--success)':'var(--danger)';}
+
+  const mTot={};
+  inR.forEach(r=>{if(r.method)mTot[r.method]=(mTot[r.method]||0)+r.tot;});
+  const cfM=g('cf-by-method');
+  if(cfM) cfM.innerHTML=Object.keys(mTot).length
+    ?Object.entries(mTot).map(([m,amt])=>{
+        const c=PM_RGB[m]||'107,114,128';
+        const pct=inflow>0?Math.round(amt/inflow*100):0;
+        return `<div class="acc-pmchip" style="background:rgba(${c},.1);color:rgba(${c},1);border-color:rgba(${c},.3)">${PM_LBL[m]||m} — ${formatMoney(amt)} (${pct}%)</div>`;
+      }).join('')
+    :'<span style="color:var(--text-muted);font-size:12px">لا توجد بيانات دفع مسجّلة</span>';
+
+  const months=Array.from({length:12},(_,i)=>{
+    const d=new Date(now.getFullYear(),now.getMonth()-11+i,1);
+    return {y:d.getFullYear(),m:d.getMonth(),label:d.toLocaleDateString('ar-EG',{year:'numeric',month:'long'})};
+  });
+  let cum=0;
+  const cb=g('cashflow-tbody');
+  if(cb) cb.innerHTML=months.map(mo=>{
+    const mIn=txns.filter(r=>{const d=new Date(r.date);return r.dir==='in'&&d.getFullYear()===mo.y&&d.getMonth()===mo.m;}).reduce((s,r)=>s+r.tot,0);
+    const mOut=exp.filter(r=>{const d=new Date(r.date);return d.getFullYear()===mo.y&&d.getMonth()===mo.m;}).reduce((s,r)=>s+(r.amount||0),0);
+    const mNet=mIn-mOut; const mg=mIn>0?Math.round(mNet/mIn*100):0; cum+=mNet;
+    const isCurr=mo.y===now.getFullYear()&&mo.m===now.getMonth();
+    return `<tr style="${isCurr?'background:rgba(108,60,233,.04)':''}">
+      <td style="font-weight:${isCurr?'700':'400'}">${mo.label}${isCurr?' <span style="color:var(--primary);font-size:10px">●</span>':''}</td>
+      <td style="color:var(--success);font-weight:600">${mIn>0?formatMoney(mIn):'—'}</td>
+      <td style="color:var(--danger)">${mOut>0?formatMoney(mOut):'—'}</td>
+      <td style="font-weight:700;color:${mNet>0?'var(--success)':mNet<0?'var(--danger)':'var(--text-muted)'}">${mNet!==0?formatMoney(mNet):'—'}</td>
+      <td><span style="font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;background:${mg>=0?'rgba(34,197,94,.1)':'rgba(239,68,68,.1)'};color:${mg>=0?'var(--success)':'var(--danger)'}">${mIn>0?mg+'%':'—'}</span></td>
+      <td style="font-weight:700;color:${cum>0?'var(--success)':cum<0?'var(--danger)':'var(--text-muted)'}">${formatMoney(cum)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function exportCashFlow() {
+  const rows=document.querySelectorAll('#cashflow-tbody tr');
+  let csv='﻿الشهر,الإيرادات,المصروفات,صافي الربح,هامش%,التراكمي\n';
+  rows.forEach(r=>{csv+=Array.from(r.cells).map(cell=>'"'+cell.textContent.trim().replace(/"/g,'""')+'"').join(',')+'';});
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='cashflow.csv';a.click();
+  URL.revokeObjectURL(url); toast('تم التصدير');
+}
+
+// ── BALANCES ──────────────────────────────────────
+function refreshBalances() {
+  updateAccountingPage();
+  const outstanding=[
+    ...(allClients||[]).filter(c=>(c.balance||0)>0).map(c=>({name:c.name,type:'client',lbl:'عميل',amt:c.balance,cnt:(c.payments||[]).length,id:c.id})),
+    ...(allSuppliers||[]).filter(s=>(s.balance||0)>0).map(s=>({name:s.name,type:'supplier',lbl:'مورد',amt:s.balance,cnt:(s.payments||[]).length,id:s.id})),
+  ].sort((a,b)=>b.amt-a.amt);
+
+  const tbody=document.getElementById('outstanding-tbody');
+  const table=document.getElementById('outstanding-table');
+  const empty=document.getElementById('outstanding-empty');
+  if(!tbody)return;
+  if(!outstanding.length){if(table)table.style.display='none';if(empty)empty.style.display='';return;}
+  if(table)table.style.display='';if(empty)empty.style.display='none';
+  tbody.innerHTML=outstanding.map(o=>`<tr>
+    <td style="font-weight:600">${o.name}</td>
+    <td>${_tyBadge(o.type==='client'?'invoice':'purchase')} <span style="font-size:11px">${o.lbl}</span></td>
+    <td style="font-weight:700;color:var(--danger)">${formatMoney(o.amt)}</td>
+    <td style="color:var(--text-muted);font-size:12px">${o.cnt} حركة</td>
+    <td><button class="btn btn-sm btn-outline" onclick="openAdjustBalance('${o.type}',${o.id})" style="font-size:11px;padding:3px 10px"><i class='bx bx-edit'></i> تسوية</button></td>
+  </tr>`).join('');
+}
+
+// ── SETTINGS ──────────────────────────────────────
+function saveAccSettings() {
+  const g=id=>document.getElementById(id);
+  localStorage.setItem('acc_settings',JSON.stringify({
+    currency:g('acc-setting-currency')?.value,
+    sym:g('acc-setting-currency-symbol')?.value,
+    pmCash:g('pm-cash')?.checked,
+    pmInsta:g('pm-instapay')?.checked,
+    pmVoda:g('pm-vodafone')?.checked,
+    alertExp:g('acc-alert-expense')?.value,
+    alertOver:g('acc-alert-overdue')?.value,
+    instaAcc:g('acc-instapay-account')?.value,
+    vodaAcc:g('acc-vodafone-account')?.value,
+  }));
+}
+function loadAccSettings() {
+  try {
+    const s=JSON.parse(localStorage.getItem('acc_settings')||'{}');
+    const g=id=>document.getElementById(id);
+    if(s.currency)g('acc-setting-currency').value=s.currency;
+    if(s.sym)g('acc-setting-currency-symbol').value=s.sym;
+    if(s.pmCash!==undefined)g('pm-cash').checked=s.pmCash;
+    if(s.pmInsta!==undefined)g('pm-instapay').checked=s.pmInsta;
+    if(s.pmVoda!==undefined)g('pm-vodafone').checked=s.pmVoda;
+    if(s.alertExp)g('acc-alert-expense').value=s.alertExp;
+    if(s.alertOver)g('acc-alert-overdue').value=s.alertOver;
+    if(s.instaAcc)g('acc-instapay-account').value=s.instaAcc;
+    if(s.vodaAcc)g('acc-vodafone-account').value=s.vodaAcc;
+  }catch(e){}
+}
+
+// ── PATCH NAVIGATE ────────────────────────────────
+(function(){
+  const orig=window.navigate;
+  if(orig)window.navigate=function(page,...a){
+    orig(page,...a);
+    if(page==='accounting') setTimeout(()=>switchAccTab('transactions'),200);
+  };
+})();
+</script>
 
 </body>
 </html>
