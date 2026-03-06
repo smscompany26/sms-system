@@ -9,12 +9,12 @@
 <title>SMS — Inventory & Maintenance System</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.3.7 — SMS System
+// v7.3.8 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.3.7');
+console.log('SMS v7.3.8');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -3062,7 +3062,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.3.7</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.3.8</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -3356,7 +3356,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.3.7 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.3.8 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -7512,7 +7512,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.3.7';
+  if (backupEl) backupEl.textContent = 'v7.3.8';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -10082,15 +10082,13 @@ async function printReceipt(invoiceId) {
   let itemsRows = '';
   let itemNum = 0;
   for (const item of inv.items) {
-    const product = await dbGet('products', item.productId);
-    const barcode = product?.barcode || '-';
     itemNum++;
-    itemsRows += `<tr>
-      <td style="text-align:center">${itemNum}</td>
-      <td>${item.productName}<br><span style="font-size:8px;color:#777">#${barcode}</span></td>
-      <td style="text-align:center">${item.quantity}</td>
-      <td>${formatMoney(item.unitPrice)}</td>
-      <td style="font-weight:600">${formatMoney(item.total)}</td>
+    itemsRows += `<tr class="item-row">
+      <td colspan="2" class="item-name">${itemNum}. ${item.productName}</td>
+    </tr>
+    <tr class="item-detail-row">
+      <td class="item-qty-price">${item.quantity} × ${formatMoney(item.unitPrice)}</td>
+      <td class="item-total">${formatMoney(item.total)}</td>
     </tr>`;
   }
   
@@ -10123,8 +10121,10 @@ async function printReceipt(invoiceId) {
       .info-row .label { color: #333; font-weight: 700; }
       .info-row .val { font-weight: 900; }
       .items-table { width: 100%; border-collapse: collapse; margin: 2px 0; }
-      .items-table th { font-size: 8px; color: #000; font-weight: 900; padding: 2px 1px; border-bottom: 1.5px solid #000; text-align: right; }
-      .items-table td { font-size: 9px; padding: 3px 1px; border-bottom: 1px dotted #999; text-align: right; vertical-align: top; font-weight: 700; }
+      .items-table .item-name { font-size: 9px; font-weight: 900; padding: 3px 0 0 0; text-align: right; width: 100%; }
+      .items-table .item-qty-price { font-size: 8.5px; font-weight: 700; color: #333; padding: 0 0 3px 0; text-align: right; }
+      .items-table .item-total { font-size: 9px; font-weight: 900; padding: 0 0 3px 0; text-align: left; white-space: nowrap; }
+      .items-table .item-detail-row td { border-bottom: 1px dashed #bbb; }
       .items-table tr:last-child td { border-bottom: none; }
       .total-section { margin: 3px 0; }
       .total-row { display: flex; justify-content: space-between; font-size: 9.5px; padding: 2px 0; font-weight: 700; }
@@ -10164,10 +10164,10 @@ async function printReceipt(invoiceId) {
     <hr class="sep">
     
     <!-- Items Table -->
-    <table class="items-table">
-      <thead>
-        <tr><th style="text-align:center;width:20px">#</th><th>${t("th_product")}</th><th style="text-align:center;width:30px">${t("th_quantity")}</th><th style="width:55px">${t("th_price")}</th><th style="width:60px">${t("th_total")}</th></tr>
-      </thead>
+    <div style="display:flex;justify-content:space-between;font-size:8px;font-weight:900;color:#000;border-bottom:1.5px solid #000;padding-bottom:2px;margin-bottom:1px">
+      <span>الصنف</span><span>الإجمالي</span>
+    </div>
+    <table class="items-table" style="width:100%">
       <tbody>${itemsRows}</tbody>
     </table>
     
