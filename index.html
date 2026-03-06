@@ -9,12 +9,12 @@
 <title>SMS — Inventory & Maintenance System</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.3.16 — SMS System
+// v7.3.17 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.3.16');
+console.log('SMS v7.3.17');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -2011,8 +2011,11 @@ tr:hover { background: rgba(108,60,233,0.02); }
 <div id="sms-loader">
   <div class="sms-loader-inner">
     <div class="sms-loader-logo">
-      <div class="sms-loader-icon">📦</div>
-      <div class="sms-loader-brand">SMS</div>
+      <div class="sms-loader-icon-wrap">
+        <img id="sms-loader-logo-img" src="" style="display:none;width:72px;height:72px;border-radius:16px;object-fit:cover;">
+        <div id="sms-loader-default-icon" class="sms-loader-icon">📦</div>
+      </div>
+      <div class="sms-loader-brand" id="sms-loader-brand">SMS</div>
     </div>
     <div class="sms-loader-bar-wrap">
       <div class="sms-loader-bar"></div>
@@ -2034,9 +2037,12 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .sms-loader-logo{
   display:flex;flex-direction:column;align-items:center;gap:6px;
 }
+.sms-loader-icon-wrap{
+  display:flex;align-items:center;justify-content:center;
+  animation:sms-pulse 1.4s ease-in-out infinite;
+}
 .sms-loader-icon{
   font-size:52px;
-  animation:sms-pulse 1.4s ease-in-out infinite;
 }
 .sms-loader-brand{
   font-size:26px;font-weight:900;letter-spacing:3px;
@@ -3211,7 +3217,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.3.16</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.3.17</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -3505,7 +3511,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.3.16 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.3.17 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -7670,7 +7676,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.3.16';
+  if (backupEl) backupEl.textContent = 'v7.3.17';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -13854,6 +13860,17 @@ async function applyCompanyBranding() {
     if (sidebarIcon) sidebarIcon.style.display = '';
   }
 
+  // --- Loader Screen ---
+  const loaderImg  = document.getElementById('sms-loader-logo-img');
+  const loaderDef  = document.getElementById('sms-loader-default-icon');
+  const loaderName = document.getElementById('sms-loader-brand');
+  if (loaderName) loaderName.textContent = name;
+  if (logo && loaderImg) {
+    loaderImg.src = logo;
+    loaderImg.style.display = 'block';
+    if (loaderDef) loaderDef.style.display = 'none';
+  }
+
   // --- Login Screen ---
   const loginImg   = document.getElementById('login-logo-img');
   const loginIcon  = document.getElementById('login-default-icon');
@@ -14869,8 +14886,7 @@ function openPersonRuleModal(name) {
   const dl = document.getElementById('prule-names-datalist');
   if (dl) dl.innerHTML = allPersons.map(n => `<option value="${n}">`).join('');
   // فتح modal المكافأة فوق أي modal مفتوحة من غير إغلاقها
-  const modal = document.getElementById('modal-person-rule');
-  modal.style.zIndex = '10500'; // أعلى من أي modal تانية
+  modal.style.zIndex = '10500';
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
   modal.onclick = (e) => { if (e.target === modal) closePersonRuleModal(); };
