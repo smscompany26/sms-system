@@ -2016,6 +2016,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <a href="#" class="nav-sub-item" onclick="navigate('accounting');setTimeout(()=>switchAccTab('expenses'),250)" data-i18n="nav_expenses">المصروفات</a>
           <a href="#" class="nav-sub-item" onclick="navigate('accounting');setTimeout(()=>switchAccTab('cashflow'),250)">التدفق النقدي</a>
           <a href="#" class="nav-sub-item" onclick="navigate('accounting');setTimeout(()=>switchAccTab('balances'),250)">الأرصدة</a>
+          <a href="#" class="nav-sub-item" onclick="navigate('accounting');setTimeout(()=>switchAccTab('employees'),250)">الموظفين</a>
         </div>
       </div>
 
@@ -2658,6 +2659,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <button class="acc-tabbtn" data-tab="expenses"     onclick="switchAccTab('expenses')"><i class='bx bx-trending-down'></i><span>المصروفات</span></button>
           <button class="acc-tabbtn" data-tab="cashflow"     onclick="switchAccTab('cashflow')"><i class='bx bx-bar-chart-alt-2'></i><span>التدفق النقدي</span></button>
           <button class="acc-tabbtn" data-tab="balances"     onclick="switchAccTab('balances')"><i class='bx bx-user-check'></i><span>الأرصدة</span></button>
+          <button class="acc-tabbtn" data-tab="employees"    onclick="switchAccTab('employees')"><i class='bx bx-group'></i><span>الموظفين</span></button>
           <button class="acc-tabbtn" data-tab="acc-settings" onclick="switchAccTab('acc-settings')"><i class='bx bx-cog'></i><span>إعدادات</span></button>
         </div>
 
@@ -2881,6 +2883,114 @@ tr:hover { background: rgba(108,60,233,0.02); }
           </div>
         </div>
 
+        <!-- ══ TAB: EMPLOYEES ══ -->
+        <div id="acc-tab-employees" class="acc-tab-content" style="display:none">
+
+          <!-- الشريط العلوي -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+            <div>
+              <h3 style="margin:0;font-size:16px"><i class='bx bx-badge-check' style="color:var(--primary)"></i> استلامات فريق الشركة</h3>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px">يتعبى تلقائياً من كل معاملة مسجّل فيها اسم المستلم</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-sm btn-outline" onclick="switchEmpSubTab('rules')"><i class='bx bx-cog'></i> قواعد المكافآت</button>
+              <button class="btn btn-sm btn-outline" onclick="exportReceiptsCSV()"><i class='bx bx-download'></i> تصدير</button>
+            </div>
+          </div>
+
+          <!-- Sub tabs -->
+          <div style="display:flex;background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;margin-bottom:16px">
+            <button class="acc-tabbtn atv" id="empsubtab-receipts" style="border-bottom:3px solid var(--primary)" onclick="switchEmpSubTab('receipts')"><i class='bx bx-money-withdraw'></i><span>الاستلامات</span></button>
+            <button class="acc-tabbtn" id="empsubtab-summary"  onclick="switchEmpSubTab('summary')"><i class='bx bx-user-circle'></i><span>ملخص الأشخاص</span></button>
+            <button class="acc-tabbtn" id="empsubtab-rules"    onclick="switchEmpSubTab('rules')"><i class='bx bx-pie-chart-alt-2'></i><span>قواعد المكافآت</span></button>
+          </div>
+
+          <!-- SUB: RECEIPTS -->
+          <div id="emp-sub-receipts">
+            <div class="acc-kpi-strip" style="margin-bottom:14px">
+              <div class="acc-kpi acc-kpi-g" style="cursor:default"><div class="acc-kpi-ico"><i class='bx bx-money-withdraw'></i></div><div><div class="acc-kpi-val" id="rec-total">0</div><div class="acc-kpi-lbl">إجمالي المستلَم</div></div></div>
+              <div class="acc-kpi acc-kpi-p" style="cursor:default"><div class="acc-kpi-ico"><i class='bx bx-user'></i></div><div><div class="acc-kpi-val" id="rec-people-count">0</div><div class="acc-kpi-lbl">عدد المستلِمين</div></div></div>
+              <div class="acc-kpi acc-kpi-o" style="cursor:default"><div class="acc-kpi-ico"><i class='bx bx-receipt'></i></div><div><div class="acc-kpi-val" id="rec-ops-count">0</div><div class="acc-kpi-lbl">عدد العمليات</div></div></div>
+              <div class="acc-kpi" style="cursor:default;border-right:3px solid #0891b2"><div class="acc-kpi-ico" style="background:rgba(8,145,178,.1);color:#0891b2"><i class='bx bx-star'></i></div><div><div class="acc-kpi-val" id="rec-bonuses-total">0</div><div class="acc-kpi-lbl">مكافآت مقترحة</div></div></div>
+            </div>
+            <div class="card" style="padding:12px 16px;margin-bottom:14px">
+              <div class="acc-frow">
+                <div class="acc-fld"><label>الفترة</label>
+                  <select id="rec-period" onchange="onRecPeriodChange()">
+                    <option value="today">اليوم</option><option value="week">هذا الأسبوع</option>
+                    <option value="month" selected>هذا الشهر</option><option value="year">هذه السنة</option>
+                    <option value="custom">مخصص</option><option value="all">الكل</option>
+                  </select>
+                </div>
+                <div id="rec-custom-wrap" style="display:none;gap:6px;flex-wrap:wrap" class="acc-frow">
+                  <div class="acc-fld"><label>من</label><input type="date" id="rec-from"></div>
+                  <div class="acc-fld"><label>إلى</label><input type="date" id="rec-to"></div>
+                </div>
+                <div class="acc-fld"><label>المستلِم</label>
+                  <select id="rec-person-filter" onchange="loadReceiptsTab()"><option value="">الكل</option></select>
+                </div>
+                <div class="acc-fld"><label>المصدر</label>
+                  <select id="rec-source-filter" onchange="loadReceiptsTab()">
+                    <option value="">كل المصادر</option>
+                    <option value="maintenance">🔧 صيانة</option><option value="service">🛠 زيارات</option>
+                    <option value="invoice">📄 فواتير بيع</option><option value="ledger">💳 دفعات يدوية</option>
+                  </select>
+                </div>
+                <div class="acc-fld"><label>طريقة الدفع</label>
+                  <select id="rec-method-filter" onchange="loadReceiptsTab()">
+                    <option value="">الكل</option><option value="cash">💵 كاش</option>
+                    <option value="instapay">📱 انستاباي</option><option value="vodafone">📲 فودافون</option>
+                  </select>
+                </div>
+                <div class="acc-fact">
+                  <button class="btn btn-primary btn-sm" onclick="loadReceiptsTab()"><i class='bx bx-search'></i></button>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="padding:0;overflow:hidden">
+              <div class="acc-thead">
+                <h3><i class='bx bx-list-check'></i> سجل الاستلامات</h3>
+                <span id="rec-badge" class="acc-badge">0 عملية</span>
+              </div>
+              <div class="table-responsive">
+                <table id="rec-table">
+                  <thead><tr><th>التاريخ</th><th>المستلِم</th><th>المصدر</th><th>العميل/المرجع</th><th>المبلغ</th><th>طريقة الدفع</th><th>مكافأة مقترحة</th></tr></thead>
+                  <tbody id="rec-tbody"></tbody>
+                </table>
+              </div>
+              <div id="rec-empty" class="empty-state" style="display:none">
+                <i class='bx bx-user-x' style="font-size:44px;color:var(--text-muted)"></i>
+                <p>لا توجد استلامات في هذه الفترة</p>
+                <small style="color:var(--text-muted)">تأكد من تسجيل اسم المستلم في فورم الدفع (صيانة / زيارات / فواتير)</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB: SUMMARY -->
+          <div id="emp-sub-summary" style="display:none">
+            <div id="emp-summary-cards"></div>
+          </div>
+
+          <!-- SUB: RULES -->
+          <div id="emp-sub-rules" style="display:none">
+            <div class="card" style="margin-bottom:14px">
+              <h3 style="margin-bottom:8px"><i class='bx bx-pie-chart-alt-2'></i> قواعد نسب المكافآت — الافتراضية للشركة</h3>
+              <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">هذه القواعد تنطبق على كل الأشخاص — ما عدا لو في قاعدة خاصة للشخص</p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px" id="default-rules-grid"></div>
+              <div style="margin-top:14px;text-align:center">
+                <button class="btn btn-primary" onclick="saveDefaultRules()"><i class='bx bx-save'></i> حفظ القواعد الافتراضية</button>
+              </div>
+            </div>
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+                <h3 style="margin:0"><i class='bx bx-user-pin'></i> قواعد خاصة لأشخاص</h3>
+                <button class="btn btn-sm btn-primary" onclick="openPersonRuleModal()"><i class='bx bx-plus'></i> إضافة قاعدة</button>
+              </div>
+              <div id="person-rules-list"><div class="empty-state" style="padding:16px"><p>لا توجد قواعد خاصة بعد</p></div></div>
+            </div>
+          </div>
+
+        </div>
         <!-- ══ TAB: SETTINGS ══ -->
         <div id="acc-tab-acc-settings" class="acc-tab-content" style="display:none">
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
@@ -3592,6 +3702,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div class="form-group"><label data-i18n="lbl_transfer_num_req">رقم التحويل *</label><input type="text" id="pay-insta-transfer-number" placeholder="رقم التحويل (إلزامي)" required></div>
           <div class="form-group"><label data-i18n="lbl_transfer_receipt">صورة إيصال التحويل</label><input type="file" id="pay-insta-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'insta-receipt-preview')"><div id="insta-receipt-preview" style="margin-top:6px"></div></div>
         </div>
+        <div class="form-group"><label data-i18n="lbl_receiving_employee">اسم الموظف المستلم</label><input type="text" id="pay-insta-employee" placeholder="اسم من استلم الفلوس" list="maint-emp-datalist"></div>
       </div>
       <!-- بيانات الدفع فودافون كاش -->
       <div id="payment-vodafone-details" class="payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
@@ -3612,7 +3723,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
           <div class="form-group"><label data-i18n="lbl_transfer_num">رقم التحويل</label><input type="text" id="pay-voda-transfer-number" placeholder="رقم التحويل"></div>
           <div class="form-group"><label data-i18n="lbl_transfer_msg_img">صورة رسالة التحويل</label><input type="file" id="pay-voda-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'voda-receipt-preview')"><div id="voda-receipt-preview" style="margin-top:6px"></div></div>
         </div>
+        <div class="form-group"><label data-i18n="lbl_receiving_employee">اسم الموظف المستلم</label><input type="text" id="pay-voda-employee" placeholder="اسم من استلم الفلوس" list="maint-emp-datalist"></div>
       </div>
+      <datalist id="maint-emp-datalist"></datalist>
       <div class="form-row">
         <div class="form-group"><label data-i18n="label_client">العميل</label>
           <select id="device-client" onchange="onClientSelect(this, 'device')"></select>
@@ -3923,8 +4036,8 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="form-row">
           <div class="form-group"><label data-i18n="lbl_transfer_receipt">صورة إيصال التحويل</label><input type="file" id="inv-pay-insta-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'inv-insta-receipt-preview')"><div id="inv-insta-receipt-preview" style="margin-top:6px"></div></div>
         </div>
+        <div class="form-group"><label data-i18n="lbl_receiving_employee">اسم الموظف المستلم</label><input type="text" id="inv-pay-insta-employee" placeholder="اسم من استلم الفلوس" list="inv-emp-datalist"></div>
       </div>
-      <!-- بيانات الدفع فودافون كاش - فاتورة -->
       <div id="inv-payment-vodafone" class="inv-payment-section" style="display:none;padding:12px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px">
         <h4 style="margin-bottom:10px;color:var(--primary)">📲 بيانات الدفع فودافون كاش</h4>
         <div class="form-row">
@@ -3942,9 +4055,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div class="form-row">
           <div class="form-group"><label data-i18n="lbl_transfer_msg_img">صورة رسالة التحويل</label><input type="file" id="inv-pay-voda-receipt-img" accept="image/*" onchange="previewPaymentImage(this, 'inv-voda-receipt-preview')"><div id="inv-voda-receipt-preview" style="margin-top:6px"></div></div>
         </div>
+        <div class="form-group"><label data-i18n="lbl_receiving_employee">اسم الموظف المستلم</label><input type="text" id="inv-pay-voda-employee" placeholder="اسم من استلم الفلوس" list="inv-emp-datalist"></div>
       </div>
-      
-      <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px">
+      <datalist id="inv-emp-datalist"></datalist>;align-items:center;margin:16px 0 8px">
         <h4 data-i18n="lbl_items">الأصناف</h4>
         <div style="display:flex;gap:6px;align-items:center">
           <div id="purchase-mode-toggle" style="display:none;align-items:center;gap:8px">
@@ -4049,6 +4162,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="form-group"><label>المبلغ المدفوع</label><input type="number" id="service-cash-paid" step="0.01" min="0" placeholder="0.00"></div>
             <div class="form-group"><label>الباقي</label><input type="number" id="service-cash-change" step="0.01" min="0" placeholder="0.00" readonly style="background:var(--bg)"></div>
           </div>
+          <div class="form-group"><label data-i18n="lbl_receiving_employee">اسم الموظف المستلم</label><input type="text" id="service-cash-employee" placeholder="اسم من استلم الفلوس" list="service-emp-datalist"></div>
         </div>
         <!-- Transfer fields (instapay/vodafone/bank) -->
         <div id="service-transfer-fields" style="display:none">
@@ -4056,9 +4170,9 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="form-group"><label>رقم التحويل</label><input type="text" id="service-transfer-number" placeholder="أدخل رقم التحويل"></div>
             <div class="form-group"><label>اسم المرسل</label><input type="text" id="service-transfer-sender" placeholder="اسم صاحب الحساب"></div>
           </div>
+          <div class="form-group"><label data-i18n="lbl_receiving_employee">اسم الموظف المستلم</label><input type="text" id="service-transfer-employee" placeholder="اسم من استلم الفلوس" list="service-emp-datalist"></div>
         </div>
-
-      </div>
+        <datalist id="service-emp-datalist"></datalist>
       <div class="form-group"><label data-i18n="th_notes">ملاحظات</label><textarea id="service-notes" rows="2"></textarea></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline" onclick="closeModal('modal-service')">إلغاء</button>
@@ -4218,6 +4332,10 @@ const TRANSLATIONS = {
     tab_invoices: 'الفواتير', tab_clients: 'العملاء', tab_services: 'خدمات وزيارات',
     tab_suppliers: 'الموردين', tab_devices: 'أجهزة', tab_visits: 'زيارات وخدمات',
     tab_treasury: 'مصروفات خزينة', tab_indirect: 'مصروفات غير مباشرة', tab_all: 'الكل',
+    tab_employees: 'الموظفين', tab_employee_records: 'سجل استلامات الموظفين',
+    emp_total_paid: 'إجمالي المصروف', emp_count: 'عدد الموظفين', emp_records: 'السجلات',
+    emp_bonuses: 'المكافآت', emp_type_salary: 'راتب', emp_type_bonus: 'مكافأة',
+    emp_type_commission: 'عمولة / نسبة ربح', emp_type_advance: 'سلفة', emp_type_other: 'أخرى',
     tab_daily: 'يومي', tab_monthly: 'شهري', tab_inventory: 'المخزون', tab_outstanding: 'المستحقات',
     
     // Filters
@@ -4704,6 +4822,10 @@ const TRANSLATIONS = {
     tab_invoices: 'Invoices', tab_clients: 'Clients', tab_services: 'Services & Visits',
     tab_suppliers: 'Suppliers', tab_devices: 'Devices', tab_visits: 'Visits & Services',
     tab_treasury: 'Treasury Expenses', tab_indirect: 'Indirect Expenses', tab_all: 'All',
+    tab_employees: 'Employees', tab_employee_records: 'Employee Payment Records',
+    emp_total_paid: 'Total Disbursed', emp_count: 'Employees', emp_records: 'Records',
+    emp_bonuses: 'Bonuses', emp_type_salary: 'Salary', emp_type_bonus: 'Bonus',
+    emp_type_commission: 'Commission', emp_type_advance: 'Advance', emp_type_other: 'Other',
     tab_daily: 'Daily', tab_monthly: 'Monthly', tab_inventory: 'Inventory', tab_outstanding: 'Outstanding',
     
     // Filters
@@ -11031,6 +11153,7 @@ function getInvoicePaymentData() {
       transferDate: document.getElementById('inv-pay-insta-date').value||'',
       transactionId: document.getElementById('inv-pay-insta-transaction-id').value.trim()||'',
       transferNumber: document.getElementById('inv-pay-insta-transfer-number').value.trim()||'',
+      employee: document.getElementById('inv-pay-insta-employee')?.value?.trim()||'',
       receiptImage: document.getElementById('inv-insta-receipt-preview').querySelector('img')?.src||''
     };
   } else if (method === 'vodafone') {
@@ -11041,6 +11164,7 @@ function getInvoicePaymentData() {
       transactionId: document.getElementById('inv-pay-voda-transaction-id').value.trim()||'',
       fromNumber: document.getElementById('inv-pay-voda-from-number').value.trim()||'',
       transferNumber: document.getElementById('inv-pay-voda-transfer-number').value.trim()||'',
+      employee: document.getElementById('inv-pay-voda-employee')?.value?.trim()||'',
       receiptImage: document.getElementById('inv-voda-receipt-preview').querySelector('img')?.src||''
     };
   }
@@ -11059,6 +11183,7 @@ function loadInvoicePaymentData(method, pd) {
     document.getElementById('inv-pay-insta-date').value = pd.transferDate||'';
     document.getElementById('inv-pay-insta-transaction-id').value = pd.transactionId||'';
     document.getElementById('inv-pay-insta-transfer-number').value = pd.transferNumber||'';
+    if (document.getElementById('inv-pay-insta-employee')) document.getElementById('inv-pay-insta-employee').value = pd.employee||'';
     if (pd.receiptImage) document.getElementById('inv-insta-receipt-preview').innerHTML = `<img src="${pd.receiptImage}" style="max-width:150px;max-height:100px;border-radius:6px;border:1px solid var(--border)">`;
   } else if (method === 'vodafone') {
     document.getElementById('inv-pay-voda-to-number').value = pd.toNumber||'';
@@ -11067,6 +11192,7 @@ function loadInvoicePaymentData(method, pd) {
     document.getElementById('inv-pay-voda-transaction-id').value = pd.transactionId||'';
     document.getElementById('inv-pay-voda-from-number').value = pd.fromNumber||'';
     document.getElementById('inv-pay-voda-transfer-number').value = pd.transferNumber||'';
+    if (document.getElementById('inv-pay-voda-employee')) document.getElementById('inv-pay-voda-employee').value = pd.employee||'';
     if (pd.receiptImage) document.getElementById('inv-voda-receipt-preview').innerHTML = `<img src="${pd.receiptImage}" style="max-width:150px;max-height:100px;border-radius:6px;border:1px solid var(--border)">`;
   }
 }
@@ -11161,6 +11287,7 @@ function getPaymentData() {
       transferDate: document.getElementById('pay-insta-date').value || '',
       transactionId: document.getElementById('pay-insta-transaction-id').value.trim() || '',
       transferNumber: document.getElementById('pay-insta-transfer-number').value.trim() || '',
+      employee: document.getElementById('pay-insta-employee')?.value?.trim() || '',
       receiptImage: document.getElementById('insta-receipt-preview').querySelector('img')?.src || ''
     };
   } else if (method === 'vodafone') {
@@ -11172,6 +11299,7 @@ function getPaymentData() {
       transactionId: document.getElementById('pay-voda-transaction-id').value.trim() || '',
       fromNumber: document.getElementById('pay-voda-from-number').value.trim() || '',
       transferNumber: document.getElementById('pay-voda-transfer-number').value.trim() || '',
+      employee: document.getElementById('pay-voda-employee')?.value?.trim() || '',
       receiptImage: document.getElementById('voda-receipt-preview').querySelector('img')?.src || ''
     };
   }
@@ -11195,6 +11323,7 @@ function loadPaymentData(method, pd) {
     document.getElementById('pay-insta-date').value = pd.transferDate || '';
     document.getElementById('pay-insta-transaction-id').value = pd.transactionId || '';
     document.getElementById('pay-insta-transfer-number').value = pd.transferNumber || '';
+    if (document.getElementById('pay-insta-employee')) document.getElementById('pay-insta-employee').value = pd.employee || '';
     if (pd.receiptImage) document.getElementById('insta-receipt-preview').innerHTML = `<img src="${pd.receiptImage}" style="max-width:150px;max-height:100px;border-radius:6px;border:1px solid var(--border)">`;
   } else if (method === 'vodafone') {
     document.getElementById('pay-voda-to-number').value = pd.toNumber || '';
@@ -11204,6 +11333,7 @@ function loadPaymentData(method, pd) {
     document.getElementById('pay-voda-transaction-id').value = pd.transactionId || '';
     document.getElementById('pay-voda-from-number').value = pd.fromNumber || '';
     document.getElementById('pay-voda-transfer-number').value = pd.transferNumber || '';
+    if (document.getElementById('pay-voda-employee')) document.getElementById('pay-voda-employee').value = pd.employee || '';
     if (pd.receiptImage) document.getElementById('voda-receipt-preview').innerHTML = `<img src="${pd.receiptImage}" style="max-width:150px;max-height:100px;border-radius:6px;border:1px solid var(--border)">`;
   }
 }
@@ -12116,9 +12246,11 @@ async function editService(id) {
     if (s.paymentMethod === 'cash') {
       document.getElementById('service-cash-paid').value = s.paymentData.amountPaid || '';
       document.getElementById('service-cash-change').value = s.paymentData.change || '';
+      if (document.getElementById('service-cash-employee')) document.getElementById('service-cash-employee').value = s.paymentData.employee || '';
     } else if (['instapay','vodafone'].includes(s.paymentMethod)) {
       document.getElementById('service-transfer-number').value = s.paymentData.transferNumber || '';
       document.getElementById('service-transfer-sender').value = s.paymentData.senderName || '';
+      if (document.getElementById('service-transfer-employee')) document.getElementById('service-transfer-employee').value = s.paymentData.employee || '';
     }
   }
   
@@ -12140,9 +12272,17 @@ async function saveService(e) {
   // Build payment data based on method
   let paymentData = {};
   if (payMethod === 'cash') {
-    paymentData = { amountPaid: parseFloat(document.getElementById('service-cash-paid').value) || 0, change: parseFloat(document.getElementById('service-cash-change').value) || 0 };
+    paymentData = {
+      amountPaid: parseFloat(document.getElementById('service-cash-paid').value) || 0,
+      change: parseFloat(document.getElementById('service-cash-change').value) || 0,
+      employee: document.getElementById('service-cash-employee')?.value?.trim() || '',
+    };
   } else if (['instapay','vodafone'].includes(payMethod)) {
-    paymentData = { transferNumber: document.getElementById('service-transfer-number').value.trim(), senderName: document.getElementById('service-transfer-sender').value.trim() };
+    paymentData = {
+      transferNumber: document.getElementById('service-transfer-number').value.trim(),
+      senderName: document.getElementById('service-transfer-sender').value.trim(),
+      employee: document.getElementById('service-transfer-employee')?.value?.trim() || '',
+    };
   }
   
   const data = {
@@ -13874,6 +14014,7 @@ function switchAccTab(tab) {
   if (tab === 'cashflow')     loadCashFlowReport();
   if (tab === 'balances')     { loadPaymentSources('all'); refreshBalances(); }
   if (tab === 'acc-settings') loadAccSettings();
+  if (tab === 'employees')    loadEmployeesTab();
 }
 
 // ── BUILD TRANSACTIONS — uses already-loaded global arrays ──
@@ -14184,7 +14325,452 @@ function loadAccSettings() {
     if(page==='accounting') setTimeout(()=>switchAccTab('transactions'),200);
   };
 })();
+
+
+// ════════════════════════════════════════════════
+// RECEIPTS MODULE — استلامات الشركة
+// ════════════════════════════════════════════════
+
+const SRC_CFG = {
+  maintenance: {l:'🔧 صيانة',       c:'0,200,255'},
+  service:     {l:'🛠 زيارة/خدمة',   c:'108,60,233'},
+  invoice:     {l:'📄 فاتورة بيع',   c:'34,197,94'},
+  ledger:      {l:'💳 دفعة يدوية',   c:'245,158,11'},
+};
+
+function _srcBadge(src) {
+  const cfg = SRC_CFG[src]||{l:src,c:'107,114,128'};
+  return `<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(${cfg.c},.12);color:rgba(${cfg.c},1);font-weight:700">${cfg.l}</span>`;
+}
+
+// استخراج كل الاستلامات من البيانات المحفوظة
+function _buildReceipts() {
+  const rows = [];
+  const dev = allDevices  || [];
+  const svc = allServices || [];
+  const inv = allInvoices || [];
+  const cli = allClients  || [];
+  const sup = allSuppliers|| [];
+
+  // صيانة
+  dev.forEach(d => {
+    const pd = d.paymentData || {};
+    // employee موجود في كل طرق الدفع
+    const emp = pd.employee || '';
+    if (!emp) return;
+    const amount = pd.amountPaid || pd.amount || (d.paymentMethod ? (d.sellingPrice || 0) : 0);
+    if (amount <= 0) return;
+    const date = pd.payDate || pd.transferDate || d.exitDate || d.intakeDate || d.date || '';
+    rows.push({
+      date, person: emp, source: 'maintenance',
+      client: d.clientName || '-', amount, method: d.paymentMethod || '',
+      ref: '🔧 ' + (d.orderNumber || d.id || ''), refId: d.id, refType: 'device',
+    });
+  });
+
+  // زيارات / خدمات
+  svc.forEach(s => {
+    const pd = s.paymentData || {};
+    const emp = pd.employee || '';
+    if (!emp) return;
+    const amount = pd.amountPaid || pd.amount || s.price || 0;
+    if (amount <= 0) return;
+    rows.push({
+      date: s.date || '', person: emp, source: 'service',
+      client: s.clientName || '-', amount, method: s.paymentMethod || '',
+      ref: '🛠 ' + (s.description || s.id || ''), refId: s.id, refType: 'service',
+    });
+  });
+
+  // فواتير بيع
+  inv.filter(i => i.type === 'sale').forEach(i => {
+    const pd = i.paymentData || {};
+    const emp = pd.employee || pd.accountName || pd.ownerName || '';
+    if (!emp) return;
+    const amount = i.paidAmount || pd.amountPaid || i.total || 0;
+    if (amount <= 0) return;
+    const cname = cli.find(c => c.id === i.clientId)?.name || i.clientName || '-';
+    rows.push({
+      date: i.date || '', person: emp, source: 'invoice',
+      client: cname, amount, method: i.paymentMethod || '',
+      ref: '📄 ' + (i.number || i.id || ''), refId: i.id, refType: 'invoice',
+    });
+  });
+
+  // دفعات يدوية من العملاء
+  cli.forEach(c => (c.payments || []).filter(p => p.type === 'payment_in').forEach(p => {
+    const emp = p.employee || p.accountName || '';
+    if (!emp) return;
+    if ((p.amount || 0) <= 0) return;
+    rows.push({
+      date: p.date ? p.date.split('T')[0] : '', person: emp, source: 'ledger',
+      client: c.name, amount: p.amount || 0, method: p.method || '',
+      ref: '💳 دفعة من ' + c.name, refId: null, refType: 'ledger',
+    });
+  }));
+
+  return rows.sort((a, b) => (b.date > a.date ? 1 : -1));
+}
+
+// تحميل قواعد المكافآت
+function _loadBonusRules() {
+  try {
+    return JSON.parse(localStorage.getItem('sms_bonus_rules') || '{"default":{},"persons":{}}');
+  } catch(e) { return {default:{}, persons:{}}; }
+}
+
+function _saveBonusRules(rules) {
+  localStorage.setItem('sms_bonus_rules', JSON.stringify(rules));
+}
+
+// حساب المكافأة المقترحة لسجل معين
+function _calcBonus(row) {
+  const rules = _loadBonusRules();
+  // قاعدة خاصة للشخص أولاً، ثم الافتراضية
+  const personRules = rules.persons?.[row.person] || {};
+  const defaultRules = rules.default || {};
+  const pct = (personRules[row.source] !== undefined) ? personRules[row.source] : (defaultRules[row.source] || 0);
+  return pct > 0 ? Math.round(row.amount * pct / 100 * 100) / 100 : 0;
+}
+
+// Date range helper
+function _recDateRange() {
+  const period = document.getElementById('rec-period')?.value || 'month';
+  const now = new Date();
+  let from = null, to = new Date(now);
+  to.setHours(23,59,59,999);
+  if (period === 'today') { from = new Date(now.getFullYear(), now.getMonth(), now.getDate()); }
+  else if (period === 'week') { from = new Date(now); from.setDate(now.getDate() - now.getDay()); from.setHours(0,0,0,0); }
+  else if (period === 'month') { from = new Date(now.getFullYear(), now.getMonth(), 1); }
+  else if (period === 'year') { from = new Date(now.getFullYear(), 0, 1); }
+  else if (period === 'custom') {
+    const f = document.getElementById('rec-from')?.value;
+    const t2 = document.getElementById('rec-to')?.value;
+    from = f ? new Date(f) : null;
+    to = t2 ? new Date(t2 + 'T23:59:59') : to;
+  }
+  const wrap = document.getElementById('rec-custom-wrap');
+  if (wrap) wrap.style.display = period === 'custom' ? 'flex' : 'none';
+  return {from, to};
+}
+
+function onRecPeriodChange() { loadReceiptsTab(); }
+
+function switchEmpSubTab(tab) {
+  ['receipts','summary','rules'].forEach(t => {
+    const el = document.getElementById('emp-sub-' + t);
+    const btn = document.getElementById('empsubtab-' + t);
+    if (el) el.style.display = t === tab ? '' : 'none';
+    if (btn) {
+      btn.classList.toggle('atv', t === tab);
+      btn.style.borderBottomColor = t === tab ? 'var(--primary)' : 'transparent';
+    }
+  });
+  if (tab === 'rules') loadRulesTab();
+  if (tab === 'summary') loadSummaryTab();
+}
+
+function loadEmployeesTab() { loadReceiptsTab(); }
+
+// ── تحميل تاب الاستلامات ────────────────────────
+function loadReceiptsTab() {
+  const {from, to} = _recDateRange();
+  const personF = document.getElementById('rec-person-filter')?.value || '';
+  const sourceF = document.getElementById('rec-source-filter')?.value || '';
+  const methodF = document.getElementById('rec-method-filter')?.value || '';
+
+  let rows = _buildReceipts();
+  if (from) rows = rows.filter(r => { const d = new Date(r.date + 'T00:00:00'); return d >= from && d <= to; });
+  if (personF) rows = rows.filter(r => r.person === personF);
+  if (sourceF) rows = rows.filter(r => r.source === sourceF);
+  if (methodF) rows = rows.filter(r => r.method === methodF);
+
+  // تحديث فلتر الأشخاص
+  const allPersons = [...new Set(_buildReceipts().map(r => r.person))].sort();
+  const pf = document.getElementById('rec-person-filter');
+  if (pf) {
+    const cur = pf.value;
+    pf.innerHTML = '<option value="">الكل</option>' + allPersons.map(n => `<option value="${n}" ${n===cur?'selected':''}>${n}</option>`).join('');
+  }
+
+  // KPIs
+  const totalAmt = rows.reduce((s, r) => s + r.amount, 0);
+  const totalBonus = rows.reduce((s, r) => s + _calcBonus(r), 0);
+  const persons = [...new Set(rows.map(r => r.person))].length;
+  const g = id => document.getElementById(id);
+  if (g('rec-total')) g('rec-total').textContent = formatMoney(totalAmt);
+  if (g('rec-people-count')) g('rec-people-count').textContent = persons;
+  if (g('rec-ops-count')) g('rec-ops-count').textContent = rows.length;
+  if (g('rec-bonuses-total')) g('rec-bonuses-total').textContent = formatMoney(totalBonus);
+
+  // تحديث كل الـ datalists بأسماء المستلمين
+  ['service-emp-datalist','maint-emp-datalist','inv-emp-datalist','prule-names-datalist'].forEach(id => {
+    const dl = document.getElementById(id);
+    if (dl) dl.innerHTML = allPersons.map(n => `<option value="${n}">`).join('');
+  });
+
+  // Table
+  const tbody = g('rec-tbody'), table = g('rec-table'), empty = g('rec-empty'), badge = g('rec-badge');
+  if (badge) badge.textContent = rows.length + ' عملية';
+  if (!rows.length) {
+    if (table) table.style.display = 'none'; if (empty) empty.style.display = '';
+    return;
+  }
+  if (table) table.style.display = ''; if (empty) empty.style.display = 'none';
+
+  tbody.innerHTML = rows.map(r => {
+    const bonus = _calcBonus(r);
+    return `<tr>
+      <td style="font-size:12px;white-space:nowrap">${formatDate(r.date)}</td>
+      <td style="font-weight:700"><i class='bx bx-user-circle' style="color:var(--primary);margin-left:4px"></i>${r.person}</td>
+      <td>${_srcBadge(r.source)}</td>
+      <td style="font-size:12px;color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.ref} — ${r.client}">${r.client} <span style="opacity:.6">${r.ref}</span></td>
+      <td style="font-weight:700;color:var(--success)">${formatMoney(r.amount)}</td>
+      <td>${_pmBadge(r.method)}</td>
+      <td>${bonus > 0
+        ? `<span style="font-size:12px;font-weight:700;color:#0891b2;background:rgba(8,145,178,.1);padding:2px 8px;border-radius:20px">${formatMoney(bonus)}</span>`
+        : '<span style="color:var(--text-muted);font-size:11px">—</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── تحميل تاب الملخص ────────────────────────────
+function loadSummaryTab() {
+  const {from, to} = _recDateRange();
+  let rows = _buildReceipts();
+  if (from) rows = rows.filter(r => { const d = new Date(r.date + 'T00:00:00'); return d >= from && d <= to; });
+
+  const map = {};
+  rows.forEach(r => {
+    if (!map[r.person]) map[r.person] = {name: r.person, total: 0, bonus: 0, bySource: {}, count: 0, last: ''};
+    map[r.person].total += r.amount;
+    map[r.person].bonus += _calcBonus(r);
+    map[r.person].count++;
+    map[r.person].bySource[r.source] = (map[r.person].bySource[r.source] || 0) + r.amount;
+    if (!map[r.person].last || r.date > map[r.person].last) map[r.person].last = r.date;
+  });
+
+  const container = document.getElementById('emp-summary-cards');
+  if (!container) return;
+  const persons = Object.values(map).sort((a,b) => b.total - a.total);
+  if (!persons.length) { container.innerHTML = '<div class="empty-state"><p>لا توجد بيانات</p></div>'; return; }
+
+  container.innerHTML = persons.map(p => {
+    const rules = _loadBonusRules();
+    const pRules = rules.persons?.[p.name] || rules.default || {};
+    const sourceBreakdown = Object.entries(p.bySource).map(([src, amt]) => {
+      const pct = pRules[src] || 0;
+      const bonus = pct > 0 ? Math.round(amt * pct / 100 * 100) / 100 : 0;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span>${_srcBadge(src)}</span>
+        <span style="font-weight:700">${formatMoney(amt)}</span>
+        <span style="color:var(--text-muted);font-size:11px">${pct > 0 ? pct + '%' : '—'}</span>
+        <span style="color:#0891b2;font-weight:700;font-size:12px">${bonus > 0 ? formatMoney(bonus) : '—'}</span>
+      </div>`;
+    }).join('');
+    return `<div class="card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:42px;height:42px;border-radius:50%;background:rgba(108,60,233,.12);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--primary)"><i class='bx bx-user'></i></div>
+          <div>
+            <div style="font-weight:800;font-size:15px">${p.name}</div>
+            <div style="font-size:11px;color:var(--text-muted)">${p.count} عملية · آخر استلام: ${p.last ? formatDate(p.last) : '—'}</div>
+          </div>
+        </div>
+        <div style="text-align:left">
+          <div style="font-weight:800;font-size:18px;color:var(--success)">${formatMoney(p.total)}</div>
+          <div style="font-size:11px;color:#0891b2">مكافأة: ${formatMoney(p.bonus)}</div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--text-muted);padding-bottom:6px;border-bottom:2px solid var(--border);margin-bottom:4px">
+          <span>المصدر</span><span>المستلَم</span><span>النسبة</span><span>المكافأة</span>
+        </div>
+        ${sourceBreakdown || '<div style="color:var(--text-muted);font-size:12px;padding:8px 0">لا توجد تفاصيل</div>'}
+      </div>
+      <div style="margin-top:10px;text-align:left">
+        <button class="btn btn-sm btn-outline" onclick="openPersonRuleModal('${p.name.replace(/'/g,"\'")}')"><i class='bx bx-edit'></i> تعديل نسبه</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── تحميل تاب قواعد المكافآت ────────────────────
+const RULE_SOURCES = [
+  {k:'maintenance', l:'🔧 صيانة'},
+  {k:'service',     l:'🛠 زيارات/خدمات'},
+  {k:'invoice',     l:'📄 فواتير بيع'},
+  {k:'ledger',      l:'💳 دفعات يدوية'},
+];
+
+function loadRulesTab() {
+  const rules = _loadBonusRules();
+  const grid = document.getElementById('default-rules-grid');
+  if (grid) {
+    grid.innerHTML = RULE_SOURCES.map(s => `
+      <div class="card" style="padding:14px;margin:0">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px">${s.l}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="number" id="rule-default-${s.k}" value="${rules.default?.[s.k] || 0}" min="0" max="100" step="0.1"
+            style="width:70px;padding:6px 8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:700;text-align:center;background:var(--bg);color:var(--text)">
+          <span style="font-size:16px;font-weight:700;color:var(--text-muted)">%</span>
+          <span style="font-size:11px;color:var(--text-muted)">من المبلغ</span>
+        </div>
+      </div>`).join('');
+  }
+
+  // قواعد خاصة بأشخاص
+  const personsList = document.getElementById('person-rules-list');
+  if (personsList) {
+    const persons = Object.keys(rules.persons || {});
+    if (!persons.length) {
+      personsList.innerHTML = '<div class="empty-state" style="padding:16px"><p>لا توجد قواعد خاصة بعد</p></div>';
+    } else {
+      personsList.innerHTML = persons.map(name => {
+        const pr = rules.persons[name];
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border)">
+          <div>
+            <div style="font-weight:700">${name}</div>
+            <div style="font-size:11px;color:var(--text-muted)">
+              ${RULE_SOURCES.filter(s=>pr[s.k]).map(s=>`${s.l}: <strong>${pr[s.k]}%</strong>`).join(' · ') || 'لا توجد نسب مخصصة'}
+            </div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-icon" onclick="openPersonRuleModal('${name.replace(/'/g,"\'")}')"><i class='bx bx-edit'></i></button>
+            <button class="btn-icon danger" onclick="deletePersonRule('${name.replace(/'/g,"\'")}')"><i class='bx bx-trash'></i></button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+function saveDefaultRules() {
+  const rules = _loadBonusRules();
+  RULE_SOURCES.forEach(s => {
+    const val = parseFloat(document.getElementById('rule-default-' + s.k)?.value) || 0;
+    if (!rules.default) rules.default = {};
+    rules.default[s.k] = val;
+  });
+  _saveBonusRules(rules);
+  if (typeof toast === 'function') toast('تم حفظ القواعد الافتراضية ✅');
+  loadReceiptsTab();
+}
+
+let _personRuleTarget = null;
+
+function openPersonRuleModal(name) {
+  _personRuleTarget = name || null;
+  const rules = _loadBonusRules();
+  const pr = name ? (rules.persons?.[name] || {}) : {};
+  const modal = document.getElementById('modal-person-rule');
+  if (!modal) return;
+  document.getElementById('prule-name').value = name || '';
+  RULE_SOURCES.forEach(s => {
+    const inp = document.getElementById('prule-' + s.k);
+    if (inp) inp.value = pr[s.k] !== undefined ? pr[s.k] : '';
+  });
+  // Populate datalist with known persons
+  const allPersons = [...new Set(_buildReceipts().map(r => r.person))].sort();
+  const dl = document.getElementById('prule-names-datalist');
+  if (dl) dl.innerHTML = allPersons.map(n => `<option value="${n}">`).join('');
+  modal.classList.add('active');
+}
+
+function savePersonRule() {
+  const name = document.getElementById('prule-name')?.value?.trim();
+  if (!name) { alert('يجب إدخال اسم الشخص'); return; }
+  const rules = _loadBonusRules();
+  if (!rules.persons) rules.persons = {};
+  const pr = {};
+  RULE_SOURCES.forEach(s => {
+    const val = document.getElementById('prule-' + s.k)?.value;
+    if (val !== '' && val !== undefined) pr[s.k] = parseFloat(val) || 0;
+  });
+  rules.persons[name] = pr;
+  _saveBonusRules(rules);
+  closeModal('modal-person-rule');
+  loadRulesTab();
+  loadReceiptsTab();
+  if (typeof toast === 'function') toast('تم الحفظ ✅');
+}
+
+function deletePersonRule(name) {
+  if (!confirm('حذف القاعدة الخاصة بـ ' + name + '؟')) return;
+  const rules = _loadBonusRules();
+  delete rules.persons?.[name];
+  _saveBonusRules(rules);
+  loadRulesTab();
+  loadReceiptsTab();
+  if (typeof toast === 'function') toast('تم الحذف');
+}
+
+function exportReceiptsCSV() {
+  const rows = _buildReceipts();
+  let csv = '﻿التاريخ,المستلِم,المصدر,العميل,المبلغ,طريقة الدفع,مكافأة مقترحة,المرجع';
+  rows.forEach(r => {
+    const bonus = _calcBonus(r);
+    csv += [r.date, r.person, SRC_CFG[r.source]?.l||r.source, r.client, r.amount, PM_LBL[r.method]||r.method||'', bonus||'', r.ref]
+      .map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',') + '';
+  });
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='company_receipts.csv'; a.click();
+  URL.revokeObjectURL(url);
+  if (typeof toast === 'function') toast('تم التصدير ✅');
+}
+
+// Legacy stubs (kept for compatibility)
+function loadEmployeesTab() { loadReceiptsTab(); }
+function exportEmployeesCSV() { exportReceiptsCSV(); }
 </script>
+<!-- ===== PERSON RULE MODAL ===== -->
+<div id="modal-person-rule" class="modal">
+  <div class="modal-content" style="max-width:480px">
+    <div class="modal-header">
+      <h3><i class='bx bx-user-pin' style="color:var(--primary)"></i> قاعدة مكافأة خاصة</h3>
+      <button class="modal-close" onclick="closeModal('modal-person-rule')">×</button>
+    </div>
+    <div style="padding:16px">
+      <div class="form-group">
+        <label>اسم الشخص *</label>
+        <input type="text" id="prule-name" placeholder="اسم المستلم كما هو مسجّل في المعاملات" list="prule-names-datalist">
+        <datalist id="prule-names-datalist"></datalist>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">حدد نسبة مكافأة من كل مصدر (0 = لا مكافأة)</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group"><label>🔧 صيانة</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <input type="number" id="prule-maintenance" min="0" max="100" step="0.1" placeholder="0" style="flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;font-weight:700;text-align:center">
+            <span style="font-weight:700;color:var(--text-muted)">%</span>
+          </div>
+        </div>
+        <div class="form-group"><label>🛠 زيارات/خدمات</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <input type="number" id="prule-service" min="0" max="100" step="0.1" placeholder="0" style="flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;font-weight:700;text-align:center">
+            <span style="font-weight:700;color:var(--text-muted)">%</span>
+          </div>
+        </div>
+        <div class="form-group"><label>📄 فواتير بيع</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <input type="number" id="prule-invoice" min="0" max="100" step="0.1" placeholder="0" style="flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;font-weight:700;text-align:center">
+            <span style="font-weight:700;color:var(--text-muted)">%</span>
+          </div>
+        </div>
+        <div class="form-group"><label>💳 دفعات يدوية</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <input type="number" id="prule-ledger" min="0" max="100" step="0.1" placeholder="0" style="flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;font-weight:700;text-align:center">
+            <span style="font-weight:700;color:var(--text-muted)">%</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="margin-top:14px;padding:0">
+        <button class="btn btn-outline" onclick="closeModal('modal-person-rule')">إلغاء</button>
+        <button class="btn btn-primary" onclick="savePersonRule()"><i class='bx bx-save'></i> حفظ</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
