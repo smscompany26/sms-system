@@ -9,12 +9,12 @@
 <title>SMS — Inventory & Maintenance System</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.3.13 — SMS System
+// v7.3.16 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.3.13');
+console.log('SMS v7.3.16');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -93,12 +93,92 @@ console.log('SMS v7.3.13');
 .acc-tog:has(input:checked) .acc-trk{background:var(--primary)}
 .acc-tog:has(input:checked) .acc-trk::after{transform:translateX(-16px)}
 .acc-tog:has(input:checked){border-color:var(--primary)}
+.acc-emp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.acc-emp-actions{display:flex;gap:8px;flex-wrap:wrap}
 @media(max-width:600px){
-  .acc-kpi-strip{grid-template-columns:repeat(2,1fr)}
-  .acc-tabbar{overflow-x:auto}
-  .acc-tabbtn span{display:none}
-  .acc-tabbtn{min-width:42px;padding:9px}
-  .acc-fld{min-width:calc(50% - 5px)}
+  .acc-emp-header{flex-direction:column;align-items:flex-start;gap:10px}
+  .acc-emp-actions{width:100%}
+  .acc-emp-actions .btn{flex:1;justify-content:center;font-size:13px;padding:10px 8px}
+  .acc-emp-btn-txt{display:inline}
+}
+@media(max-width:600px){
+  /* ── KPI strip: 2 columns ── */
+  .acc-kpi-strip{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+  .acc-kpi{padding:10px 12px;gap:9px}
+  .acc-kpi-ico{width:34px;height:34px;font-size:16px;border-radius:8px}
+  .acc-kpi-val{font-size:15px}
+  .acc-kpi-lbl{font-size:10px}
+  .acc-kpi-sub{display:none}
+
+  /* ── Tab bar ── */
+  .acc-tabbar{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:12px;gap:0}
+  .acc-tabbar::-webkit-scrollbar{display:none}
+  .acc-tabbtn{min-width:52px;padding:10px 6px;font-size:9px;flex:0 0 auto}
+  .acc-tabbtn span{font-size:9px;display:block;margin-top:3px;line-height:1.1}
+  .acc-tabbtn i{font-size:19px}
+
+  /* ── Filter row: collapsible on mobile ── */
+  .acc-frow{flex-direction:column;gap:7px}
+  .acc-fld{min-width:100%;flex:none}
+  .acc-fld label{font-size:12px}
+  .acc-fld input,.acc-fld select{font-size:14px;padding:10px 12px;border-radius:8px}
+  .acc-fact{width:100%;display:flex;gap:7px}
+  .acc-fact .btn{flex:1;justify-content:center;padding:11px 8px;font-size:14px;border-radius:8px}
+
+  /* ── Summary bar: 2 columns ── */
+  .acc-sumbar{grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:10px}
+
+  /* ── Tables → card rows on mobile ── */
+  .acc-tab-content .table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .acc-tab-content table{min-width:520px;font-size:12px}
+  .acc-tab-content th{font-size:11px;padding:8px 8px;white-space:nowrap;background:var(--bg);position:sticky;top:0;z-index:1}
+  .acc-tab-content td{padding:8px 8px;white-space:nowrap;vertical-align:middle}
+
+  /* ── Employee tab header ── */
+  #acc-tab-employees > div:first-child{flex-direction:column;align-items:flex-start!important;gap:8px!important}
+  #acc-tab-employees > div:first-child h3{font-size:14px!important}
+  #acc-tab-employees > div:first-child > div:last-child{width:100%;display:flex;gap:7px}
+  #acc-tab-employees > div:first-child > div:last-child .btn{flex:1;justify-content:center;font-size:13px;padding:9px 8px}
+
+  /* ── Employee sub-tab bar ── */
+  #acc-tab-employees .acc-tabbar{margin-bottom:10px}
+  #empsubtab-receipts,#empsubtab-summary,#empsubtab-rules{font-size:9.5px;min-width:80px;padding:9px 8px;flex:1}
+
+  /* ── Employee KPI: 2x2 grid ── */
+  #emp-sub-receipts .acc-kpi-strip{grid-template-columns:repeat(2,1fr);gap:7px}
+  #emp-sub-receipts .acc-kpi{padding:10px 11px}
+
+  /* ── Rules tab ── */
+  #emp-sub-rules .acc-kpi-strip{grid-template-columns:repeat(2,1fr)}
+  #emp-sub-rules .card{padding:12px!important}
+
+  /* ── Person summary cards ── */
+  #emp-sub-summary .acc-person-card{padding:12px 14px}
+
+  /* ── Cards ── */
+  .acc-tab-content .card{border-radius:10px;margin-bottom:10px;overflow:hidden}
+  .acc-thead{padding:10px 12px!important}
+  .acc-thead h3{font-size:13px!important}
+  .acc-badge{font-size:11px!important;padding:3px 8px!important}
+
+  /* ── Action buttons in tables ── */
+  .acc-tab-content td .btn{padding:5px 8px;font-size:11px;border-radius:6px}
+  .acc-tab-content td .btn i{font-size:13px}
+
+  /* ── Bonus rules table ── */
+  #rules-table{min-width:400px}
+  #rules-table td, #rules-table th{padding:7px 8px;font-size:11px}
+  #rules-thead tr th{font-size:10px}
+}
+
+@media(max-width:400px){
+  .acc-kpi-strip{grid-template-columns:1fr 1fr;gap:6px}
+  .acc-kpi{padding:8px 10px}
+  .acc-kpi-val{font-size:13px}
+  .acc-tabbtn{min-width:44px;padding:8px 4px}
+  .acc-tabbtn span{font-size:8px}
+  .acc-sumbar{grid-template-columns:1fr 1fr}
+  #empsubtab-receipts,#empsubtab-summary,#empsubtab-rules{min-width:60px;font-size:8.5px}
 }
 
 /* ========== Auto-Scan Toggle ========== */
@@ -1927,6 +2007,75 @@ tr:hover { background: rgba(108,60,233,0.02); }
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 </head>
 <body>
+<!-- ══ SMS LOADER ══ -->
+<div id="sms-loader">
+  <div class="sms-loader-inner">
+    <div class="sms-loader-logo">
+      <div class="sms-loader-icon">📦</div>
+      <div class="sms-loader-brand">SMS</div>
+    </div>
+    <div class="sms-loader-bar-wrap">
+      <div class="sms-loader-bar"></div>
+    </div>
+    <div class="sms-loader-txt">جاري تحميل النظام...</div>
+  </div>
+</div>
+<style>
+#sms-loader{
+  position:fixed;inset:0;z-index:999999;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg,#f8f7ff);
+  transition:opacity .4s ease, visibility .4s ease;
+}
+#sms-loader.hide{opacity:0;visibility:hidden;pointer-events:none}
+.sms-loader-inner{
+  display:flex;flex-direction:column;align-items:center;gap:20px;
+}
+.sms-loader-logo{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.sms-loader-icon{
+  font-size:52px;
+  animation:sms-pulse 1.4s ease-in-out infinite;
+}
+.sms-loader-brand{
+  font-size:26px;font-weight:900;letter-spacing:3px;
+  background:linear-gradient(135deg,#6c3ce9,#a78bfa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  font-family:Arial,sans-serif;
+}
+.sms-loader-bar-wrap{
+  width:180px;height:4px;
+  background:rgba(108,60,233,.15);
+  border-radius:99px;overflow:hidden;
+}
+.sms-loader-bar{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,#6c3ce9,#a78bfa);
+  border-radius:99px;
+  animation:sms-progress 2.5s cubic-bezier(.4,0,.2,1) forwards;
+}
+.sms-loader-txt{
+  font-size:13px;color:#888;
+  font-family:Arial,sans-serif;
+  animation:sms-blink 1.4s ease-in-out infinite;
+}
+@keyframes sms-pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.12)}
+}
+@keyframes sms-progress{
+  0%{width:0%}
+  30%{width:40%}
+  70%{width:75%}
+  90%{width:90%}
+  100%{width:100%}
+}
+@keyframes sms-blink{
+  0%,100%{opacity:1}50%{opacity:.4}
+}
+[data-theme="dark"] #sms-loader{background:#13111c}
+</style>
 
 <!-- Login Screen -->
 <div id="login-screen" class="login-screen" style="display:none">
@@ -2888,22 +3037,22 @@ tr:hover { background: rgba(108,60,233,0.02); }
         <div id="acc-tab-employees" class="acc-tab-content" style="display:none">
 
           <!-- الشريط العلوي -->
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div class="acc-emp-header">
             <div>
               <h3 style="margin:0;font-size:16px"><i class='bx bx-badge-check' style="color:var(--primary)"></i> استلامات فريق الشركة</h3>
               <div style="font-size:12px;color:var(--text-muted);margin-top:2px">يتعبى تلقائياً من كل معاملة مسجّل فيها اسم المستلم</div>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button class="btn btn-sm btn-outline" onclick="switchEmpSubTab('rules')"><i class='bx bx-cog'></i> قواعد المكافآت</button>
-              <button class="btn btn-sm btn-outline" onclick="exportReceiptsCSV()"><i class='bx bx-download'></i> تصدير</button>
+            <div class="acc-emp-actions">
+              <button class="btn btn-sm btn-outline" onclick="switchEmpSubTab('rules')"><i class='bx bx-cog'></i> <span class="acc-emp-btn-txt">قواعد المكافآت</span></button>
+              <button class="btn btn-sm btn-outline" onclick="exportReceiptsCSV()"><i class='bx bx-download'></i> <span class="acc-emp-btn-txt">تصدير</span></button>
             </div>
           </div>
 
           <!-- Sub tabs -->
-          <div style="display:flex;background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;margin-bottom:16px">
-            <button class="acc-tabbtn atv" id="empsubtab-receipts" style="border-bottom:3px solid var(--primary)" onclick="switchEmpSubTab('receipts')"><i class='bx bx-money-withdraw'></i><span>الاستلامات</span></button>
-            <button class="acc-tabbtn" id="empsubtab-summary"  onclick="switchEmpSubTab('summary')"><i class='bx bx-user-circle'></i><span>ملخص الأشخاص</span></button>
-            <button class="acc-tabbtn" id="empsubtab-rules"    onclick="switchEmpSubTab('rules')"><i class='bx bx-pie-chart-alt-2'></i><span>قواعد المكافآت</span></button>
+          <div class="acc-tabbar" style="margin-bottom:12px;display:flex">
+            <button class="acc-tabbtn atv" id="empsubtab-receipts" style="border-bottom:3px solid var(--primary);flex:1" onclick="switchEmpSubTab('receipts')"><i class='bx bx-money-withdraw'></i><span>الاستلامات</span></button>
+            <button class="acc-tabbtn" id="empsubtab-summary" style="flex:1" onclick="switchEmpSubTab('summary')"><i class='bx bx-user-circle'></i><span>ملخص الأشخاص</span></button>
+            <button class="acc-tabbtn" id="empsubtab-rules" style="flex:1" onclick="switchEmpSubTab('rules')"><i class='bx bx-pie-chart-alt-2'></i><span>قواعد المكافآت</span></button>
           </div>
 
           <!-- SUB: RECEIPTS -->
@@ -3062,7 +3211,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.3.13</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.3.16</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -3356,7 +3505,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.3.13 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.3.16 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -4335,6 +4484,8 @@ const TRANSLATIONS = {
     tab_suppliers: 'الموردين', tab_devices: 'أجهزة', tab_visits: 'زيارات وخدمات',
     tab_treasury: 'مصروفات خزينة', tab_indirect: 'مصروفات غير مباشرة', tab_all: 'الكل',
     tab_employees: 'الموظفين', tab_employee_records: 'سجل استلامات الموظفين',
+    tab_receipts: 'الاستلامات', tab_summary: 'ملخص الأشخاص', tab_rules: 'قواعد المكافآت',
+    src_maintenance: 'صيانة', src_service: 'زيارات/خدمات', src_invoice: 'فواتير بيع', src_manual: 'دفعات يدوية',
     emp_total_paid: 'إجمالي المصروف', emp_count: 'عدد الموظفين', emp_records: 'السجلات',
     emp_bonuses: 'المكافآت', emp_type_salary: 'راتب', emp_type_bonus: 'مكافأة',
     emp_type_commission: 'عمولة / نسبة ربح', emp_type_advance: 'سلفة', emp_type_other: 'أخرى',
@@ -4825,6 +4976,8 @@ const TRANSLATIONS = {
     tab_suppliers: 'Suppliers', tab_devices: 'Devices', tab_visits: 'Visits & Services',
     tab_treasury: 'Treasury Expenses', tab_indirect: 'Indirect Expenses', tab_all: 'All',
     tab_employees: 'Employees', tab_employee_records: 'Employee Payment Records',
+    tab_receipts: 'Receipts', tab_summary: 'People Summary', tab_rules: 'Bonus Rules',
+    src_maintenance: 'Maintenance', src_service: 'Visits/Services', src_invoice: 'Sales Invoices', src_manual: 'Manual Payments',
     emp_total_paid: 'Total Disbursed', emp_count: 'Employees', emp_records: 'Records',
     emp_bonuses: 'Bonuses', emp_type_salary: 'Salary', emp_type_bonus: 'Bonus',
     emp_type_commission: 'Commission', emp_type_advance: 'Advance', emp_type_other: 'Other',
@@ -7393,9 +7546,14 @@ async function initApp() {
     enhanceAllSelects();
   } catch (err) {
     console.error('Init error:', err);
-    // Show login screen even on error so the page isn't blank
     document.getElementById('login-screen').style.display = 'flex';
     toast(t('toast_system_load_error'), 'error');
+  } finally {
+    // إخفاء الـ loader في كل الأحوال
+    const loader = document.getElementById('sms-loader');
+    if (loader) {
+      setTimeout(() => loader.classList.add('hide'), 300);
+    }
   }
 }
 
@@ -7512,7 +7670,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.3.13';
+  if (backupEl) backupEl.textContent = 'v7.3.16';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -10221,7 +10379,7 @@ async function printReceipt(invoiceId) {
     <!-- Buttons injected by printHTML -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script>
     <script>
-      try { JsBarcode('#receipt-barcode', '${inv.number}', { format:'CODE128', width:1.0, height:25, displayValue:true, fontSize:8, font:'monospace', textMargin:1, margin:1, background:'transparent', lineColor:'#000' }); } catch(e){}
+      try { JsBarcode('#receipt-barcode', '${inv.number}', { format:'CODE128', width:1.5, height:30, displayValue:true, fontSize:8, font:'Arial', textMargin:1, margin:0, background:'#ffffff', lineColor:'#000000' }); } catch(e){}
     <\/script>
   </body>
   </html>`;
@@ -14710,9 +14868,21 @@ function openPersonRuleModal(name) {
   const allPersons = [...new Set(_buildReceipts().map(r => r.person))].sort();
   const dl = document.getElementById('prule-names-datalist');
   if (dl) dl.innerHTML = allPersons.map(n => `<option value="${n}">`).join('');
-  // فتح الـ modal مباشرةً في أي صفحة من غير navigate
-  document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
-  openModal('modal-person-rule');
+  // فتح modal المكافأة فوق أي modal مفتوحة من غير إغلاقها
+  const modal = document.getElementById('modal-person-rule');
+  modal.style.zIndex = '10500'; // أعلى من أي modal تانية
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  modal.onclick = (e) => { if (e.target === modal) closePersonRuleModal(); };
+}
+
+function closePersonRuleModal() {
+  const modal = document.getElementById('modal-person-rule');
+  modal.classList.remove('active');
+  // أعد الـ overflow للوضع الطبيعي بس لو مفيش modal تانية مفتوحة
+  if (!document.querySelector('.modal.active')) {
+    document.body.style.overflow = '';
+  }
 }
 
 function savePersonRule() {
@@ -14727,7 +14897,7 @@ function savePersonRule() {
   });
   rules.persons[name] = pr;
   _saveBonusRules(rules);
-  closeModal('modal-person-rule');
+  closePersonRuleModal();
   loadRulesTab();
   loadReceiptsTab();
   if (typeof toast === 'function') toast('تم الحفظ ✅');
@@ -14767,7 +14937,7 @@ function exportEmployeesCSV() { exportReceiptsCSV(); }
   <div class="modal-content" style="max-width:480px">
     <div class="modal-header">
       <h3><i class='bx bx-user-pin' style="color:var(--primary)"></i> قاعدة مكافأة خاصة</h3>
-      <button class="modal-close" onclick="closeModal('modal-person-rule')">×</button>
+      <button class="modal-close" onclick="closePersonRuleModal()">×</button>
     </div>
     <div style="padding:16px">
       <div class="form-group">
@@ -14803,7 +14973,7 @@ function exportEmployeesCSV() { exportReceiptsCSV(); }
         </div>
       </div>
       <div class="modal-footer" style="margin-top:14px;padding:0">
-        <button class="btn btn-outline" onclick="closeModal('modal-person-rule')">إلغاء</button>
+        <button class="btn btn-outline" onclick="closePersonRuleModal()">إلغاء</button>
         <button class="btn btn-primary" onclick="savePersonRule()"><i class='bx bx-save'></i> حفظ</button>
       </div>
     </div>
