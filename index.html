@@ -9,12 +9,12 @@
 <title>SMS — Inventory & Maintenance System</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.2.8 — SMS System
+// v7.2.9 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.2.8');
+console.log('SMS v7.2.9');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -3061,7 +3061,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.8</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.2.9</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -3355,7 +3355,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.2.8 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.2.9 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -7510,7 +7510,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.2.8';
+  if (backupEl) backupEl.textContent = 'v7.2.9';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -10086,27 +10086,27 @@ async function printReceipt(invoiceId) {
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
         font-family: 'Cairo', sans-serif;
-        width: 80mm;
-        max-width: 80mm;
+        width: 56mm;
+        max-width: 56mm;
         margin: 0 auto;
-        padding: 10px 8px;
-        font-size: 11px;
-        line-height: 1.4;
+        padding: 6px 5px;
+        font-size: 10px;
+        line-height: 1.35;
         color: #000;
         background: #fff;
       }
       .sep { border: none; border-top: 1px dashed #555; margin: 8px 0; }
       .sep-double { border: none; border-top: 2px solid #000; margin: 8px 0; }
       .header { text-align: center; margin-bottom: 6px; }
-      .header .name { font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+      .header .name { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; }
       .header .sub { font-size: 9px; color: #555; }
       .info { margin: 6px 0; }
       .info-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 2px; }
       .info-row .label { color: #555; }
       .info-row .val { font-weight: 600; }
       .items-table { width: 100%; border-collapse: collapse; margin: 4px 0; }
-      .items-table th { font-size: 9px; color: #555; font-weight: 600; padding: 3px 2px; border-bottom: 1px solid #000; text-align: right; }
-      .items-table td { font-size: 10px; padding: 4px 2px; border-bottom: 1px dotted #ccc; text-align: right; vertical-align: top; }
+      .items-table th { font-size: 8px; color: #555; font-weight: 600; padding: 2px 1px; border-bottom: 1px solid #000; text-align: right; }
+      .items-table td { font-size: 9px; padding: 3px 1px; border-bottom: 1px dotted #ccc; text-align: right; vertical-align: top; }
       .items-table tr:last-child td { border-bottom: none; }
       .total-section { margin: 6px 0; }
       .total-row { display: flex; justify-content: space-between; font-size: 11px; padding: 2px 0; }
@@ -10114,13 +10114,13 @@ async function printReceipt(invoiceId) {
       .qr-area { text-align: center; margin: 10px 0 6px; }
       .footer { text-align: center; font-size: 9px; color: #555; margin-top: 6px; padding-bottom: 0; }
       @media print {
-        @page { size: 80mm auto; margin: 0 !important; padding: 0 !important; }
-        html, body { width: 80mm !important; max-width: 80mm !important; margin: 0 !important; padding: 2px 4px !important; min-height: auto !important; height: auto !important; }
+        @page { size: 56mm auto; margin: 0 !important; padding: 0 !important; }
+        html, body { width: 56mm !important; max-width: 56mm !important; margin: 0 !important; padding: 1px 3px !important; min-height: auto !important; height: auto !important; }
         .no-print { display: none !important; }
         .footer { padding-bottom: 0 !important; margin-bottom: 0 !important; }
-        .qr-area { margin: 4px 0 2px !important; }
-        .header { margin-bottom: 4px !important; }
-        .header .name { font-size: 14px !important; }
+        .qr-area { margin: 3px 0 1px !important; }
+        .header { margin-bottom: 3px !important; }
+        .header .name { font-size: 13px !important; }
       }
     </style>
   </head>
@@ -10166,7 +10166,7 @@ async function printReceipt(invoiceId) {
     
     <!-- QR -->
     <div class="qr-area">
-      <img src="${qrUrl}" style="width:70px;height:70px">
+      <img src="${qrUrl}" style="width:55px;height:55px">
       <div style="font-size:8px;color:#777;margin-top:3px">QR للتحقق</div>
     </div>
     
@@ -14674,7 +14674,9 @@ function openPersonRuleModal(name) {
   const allPersons = [...new Set(_buildReceipts().map(r => r.person))].sort();
   const dl = document.getElementById('prule-names-datalist');
   if (dl) dl.innerHTML = allPersons.map(n => `<option value="${n}">`).join('');
-  modal.classList.add('active');
+  // إغلاق أي modal مفتوح أولاً ثم فتح modal القاعدة الخاصة
+  document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+  openModal('modal-person-rule');
 }
 
 function savePersonRule() {
