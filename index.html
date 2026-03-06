@@ -717,13 +717,14 @@ tr:hover { background: rgba(108,60,233,0.02); }
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.5);
-  z-index: 1000;
+  z-index: 10100;
   align-items: center;
   justify-content: center;
   padding: 20px;
   overflow: hidden;
 }
 .modal.active { display: flex; }
+#modal-person-rule { z-index: 10200; }
 .modal-content {
   background: rgba(255,255,255,0.75);
   backdrop-filter: blur(20px) saturate(1.4);
@@ -10089,38 +10090,38 @@ async function printReceipt(invoiceId) {
         width: 56mm;
         max-width: 56mm;
         margin: 0 auto;
-        padding: 6px 5px;
+        padding: 6px 4px 70px 4px;
         font-size: 10px;
         line-height: 1.35;
         color: #000;
         background: #fff;
       }
-      .sep { border: none; border-top: 1px dashed #555; margin: 8px 0; }
-      .sep-double { border: none; border-top: 2px solid #000; margin: 8px 0; }
-      .header { text-align: center; margin-bottom: 6px; }
+      .sep { border: none; border-top: 1px dashed #555; margin: 5px 0; }
+      .sep-double { border: none; border-top: 2px solid #000; margin: 5px 0; }
+      .header { text-align: center; margin-bottom: 4px; }
       .header .name { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; }
-      .header .sub { font-size: 9px; color: #555; }
-      .info { margin: 6px 0; }
-      .info-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 2px; }
+      .header .sub { font-size: 8px; color: #555; }
+      .info { margin: 4px 0; }
+      .info-row { display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 1px; }
       .info-row .label { color: #555; }
       .info-row .val { font-weight: 600; }
-      .items-table { width: 100%; border-collapse: collapse; margin: 4px 0; }
+      .items-table { width: 100%; border-collapse: collapse; margin: 3px 0; }
       .items-table th { font-size: 8px; color: #555; font-weight: 600; padding: 2px 1px; border-bottom: 1px solid #000; text-align: right; }
       .items-table td { font-size: 9px; padding: 3px 1px; border-bottom: 1px dotted #ccc; text-align: right; vertical-align: top; }
       .items-table tr:last-child td { border-bottom: none; }
-      .total-section { margin: 6px 0; }
-      .total-row { display: flex; justify-content: space-between; font-size: 11px; padding: 2px 0; }
-      .total-row.final { font-weight: 700; font-size: 12px; border-top: 1px solid #000; padding-top: 4px; margin-top: 2px; }
-      .qr-area { text-align: center; margin: 10px 0 6px; }
-      .footer { text-align: center; font-size: 9px; color: #555; margin-top: 6px; padding-bottom: 0; }
+      .total-section { margin: 4px 0; }
+      .total-row { display: flex; justify-content: space-between; font-size: 10px; padding: 2px 0; }
+      .total-row.final { font-weight: 700; font-size: 11px; border-top: 1px solid #000; padding-top: 3px; margin-top: 2px; }
+      .qr-area { text-align: center; margin: 6px 0 4px; }
+      .footer { text-align: center; font-size: 8px; color: #555; margin-top: 4px; }
       @media print {
-        @page { size: 56mm auto; margin: 0 !important; padding: 0 !important; }
-        html, body { width: 56mm !important; max-width: 56mm !important; margin: 0 !important; padding: 1px 3px !important; min-height: auto !important; height: auto !important; }
+        @page { size: 56mm auto; margin: 0 !important; }
+        html, body { width: 56mm !important; max-width: 56mm !important; margin: 0 !important; padding: 4px 3px 0 3px !important; min-height: auto !important; height: auto !important; }
         .no-print { display: none !important; }
-        .footer { padding-bottom: 0 !important; margin-bottom: 0 !important; }
-        .qr-area { margin: 3px 0 1px !important; }
+        .footer { padding-bottom: 2px !important; margin-bottom: 0 !important; }
+        .qr-area { margin: 3px 0 2px !important; }
         .header { margin-bottom: 3px !important; }
-        .header .name { font-size: 13px !important; }
+        .header .name { font-size: 12px !important; }
       }
     </style>
   </head>
@@ -10166,7 +10167,7 @@ async function printReceipt(invoiceId) {
     
     <!-- QR -->
     <div class="qr-area">
-      <img src="${qrUrl}" style="width:55px;height:55px">
+      <img src="${qrUrl}" style="width:52px;height:52px">
       <div style="font-size:8px;color:#777;margin-top:3px">QR للتحقق</div>
     </div>
     
@@ -10174,14 +10175,14 @@ async function printReceipt(invoiceId) {
     <div class="footer">شكراً لتعاملكم معنا</div>
     
     <!-- Barcode at bottom -->
-    <div style="text-align:center;margin:8px 0 4px">
+    <div style="text-align:center;margin:5px 0 2px">
       <svg id="receipt-barcode"></svg>
     </div>
     
     <!-- Buttons injected by printHTML -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script>
     <script>
-      try { JsBarcode('#receipt-barcode', '${inv.number}', { format:'CODE128', width:1.2, height:30, displayValue:true, fontSize:9, font:'monospace', textMargin:2, margin:2, background:'transparent', lineColor:'#000' }); } catch(e){}
+      try { JsBarcode('#receipt-barcode', '${inv.number}', { format:'CODE128', width:1.0, height:25, displayValue:true, fontSize:8, font:'monospace', textMargin:1, margin:1, background:'transparent', lineColor:'#000' }); } catch(e){}
     <\/script>
   </body>
   </html>`;
@@ -14674,9 +14675,10 @@ function openPersonRuleModal(name) {
   const allPersons = [...new Set(_buildReceipts().map(r => r.person))].sort();
   const dl = document.getElementById('prule-names-datalist');
   if (dl) dl.innerHTML = allPersons.map(n => `<option value="${n}">`).join('');
-  // إغلاق أي modal مفتوح أولاً ثم فتح modal القاعدة الخاصة
-  document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
-  openModal('modal-person-rule');
+  // فتح الـ modal فوق كل حاجة تانية
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  modal.onclick = (e) => { if (e.target === modal) closeModal('modal-person-rule'); };
 }
 
 function savePersonRule() {
