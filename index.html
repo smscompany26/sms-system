@@ -9,12 +9,12 @@
 <title>SMS — Inventory & Maintenance System</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.3.1 — SMS System
+// v7.3.3 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.3.1');
+console.log('SMS v7.3.3');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -3062,7 +3062,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.3.1</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.3.3</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -3356,7 +3356,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.3.1 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.3.3 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -7511,7 +7511,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.3.1';
+  if (backupEl) backupEl.textContent = 'v7.3.3';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -9942,65 +9942,34 @@ async function printBarcodeSticker(productId) {
   const barcodeVal = p.barcode || p.sku || '';
   if (!barcodeVal) { toast(t('toast_no_barcode'), 'error'); return; }
 
-  // Sanitize barcode: CODE128 supports all ASCII, so keep as-is
-  const printWin = window.open('', '_blank');
-  printWin.document.write(`<!DOCTYPE html><html><head>
+  // استخدام iframe بدل window.open لتفادي popup blocker
+  const stickerHtml = `<!DOCTYPE html><html><head>
     <meta charset="UTF-8">
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\\/script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script>
     <style>
       * { margin: 0 !important; padding: 0 !important; box-sizing: border-box; }
-      html, body {
-        width: 50mm;
-        height: 20mm;
-        overflow: hidden;
-        font-family: Arial, sans-serif;
-        background: #fff;
-      }
+      html, body { width: 50mm; font-family: Arial, sans-serif; background: #fff; }
       .sticker {
-        width: 50mm;
-        height: 20mm;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 1mm 1.5mm;
-        overflow: hidden;
-        page-break-after: avoid;
-        page-break-inside: avoid;
+        width: 50mm; height: 20mm;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        padding: 1mm 1.5mm; overflow: hidden;
       }
       .sticker .name {
-        font-size: 8pt;
-        font-weight: bold;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 47mm;
-        text-align: center;
-        margin-bottom: 0.5mm;
+        font-size: 8pt; font-weight: bold;
+        white-space: nowrap; overflow: hidden;
+        text-overflow: ellipsis; max-width: 47mm;
+        text-align: center; margin-bottom: 0.5mm;
       }
-      .sticker svg {
-        max-width: 47mm !important;
-        height: 10mm !important;
-        display: block;
-      }
+      .sticker svg { max-width: 47mm !important; height: 10mm !important; display: block; }
       @media print {
-        @page {
-          size: 50mm 20mm;
-          margin: 0mm !important;
-        }
-        html, body {
-          width: 50mm !important;
-          height: 20mm !important;
-          overflow: hidden !important;
-          margin: 0 !important;
-          padding: 0 !important;
-        }
+        @page { size: 50mm 20mm; margin: 0mm !important; }
+        html, body { width: 50mm !important; height: 20mm !important; overflow: hidden !important; }
         .no-print { display: none !important; }
       }
       .no-print {
         position: fixed; bottom: 0; left: 0; right: 0;
-        text-align: center; padding: 8px;
-        background: #f0f0f0;
+        text-align: center; padding: 8px; background: #f0f0f0;
       }
     </style>
   </head><body>
@@ -10009,33 +9978,32 @@ async function printBarcodeSticker(productId) {
       <svg id="bc"></svg>
     </div>
     <div class="no-print">
-      <button onclick="window.print()" style="padding:6px 18px;font-size:13px;cursor:pointer;margin:4px">طباعة</button>
-      <button onclick="window.close()" style="padding:6px 18px;font-size:13px;cursor:pointer;margin:4px">اغلاق</button>
+      <button onclick="window.print()" style="padding:6px 18px;font-size:13px;cursor:pointer;margin:4px">🖨️ طباعة</button>
+      <button onclick="parent.document.getElementById('barcode-print-iframe').remove()" style="padding:6px 18px;font-size:13px;cursor:pointer;margin:4px">✕ إغلاق</button>
     </div>
     <script>
       window.onload = function() {
         try {
           JsBarcode('#bc', '${barcodeVal.replace(/'/g,"\\'")}', {
-            format: 'CODE128',
-            width: 1.1,
-            height: 20,
-            displayValue: true,
-            fontSize: 6,
-            font: 'monospace',
-            textMargin: 0,
-            margin: 0,
-            background: '#ffffff',
-            lineColor: '#000000'
+            format: 'CODE128', width: 1.1, height: 20,
+            displayValue: true, fontSize: 6, font: 'monospace',
+            textMargin: 0, margin: 0, background: '#ffffff', lineColor: '#000000'
           });
-          // Force SVG to fit sticker
           const svg = document.getElementById('bc');
           if (svg) { svg.style.maxWidth = '47mm'; svg.style.height = '10mm'; }
         } catch(e) { document.body.innerHTML += '<p style="color:red;font-size:10px">خطأ: ' + e.message + '</p>'; }
-        setTimeout(() => { window.print(); window.close(); }, 700);
       };
-    <\\/script>
-  </body></html>`);
-  printWin.document.close();
+    <\/script>
+  </body></html>`;
+
+  const iframe = document.createElement('iframe');
+  iframe.id = 'barcode-print-iframe';
+  iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;border:none;background:#fff';
+  document.body.appendChild(iframe);
+  const doc = iframe.contentDocument || iframe.contentWindow.document;
+  doc.open();
+  doc.write(stickerHtml);
+  doc.close();
 }
 
 async function printReceipt(invoiceId) {
@@ -10087,41 +10055,41 @@ async function printReceipt(invoiceId) {
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
         font-family: 'Cairo', sans-serif;
-        width: 56mm;
-        max-width: 56mm;
+        width: 38mm;
+        max-width: 38mm;
         margin: 0 auto;
-        padding: 6px 4px 70px 4px;
-        font-size: 10px;
-        line-height: 1.35;
+        padding: 4px 3mm 0 3mm;
+        font-size: 9.5px;
+        line-height: 1.3;
         color: #000;
         background: #fff;
       }
-      .sep { border: none; border-top: 1px dashed #555; margin: 5px 0; }
-      .sep-double { border: none; border-top: 2px solid #000; margin: 5px 0; }
-      .header { text-align: center; margin-bottom: 4px; }
-      .header .name { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; }
-      .header .sub { font-size: 8px; color: #555; }
-      .info { margin: 4px 0; }
-      .info-row { display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 1px; }
+      .sep { border: none; border-top: 1px dashed #555; margin: 3px 0; }
+      .sep-double { border: none; border-top: 2px solid #000; margin: 3px 0; }
+      .header { text-align: center; margin-bottom: 2px; }
+      .header .name { font-size: 11.5px; font-weight: 700; letter-spacing: 0.3px; }
+      .header .sub { font-size: 7px; color: #555; }
+      .info { margin: 2px 0; }
+      .info-row { display: flex; justify-content: space-between; font-size: 8.5px; margin-bottom: 1px; }
       .info-row .label { color: #555; }
       .info-row .val { font-weight: 600; }
-      .items-table { width: 100%; border-collapse: collapse; margin: 3px 0; }
-      .items-table th { font-size: 8px; color: #555; font-weight: 600; padding: 2px 1px; border-bottom: 1px solid #000; text-align: right; }
-      .items-table td { font-size: 9px; padding: 3px 1px; border-bottom: 1px dotted #ccc; text-align: right; vertical-align: top; }
+      .items-table { width: 100%; border-collapse: collapse; margin: 2px 0; }
+      .items-table th { font-size: 7px; color: #555; font-weight: 600; padding: 2px 1px; border-bottom: 1px solid #000; text-align: right; }
+      .items-table td { font-size: 8.5px; padding: 2px 1px; border-bottom: 1px dotted #ccc; text-align: right; vertical-align: top; }
       .items-table tr:last-child td { border-bottom: none; }
-      .total-section { margin: 4px 0; }
-      .total-row { display: flex; justify-content: space-between; font-size: 10px; padding: 2px 0; }
-      .total-row.final { font-weight: 700; font-size: 11px; border-top: 1px solid #000; padding-top: 3px; margin-top: 2px; }
-      .qr-area { text-align: center; margin: 6px 0 4px; }
-      .footer { text-align: center; font-size: 8px; color: #555; margin-top: 4px; }
+      .total-section { margin: 2px 0; }
+      .total-row { display: flex; justify-content: space-between; font-size: 9px; padding: 1px 0; }
+      .total-row.final { font-weight: 700; font-size: 10px; border-top: 1px solid #000; padding-top: 2px; margin-top: 1px; }
+      .qr-area { text-align: center; margin: 3px 0 1px; }
+      .footer { text-align: center; font-size: 7px; color: #555; margin-top: 1px; margin-bottom: 0; padding-bottom: 0; }
       @media print {
-        @page { size: 56mm auto; margin: 0 !important; }
-        html, body { width: 56mm !important; max-width: 56mm !important; margin: 0 !important; padding: 4px 3px 0 3px !important; min-height: auto !important; height: auto !important; }
+        @page { size: 38mm auto; margin: 0 !important; }
+        html, body { width: 38mm !important; max-width: 38mm !important; margin: 0 !important; padding: 3px 3mm 0 3mm !important; min-height: auto !important; height: auto !important; }
         .no-print { display: none !important; }
-        .footer { padding-bottom: 2px !important; margin-bottom: 0 !important; }
-        .qr-area { margin: 3px 0 2px !important; }
-        .header { margin-bottom: 3px !important; }
-        .header .name { font-size: 12px !important; }
+        .footer { padding-bottom: 0 !important; margin-bottom: 0 !important; }
+        .qr-area { margin: 2px 0 0 !important; }
+        .header { margin-bottom: 2px !important; }
+        .header .name { font-size: 10px !important; }
       }
     </style>
   </head>
@@ -10136,7 +10104,7 @@ async function printReceipt(invoiceId) {
     <hr class="sep-double">
     
     <!-- Invoice Info -->
-    <div style="text-align:center;font-size:13px;font-weight:700;margin-bottom:4px">${invoiceType}</div>
+    <div style="text-align:center;font-size:10px;font-weight:700;margin-bottom:2px">${invoiceType}</div>
     <div class="info">
       <div class="info-row"><span class="label">رقم الفاتورة:</span><span class="val">${inv.number}</span></div>
       <div class="info-row"><span class="label">التاريخ:</span><span class="val">${formatDate(inv.date)}</span></div>
@@ -10167,7 +10135,7 @@ async function printReceipt(invoiceId) {
     
     <!-- QR -->
     <div class="qr-area">
-      <img src="${qrUrl}" style="width:52px;height:52px">
+      <img src="${qrUrl}" style="width:36px;height:36px">
       <div style="font-size:8px;color:#777;margin-top:3px">QR للتحقق</div>
     </div>
     
@@ -10175,7 +10143,7 @@ async function printReceipt(invoiceId) {
     <div class="footer">شكراً لتعاملكم معنا</div>
     
     <!-- Barcode at bottom -->
-    <div style="text-align:center;margin:5px 0 2px">
+    <div style="text-align:center;margin:1px 0 0;line-height:0">
       <svg id="receipt-barcode"></svg>
     </div>
     
