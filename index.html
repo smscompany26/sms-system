@@ -9,12 +9,12 @@
 <title>SMS — Inventory & Maintenance System</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <script>
-// v7.3.17 — SMS System
+// v7.3.21 — SMS System
 try { indexedDB.deleteDatabase('sms_db'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms_system'); } catch(e) {}
 try { indexedDB.deleteDatabase('sms-system'); } catch(e) {}
 try { indexedDB.deleteDatabase('SMSSystem'); } catch(e) {}
-console.log('SMS v7.3.17');
+console.log('SMS v7.3.21');
 </script>
 <style>/* ========== CSS Variables ========== */
 :root {
@@ -963,16 +963,34 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .invoice-item-row {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 8px;
-  padding: 10px;
+  padding: 10px 12px;
   background: var(--bg);
-  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   overflow: hidden;
   box-sizing: border-box;
   max-width: 100%;
+  transition: border-color 0.15s;
 }
+.invoice-item-row:has(.inv-product-display[data-value=""]) { border-color: var(--border); }
 .invoice-item-row select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: var(--bg-card); box-sizing: border-box; min-width: 0; }
+
+/* زر اختيار الصنف */
+.inv-product-display {
+  width: 100%; padding: 10px 12px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 14px; background: var(--bg-card);
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  box-sizing: border-box; transition: border-color 0.15s, background 0.15s;
+  user-select: none; -webkit-user-select: none;
+  min-height: 42px;
+}
+.inv-product-display:hover { border-color: var(--primary); background: var(--bg); }
+.inv-product-display[data-value=""] { border-style: dashed; }
+.inv-product-display[data-value=""] .inv-product-label { color: var(--text-muted); font-style: italic; }
+
 .invoice-item-row .inv-item-details {
   display: flex;
   gap: 6px;
@@ -980,8 +998,21 @@ tr:hover { background: rgba(108,60,233,0.02); }
   width: 100%;
   box-sizing: border-box;
 }
-.invoice-item-row input { flex: 1; min-width: 0; padding: 8px 4px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; text-align: center; background: var(--bg-card); box-sizing: border-box; }
-.invoice-item-row .inv-total { font-weight: 700; font-size: 12px; white-space: nowrap; }
+.invoice-item-row input {
+  flex: 1; min-width: 0; padding: 8px 6px;
+  border: 1px solid var(--border); border-radius: 6px;
+  font-size: 13px; text-align: center;
+  background: var(--bg-card); box-sizing: border-box;
+}
+.invoice-item-row input:focus { border-color: var(--primary); outline: none; }
+.invoice-item-row .inv-total {
+  font-weight: 700; font-size: 13px; white-space: nowrap;
+  min-width: 68px; text-align: center;
+  color: var(--primary);
+}
+/* label صغير فوق كل حقل */
+.inv-field-wrap { display: flex; flex-direction: column; flex: 1; gap: 2px; min-width: 0; }
+.inv-field-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-align: center; }
 .invoice-items-container { overflow-x: hidden; }
 
 .invoice-summary {
@@ -1683,7 +1714,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .chart-section-title { font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
 /* Custom Select Bottom Sheet */
 .custom-select-overlay {
-  position:fixed; inset:0; z-index:10000;
+  position:fixed; inset:0; z-index:10600;
   background:rgba(0,0,0,0.35); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
   display:flex; align-items:center; justify-content:center;
   opacity:0; transition:opacity 0.25s ease; pointer-events:none;
@@ -1691,7 +1722,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
 .custom-select-overlay.show { opacity:1; pointer-events:auto; }
 
 .custom-select-sheet {
-  width:90%; max-width:400px; max-height:60vh;
+  width:94%; max-width:480px; max-height:60vh;
   background:rgba(255,255,255,0.75); backdrop-filter:blur(24px) saturate(1.4); -webkit-backdrop-filter:blur(24px) saturate(1.4);
   border-radius:20px; border:1px solid rgba(255,255,255,0.3);
   display:flex; flex-direction:column;
@@ -1709,7 +1740,12 @@ tr:hover { background: rgba(108,60,233,0.02); }
 
 .cs-title { font-size:15px; font-weight:700; color:var(--text); text-align:center; padding:8px 20px 12px; }
 
-.cs-options { overflow-y:auto; -webkit-overflow-scrolling:touch; padding:0 12px 12px; flex:1; overscroll-behavior:contain; }
+.cs-options { overflow-y:auto; -webkit-overflow-scrolling:touch; padding:0 4px 12px; flex:1; overscroll-behavior:contain; }
+/* picker الأصناف: override الـ radio button style */
+#inv-picker-list .cs-option { padding:0; border-radius:10px; }
+#inv-picker-list .cs-option::after, #inv-picker-list .cs-option::before { display:none !important; }
+#inv-picker-list .cs-option:hover { background:rgba(108,60,233,0.06); }
+#inv-picker-list .cs-option.selected { background:rgba(108,60,233,0.08); }
 
 .cs-option {
   display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -3217,7 +3253,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
             <div class="stat-card" style="border-right-color:var(--primary)"><div class="stat-icon" style="background:rgba(108,60,233,0.1);color:var(--primary)"><i class='bx bx-building'></i></div><div class="stat-info"><span class="stat-value" id="settings-company-name" style="font-size:14px">—</span><span class="stat-label" data-i18n="label_company">الشركة</span></div></div>
             <div class="stat-card" style="border-right-color:var(--success)"><div class="stat-icon" style="background:rgba(34,197,94,0.1);color:var(--success)"><i class='bx bx-cloud'></i></div><div class="stat-info"><span class="stat-value" id="settings-drive-status" style="font-size:14px">غير متصل</span><span class="stat-label" data-i18n="label_cloud_sync">المزامنة السحابية</span></div></div>
             <div class="stat-card" style="border-right-color:var(--accent)"><div class="stat-icon" style="background:rgba(0,200,255,0.1);color:var(--accent)"><i class='bx bx-group'></i></div><div class="stat-info"><span class="stat-value" id="settings-team-count" style="font-size:16px">0</span><span class="stat-label" data-i18n="label_team">فريق العمل</span></div></div>
-            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.3.17</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
+            <div class="stat-card" style="border-right-color:var(--warning)"><div class="stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i class='bx bx-code-alt'></i></div><div class="stat-info"><span class="stat-value" id="settings-last-backup" style="font-size:14px">v7.3.21</span><span class="stat-label" data-i18n="label_version">إصدار النظام</span></div></div>
           </div>
 
           <h4 style="margin-bottom:12px;color:var(--text-muted);font-size:13px;text-transform:uppercase;letter-spacing:1px"><i class='bx bx-cog'></i> إعداد النظام</h4>
@@ -3511,7 +3547,7 @@ tr:hover { background: rgba(108,60,233,0.02); }
       </section>
     </div>
     <footer class="app-footer">
-      <span>v7.3.17 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
+      <span>v7.3.21 · Developed by <a href="https://kyrolosehab.me" target="_blank">Eng. Kyrolos Ehab</a> — 01228370809 · © 2026</span>
     </footer>
   </main>
 </div>
@@ -5544,6 +5580,15 @@ async function saveStoreToServer(storeName) {
   }
 }
 
+// autoPush: push كل الـ stores للسيرفر (alias لـ saveStoreToServer للكل)
+async function autoPush() {
+  try {
+    for (const storeName of Object.keys(STORES)) {
+      await saveStoreToServer(storeName);
+    }
+  } catch(e) { console.warn('autoPush error:', e); }
+}
+
 async function dbGetAll(store) {
   return [...(_cache[store] || [])];
 }
@@ -6154,6 +6199,10 @@ function openStaticSelect(select, title) {
   const overlay = document.createElement('div');
   overlay.className = 'custom-select-overlay';
   overlay.id = 'custom-select-overlay';
+  // z-index ديناميكي: فوق أي modal مفتوحة
+  const topModal = [...document.querySelectorAll('.modal.active')]
+    .reduce((max, m) => Math.max(max, parseInt(getComputedStyle(m).zIndex) || 10100), 10100);
+  overlay.style.zIndex = String(topModal + 100);
   
   const optionsData = Array.from(select.options).map((opt, i) => {
     const selected = opt.value === select.value ? ' selected' : '';
@@ -7676,7 +7725,7 @@ async function loadSettingsOverview() {
   
   // App version
   const backupEl = document.getElementById('settings-last-backup');
-  if (backupEl) backupEl.textContent = 'v7.3.17';
+  if (backupEl) backupEl.textContent = 'v7.3.21';
 }
 
 // ============ WARRANTY TOGGLE ============
@@ -9214,7 +9263,9 @@ function openNewSaleInvoice() {
   document.getElementById('invoice-photos-preview').innerHTML = '';
   existingInvoicePhotos = [];
   
-  renderInvoiceItems();
+  // تحديث allProducts من الـ cache للتأكد من أحدث البيانات
+  allProducts = [...(_cache['products'] || [])];
+  addInvoiceItem();  // item واحد افتراضي عند الفتح
   updateInvoiceTotals();
   openModal('modal-invoice');
 }
@@ -9249,6 +9300,8 @@ function openNewPurchaseInvoice() {
   const label = document.getElementById('purchase-mode-label');
   if (label) label.textContent = t('from_stock');
   
+  // تحديث allProducts من الـ cache
+  allProducts = [...(_cache['products'] || [])];
   // Auto-add first item
   addInvoiceItem();
   updateInvoiceTotals();
@@ -9263,6 +9316,10 @@ async function editInvoice(id) {
   currentInvoiceItems = (inv.items || []).map(item => {
     if (item.unitPrice === undefined && item.price !== undefined) item.unitPrice = item.price;
     if (!item.unitPrice && item.total && item.quantity) item.unitPrice = item.total / item.quantity;
+    // تأكد إن productId string للمقارنة الصحيحة
+    if (item.productId && item.productId !== '__external__') item.productId = item.productId;
+    if (!item.quantity || item.quantity <= 0) item.quantity = 1;
+    if (!item.total && item.quantity && item.unitPrice) item.total = item.quantity * item.unitPrice;
     return item;
   });
   
@@ -9302,15 +9359,66 @@ async function editInvoice(id) {
 // ============ INVOICE ITEMS ============
 function addInvoiceItem() {
   const isExternal = purchaseExternalMode && editingInvoiceType === 'purchase';
-  currentInvoiceItems.push({ 
-    productId: isExternal ? '__external__' : null, 
-    productName: '', 
-    quantity: 1, 
-    unitPrice: 0, 
-    total: 0,
-    isExternal: isExternal 
+  const idx = currentInvoiceItems.length;
+  currentInvoiceItems.push({
+    productId: isExternal ? '__external__' : null,
+    productName: '', quantity: 1, unitPrice: 0, total: 0,
+    isExternal: isExternal
   });
-  renderInvoiceItems();
+  // أضف الـ row مباشرة بدون full re-render لو الـ container موجود
+  const container = document.getElementById('invoice-items-list');
+  if (!container || currentInvoiceItems.length <= 1) { renderInvoiceItems(); return; }
+  const baseProductOptions = allProducts.map(p =>
+    `<option value="${p.id}" data-buy="${p.buyPrice}" data-sell="${p.sellPrice}" data-qty="${p.quantity}">${p.name} (${p.sku})</option>`
+  ).join('');
+  const div = document.createElement('div');
+  div.className = 'invoice-item-row';
+  div.dataset.idx = idx;
+  if (isExternal) {
+    div.style.cssText = 'flex-direction:column;gap:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px';
+    div.innerHTML = `<div style="display:flex;gap:6px;align-items:center">
+      <input type="text" class="inv-product-name" data-idx="${idx}" value="" placeholder="${t('inline_prod_name')}" style="flex:2;min-width:100px">
+      <button class="btn-icon danger" onclick="removeInvoiceItem(${idx})"><i class='bx bx-trash'></i></button>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <input type="number" class="inv-qty" value="1" min="1" data-idx="${idx}" style="flex:1">
+      <input type="number" class="inv-price" value="" step="0.01" min="0" data-idx="${idx}" style="flex:1">
+      <span class="inv-total" style="min-width:70px;text-align:center;font-weight:600">0.00 ج.م</span>
+    </div>`;
+    div.querySelector('.inv-product-name').addEventListener('input', function() {
+      currentInvoiceItems[idx].productName = this.value;
+      currentInvoiceItems[idx].productId = '__external__';
+      currentInvoiceItems[idx].isExternal = true;
+    });
+  } else {
+    div.innerHTML = `<div class="inv-product-display" data-idx="${idx}" data-value=""
+      style="width:100%;padding:10px 12px;border:1.5px dashed var(--border);border-radius:8px;font-size:14px;background:var(--bg-card);cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-sizing:border-box;min-height:42px">
+      <span class="inv-product-label" style="flex:1;color:var(--text-muted);font-style:italic">${t('choose_item')}</span>
+      <i class='bx bx-chevron-down' style="font-size:18px;color:var(--text-muted);flex-shrink:0"></i>
+    </div>
+    <select class="inv-product-select" data-idx="${idx}" style="display:none">
+      <option value="">${t('choose_item')}</option>${baseProductOptions}<option value="__other__">${t('other_add_new')}</option>
+    </select>
+    <div class="inv-item-details">
+      <div class="inv-field-wrap"><span class="inv-field-label">${t('ph_qty')}</span>
+        <input type="number" class="inv-qty" value="1" min="1" data-idx="${idx}"></div>
+      <div class="inv-field-wrap"><span class="inv-field-label">${t('ph_price')}</span>
+        <input type="number" class="inv-price" value="" step="0.01" min="0" placeholder="0.00" data-idx="${idx}"></div>
+      <div class="inv-field-wrap" style="flex:0 0 auto;min-width:64px;align-items:center">
+        <span class="inv-field-label">الإجمالي</span>
+        <span class="inv-total">0.00 ج.م</span>
+      </div>
+      <button class="btn-icon danger" onclick="removeInvoiceItem(${idx})" style="flex-shrink:0;align-self:flex-end;margin-bottom:2px"><i class='bx bx-trash'></i></button>
+    </div>`;
+    div.querySelector('.inv-product-display').addEventListener('click', () => openProductPicker(idx));
+  }
+  div.querySelectorAll('.inv-qty,.inv-price').forEach(input => {
+    input.addEventListener('input',  () => onInvoiceItemChange(idx));
+    input.addEventListener('change', () => onInvoiceItemChange(idx));
+  });
+  container.appendChild(div);
+  // scroll to new item
+  div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function removeInvoiceItem(idx) {
@@ -9343,10 +9451,13 @@ function renderInvoiceItems() {
   const toggleEl = document.getElementById('purchase-mode-toggle');
   if (toggleEl) toggleEl.style.display = editingInvoiceType === 'purchase' ? 'flex' : 'none';
   
-  const productsOptions = allProducts.map(p => 
+  // productsOptions now generated per-item below
+  
+  // بناء الـ options مرة واحدة لكل المنتجات (O(n) بدل O(n²))
+  const baseProductOptions = allProducts.map(p =>
     `<option value="${p.id}" data-buy="${p.buyPrice}" data-sell="${p.sellPrice}" data-qty="${p.quantity}">${p.name} (${p.sku})</option>`
   ).join('');
-  
+
   container.innerHTML = currentInvoiceItems.map((item, idx) => {
     if (isExternal) {
       return `<div class="invoice-item-row" data-idx="${idx}" style="flex-direction:column;gap:8px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px">
@@ -9361,56 +9472,140 @@ function renderInvoiceItems() {
         </div>
       </div>`;
     }
+    const itemProductId = item.productId && item.productId !== '__external__' ? String(item.productId) : '';
+    // اسم الصنف المختار للعرض
+    const chosenProduct = itemProductId ? allProducts.find(p => String(p.id) === itemProductId) : null;
+    const chosenLabel = chosenProduct ? `${chosenProduct.name} (${chosenProduct.sku})` : t('choose_item');
     return `<div class="invoice-item-row" data-idx="${idx}">
-      <select class="inv-product-select" data-idx="${idx}">
+      <div class="inv-product-display" data-idx="${idx}" data-value="${itemProductId}" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--bg-card);cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-sizing:border-box">
+        <span class="inv-product-label" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:${itemProductId ? 'var(--text)' : 'var(--text-muted)'}">${chosenLabel}</span>
+        <i class='bx bx-chevron-down' style="font-size:18px;color:var(--text-muted);flex-shrink:0"></i>
+      </div>
+      <select class="inv-product-select" data-idx="${idx}" style="display:none">
         <option value="">${t('choose_item')}</option>
-        ${productsOptions}
+        ${baseProductOptions}
         <option value="__other__">${t('other_add_new')}</option>
       </select>
       <div class="inv-item-details">
-        <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="${t('ph_qty')}" data-idx="${idx}">
-        <input type="number" class="inv-price" value="${item.unitPrice}" step="0.01" min="0" placeholder="${t('ph_price')}" data-idx="${idx}">
-        <span class="inv-total">${formatMoney(item.total)}</span>
-        <button class="btn-icon danger" onclick="removeInvoiceItem(${idx})"><i class='bx bx-trash'></i></button>
+        <div class="inv-field-wrap">
+          <span class="inv-field-label">${t('ph_qty')}</span>
+          <input type="number" class="inv-qty" value="${item.quantity}" min="1" placeholder="1" data-idx="${idx}">
+        </div>
+        <div class="inv-field-wrap">
+          <span class="inv-field-label">${t('ph_price')}</span>
+          <input type="number" class="inv-price" value="${item.unitPrice || ''}" step="0.01" min="0" placeholder="0.00" data-idx="${idx}">
+        </div>
+        <div class="inv-field-wrap" style="flex:0 0 auto;min-width:64px;align-items:center">
+          <span class="inv-field-label">الإجمالي</span>
+          <span class="inv-total">${formatMoney(item.total)}</span>
+        </div>
+        <button class="btn-icon danger" onclick="removeInvoiceItem(${idx})" style="flex-shrink:0;align-self:flex-end;margin-bottom:2px"><i class='bx bx-trash'></i></button>
       </div>
     </div>`;
   }).join('');
   
-  // Set selected products and attach event listeners
+  // Event listeners
   if (isExternal) {
-    // External purchase mode: text input for product name
     container.querySelectorAll('.inv-product-name').forEach(input => {
       input.addEventListener('input', function() {
         const idx = parseInt(this.dataset.idx);
         currentInvoiceItems[idx].productName = this.value;
-        currentInvoiceItems[idx].productId = '__external__'; // Mark as external
+        currentInvoiceItems[idx].productId = '__external__';
         currentInvoiceItems[idx].isExternal = true;
       });
     });
   } else {
-    const selects = container.querySelectorAll('.inv-product-select');
-    currentInvoiceItems.forEach((item, idx) => {
-      if (item.productId && item.productId !== '__external__' && selects[idx]) selects[idx].value = item.productId;
-    });
-    
-    // Attach change listeners (more reliable than inline onchange with custom selects)
-    selects.forEach(sel => {
-      sel.addEventListener('change', function() {
+    // بدل enhanceAllSelects، نحط click listener مباشرة على الـ display button
+    container.querySelectorAll('.inv-product-display').forEach(display => {
+      display.addEventListener('click', function() {
         const idx = parseInt(this.dataset.idx);
-        onInvoiceItemProductChange(idx, this);
+        openProductPicker(idx);
       });
     });
   }
   container.querySelectorAll('.inv-qty').forEach(input => {
     input.addEventListener('change', function() { onInvoiceItemChange(parseInt(this.dataset.idx)); });
-    input.addEventListener('input', function() { onInvoiceItemChange(parseInt(this.dataset.idx)); });
+    input.addEventListener('input',  function() { onInvoiceItemChange(parseInt(this.dataset.idx)); });
   });
   container.querySelectorAll('.inv-price').forEach(input => {
     input.addEventListener('change', function() { onInvoiceItemChange(parseInt(this.dataset.idx)); });
-    input.addEventListener('input', function() { onInvoiceItemChange(parseInt(this.dataset.idx)); });
+    input.addEventListener('input',  function() { onInvoiceItemChange(parseInt(this.dataset.idx)); });
   });
-  
-  enhanceAllSelects();
+}
+
+function openProductPicker(idx) {
+  closeCustomSelect();
+  const overlay = document.createElement('div');
+  overlay.className = 'custom-select-overlay';
+  overlay.id = 'custom-select-overlay';
+  const topModal = [...document.querySelectorAll('.modal.active')]
+    .reduce((max, m) => Math.max(max, parseInt(getComputedStyle(m).zIndex) || 10100), 10100);
+  overlay.style.zIndex = String(topModal + 100);
+
+  const renderOptions = (query) => {
+    const q = query.trim().toLowerCase();
+    const filtered = q
+      ? allProducts.filter(p => p.name.toLowerCase().includes(q) || (p.sku||'').toLowerCase().includes(q) || (p.barcode||'').includes(q))
+      : allProducts;
+    const rows = filtered.map(p => {
+      const isSel = String(p.id) === String(currentInvoiceItems[idx]?.productId || '');
+      const stockColor = p.quantity <= 0 ? 'var(--danger)' : p.quantity <= (p.minStock||3) ? '#f59e0b' : 'var(--success)';
+      const price = editingInvoiceType === 'sale' ? (p.sellPrice||0) : (p.buyPrice||0);
+      return `<div class="cs-option${isSel?' selected':''}" data-pid="${p.id}"
+        style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px">
+        <div style="flex:1;overflow:hidden;min-width:0">
+          <div style="font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${p.sku||''}${p.barcode?' · '+p.barcode:''}</div>
+        </div>
+        <div style="flex-shrink:0;text-align:left;display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+          <span style="font-size:13px;font-weight:700;color:var(--primary)">${typeof formatMoney==='function'?formatMoney(price):price}</span>
+          <span style="font-size:10px;color:${stockColor};font-weight:700">${p.quantity} وحدة</span>
+        </div>
+      </div>`;
+    }).join('');
+    return rows || `<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:14px">🔍 لا توجد نتائج</div>`;
+  };
+
+  overlay.innerHTML = `
+    <div class="custom-select-sheet" style="max-height:75vh">
+      <div class="cs-handle"></div>
+      <div class="cs-title" style="font-size:14px">${t ? t('choose_item') : 'اختر صنف'} <span style="font-size:12px;color:var(--text-muted);font-weight:400">(${allProducts.length} صنف)</span></div>
+      <div style="padding:6px 16px 4px">
+        <input type="text" id="inv-picker-search" placeholder="بحث بالاسم أو الكود..." autofocus
+          style="width:100%;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;outline:none;box-sizing:border-box">
+      </div>
+      <div class="cs-options" id="inv-picker-list">${renderOptions('')}</div>
+      <div style="padding:8px 16px 12px;border-top:1px solid var(--border)">
+        <button class="btn btn-outline btn-sm" style="width:100%" onclick="
+          closeCustomSelect();
+          setTimeout(()=>showInlineProductAdd(${idx}),50);
+        "><i class='bx bx-plus'></i> ${t ? t('other_add_new') : '+ إضافة صنف جديد'}</button>
+      </div>
+    </div>`;
+
+  // Search
+  const searchEl = overlay.querySelector('#inv-picker-search');
+  const listEl   = overlay.querySelector('#inv-picker-list');
+  searchEl.addEventListener('input', () => { listEl.innerHTML = renderOptions(searchEl.value); attachPick(); });
+
+  function attachPick() {
+    listEl.querySelectorAll('.cs-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const pid = opt.dataset.pid;
+        const fakeSelect = { value: pid };
+        onInvoiceItemProductChange(idx, fakeSelect);
+        closeCustomSelect();
+      });
+    });
+  }
+  attachPick();
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeCustomSelect(); });
+  const sheet = overlay.querySelector('.custom-select-sheet');
+  let startY = 0;
+  sheet.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, {passive:true});
+  sheet.addEventListener('touchmove',  (e) => { if (e.touches[0].clientY - startY > 80) closeCustomSelect(); }, {passive:true});
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => { overlay.classList.add('show'); setTimeout(()=>searchEl.focus(), 300); });
 }
 
 function onInvoiceItemProductChange(idx, sel) {
@@ -9425,18 +9620,36 @@ function onInvoiceItemProductChange(idx, sel) {
     return;
   }
   
-  currentInvoiceItems[idx].productId = product.id;
+  const price = editingInvoiceType === 'sale' ? product.sellPrice : product.buyPrice;
+  currentInvoiceItems[idx].productId   = product.id;
   currentInvoiceItems[idx].productName = product.name;
-  
-  // Auto-fill price based on invoice type
-  if (editingInvoiceType === 'sale') {
-    currentInvoiceItems[idx].unitPrice = product.sellPrice;
-  } else {
-    currentInvoiceItems[idx].unitPrice = product.buyPrice;
+  currentInvoiceItems[idx].unitPrice   = price;
+  currentInvoiceItems[idx].total       = currentInvoiceItems[idx].quantity * price;
+
+  // تحديث الـ UI مباشرة بدون full re-render
+  const row = document.querySelectorAll('.invoice-item-row')[idx];
+  if (row) {
+    const display = row.querySelector('.inv-product-display');
+    if (display) {
+      display.dataset.value = String(product.id);
+      const lbl = display.querySelector('.inv-product-label');
+      if (lbl) {
+        lbl.textContent = `${product.name} (${product.sku})`;
+        lbl.style.color = 'var(--text)';
+        lbl.style.fontStyle = 'normal';
+      }
+      display.style.borderStyle = 'solid';
+      display.style.borderColor = 'var(--primary)';
+      setTimeout(() => { if (display) display.style.borderColor = ''; }, 800);
+    }
+    const priceInput = row.querySelector('.inv-price');
+    if (priceInput) priceInput.value = price;
+    const totalEl = row.querySelector('.inv-total');
+    if (totalEl) totalEl.textContent = formatMoney(currentInvoiceItems[idx].total);
+    // تحديث hidden select
+    const sel = row.querySelector('.inv-product-select');
+    if (sel) sel.value = String(product.id);
   }
-  
-  currentInvoiceItems[idx].total = currentInvoiceItems[idx].quantity * currentInvoiceItems[idx].unitPrice;
-  renderInvoiceItems();
   updateInvoiceTotals();
 }
 
@@ -9493,24 +9706,47 @@ async function saveInlineProduct(idx) {
   currentInvoiceItems[idx].unitPrice = editingInvoiceType === 'sale' ? sellPrice : buyPrice;
   currentInvoiceItems[idx].total = currentInvoiceItems[idx].quantity * currentInvoiceItems[idx].unitPrice;
   
-  toast(t("toast_inline_product_added").replace("{name}", name));
-  renderInvoiceItems();
+  if (editingInvoiceType === 'sale' && sellPrice === 0) {
+    toast('⚠️ ' + name + ' - السعر 0، تأكد من تعديل السعر', 'warning');
+  } else {
+    toast(t('toast_inline_product_added').replace('{name}', name));
+  }
+  // تحديث الـ display مباشرة بدون full re-render
+  const row = document.querySelectorAll('.invoice-item-row')[idx];
+  if (row) {
+    const display = row.querySelector('.inv-product-display');
+    if (display) {
+      display.dataset.value = String(id);
+      const lbl = display.querySelector('.inv-product-label');
+      if (lbl) { lbl.textContent = `${name} (${sku})`; lbl.style.color='var(--text)'; lbl.style.fontStyle='normal'; }
+      display.style.borderStyle = 'solid';
+    }
+    const priceInput = row.querySelector('.inv-price');
+    if (priceInput) priceInput.value = editingInvoiceType === 'sale' ? sellPrice : buyPrice;
+    const totalEl = row.querySelector('.inv-total');
+    if (totalEl) totalEl.textContent = formatMoney(currentInvoiceItems[idx].total);
+    // شيل الـ inline form
+    row.querySelector('.inline-product-add')?.remove();
+  }
   updateInvoiceTotals();
 }
 
 function onInvoiceItemChange(idx) {
+  if (idx < 0 || idx >= currentInvoiceItems.length) return;
   const rows = document.querySelectorAll('.invoice-item-row');
   const row = rows[idx];
   if (!row) return;
   
-  const qty = parseInt(row.querySelector('.inv-qty').value) || 0;
-  const price = parseFloat(row.querySelector('.inv-price').value) || 0;
+  const qty   = parseFloat(row.querySelector('.inv-qty')?.value)   || 0;
+  const price = parseFloat(row.querySelector('.inv-price')?.value) || 0;
+  const total = Math.round(qty * price * 100) / 100; // تجنب floating point errors
   
-  currentInvoiceItems[idx].quantity = qty;
+  currentInvoiceItems[idx].quantity  = qty;
   currentInvoiceItems[idx].unitPrice = price;
-  currentInvoiceItems[idx].total = qty * price;
+  currentInvoiceItems[idx].total     = total;
   
-  row.querySelector('.inv-total').textContent = formatMoney(qty * price);
+  const totalEl = row.querySelector('.inv-total');
+  if (totalEl) totalEl.textContent = formatMoney(total);
   updateInvoiceTotals();
 }
 
@@ -9537,24 +9773,13 @@ async function saveInvoice(e) {
   
   if (currentInvoiceItems.length === 0) return toast(t('toast_add_one_item'), 'warning');
   
-  // Try to recover productId from the select elements before validation
-  const invoiceSelects = document.querySelectorAll('.inv-product-select');
-  currentInvoiceItems.forEach((item, idx) => {
-    if (!item.productId && invoiceSelects[idx] && invoiceSelects[idx].value) {
-      const selVal = parseInt(invoiceSelects[idx].value);
-      if (selVal) {
-        const prod = allProducts.find(p => p.id === selVal || p.id == invoiceSelects[idx].value);
-        if (prod) {
-          item.productId = prod.id;
-          item.productName = prod.name;
-        }
-      }
-    }
+  // Normalize external flag
+  currentInvoiceItems.forEach(i => {
+    if (i.productId === '__external__') i.isExternal = true;
   });
-  
-  // For external purchase items, ensure they have a name
   if (currentInvoiceItems.some(i => i.isExternal && !i.productName?.trim())) return toast(t('toast_enter_product'), 'warning');
   if (currentInvoiceItems.some(i => !i.productId && !i.isExternal)) return toast(t('toast_choose_product_all'), 'warning');
+  if (currentInvoiceItems.some(i => !i.quantity || i.quantity <= 0)) return toast('⚠️ تأكد من كمية جميع الأصناف', 'warning');
   
   const total = currentInvoiceItems.reduce((sum, i) => sum + i.total, 0);
   
@@ -9634,9 +9859,18 @@ async function saveInvoice(e) {
 
 async function applyStockChanges(invoice) {
   for (const item of invoice.items) {
+    // external purchase items: سجّل movement بس مش بنخصم مخزون
+    if (item.isExternal || item.productId === '__external__') {
+      await dbAdd('stockMovements', {
+        productId: null, productName: item.productName || 'خارجي',
+        type: 'in', quantity: item.quantity,
+        notes: `فاتورة شراء خارجية ${invoice.number}`,
+        date: invoice.date, totalPrice: item.total,
+      });
+      continue;
+    }
     const product = await dbGet('products', item.productId);
     if (!product) continue;
-    
     if (invoice.type === 'sale') {
       product.quantity = Math.max(0, product.quantity - item.quantity);
       await dbAdd('stockMovements', {
@@ -9660,6 +9894,7 @@ async function applyStockChanges(invoice) {
 
 async function reverseStockChanges(invoice) {
   for (const item of invoice.items) {
+    if (item.isExternal || item.productId === '__external__' || !item.productId) continue;
     const product = await dbGet('products', item.productId);
     if (!product) continue;
     if (invoice.type === 'sale') {
@@ -9673,23 +9908,39 @@ async function reverseStockChanges(invoice) {
 
 async function updateBalances() {
   const invoices = await dbGetAll('invoices');
-  
-  // Reset and recalc client balances
-  for (const client of allClients) {
-    const clientInvoices = invoices.filter(i => i.type === 'sale' && i.clientId === client.id);
-    client.balance = clientInvoices.reduce((sum, inv) => {
-      return sum + inv.total - (inv.paidAmount || 0);
-    }, 0);
-    await dbPut('clients', client);
+  // مجموع الفواتير لكل عميل/مورد
+  const clientInvTotals = {}, supplierInvTotals = {};
+  for (const inv of invoices) {
+    const due = (inv.total || 0) - (inv.paidAmount || 0);
+    if (inv.type === 'sale' && inv.clientId) {
+      clientInvTotals[inv.clientId] = (clientInvTotals[inv.clientId] || 0) + due;
+    } else if (inv.type === 'purchase' && inv.supplierId) {
+      supplierInvTotals[inv.supplierId] = (supplierInvTotals[inv.supplierId] || 0) + due;
+    }
   }
-  
-  // Supplier balances
+  // الـ balance = مديونية الفواتير - المدفوعات اليدوية + الديون المضافة يدوياً
+  const calcBalance = (entity, invTotal) => {
+    let bal = invTotal;
+    for (const p of (entity.payments || [])) {
+      if (p.type === 'payment_in' || p.type === 'payment_out') bal -= p.amount;
+      else if (p.type === 'add_debt') bal += p.amount;
+      else if (p.type === 'adjust') bal = p.amount; // آخر adjust يحكم
+    }
+    return Math.round(bal * 100) / 100;
+  };
+  for (const client of allClients) {
+    const newBal = calcBalance(client, clientInvTotals[client.id] || 0);
+    if (Math.abs((client.balance || 0) - newBal) > 0.01) {
+      client.balance = newBal;
+      await dbPut('clients', client);
+    }
+  }
   for (const supplier of allSuppliers) {
-    const supInvoices = invoices.filter(i => i.type === 'purchase' && i.supplierId === supplier.id);
-    supplier.balance = supInvoices.reduce((sum, inv) => {
-      return sum + inv.total - (inv.paidAmount || 0);
-    }, 0);
-    await dbPut('suppliers', supplier);
+    const newBal = calcBalance(supplier, supplierInvTotals[supplier.id] || 0);
+    if (Math.abs((supplier.balance || 0) - newBal) > 0.01) {
+      supplier.balance = newBal;
+      await dbPut('suppliers', supplier);
+    }
   }
 }
 
@@ -9872,6 +10123,7 @@ async function recordPayment(id) {
   
   allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
   renderSalesInvoices();
+  renderPurchaseInvoices();
 }
 
 // ============ VIEW & PRINT ============
@@ -10397,6 +10649,10 @@ async function printReceipt(invoiceId) {
 async function createReturn(invoiceId) {
   const inv = await dbGet('invoices', invoiceId);
   if (!inv || inv.type !== 'sale') return;
+  // تأكد مفيش return موجود بالفعل لنفس الفاتورة
+  const existingReturn = (_cache['invoices']||[]).find(i => i.number === 'R-' + inv.number);
+  if (existingReturn) { toast('⚠️ يوجد مرتجع بالفعل لهذه الفاتورة', 'warning'); return; }
+  if (!confirm(`تأكيد إنشاء مرتجع للفاتورة ${inv.number}؟`)) return;
   // Simple return — creates a negative invoice
   const returnInv = {
     ...inv,
@@ -10410,8 +10666,11 @@ async function createReturn(invoiceId) {
   };
   
   await dbAdd('invoices', returnInv);
-  // Return stock
   await reverseStockChanges(inv);
+  await updateBalances();
+  // تحديث allInvoices
+  allInvoices = normalizeInvoiceItems(await dbGetAll('invoices'));
+  renderSalesInvoices();
   toast(t('toast_return_created'));
 }
 
@@ -10420,8 +10679,20 @@ function generateInvoiceNumber(prefix) {
   const date = new Date();
   const y = date.getFullYear().toString().slice(-2);
   const m = String(date.getMonth()+1).padStart(2,'0');
-  const rand = String(Math.floor(Math.random() * 9999)).padStart(4,'0');
-  return `${prefix}-${y}${m}-${rand}`;
+  const d = String(date.getDate()).padStart(2,'0');
+  // استخدم cache مباشرة للدقة (allInvoices ممكن تكون لسه فاضية)
+  const allInv = (_cache['invoices'] || []);
+  const prefix_month = prefix + '-' + y + m;
+  const existing = allInv.filter(i => (i.number||'').startsWith(prefix_month));
+  const seq = String(existing.length + 1).padStart(4, '0');
+  let num = `${prefix_month}-${seq}`;
+  // تأكد من عدم التكرار
+  let tries = 0;
+  while (allInv.some(i => i.number === num) && tries < 20) {
+    tries++;
+    num = `${prefix_month}-${String(existing.length + 1 + tries).padStart(4,'0')}`;
+  }
+  return num;
 }
 </script>
 <script>/**
@@ -10970,6 +11241,8 @@ async function saveDevice(e) {
   if (id) {
     data.id = parseInt(id);
     const existing = await dbGet('devices', parseInt(id));
+    // حفظ الـ parts القديمة قبل أي تعديل
+    const oldParts = existing?.parts || [];
     // Preserve task tracking data
     data.warningsCount = existing?.warningsCount || 0;
     if (existing?.taskStatus === 'completed') data.taskStatus = 'completed';
@@ -10979,6 +11252,16 @@ async function saveDevice(e) {
       data.taskStatus = 'assigned';
       data.warningsCount = 0;
       notifyEngineerAssignment(data);
+    }
+    // إرجاع المخزون للـ parts القديمة قبل dbPut
+    for (const oldPart of oldParts) {
+      if (oldPart.fromStock && oldPart.productId) {
+        const product = await dbGet('products', oldPart.productId);
+        if (product) {
+          product.quantity += oldPart.quantity;
+          await dbPut('products', product);
+        }
+      }
     }
     await dbPut('devices', data);
     toast(t('toast_maintenance_updated'));
@@ -10991,8 +11274,8 @@ async function saveDevice(e) {
     }
     toast(t('toast_intake_created'));
   }
-  
-  // Deduct stock parts
+
+  // خصم stock للـ parts الجديدة
   for (const part of currentDeviceParts) {
     if (part.fromStock && part.productId) {
       const product = await dbGet('products', part.productId);
@@ -11008,7 +11291,7 @@ async function saveDevice(e) {
       }
     }
   }
-  
+
   closeModal('modal-device');
   await loadMaintenancePage();
 }
@@ -11145,7 +11428,17 @@ async function penalizeEngineer(deviceId) {
 
 async function deleteDevice(id) {
   const d = allDevices.find(x => x.id === id);
-  if (!confirm(`حذف أمر الصيانة ${d?.orderNumber}؟`)) return;
+  if (!confirm(`حذف أمر الصيانة ${d?.orderNumber}؟ سيتم إرجاع المخزون.`)) return;
+  // إرجاع المخزون للـ parts المستخدمة
+  for (const part of (d?.parts || [])) {
+    if (part.fromStock && part.productId) {
+      const product = await dbGet('products', part.productId);
+      if (product) {
+        product.quantity += part.quantity;
+        await dbPut('products', product);
+      }
+    }
+  }
   allDevices = allDevices.filter(x => x.id !== id);
   renderDevicesTable();
   updateMaintenanceStats();
@@ -11227,24 +11520,40 @@ function onPartProductChange(idx, productId) {
   const product = allProducts.find(p => p.id === parseInt(productId));
   if (!product) return;
   currentDeviceParts[idx].productId = product.id;
-  currentDeviceParts[idx].name = product.name;
+  currentDeviceParts[idx].name     = product.name;
   currentDeviceParts[idx].unitPrice = product.buyPrice;
-  currentDeviceParts[idx].total = currentDeviceParts[idx].quantity * product.buyPrice;
-  renderDeviceParts();
+  currentDeviceParts[idx].total    = Math.round(currentDeviceParts[idx].quantity * product.buyPrice * 100) / 100;
+  // تحديث الـ row مباشرة
+  const rows = document.querySelectorAll('.part-row');
+  if (rows[idx]) {
+    const priceInput = rows[idx].querySelectorAll('input[type="number"]')[1];
+    if (priceInput) priceInput.value = product.buyPrice;
+    const totalEl = rows[idx].querySelector('.part-total');
+    if (totalEl) totalEl.textContent = formatMoney(currentDeviceParts[idx].total);
+  }
   updateRepairCost();
 }
 
 function onPartQtyChange(idx, val) {
-  currentDeviceParts[idx].quantity = parseInt(val) || 0;
-  currentDeviceParts[idx].total = currentDeviceParts[idx].quantity * currentDeviceParts[idx].unitPrice;
-  renderDeviceParts();
+  currentDeviceParts[idx].quantity = parseFloat(val) || 0;
+  currentDeviceParts[idx].total = Math.round(currentDeviceParts[idx].quantity * currentDeviceParts[idx].unitPrice * 100) / 100;
+  // تحديث الـ total span مباشرة بدون full re-render
+  const rows = document.querySelectorAll('.part-row');
+  if (rows[idx]) {
+    const totalEl = rows[idx].querySelector('.part-total');
+    if (totalEl) totalEl.textContent = formatMoney(currentDeviceParts[idx].total);
+  }
   updateRepairCost();
 }
 
 function onPartPriceChange(idx, val) {
   currentDeviceParts[idx].unitPrice = parseFloat(val) || 0;
-  currentDeviceParts[idx].total = currentDeviceParts[idx].quantity * currentDeviceParts[idx].unitPrice;
-  renderDeviceParts();
+  currentDeviceParts[idx].total = Math.round(currentDeviceParts[idx].quantity * currentDeviceParts[idx].unitPrice * 100) / 100;
+  const rows = document.querySelectorAll('.part-row');
+  if (rows[idx]) {
+    const totalEl = rows[idx].querySelector('.part-total');
+    if (totalEl) totalEl.textContent = formatMoney(currentDeviceParts[idx].total);
+  }
   updateRepairCost();
 }
 
@@ -12095,10 +12404,11 @@ function renderLedger(entity) {
     return;
   }
   
-  const sorted = [...payments].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const sorted = payments.map((p, i) => ({...p, _origIdx: i}))
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
   ledger.style.display = 'block';
-  ledger.innerHTML = sorted.map((p, i) => {
-    const origIdx = payments.indexOf(p);
+  ledger.innerHTML = sorted.map((p) => {
+    const origIdx = p._origIdx;
     const isIn = p.type === 'payment_in';
     const isDebt = p.type === 'add_debt';
     const isAdjust = p.type === 'adjust';
@@ -12190,6 +12500,9 @@ async function deleteLedgerEntry(idx) {
   if (localEntity) { localEntity.payments = entity.payments; localEntity.balance = entity.balance; }
   
   toast('تم حذف الحركة');
+  await updateBalances();
+  const updatedE = await dbGet(store, id);
+  if (updatedE && localEntity) { localEntity.balance = updatedE.balance; }
   onLedgerEntityChange();
   renderAccountingDashboard();
 }
@@ -12231,7 +12544,7 @@ async function saveLedgerEntry() {
     entity.balance = amount; // For adjust, amount IS the new balance
   }
   
-  entity.balance = Math.round(Math.max(0, entity.balance) * 100) / 100;
+  entity.balance = Math.round((entity.balance || 0) * 100) / 100;
   
   if (editIdx >= 0) {
     entity.payments[editIdx] = entry;
@@ -12250,6 +12563,15 @@ async function saveLedgerEntry() {
   toast('تم حفظ الحركة');
   document.getElementById('adj-add-form').style.display = 'none';
   document.getElementById('adj-edit-idx').value = '-1';
+  // إعادة حساب الـ balance من الصفر للدقة
+  await updateBalances();
+  // تحديث الـ local entity من الـ cache المحدث
+  const updatedEntity = await dbGet(store, id);
+  if (updatedEntity) {
+    const list2 = type === 'client' ? allClients : allSuppliers;
+    const localE = list2.find(e => e.id === id);
+    if (localE) { localE.balance = updatedEntity.balance; localE.payments = updatedEntity.payments; }
+  }
   onLedgerEntityChange();
   renderAccountingDashboard();
 }
@@ -12617,7 +12939,7 @@ async function generateDailyReport(dateStr) {
   const dayPurchases = invoices.filter(i => i.type === 'purchase' && i.date?.startsWith(date));
   const dayExpenses = expenses.filter(e => e.date?.startsWith(date));
   const dayDevicesIn = devices.filter(d => d.intakeDate?.startsWith(date));
-  const dayDevicesDone = devices.filter(d => d.status !== 'under_repair' && d.createdAt?.startsWith(date));
+  const dayDevicesDone = devices.filter(d => d.status === 'completed' && (d.exitDate||d.completedAt||'')?.startsWith(date));
   
   const totalSales = daySales.reduce((s, i) => s + (i.total || 0), 0);
   const totalPurchases = dayPurchases.reduce((s, i) => s + (i.total || 0), 0);
@@ -13802,10 +14124,8 @@ async function handleGlobalScan(code) {
 
   // Determine current active page
   const activePage = document.querySelector('.page.active')?.id?.replace('page-', '') || '';
-  const invoiceModalOpen = document.getElementById('modal-invoice')?.style.display !== 'none' &&
-                           document.getElementById('modal-invoice')?.classList.contains('open');
-  const deviceModalOpen  = document.getElementById('modal-device')?.style.display !== 'none' &&
-                           document.getElementById('modal-device')?.classList.contains('open');
+  const invoiceModalOpen = document.getElementById('modal-invoice')?.classList.contains('active');
+  const deviceModalOpen  = document.getElementById('modal-device')?.classList.contains('active');
 
   if (deviceModalOpen) {
     _scannerContext = 'maintenance';
@@ -14237,7 +14557,7 @@ function _buildTxns() {
   const rows = [];
   const inv = allInvoices || [];
   const dev = allDevices  || [];
-  const svc = allServices || [];
+  const svc = (typeof _allServicesLoaded !== 'undefined' ? _allServicesLoaded : null) || allServices || [];
   const cli = allClients  || [];
   const sup = allSuppliers|| [];
 
@@ -14562,7 +14882,7 @@ function _srcBadge(src) {
 function _buildReceipts() {
   const rows = [];
   const dev = allDevices  || [];
-  const svc = allServices || [];
+  const svc = (typeof _allServicesLoaded !== 'undefined' ? _allServicesLoaded : null) || allServices || [];
   const inv = allInvoices || [];
   const cli = allClients  || [];
   const sup = allSuppliers|| [];
@@ -14945,7 +15265,6 @@ function exportReceiptsCSV() {
 }
 
 // Legacy stubs (kept for compatibility)
-function loadEmployeesTab() { loadReceiptsTab(); }
 function exportEmployeesCSV() { exportReceiptsCSV(); }
 </script>
 <!-- ===== PERSON RULE MODAL ===== -->
